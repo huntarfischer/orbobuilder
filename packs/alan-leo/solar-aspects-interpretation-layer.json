@@ -1,0 +1,3005 @@
+{
+  "schema": "orbo.interpretation.solar_aspects.alan_leo.v1",
+  "language": "en",
+  "source": {
+    "author": "Alan Leo",
+    "work": "The Progressed Horoscope",
+    "chapter": 13,
+    "chapter_title": "Solar Aspects",
+    "pages": "89-117",
+    "basis": "User-supplied page scans transcribed and normalized for Orbo."
+  },
+  "editorial_policy": {
+    "astrological_glyphs": "not_used",
+    "planet_and_aspect_names": "plain_text",
+    "source_text_location": "alan-leo-progressed-horoscope-chapter-xiii-solar-aspects.md",
+    "interpretation_status": "editorial abstraction from Leo's delineations, not verbatim source text",
+    "historical_language": "preserved in transcription; normalized in interpretation fields where useful"
+  },
+  "engine_rules": {
+    "default_geometry": {
+      "moving_body": "progressed Sun",
+      "target_body": "radical planet",
+      "note": "Leo states that the ensuing Solar aspects are considered as formed between the progressed Sun and the radical position of the planet in question."
+    },
+    "progressed_to_progressed_allowed": {
+      "enabled": true,
+      "interpretation_context": "Progressed Horoscope rather than Nativity",
+      "condition": "The native is affected to the extent that present-life foundations and helpful circumstances can be used."
+    },
+    "solar_clock_model": {
+      "Sun": "short hand / hour",
+      "Moon": "long hand / minute",
+      "activation_rule": "Lunar aspects focus and time the manifestation of solar directions."
+    },
+    "duration": {
+      "typical_minimum_years": 3,
+      "phases": [
+        "approximately one year becoming complete",
+        "approximately one year complete",
+        "approximately one year passing off"
+      ],
+      "note": "Some solar influences, especially parallels and transitions between radical and progressed contacts, can extend for many years."
+    },
+    "modifiers": {
+      "priority_after_planetary_aspect": [
+        "natal Sun sign",
+        "natal Sun house"
+      ],
+      "lunar_aspects": "timing and activation modifier",
+      "natal_condition_of_target": "can materially change the expression of the solar aspect"
+    },
+    "no_solar_aspects": {
+      "effect": "The period is less eventful and other directions are less potent and more restricted in scope.",
+      "lunar_use": "Lunar aspects may be used more finely when no solar aspect is operating."
+    },
+    "aspect_angles_degrees": {
+      "parallel": null,
+      "conjunction": 0,
+      "semi-sextile": 30,
+      "semi-square": 45,
+      "sextile": 60,
+      "quintile": 72,
+      "square": 90,
+      "trine": 120,
+      "sesquiquadrate": 135,
+      "quincunx": 150,
+      "opposition": 180
+    }
+  },
+  "interpretations": [
+    {
+      "id": "solar_aspect_037",
+      "source_number": 37,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Beneficial change through emotional, domestic, and relational development.",
+      "themes": [
+        "attachments",
+        "domestic affairs",
+        "feelings",
+        "honour",
+        "inner change"
+      ],
+      "constructive_expression": [
+        "Develop emotional maturity",
+        "Use favourable changes constructively",
+        "Strengthen supportive attachments"
+      ],
+      "cautions": [
+        "Source notes reduced favourability for women"
+      ],
+      "conditions": [
+        "Often active for several years"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 37
+      }
+    },
+    {
+      "id": "solar_aspect_038",
+      "source_number": 38,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "mixed-positive",
+      "strength": "strong",
+      "core_meaning": "A major life change or crisis that activates vitality, emotion, and advancement.",
+      "themes": [
+        "life change",
+        "crisis",
+        "vitality",
+        "environment",
+        "success",
+        "higher emotions"
+      ],
+      "constructive_expression": [
+        "Use the period to redirect life constructively",
+        "Channel increased vitality",
+        "Accept necessary change"
+      ],
+      "cautions": [
+        "Feverish excess if natal vitality is poorly supported",
+        "Source notes reduced favourability for women"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 38
+      }
+    },
+    {
+      "id": "solar_aspect_039",
+      "source_number": 39,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "Modest improvement in prospects, domestic harmony, and personal benefit.",
+      "themes": [
+        "finance",
+        "advancement",
+        "domestic harmony",
+        "environment",
+        "heart"
+      ],
+      "constructive_expression": [
+        "Improve surroundings",
+        "Advance matters of personal importance",
+        "Use supportive lunar contacts"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 39
+      }
+    },
+    {
+      "id": "solar_aspect_040",
+      "source_number": 40,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Difficult change affecting health, finance, domestic life, and dependents.",
+      "themes": [
+        "health",
+        "finance",
+        "domestic affairs",
+        "sorrow",
+        "dependents"
+      ],
+      "constructive_expression": [
+        "Avoid unnecessary changes",
+        "Protect health",
+        "Act cautiously in domestic and financial matters"
+      ],
+      "cautions": [
+        "Prolonged illness",
+        "Financial or domestic trouble"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 40
+      }
+    },
+    {
+      "id": "solar_aspect_041",
+      "source_number": 41,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "A successful and expansive period supporting health, intuition, relationships, and beneficial change.",
+      "themes": [
+        "success",
+        "health",
+        "intuition",
+        "attachments",
+        "travel",
+        "relocation"
+      ],
+      "constructive_expression": [
+        "Act on opportunities",
+        "Make constructive changes",
+        "Use intuition practically"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 41
+      }
+    },
+    {
+      "id": "solar_aspect_042",
+      "source_number": 42,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "A severe testing period involving health, grief, domestic conflict, and separation.",
+      "themes": [
+        "illness",
+        "grief",
+        "family",
+        "disappointment",
+        "estrangement",
+        "adversity"
+      ],
+      "constructive_expression": [
+        "Meet adversity with strength",
+        "Avoid needless conflict",
+        "Treat change as a character test"
+      ],
+      "cautions": [
+        "Serious health strain",
+        "Family sorrow",
+        "Separation"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 42
+      }
+    },
+    {
+      "id": "solar_aspect_043",
+      "source_number": 43,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "A highly successful period for enterprise, investment, recognition, and lasting unions.",
+      "themes": [
+        "happiness",
+        "investment",
+        "enterprise",
+        "recognition",
+        "attachments",
+        "social success"
+      ],
+      "constructive_expression": [
+        "Start worthwhile enterprises",
+        "Use favourable lunar timing",
+        "Pursue advancement"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo explicitly links full expression to supportive lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 43
+      }
+    },
+    {
+      "id": "solar_aspect_044",
+      "source_number": 44,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "A trying period affecting health, reputation, finance, and close relationships.",
+      "themes": [
+        "health",
+        "reputation",
+        "finance",
+        "grief",
+        "family"
+      ],
+      "constructive_expression": [
+        "Avoid risk",
+        "Maintain health",
+        "Protect reputation and finances"
+      ],
+      "cautions": [
+        "Loss",
+        "Family grief",
+        "Health problems"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 44
+      }
+    },
+    {
+      "id": "solar_aspect_045",
+      "source_number": 45,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "mixed-positive",
+      "strength": "weak",
+      "core_meaning": "A modestly favourable change cycle with material benefit but bodily adjustment.",
+      "themes": [
+        "material gain",
+        "change",
+        "health adjustment",
+        "mental attitude"
+      ],
+      "constructive_expression": [
+        "Maintain a constructive mental attitude",
+        "Allow gradual adjustment",
+        "Use changes selectively"
+      ],
+      "cautions": [
+        "Feverish tendencies",
+        "Health sensitivity"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 45
+      }
+    },
+    {
+      "id": "solar_aspect_046",
+      "source_number": 46,
+      "progressed_body": "Sun",
+      "target_body": "Moon",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "critical",
+      "strength": "strong",
+      "core_meaning": "A culmination bringing emotional crisis, separation, broken ties, and deep personal change.",
+      "themes": [
+        "culmination",
+        "separation",
+        "family",
+        "friends",
+        "partners",
+        "psychic development"
+      ],
+      "constructive_expression": [
+        "Accept necessary endings",
+        "Use crisis for inner development",
+        "Avoid retaliatory conflict"
+      ],
+      "cautions": [
+        "Enemies",
+        "Loss",
+        "Severed attachments"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 46
+      }
+    },
+    {
+      "id": "solar_aspect_047",
+      "source_number": 47,
+      "progressed_body": "Sun",
+      "target_body": "Mercury",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        },
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        },
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        },
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        },
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "moderate",
+      "core_meaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive_expression": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 47
+      }
+    },
+    {
+      "id": "solar_aspect_048",
+      "source_number": 48,
+      "progressed_body": "Sun",
+      "target_body": "Mercury",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        },
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Mental strain, anxiety, error, difficult correspondence, and delayed fruition.",
+      "themes": [
+        "anxiety",
+        "mistakes",
+        "writing",
+        "contracts",
+        "interviews",
+        "agents"
+      ],
+      "constructive_expression": [
+        "Double-check documents",
+        "Slow decisions",
+        "Use caution in communication"
+      ],
+      "cautions": [
+        "Errors",
+        "Worry",
+        "Business misunderstandings"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 48
+      }
+    },
+    {
+      "id": "solar_aspect_049",
+      "source_number": 49,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "A long beneficial background influence for pleasure, finance, social expansion, and union.",
+      "themes": [
+        "pleasure",
+        "prosperity",
+        "finance",
+        "social life",
+        "attachments",
+        "union"
+      ],
+      "constructive_expression": [
+        "Improve finances",
+        "Cultivate relationships",
+        "Use social opportunities"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Acts most specifically when the Moon simultaneously supports Venus"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 49
+      }
+    },
+    {
+      "id": "solar_aspect_050",
+      "source_number": 50,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Affection, happiness, congenial society, social gain, and strong partnership potential.",
+      "themes": [
+        "love",
+        "friendship",
+        "happiness",
+        "society",
+        "marriage",
+        "higher emotions"
+      ],
+      "constructive_expression": [
+        "Strengthen relationships",
+        "Join congenial circles",
+        "Cultivate affection and higher emotion"
+      ],
+      "cautions": [
+        "Overindulgence in pleasure"
+      ],
+      "conditions": [
+        "Leo says this position often denotes marriage"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 50
+      }
+    },
+    {
+      "id": "solar_aspect_051",
+      "source_number": 51,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "Mild financial, social, and relational improvement.",
+      "themes": [
+        "finance",
+        "attachments",
+        "social ease",
+        "connections"
+      ],
+      "constructive_expression": [
+        "Improve finances",
+        "Invest cautiously",
+        "Build useful connections"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 51
+      }
+    },
+    {
+      "id": "solar_aspect_052",
+      "source_number": 52,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        },
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Financial drain and emotional disappointment affecting family and attachments.",
+      "themes": [
+        "money loss",
+        "domestic trouble",
+        "sorrow",
+        "separation",
+        "friends"
+      ],
+      "constructive_expression": [
+        "Protect money",
+        "Handle relationships carefully",
+        "Avoid unnecessary social or pleasure expenses"
+      ],
+      "cautions": [
+        "Loss of affection or property",
+        "Severed ties"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 52
+      }
+    },
+    {
+      "id": "solar_aspect_053",
+      "source_number": 53,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Marked improvement in finance, social position, affection, unions, and recognition.",
+      "themes": [
+        "finance",
+        "social success",
+        "relationships",
+        "recognition",
+        "happiness"
+      ],
+      "constructive_expression": [
+        "Make the most of opportunities",
+        "Strengthen permanent connections",
+        "Advance socially and financially"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 53
+      }
+    },
+    {
+      "id": "solar_aspect_054",
+      "source_number": 54,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Same delineation as paragraph 52: financial and emotional strain, domestic trouble, and severed ties.",
+      "themes": [
+        "money loss",
+        "domestic trouble",
+        "sorrow",
+        "separation"
+      ],
+      "constructive_expression": [
+        "Protect money",
+        "Handle relationships carefully"
+      ],
+      "cautions": [
+        "Loss of affection or property"
+      ],
+      "conditions": [
+        "Explicit cross-reference to paragraph 52"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 54
+      }
+    },
+    {
+      "id": "solar_aspect_055",
+      "source_number": 55,
+      "progressed_body": "Sun",
+      "target_body": "Venus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Prosperity, successful investments, happy attachments, and social expansion.",
+      "themes": [
+        "financial gain",
+        "prosperity",
+        "social life",
+        "attachments",
+        "investment"
+      ],
+      "constructive_expression": [
+        "Invest or build enterprises prudently",
+        "Use expanding social influence",
+        "Strengthen beneficial ties"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo notes trine to Venus is rare and usually requires progressed Sun to radical Venus"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 55
+      }
+    },
+    {
+      "id": "solar_aspect_056",
+      "source_number": 56,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "A prolonged period of heightened heat, accident risk, impulsiveness, and provocation.",
+      "themes": [
+        "accidents",
+        "inflammation",
+        "impulse",
+        "anger",
+        "activity"
+      ],
+      "constructive_expression": [
+        "Act temperately",
+        "Slow reactions",
+        "Use lunar timing carefully"
+      ],
+      "cautions": [
+        "Accidents",
+        "Feverish conditions",
+        "Provocation"
+      ],
+      "conditions": [
+        "Often overlaps other aspects for an extended period"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 56
+      }
+    },
+    {
+      "id": "solar_aspect_057",
+      "source_number": 57,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Extreme vitality and assertiveness that can produce enterprise or aggression depending on restraint.",
+      "themes": [
+        "heat",
+        "anger",
+        "assertiveness",
+        "daring",
+        "enterprise",
+        "extravagance"
+      ],
+      "constructive_expression": [
+        "Practice self-restraint",
+        "Channel energy into work",
+        "Avoid unnecessary changes and quarrels"
+      ],
+      "cautions": [
+        "Aggression",
+        "Inflammation",
+        "Extravagance",
+        "Conflict"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 57
+      }
+    },
+    {
+      "id": "solar_aspect_058",
+      "source_number": 58,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "A mild boost to courage, energy, enterprise, and constructive self-assertion.",
+      "themes": [
+        "courage",
+        "activity",
+        "enterprise",
+        "force",
+        "acquisition"
+      ],
+      "constructive_expression": [
+        "Push affairs forward discreetly",
+        "Use energy constructively"
+      ],
+      "cautions": [
+        "Over-forcefulness"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 58
+      }
+    },
+    {
+      "id": "solar_aspect_059",
+      "source_number": 59,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Impulsive annoyance, financial errors, inflammatory strain, and turbulent thinking.",
+      "themes": [
+        "irritability",
+        "finance",
+        "judgment",
+        "health",
+        "acquaintances"
+      ],
+      "constructive_expression": [
+        "Avoid disputes",
+        "Check judgments",
+        "Live temperately"
+      ],
+      "cautions": [
+        "Inflammatory complaints",
+        "Monetary loss",
+        "Poor associations"
+      ],
+      "conditions": [
+        "Severity is modified by lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 59
+      }
+    },
+    {
+      "id": "solar_aspect_060",
+      "source_number": 60,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Enterprise, courage, travel, change, and high executive capacity.",
+      "themes": [
+        "enterprise",
+        "courage",
+        "travel",
+        "change",
+        "friends",
+        "executive power"
+      ],
+      "constructive_expression": [
+        "Start ventures",
+        "Act independently",
+        "Use energy for constructive change"
+      ],
+      "cautions": [
+        "Restlessness",
+        "Risk-taking"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 60
+      }
+    },
+    {
+      "id": "solar_aspect_061",
+      "source_number": 61,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "A critical period of accident risk, conflict, domestic trouble, and reputation danger.",
+      "themes": [
+        "accidents",
+        "domestic trouble",
+        "estrangement",
+        "reputation",
+        "failure"
+      ],
+      "constructive_expression": [
+        "Avoid disputes",
+        "Postpone risky undertakings",
+        "Protect health and reputation"
+      ],
+      "cautions": [
+        "Serious misfortune",
+        "Scandal",
+        "Failed undertakings"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 61
+      }
+    },
+    {
+      "id": "solar_aspect_062",
+      "source_number": 62,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "A successful and eventful period of courage, enterprise, activity, and strong attachments.",
+      "themes": [
+        "courage",
+        "enterprise",
+        "adventure",
+        "attachments",
+        "activity"
+      ],
+      "constructive_expression": [
+        "Use the energy for bold but constructive action",
+        "Recognize temporary external stimulation"
+      ],
+      "cautions": [
+        "Over-identification with excitement"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 62
+      }
+    },
+    {
+      "id": "solar_aspect_063",
+      "source_number": 63,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Accident, inflammation, loss, dispute, and separation arising from impulsiveness.",
+      "themes": [
+        "accidents",
+        "fire",
+        "health",
+        "loss",
+        "separation",
+        "dispute"
+      ],
+      "constructive_expression": [
+        "Avoid travel and speculation",
+        "Use maximum caution",
+        "Act temperately"
+      ],
+      "cautions": [
+        "Fire",
+        "Accidents",
+        "Inflammatory illness"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 63
+      }
+    },
+    {
+      "id": "solar_aspect_064",
+      "source_number": 64,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Health vulnerability and rashness that can become severe in weak constitutions.",
+      "themes": [
+        "health",
+        "inflammation",
+        "family",
+        "impulse",
+        "temperance"
+      ],
+      "constructive_expression": [
+        "Safeguard health",
+        "Avoid extremes",
+        "Act discreetly"
+      ],
+      "cautions": [
+        "Family danger",
+        "Illness",
+        "Rash action"
+      ],
+      "conditions": [
+        "May behave more like conjunction when rashness is indulged"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 64
+      }
+    },
+    {
+      "id": "solar_aspect_065",
+      "source_number": 65,
+      "progressed_body": "Sun",
+      "target_body": "Mars",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "critical",
+      "strength": "strong",
+      "core_meaning": "A dangerous crisis of health and action symbolizing conflict between will and desire.",
+      "themes": [
+        "danger",
+        "accidents",
+        "illness",
+        "will",
+        "desire",
+        "crisis"
+      ],
+      "constructive_expression": [
+        "Maintain calm will",
+        "Avoid danger",
+        "Use conflict for self-knowledge"
+      ],
+      "cautions": [
+        "Severe illness",
+        "Accidents",
+        "Impulsive conflict"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 65
+      }
+    },
+    {
+      "id": "solar_aspect_066",
+      "source_number": 66,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "A long prosperity cycle supporting health, finance, social success, and new undertakings.",
+      "themes": [
+        "prosperity",
+        "health",
+        "social success",
+        "finance",
+        "undertakings"
+      ],
+      "constructive_expression": [
+        "Plan for future welfare",
+        "Begin constructive undertakings"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Often activated by good lunar aspects to Jupiter"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 66
+      }
+    },
+    {
+      "id": "solar_aspect_067",
+      "source_number": 67,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Success, gain, prosperity, travel, strong health, and beneficial ties.",
+      "themes": [
+        "success",
+        "finance",
+        "travel",
+        "health",
+        "unions",
+        "social advantage"
+      ],
+      "constructive_expression": [
+        "Pursue opportunities",
+        "Travel",
+        "Build alliances"
+      ],
+      "cautions": [
+        "Pride",
+        "Overconfidence",
+        "Excess"
+      ],
+      "conditions": [
+        "Less favourable if natal Jupiter is afflicted, especially by Mars"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 67
+      }
+    },
+    {
+      "id": "solar_aspect_068",
+      "source_number": 68,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "Modest gain, new friends, social advantage, and improving financial prospects.",
+      "themes": [
+        "gain",
+        "friends",
+        "social advantage",
+        "finance",
+        "undertakings"
+      ],
+      "constructive_expression": [
+        "Push useful affairs",
+        "Begin modest undertakings"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Strengthened by similar lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 68
+      }
+    },
+    {
+      "id": "solar_aspect_069",
+      "source_number": 69,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "weak",
+      "core_meaning": "Delay, modest financial difficulty, social disappointment, and restrained progress.",
+      "themes": [
+        "delay",
+        "finance",
+        "social affairs",
+        "travel",
+        "associations"
+      ],
+      "constructive_expression": [
+        "Live quietly",
+        "Avoid new undertakings",
+        "Keep finances conservative"
+      ],
+      "cautions": [
+        "Financial loss",
+        "Social disagreement"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 69
+      }
+    },
+    {
+      "id": "solar_aspect_070",
+      "source_number": 70,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "One of Leo’s best solar aspects: prosperity, fulfilled ambitions, travel, and successful undertakings.",
+      "themes": [
+        "prosperity",
+        "ambition",
+        "travel",
+        "writing",
+        "friends",
+        "career"
+      ],
+      "constructive_expression": [
+        "Act on opportunities",
+        "Travel",
+        "Launch undertakings",
+        "Use correspondence constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says it may mark an epoch in the career"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 70
+      }
+    },
+    {
+      "id": "solar_aspect_071",
+      "source_number": 71,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Financial and social loss, domestic trouble, deception, and a test of pride.",
+      "themes": [
+        "finance",
+        "domestic affairs",
+        "social trouble",
+        "deception",
+        "loss",
+        "pride"
+      ],
+      "constructive_expression": [
+        "Avoid lending money",
+        "Guard against deception",
+        "Use adversity for moral growth"
+      ],
+      "cautions": [
+        "Loss",
+        "Separation",
+        "Sorrow"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 71
+      }
+    },
+    {
+      "id": "solar_aspect_072",
+      "source_number": 72,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "exceptional",
+      "core_meaning": "An exceptional life opportunity for prosperity, advancement, philosophical growth, and lasting alliances.",
+      "themes": [
+        "prosperity",
+        "advancement",
+        "ambition",
+        "attachments",
+        "religion",
+        "philosophy"
+      ],
+      "constructive_expression": [
+        "Make full use of opportunity",
+        "Invest or speculate prudently",
+        "Pursue spiritual or material growth"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says this occurs only once in a lifetime"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 72
+      }
+    },
+    {
+      "id": "solar_aspect_073",
+      "source_number": 73,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Loss, excess, bodily imbalance, and relational disappointment.",
+      "themes": [
+        "health",
+        "excess",
+        "finance",
+        "separation",
+        "disappointment"
+      ],
+      "constructive_expression": [
+        "Practice moderation",
+        "Avoid lending, investing, or speculating"
+      ],
+      "cautions": [
+        "Monetary loss",
+        "Health strain"
+      ],
+      "conditions": [
+        "Less severe because both bodies are treated as benefic"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 73
+      }
+    },
+    {
+      "id": "solar_aspect_074",
+      "source_number": 74,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "mixed-critical",
+      "strength": "moderate",
+      "core_meaning": "Strain between expansion and moral or spiritual restraint, especially around finance and speculation.",
+      "themes": [
+        "finance",
+        "speculation",
+        "religion",
+        "expansion",
+        "moral conflict"
+      ],
+      "constructive_expression": [
+        "Watch investments",
+        "Avoid over-expansion",
+        "Resolve inner value conflicts"
+      ],
+      "cautions": [
+        "Speculative loss",
+        "Social or religious disputes"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 74
+      }
+    },
+    {
+      "id": "solar_aspect_075",
+      "source_number": 75,
+      "progressed_body": "Sun",
+      "target_body": "Jupiter",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Opposition, legal difficulty, illusion, financial loss, and social disadvantage.",
+      "themes": [
+        "legal trouble",
+        "illusion",
+        "friends",
+        "finance",
+        "opposition",
+        "health"
+      ],
+      "constructive_expression": [
+        "Stay balanced",
+        "Avoid excess and pride",
+        "Question apparent good fortune"
+      ],
+      "cautions": [
+        "Financial loss",
+        "Disappointment",
+        "Social conflict"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 75
+      }
+    },
+    {
+      "id": "solar_aspect_076",
+      "source_number": 76,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "A long period of restriction, debility, sorrow, and prolonged trial.",
+      "themes": [
+        "restriction",
+        "health",
+        "sorrow",
+        "delay",
+        "despondency"
+      ],
+      "constructive_expression": [
+        "Maintain hope",
+        "Protect health",
+        "Use will against discouragement"
+      ],
+      "cautions": [
+        "Long illness",
+        "Loss",
+        "Depression"
+      ],
+      "conditions": [
+        "Leo says Sun-Saturn contacts are generally restrictive"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 76
+      }
+    },
+    {
+      "id": "solar_aspect_077",
+      "source_number": 77,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "mixed-critical",
+      "strength": "strong",
+      "core_meaning": "Responsibility, anxiety, ambition, endurance, and major character consolidation.",
+      "themes": [
+        "responsibility",
+        "ambition",
+        "stability",
+        "work",
+        "anxiety",
+        "character"
+      ],
+      "constructive_expression": [
+        "Accept responsibility",
+        "Develop perseverance",
+        "Exercise physically",
+        "Maintain hope"
+      ],
+      "cautions": [
+        "Narrowness",
+        "Poor circulation",
+        "Rheumatic tendency",
+        "Fear"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 77
+      }
+    },
+    {
+      "id": "solar_aspect_078",
+      "source_number": 78,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "Mild stabilisation, caution, useful responsibility, and help from elders.",
+      "themes": [
+        "stability",
+        "caution",
+        "elders",
+        "finance",
+        "responsibility"
+      ],
+      "constructive_expression": [
+        "Practice thrift",
+        "Use older advisers",
+        "Build permanence"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Stronger when lunar aspects are good"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 78
+      }
+    },
+    {
+      "id": "solar_aspect_079",
+      "source_number": 79,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Delay, financial risk, discouragement, and a tendency to defeat oneself through pessimism.",
+      "themes": [
+        "delay",
+        "finance",
+        "fraud",
+        "death",
+        "disappointment",
+        "despondency"
+      ],
+      "constructive_expression": [
+        "Protect finances",
+        "Cultivate hope",
+        "Avoid pessimistic self-sabotage"
+      ],
+      "cautions": [
+        "Loss",
+        "Depression"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 79
+      }
+    },
+    {
+      "id": "solar_aspect_080",
+      "source_number": 80,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Responsibility, reliability, concentration, honour, and long-term security.",
+      "themes": [
+        "responsibility",
+        "honour",
+        "stability",
+        "elders",
+        "concentration",
+        "trust"
+      ],
+      "constructive_expression": [
+        "Assume durable responsibilities",
+        "Build a secure position",
+        "Work with trustworthy elders"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 80
+      }
+    },
+    {
+      "id": "solar_aspect_081",
+      "source_number": 81,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Grief, domestic trouble, chronic strain, worry, and restriction.",
+      "themes": [
+        "grief",
+        "home",
+        "health",
+        "worry",
+        "restriction",
+        "elders"
+      ],
+      "constructive_expression": [
+        "Avoid unnecessary change",
+        "Maintain courage",
+        "Protect health"
+      ],
+      "cautions": [
+        "Chronic illness",
+        "Rheumatic tendency",
+        "Bereavement"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 81
+      }
+    },
+    {
+      "id": "solar_aspect_082",
+      "source_number": 82,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Permanence, responsibility, reputation, sound investment, and disciplined character building.",
+      "themes": [
+        "permanence",
+        "reputation",
+        "responsibility",
+        "investment",
+        "discipline",
+        "patience"
+      ],
+      "constructive_expression": [
+        "Take sound investments",
+        "Build durable structures",
+        "Practice patience and perseverance"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 82
+      }
+    },
+    {
+      "id": "solar_aspect_083",
+      "source_number": 83,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Health weakness, separation, discouragement, and difficult relations with elders or authority.",
+      "themes": [
+        "health",
+        "separation",
+        "elders",
+        "authority",
+        "depression",
+        "circulation"
+      ],
+      "constructive_expression": [
+        "Protect health",
+        "Cultivate hope",
+        "Avoid offending superiors"
+      ],
+      "cautions": [
+        "Cold",
+        "Debility",
+        "Loss",
+        "Melancholia"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 83
+      }
+    },
+    {
+      "id": "solar_aspect_084",
+      "source_number": 84,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "mixed-critical",
+      "strength": "weak",
+      "core_meaning": "A weak but restrictive health influence that can deepen steadfastness through balancing expansion and contraction.",
+      "themes": [
+        "health",
+        "perseverance",
+        "family",
+        "restraint",
+        "character"
+      ],
+      "constructive_expression": [
+        "Keep cheerful",
+        "Build perseverance",
+        "Monitor health"
+      ],
+      "cautions": [
+        "Debility",
+        "Family loss if other directions support it"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 84
+      }
+    },
+    {
+      "id": "solar_aspect_085",
+      "source_number": 85,
+      "progressed_body": "Sun",
+      "target_body": "Saturn",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "critical",
+      "strength": "strong",
+      "core_meaning": "Severe obstacles, loss, depression, financial difficulty, and moral testing.",
+      "themes": [
+        "obstacles",
+        "health",
+        "loss",
+        "finance",
+        "depression",
+        "moral struggle"
+      ],
+      "constructive_expression": [
+        "Maintain hope and calmness",
+        "Exercise forethought",
+        "Use adversity for moral development"
+      ],
+      "cautions": [
+        "Death",
+        "Sorrow",
+        "Despair",
+        "Financial trouble"
+      ],
+      "conditions": [
+        "Especially severe when adverse lunar aspects coincide"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 85
+      }
+    },
+    {
+      "id": "solar_aspect_086",
+      "source_number": 86,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "mixed",
+      "strength": "strong",
+      "core_meaning": "A long background period of originality, occult interest, mental expansion, and intermittent irritability.",
+      "themes": [
+        "originality",
+        "occult",
+        "metaphysics",
+        "consciousness",
+        "friends",
+        "irritability"
+      ],
+      "constructive_expression": [
+        "Explore higher thought",
+        "Use unusual contacts constructively",
+        "Accept broader perspectives"
+      ],
+      "cautions": [
+        "Excitability",
+        "Irritability"
+      ],
+      "conditions": [
+        "Acts spasmodically when congenial influences coincide"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 86
+      }
+    },
+    {
+      "id": "solar_aspect_087",
+      "source_number": 87,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "transformative",
+      "strength": "strong",
+      "core_meaning": "A major epoch of sudden consciousness change, reform, unusual associations, and altered future direction.",
+      "themes": [
+        "sudden change",
+        "consciousness",
+        "reform",
+        "friendships",
+        "unions",
+        "adventure"
+      ],
+      "constructive_expression": [
+        "Prepare for major change",
+        "Choose unusual associations carefully",
+        "Use the period for reform"
+      ],
+      "cautions": [
+        "Estrangement",
+        "Unstable ties",
+        "Unexpected events"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 87
+      }
+    },
+    {
+      "id": "solar_aspect_088",
+      "source_number": 88,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "New thought, occult study, inventiveness, and possible unexpected benefit.",
+      "themes": [
+        "higher thought",
+        "occult",
+        "friends",
+        "inventiveness",
+        "unexpected gain"
+      ],
+      "constructive_expression": [
+        "Study original subjects",
+        "Develop inventions",
+        "Use new contacts"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 88
+      }
+    },
+    {
+      "id": "solar_aspect_089",
+      "source_number": 89,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Sudden change, irritability, nervous unrest, and relationship friction.",
+      "themes": [
+        "sudden change",
+        "irritability",
+        "nerves",
+        "relationships",
+        "enemies"
+      ],
+      "constructive_expression": [
+        "Act discreetly",
+        "Avoid impulsive reactions",
+        "Control temper"
+      ],
+      "cautions": [
+        "Enemies",
+        "Social or domestic conflict"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 89
+      }
+    },
+    {
+      "id": "solar_aspect_090",
+      "source_number": 90,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Unexpected gain, originality, travel, reform, metaphysical study, and new communities.",
+      "themes": [
+        "unexpected gain",
+        "travel",
+        "originality",
+        "astrology",
+        "friends",
+        "reform"
+      ],
+      "constructive_expression": [
+        "Travel",
+        "Study metaphysics or astrology",
+        "Join innovative groups"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 90
+      }
+    },
+    {
+      "id": "solar_aspect_091",
+      "source_number": 91,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Sudden reversals, separation, nervous strain, and severe disruption.",
+      "themes": [
+        "reversal",
+        "separation",
+        "nervous system",
+        "travel",
+        "disappointment",
+        "stress"
+      ],
+      "constructive_expression": [
+        "Postpone major decisions",
+        "Avoid unnecessary travel",
+        "Stay flexible and calm"
+      ],
+      "cautions": [
+        "Unexpected loss",
+        "Estrangement",
+        "Health strain"
+      ],
+      "conditions": [
+        "Becomes especially critical with adverse lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 91
+      }
+    },
+    {
+      "id": "solar_aspect_092",
+      "source_number": 92,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Sudden gains, invention, reform, travel, advanced study, and unusual beneficial experiences.",
+      "themes": [
+        "gain",
+        "invention",
+        "travel",
+        "reform",
+        "astrology",
+        "friends"
+      ],
+      "constructive_expression": [
+        "Pursue reform",
+        "Study advanced subjects",
+        "Use new networks"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 92
+      }
+    },
+    {
+      "id": "solar_aspect_093",
+      "source_number": 93,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Sudden trouble, nervous strain, harsh criticism, and separation.",
+      "themes": [
+        "nerves",
+        "separation",
+        "criticism",
+        "travel",
+        "strangers"
+      ],
+      "constructive_expression": [
+        "Avoid major changes",
+        "Control irritability",
+        "Use discretion with strangers"
+      ],
+      "cautions": [
+        "Slander",
+        "Harsh criticism",
+        "Friendship rupture"
+      ],
+      "conditions": [
+        "Severity depends on lunar aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 93
+      }
+    },
+    {
+      "id": "solar_aspect_094",
+      "source_number": 94,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "mixed-developmental",
+      "strength": "moderate",
+      "core_meaning": "Separative mental change that can produce lasting expansion of consciousness.",
+      "themes": [
+        "separation",
+        "health",
+        "consciousness",
+        "change",
+        "misunderstanding"
+      ],
+      "constructive_expression": [
+        "Live moderately",
+        "Accept mental expansion",
+        "Use disruption for growth"
+      ],
+      "cautions": [
+        "Health strain",
+        "Minor misunderstandings"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 94
+      }
+    },
+    {
+      "id": "solar_aspect_095",
+      "source_number": 95,
+      "progressed_body": "Sun",
+      "target_body": "Uranus",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "critical",
+      "strength": "strong",
+      "core_meaning": "Sudden conflict, separation, rashness, destabilisation, and profound consciousness change.",
+      "themes": [
+        "opposition",
+        "separation",
+        "conflict",
+        "rashness",
+        "legal affairs",
+        "consciousness"
+      ],
+      "constructive_expression": [
+        "Avoid impulsive actions",
+        "Stay out of disputes",
+        "Weigh consequences carefully"
+      ],
+      "cautions": [
+        "Loss",
+        "Disgrace",
+        "Legal trouble",
+        "Destabilisation"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 95
+      }
+    },
+    {
+      "id": "solar_aspect_096",
+      "source_number": 96,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "subtle",
+      "strength": "strong",
+      "core_meaning": "A long-duration version of the Neptune conjunction, acting as an overhanging psychic or spiritual influence.",
+      "themes": [
+        "psychic influence",
+        "spirituality",
+        "subtlety",
+        "duration"
+      ],
+      "constructive_expression": [
+        "Observe subtle changes without forcing them",
+        "Use spiritual sensitivity constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says it mainly affects advanced souls"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 96
+      }
+    },
+    {
+      "id": "solar_aspect_097",
+      "source_number": 97,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0
+        }
+      ],
+      "valence": "transformative",
+      "strength": "strong",
+      "core_meaning": "Psychic awakening, inspiration, strange experience, restriction, and renunciation.",
+      "themes": [
+        "psychic awakening",
+        "inspiration",
+        "music",
+        "poetry",
+        "clairaudience",
+        "restriction"
+      ],
+      "constructive_expression": [
+        "Develop creative or spiritual sensitivity",
+        "Accept necessary renunciation"
+      ],
+      "cautions": [
+        "Confinement",
+        "Obscure or disturbing experiences"
+      ],
+      "conditions": [
+        "Expression depends heavily on natal Neptune"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 97
+      }
+    },
+    {
+      "id": "solar_aspect_098",
+      "source_number": 98,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        }
+      ],
+      "valence": "subtle",
+      "strength": "weak",
+      "core_meaning": "Obscure or hidden experience involving institutions, secret activity, or recondite themes.",
+      "themes": [
+        "secrecy",
+        "institutions",
+        "hospitals",
+        "hidden affairs",
+        "mystery"
+      ],
+      "constructive_expression": [
+        "Work carefully with hidden or institutional matters",
+        "Observe subtle patterns"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 98
+      }
+    },
+    {
+      "id": "solar_aspect_099",
+      "source_number": 99,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "weak",
+      "core_meaning": "Mysterious setbacks and psychic interference of an unusual kind.",
+      "themes": [
+        "mysterious trouble",
+        "psychic matters",
+        "misfortune"
+      ],
+      "constructive_expression": [
+        "Maintain clear boundaries",
+        "Avoid overreacting to strange circumstances"
+      ],
+      "cautions": [
+        "Psychic or emotional disturbance"
+      ],
+      "conditions": [
+        "Usually limited unless natal Neptune is heavily afflicted"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 99
+      }
+    },
+    {
+      "id": "solar_aspect_100",
+      "source_number": 100,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Mysticism, creativity, contentment, and surprising good fortune.",
+      "themes": [
+        "mysticism",
+        "poetry",
+        "music",
+        "contentment",
+        "good fortune"
+      ],
+      "constructive_expression": [
+        "Create",
+        "Study spiritual subjects",
+        "Use inspiration productively"
+      ],
+      "cautions": [
+        "Refined sensuousness if expressed materially"
+      ],
+      "conditions": [
+        "Depends on supportive natal aspects"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 100
+      }
+    },
+    {
+      "id": "solar_aspect_101",
+      "source_number": 101,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "strong",
+      "core_meaning": "Confusion, emotional depression, physical sensitivity, and weakened moral or bodily resilience when Neptune is afflicted.",
+      "themes": [
+        "confusion",
+        "depression",
+        "health",
+        "emotion",
+        "rash action"
+      ],
+      "constructive_expression": [
+        "Avoid rash action",
+        "Seek clarity",
+        "Protect health and judgment"
+      ],
+      "cautions": [
+        "Serious destabilisation when natal Neptune is afflicted"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 101
+      }
+    },
+    {
+      "id": "solar_aspect_102",
+      "source_number": 102,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120
+        }
+      ],
+      "valence": "favourable",
+      "strength": "exceptional",
+      "core_meaning": "Unusual prosperity, blessing, religious exaltation, and intense creative fertility.",
+      "themes": [
+        "prosperity",
+        "blessing",
+        "religion",
+        "creativity",
+        "music",
+        "poetry"
+      ],
+      "constructive_expression": [
+        "Use abundance creatively or spiritually",
+        "Accept unusual opportunities"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Requires other influences to be favourable"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 102
+      }
+    },
+    {
+      "id": "solar_aspect_103",
+      "source_number": 103,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Delays, disappointment, and strange persistent difficulty.",
+      "themes": [
+        "delay",
+        "disappointment",
+        "unusual experiences",
+        "memory"
+      ],
+      "constructive_expression": [
+        "Practice patience",
+        "Avoid forcing resolution"
+      ],
+      "cautions": [
+        "Persistent frustration"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 103
+      }
+    },
+    {
+      "id": "solar_aspect_104",
+      "source_number": 104,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150
+        }
+      ],
+      "valence": "developmental",
+      "strength": "moderate",
+      "core_meaning": "A subtle, longer, more far-reaching purification process.",
+      "themes": [
+        "purification",
+        "duration",
+        "spiritual development",
+        "subtle change"
+      ],
+      "constructive_expression": [
+        "Allow gradual purification",
+        "Release attachments that obstruct growth"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 104
+      }
+    },
+    {
+      "id": "solar_aspect_105",
+      "source_number": 105,
+      "progressed_body": "Sun",
+      "target_body": "Neptune",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180
+        }
+      ],
+      "valence": "critical",
+      "strength": "strong",
+      "core_meaning": "Profound spiritual and psychological testing that can dissolve cherished plans and expose weakness.",
+      "themes": [
+        "spiritual test",
+        "collapse",
+        "lower nature",
+        "perseverance",
+        "purification"
+      ],
+      "constructive_expression": [
+        "Continue striving",
+        "Release false structures",
+        "Strengthen inner discipline"
+      ],
+      "cautions": [
+        "Disillusionment",
+        "Collapse of plans",
+        "Psychological overwhelm"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 105
+      }
+    },
+    {
+      "id": "solar_aspect_106",
+      "source_number": 106,
+      "progressed_body": "Sun",
+      "target_body": "Sun",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60
+        },
+        {
+          "name": "parallel",
+          "angle_degrees": null
+        }
+      ],
+      "valence": "favourable",
+      "strength": "strong",
+      "core_meaning": "Vitality, authority support, new responsibility, and possible recognition.",
+      "themes": [
+        "vitality",
+        "career",
+        "authority",
+        "recognition",
+        "enterprise"
+      ],
+      "constructive_expression": [
+        "Take on responsibility",
+        "Begin enterprises",
+        "Use support from superiors"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 106
+      }
+    },
+    {
+      "id": "solar_aspect_107",
+      "source_number": 107,
+      "progressed_body": "Sun",
+      "target_body": "Sun",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30
+        },
+        {
+          "name": "quintile",
+          "angle_degrees": 72
+        }
+      ],
+      "valence": "favourable",
+      "strength": "weak",
+      "core_meaning": "A milder version of paragraph 106, with modest vitality and opportunity.",
+      "themes": [
+        "vitality",
+        "opportunity",
+        "career"
+      ],
+      "constructive_expression": [
+        "Use small openings constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Produces little if surrounded by adverse directions"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 107
+      }
+    },
+    {
+      "id": "solar_aspect_108",
+      "source_number": 108,
+      "progressed_body": "Sun",
+      "target_body": "Sun",
+      "target_state_default": "radical",
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45
+        },
+        {
+          "name": "square",
+          "angle_degrees": 90
+        }
+      ],
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "core_meaning": "Reduced vitality, health disturbance, delay, occupational loss, and reputation difficulty.",
+      "themes": [
+        "health",
+        "career",
+        "reputation",
+        "delay",
+        "superiors",
+        "friends"
+      ],
+      "constructive_expression": [
+        "Protect health",
+        "Avoid reputation risks",
+        "Manage occupational setbacks conservatively"
+      ],
+      "cautions": [
+        "Loss of credit",
+        "Disfavour of superiors",
+        "Sorrow through friends"
+      ],
+      "conditions": [],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 13,
+        "chapter_title": "Solar Aspects",
+        "paragraph": 108
+      }
+    }
+  ]
+}

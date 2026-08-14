@@ -1,0 +1,1746 @@
+{
+  "schema": "orbo.interpretation.progressed_ascendant.alan_leo.v1",
+  "language": "en",
+  "source": {
+    "author": "Alan Leo",
+    "work": "The Progressed Horoscope",
+    "chapter": 12,
+    "chapter_title": "The Progressed Ascendant",
+    "pages": "69-88",
+    "basis": "User-supplied page scans transcribed and normalized for Orbo."
+  },
+  "editorial_policy": {
+    "astrological_glyphs": "not_used",
+    "signs_and_planets": "plain_text_names",
+    "source_text_location": "alan-leo-progressed-ascendant-chapter-xii.md",
+    "interpretation_status": "editorial abstraction from Leo's delineations, not verbatim source text",
+    "predictive_claims": "preserved as source concepts in the transcription; normalized cautiously in the interpretation fields"
+  },
+  "engine_rules": {
+    "progressed_ascendant_rate_source_statement": "about one degree per year",
+    "radical_ruler_persists": true,
+    "progressed_sign_ruler_role": "main superimposed influence during the sign's ascendancy",
+    "progressed_decan_ruler_role": "assistant and coadjutor to the progressed sign ruler",
+    "hierarchy": {
+      "fundamental": [
+        "radical_sign",
+        "radical_decan",
+        "radical_dwadashamsha",
+        "radical_degree"
+      ],
+      "superimposed": [
+        "progressed_sign",
+        "progressed_decan",
+        "progressed_dwadashamsha",
+        "progressed_degree"
+      ]
+    },
+    "leo_simplification": {
+      "retain": [
+        "radical_sign",
+        "radical_decan",
+        "progressed_sign",
+        "progressed_decan"
+      ],
+      "may_neglect_for_present": [
+        "radical_dwadashamsha",
+        "radical_degree",
+        "progressed_dwadashamsha",
+        "progressed_degree"
+      ]
+    },
+    "first_decan_rule": "The first decan delineation applies generally to the whole sign; the second and third decans modify and refine it.",
+    "approximate_decan_duration_years": 10
+  },
+  "interpretations": [
+    {
+      "id": "progressed_ascendant_decan_01",
+      "global_decan": 1,
+      "progressed_sign": "Aries",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Aries",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Initiative, leadership, intellectual drive, and reform.",
+      "themes": [
+        "leadership",
+        "initiative",
+        "ambition",
+        "learning",
+        "reform",
+        "recognition",
+        "mental energy"
+      ],
+      "constructive_expression": [
+        "Lead actively",
+        "Pursue intellectual growth",
+        "Reform stagnant conditions",
+        "Use enthusiasm constructively"
+      ],
+      "cautions": [
+        "Over-identification with action",
+        "Excess force or impatience"
+      ],
+      "domains": [
+        "identity",
+        "leadership",
+        "learning",
+        "public recognition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 1
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_02",
+      "global_decan": 2,
+      "progressed_sign": "Aries",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Leo",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Sun",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Heart and will are joined through renewal, enterprise, emotional awakening, and the possibility of recognition.",
+      "themes": [
+        "heart",
+        "emotion",
+        "renewal",
+        "enterprise",
+        "sympathy",
+        "recognition",
+        "speculation"
+      ],
+      "constructive_expression": [
+        "Integrate thought and feeling",
+        "Create and initiate",
+        "Rise through merit",
+        "Allow deeper sympathies to develop"
+      ],
+      "cautions": [
+        "Emotional excess",
+        "Speculative overreach"
+      ],
+      "domains": [
+        "creativity",
+        "emotion",
+        "ambition",
+        "enterprise"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 2
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_03",
+      "global_decan": 3,
+      "progressed_sign": "Aries",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Sagittarius",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Expansion through travel, philosophy, higher questions, and a widening mental horizon.",
+      "themes": [
+        "travel",
+        "philosophy",
+        "religion",
+        "higher mind",
+        "mystery",
+        "law",
+        "expansion"
+      ],
+      "constructive_expression": [
+        "Travel or broaden horizons",
+        "Investigate deeper questions",
+        "Develop a philosophical frame of mind"
+      ],
+      "cautions": [
+        "Rebellion",
+        "Conflict with law or authority",
+        "Legal disputes when other directions are difficult"
+      ],
+      "domains": [
+        "travel",
+        "belief",
+        "law",
+        "study"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 3
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_04",
+      "global_decan": 4,
+      "progressed_sign": "Taurus",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Taurus",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Practical consolidation, financial focus, persistence, and the cultivation of inner steadiness.",
+      "themes": [
+        "practicality",
+        "finance",
+        "persistence",
+        "stability",
+        "obedience",
+        "will"
+      ],
+      "constructive_expression": [
+        "Build steadily",
+        "Stabilize resources",
+        "Practice calm persistence",
+        "Develop disciplined receptivity"
+      ],
+      "cautions": [
+        "Obstinacy",
+        "Dogmatism",
+        "Stubbornness"
+      ],
+      "domains": [
+        "finance",
+        "work",
+        "values",
+        "stability"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 4
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_05",
+      "global_decan": 5,
+      "progressed_sign": "Taurus",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Virgo",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Practical analysis, discrimination, health awareness, and intellectually grounded refinement.",
+      "themes": [
+        "analysis",
+        "discrimination",
+        "health",
+        "business",
+        "hygiene",
+        "occult study",
+        "self-critique"
+      ],
+      "constructive_expression": [
+        "Improve systems",
+        "Study carefully",
+        "Attend to health",
+        "Apply practical intelligence"
+      ],
+      "cautions": [
+        "Over-criticism",
+        "Nervous strain"
+      ],
+      "domains": [
+        "health",
+        "work",
+        "analysis",
+        "study"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 5
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_06",
+      "global_decan": 6,
+      "progressed_sign": "Taurus",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Capricorn",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Ambition, responsibility, perseverance, and professional advancement through disciplined effort.",
+      "themes": [
+        "ambition",
+        "profession",
+        "recognition",
+        "responsibility",
+        "perseverance",
+        "discipline",
+        "purity"
+      ],
+      "constructive_expression": [
+        "Accept responsibility",
+        "Work steadily",
+        "Pursue advancement by merit",
+        "Cultivate discipline"
+      ],
+      "cautions": [
+        "Overwork",
+        "Material rigidity",
+        "Excess severity"
+      ],
+      "domains": [
+        "career",
+        "status",
+        "work",
+        "discipline"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 6
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_07",
+      "global_decan": 7,
+      "progressed_sign": "Gemini",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Gemini",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "A mentally active period emphasizing learning, movement, writing, relatives, and communication.",
+      "themes": [
+        "learning",
+        "writing",
+        "travel",
+        "relatives",
+        "correspondence",
+        "movement",
+        "mental activity"
+      ],
+      "constructive_expression": [
+        "Study",
+        "Write",
+        "Communicate",
+        "Take useful journeys",
+        "Engage with kindred and networks"
+      ],
+      "cautions": [
+        "Scattered attention",
+        "Restlessness"
+      ],
+      "domains": [
+        "communication",
+        "learning",
+        "travel",
+        "relatives"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 7
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_08",
+      "global_decan": 8,
+      "progressed_sign": "Gemini",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Libra",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Partnership, balance, shared responsibility, comparison, and quieter internal refinement.",
+      "themes": [
+        "partnership",
+        "balance",
+        "comparison",
+        "peace",
+        "shared responsibility",
+        "clear vision"
+      ],
+      "constructive_expression": [
+        "Cooperate",
+        "Share burdens",
+        "Develop perspective",
+        "Cultivate internal refinement"
+      ],
+      "cautions": [
+        "Dependence on another",
+        "External quiet mistaken for lack of progress"
+      ],
+      "domains": [
+        "relationships",
+        "perception",
+        "balance",
+        "partnership"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 8
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_09",
+      "global_decan": 9,
+      "progressed_sign": "Gemini",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Aquarius",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Concentrated thought, deeper study, friendship, associations, and increasingly impersonal judgment.",
+      "themes": [
+        "concentration",
+        "study",
+        "friends",
+        "groups",
+        "science",
+        "occult",
+        "human nature"
+      ],
+      "constructive_expression": [
+        "Focus the mind",
+        "Join useful associations",
+        "Study deeply",
+        "Judge impartially"
+      ],
+      "cautions": [
+        "Fixation",
+        "Excess detachment",
+        "Intellectual rigidity"
+      ],
+      "domains": [
+        "groups",
+        "study",
+        "friendship",
+        "analysis"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 9
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_10",
+      "global_decan": 10,
+      "progressed_sign": "Cancer",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Cancer",
+      "sign_ruler": "Moon",
+      "decan_ruler": "Moon",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Home, sensitivity, receptivity, psychic awareness, and the expansion of feeling.",
+      "themes": [
+        "home",
+        "family",
+        "sensitivity",
+        "receptivity",
+        "psychic awareness",
+        "emotion",
+        "tenacity"
+      ],
+      "constructive_expression": [
+        "Deepen emotional awareness",
+        "Attend to home and belonging",
+        "Develop empathy",
+        "Build emotional persistence"
+      ],
+      "cautions": [
+        "Over-sensitivity",
+        "Reactive feeling"
+      ],
+      "domains": [
+        "home",
+        "family",
+        "emotion",
+        "environment"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 10
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_11",
+      "global_decan": 11,
+      "progressed_sign": "Cancer",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Scorpio",
+      "sign_ruler": "Moon",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "An emotionally intense and potentially critical period emphasizing transformation, secrecy, passion, and deep feeling.",
+      "themes": [
+        "crisis",
+        "emotion",
+        "passion",
+        "secrecy",
+        "mysticism",
+        "dignity",
+        "jealousy"
+      ],
+      "constructive_expression": [
+        "Face deep feelings",
+        "Develop courage",
+        "Pursue meaningful inner work",
+        "Use intensity constructively"
+      ],
+      "cautions": [
+        "Jealousy",
+        "Pride",
+        "Sarcasm",
+        "Health strain",
+        "Family sorrow"
+      ],
+      "domains": [
+        "family",
+        "emotion",
+        "health",
+        "occult"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 11
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_12",
+      "global_decan": 12,
+      "progressed_sign": "Cancer",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Pisces",
+      "sign_ruler": "Moon",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "A highly receptive, compassionate and inward period that completes the Cancer cycle.",
+      "themes": [
+        "compassion",
+        "receptivity",
+        "psychic sensitivity",
+        "hospitality",
+        "institutions",
+        "closure",
+        "sympathy"
+      ],
+      "constructive_expression": [
+        "Serve others",
+        "Cultivate empathy",
+        "Release old emotional patterns",
+        "Develop quiet compassion"
+      ],
+      "cautions": [
+        "Weak boundaries",
+        "Excess receptivity",
+        "Confinement",
+        "Sensitivity to environment"
+      ],
+      "domains": [
+        "service",
+        "institutions",
+        "emotion",
+        "closure"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 12
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_13",
+      "global_decan": 13,
+      "progressed_sign": "Leo",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Leo",
+      "sign_ruler": "Sun",
+      "decan_ruler": "Sun",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Vitality, heart, creativity, generosity and stronger individual self-expression.",
+      "themes": [
+        "vitality",
+        "heart",
+        "creativity",
+        "generosity",
+        "drama",
+        "independence",
+        "ambition"
+      ],
+      "constructive_expression": [
+        "Express generosity",
+        "Create boldly",
+        "Develop noble purpose",
+        "Lead from the heart"
+      ],
+      "cautions": [
+        "Pleasure-seeking",
+        "Excess sensation",
+        "Profligacy"
+      ],
+      "domains": [
+        "creativity",
+        "identity",
+        "leadership",
+        "pleasure"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 13
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_14",
+      "global_decan": 14,
+      "progressed_sign": "Leo",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Sagittarius",
+      "sign_ruler": "Sun",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Philosophical expansion, travel, higher thought, intuition, dreams and prophetic tendencies.",
+      "themes": [
+        "philosophy",
+        "travel",
+        "higher mind",
+        "intuition",
+        "dreams",
+        "prophecy",
+        "speculation"
+      ],
+      "constructive_expression": [
+        "Study higher thought",
+        "Travel",
+        "Record dreams",
+        "Use intuition wisely"
+      ],
+      "cautions": [
+        "Gambling",
+        "Risky speculation",
+        "Overconfidence"
+      ],
+      "domains": [
+        "travel",
+        "belief",
+        "intuition",
+        "speculation"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 14
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_15",
+      "global_decan": 15,
+      "progressed_sign": "Leo",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Aries",
+      "sign_ruler": "Sun",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Courage, enterprise, leadership and conviction, with strong pressure toward action.",
+      "themes": [
+        "courage",
+        "leadership",
+        "enterprise",
+        "assertiveness",
+        "truth",
+        "will",
+        "self-control"
+      ],
+      "constructive_expression": [
+        "Pioneer",
+        "Lead",
+        "Act from principle",
+        "Develop self-control"
+      ],
+      "cautions": [
+        "Rashness",
+        "Extremes",
+        "Impulsiveness"
+      ],
+      "domains": [
+        "leadership",
+        "action",
+        "principles",
+        "ambition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 15
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_16",
+      "global_decan": 16,
+      "progressed_sign": "Virgo",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Virgo",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Discrimination, work, health, patience and refinement through careful experience.",
+      "themes": [
+        "discrimination",
+        "work",
+        "health",
+        "analysis",
+        "patience",
+        "worry",
+        "service"
+      ],
+      "constructive_expression": [
+        "Improve craft",
+        "Work carefully",
+        "Learn from mistakes",
+        "Practice discernment"
+      ],
+      "cautions": [
+        "Worry",
+        "Nervous strain",
+        "Discouragement",
+        "Over-criticism"
+      ],
+      "domains": [
+        "work",
+        "health",
+        "analysis",
+        "service"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 16
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_17",
+      "global_decan": 17,
+      "progressed_sign": "Virgo",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Capricorn",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Advancement through work, responsibility, perseverance, tact and demonstrated merit.",
+      "themes": [
+        "career",
+        "responsibility",
+        "recognition",
+        "service",
+        "tact",
+        "perseverance",
+        "stability"
+      ],
+      "constructive_expression": [
+        "Accept responsibility",
+        "Serve steadily",
+        "Develop competence",
+        "Earn advancement"
+      ],
+      "cautions": [
+        "Status anxiety",
+        "Overwork",
+        "Excess severity"
+      ],
+      "domains": [
+        "career",
+        "work",
+        "service",
+        "recognition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 17
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_18",
+      "global_decan": 18,
+      "progressed_sign": "Virgo",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Taurus",
+      "sign_ruler": "Mercury",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "A softening of criticism through receptivity, financial improvement, determination and the union of love with intellect.",
+      "themes": [
+        "finance",
+        "receptivity",
+        "determination",
+        "service",
+        "love",
+        "intellect",
+        "work"
+      ],
+      "constructive_expression": [
+        "Stabilize finances",
+        "Work without ego",
+        "Combine sympathy with intelligence",
+        "Use firmness constructively"
+      ],
+      "cautions": [
+        "Stubbornness",
+        "Self-interest",
+        "Obstinacy"
+      ],
+      "domains": [
+        "finance",
+        "work",
+        "values",
+        "service"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 18
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_19",
+      "global_decan": 19,
+      "progressed_sign": "Libra",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Libra",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Balance, justice, partnership and a consequential turning point requiring conscious choice.",
+      "themes": [
+        "balance",
+        "justice",
+        "partnership",
+        "comparison",
+        "equilibrium",
+        "decision",
+        "transition"
+      ],
+      "constructive_expression": [
+        "Negotiate fairly",
+        "Compare perspectives",
+        "Choose deliberately",
+        "Prepare for a new phase"
+      ],
+      "cautions": [
+        "Indecision",
+        "Over-reliance on partners"
+      ],
+      "domains": [
+        "relationships",
+        "justice",
+        "decision",
+        "transition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 19
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_20",
+      "global_decan": 20,
+      "progressed_sign": "Libra",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Aquarius",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Friendship, social refinement, humanitarian interests and stable engagement with higher or metaphysical study.",
+      "themes": [
+        "friendship",
+        "groups",
+        "humanitarianism",
+        "refinement",
+        "metaphysics",
+        "independence",
+        "social life"
+      ],
+      "constructive_expression": [
+        "Build lasting alliances",
+        "Join useful groups",
+        "Refine thought",
+        "Study human nature"
+      ],
+      "cautions": [
+        "Detachment",
+        "Idealism without grounding"
+      ],
+      "domains": [
+        "friendship",
+        "groups",
+        "study",
+        "social life"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 20
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_21",
+      "global_decan": 21,
+      "progressed_sign": "Libra",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Gemini",
+      "sign_ruler": "Venus",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Intellectual activity, writing, travel, relatives, detail and mental development.",
+      "themes": [
+        "reading",
+        "writing",
+        "travel",
+        "relatives",
+        "detail",
+        "learning",
+        "correspondence"
+      ],
+      "constructive_expression": [
+        "Read and write",
+        "Communicate",
+        "Travel",
+        "Attend to details"
+      ],
+      "cautions": [
+        "Fragmentation",
+        "Small matters overshadowing larger concerns"
+      ],
+      "domains": [
+        "communication",
+        "learning",
+        "travel",
+        "relatives"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 21
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_22",
+      "global_decan": 22,
+      "progressed_sign": "Scorpio",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Scorpio",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Power, determination, secrecy and the awakening of latent potency.",
+      "themes": [
+        "power",
+        "determination",
+        "secrecy",
+        "ambition",
+        "occult",
+        "jealousy",
+        "dignity"
+      ],
+      "constructive_expression": [
+        "Use will deliberately",
+        "Pursue deep transformation",
+        "Channel intensity productively"
+      ],
+      "cautions": [
+        "Jealousy",
+        "Sarcasm",
+        "Pride",
+        "Coercive force"
+      ],
+      "domains": [
+        "power",
+        "transformation",
+        "occult",
+        "ambition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 22
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_23",
+      "global_decan": 23,
+      "progressed_sign": "Scorpio",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Pisces",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "A critical and highly receptive period associated with sorrow, psychic sensitivity, confinement and the need for restraint.",
+      "themes": [
+        "crisis",
+        "sorrow",
+        "psychic receptivity",
+        "confinement",
+        "health",
+        "temptation",
+        "discernment"
+      ],
+      "constructive_expression": [
+        "Practice restraint",
+        "Cultivate compassion",
+        "Use psychic sensitivity carefully",
+        "Maintain boundaries"
+      ],
+      "cautions": [
+        "Temptation",
+        "Illness",
+        "Enemies",
+        "Porous boundaries",
+        "Sorrow"
+      ],
+      "domains": [
+        "health",
+        "institutions",
+        "psychic",
+        "crisis"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 23
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_24",
+      "global_decan": 24,
+      "progressed_sign": "Scorpio",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Cancer",
+      "sign_ruler": "Mars",
+      "decan_ruler": "Moon",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Domestic upheaval, emotional intensity, enforced change and unusual or psychic experiences.",
+      "themes": [
+        "family",
+        "domestic change",
+        "sorrow",
+        "psychic sensitivity",
+        "attachment",
+        "instability",
+        "caution"
+      ],
+      "constructive_expression": [
+        "Adapt to change",
+        "Cultivate caution",
+        "Process emotional intensity",
+        "Use sensitivity constructively"
+      ],
+      "cautions": [
+        "Family sorrow",
+        "Sarcasm",
+        "Unstable attachments",
+        "Enforced change"
+      ],
+      "domains": [
+        "family",
+        "home",
+        "emotion",
+        "psychic"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 24
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_25",
+      "global_decan": 25,
+      "progressed_sign": "Sagittarius",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Sagittarius",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Hope, philosophy, freedom, travel and the development of a broader worldview.",
+      "themes": [
+        "hope",
+        "freedom",
+        "travel",
+        "philosophy",
+        "religion",
+        "outdoors",
+        "higher mind"
+      ],
+      "constructive_expression": [
+        "Expand horizons",
+        "Travel",
+        "Study",
+        "Seek truth",
+        "Cultivate independence"
+      ],
+      "cautions": [
+        "Rebellion",
+        "Carelessness",
+        "Disregard for limits"
+      ],
+      "domains": [
+        "travel",
+        "belief",
+        "freedom",
+        "study"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 25
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_26",
+      "global_decan": 26,
+      "progressed_sign": "Sagittarius",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Aries",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Independence, force, leadership and bold action requiring greater forethought and self-control.",
+      "themes": [
+        "independence",
+        "leadership",
+        "assertiveness",
+        "initiative",
+        "force",
+        "risk",
+        "self-control"
+      ],
+      "constructive_expression": [
+        "Take initiative",
+        "Lead responsibly",
+        "Act with foresight",
+        "Channel energy"
+      ],
+      "cautions": [
+        "Rashness",
+        "Accidents",
+        "Lack of self-control",
+        "Excess force"
+      ],
+      "domains": [
+        "action",
+        "leadership",
+        "risk",
+        "ambition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 26
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_27",
+      "global_decan": 27,
+      "progressed_sign": "Sagittarius",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Leo",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Sun",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Heart-led expansion, emotional enthusiasm, speculation, intuition and prophetic development.",
+      "themes": [
+        "heart",
+        "emotion",
+        "speculation",
+        "intuition",
+        "dreams",
+        "prophecy",
+        "success"
+      ],
+      "constructive_expression": [
+        "Invest judiciously",
+        "Cultivate intuition",
+        "Act generously",
+        "Use enthusiasm wisely"
+      ],
+      "cautions": [
+        "Gambling",
+        "Impulsive attachments",
+        "Excess demonstration"
+      ],
+      "domains": [
+        "speculation",
+        "intuition",
+        "relationships",
+        "enterprise"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 27
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_28",
+      "global_decan": 28,
+      "progressed_sign": "Capricorn",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Capricorn",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Ambition, endurance, recognition and self-made advancement through merit.",
+      "themes": [
+        "ambition",
+        "career",
+        "recognition",
+        "endurance",
+        "tact",
+        "industry",
+        "independence"
+      ],
+      "constructive_expression": [
+        "Build position",
+        "Persist",
+        "Use tact",
+        "Rise through merit"
+      ],
+      "cautions": [
+        "Rigidity",
+        "Failure to use opportunity",
+        "Excess severity"
+      ],
+      "domains": [
+        "career",
+        "status",
+        "work",
+        "recognition"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 28
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_29",
+      "global_decan": 29,
+      "progressed_sign": "Capricorn",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Taurus",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Acquisition, patience, financial progress and practical judgment sustained by determination.",
+      "themes": [
+        "finance",
+        "acquisition",
+        "patience",
+        "determination",
+        "common sense",
+        "thrift",
+        "ambition"
+      ],
+      "constructive_expression": [
+        "Build wealth carefully",
+        "Persist toward goals",
+        "Use practical judgment",
+        "Practice steadiness"
+      ],
+      "cautions": [
+        "Obstinacy",
+        "Excess acquisitiveness"
+      ],
+      "domains": [
+        "finance",
+        "career",
+        "values",
+        "work"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 29
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_30",
+      "global_decan": 30,
+      "progressed_sign": "Capricorn",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Virgo",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Practical judgment, planning and disciplined preparation, with greater emphasis on sowing than reaping.",
+      "themes": [
+        "planning",
+        "analysis",
+        "practicality",
+        "work",
+        "judgment",
+        "health",
+        "preparation"
+      ],
+      "constructive_expression": [
+        "Organize",
+        "Discriminate",
+        "Prepare carefully",
+        "Use common sense"
+      ],
+      "cautions": [
+        "Worry",
+        "Selfishness",
+        "Health strain",
+        "Frustration with delayed results"
+      ],
+      "domains": [
+        "work",
+        "planning",
+        "health",
+        "strategy"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 30
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_31",
+      "global_decan": 31,
+      "progressed_sign": "Aquarius",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Aquarius",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Saturn",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "A new social and mental cycle emphasizing reform, friendship, higher thought and humane perspective.",
+      "themes": [
+        "friends",
+        "groups",
+        "reform",
+        "humanitarianism",
+        "higher thought",
+        "character study",
+        "fixation"
+      ],
+      "constructive_expression": [
+        "Join communities",
+        "Think humanely",
+        "Study character",
+        "Pursue reform"
+      ],
+      "cautions": [
+        "Fixation",
+        "Possessiveness",
+        "Poor choice of associates"
+      ],
+      "domains": [
+        "friends",
+        "groups",
+        "reform",
+        "study"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 31
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_32",
+      "global_decan": 32,
+      "progressed_sign": "Aquarius",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Gemini",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Mercury",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Intellectual refinement, writing, correspondence, travel and system-building for collective benefit.",
+      "themes": [
+        "writing",
+        "intellect",
+        "friends",
+        "relatives",
+        "travel",
+        "systems",
+        "principles"
+      ],
+      "constructive_expression": [
+        "Communicate principles",
+        "Organize knowledge",
+        "Write",
+        "Build systems for others"
+      ],
+      "cautions": [
+        "Over-intellectualization",
+        "Detachment from physical needs"
+      ],
+      "domains": [
+        "communication",
+        "groups",
+        "travel",
+        "systems"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 32
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_33",
+      "global_decan": 33,
+      "progressed_sign": "Aquarius",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Libra",
+      "sign_ruler": "Saturn",
+      "decan_ruler": "Venus",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Attachment, balance, justice and social refinement, with emphasis on seeing both sides fairly.",
+      "themes": [
+        "attachment",
+        "balance",
+        "justice",
+        "comparison",
+        "social refinement",
+        "clairvoyance",
+        "equilibrium"
+      ],
+      "constructive_expression": [
+        "Cooperate fairly",
+        "Compare perspectives",
+        "Build equilibrium",
+        "Act conscientiously"
+      ],
+      "cautions": [
+        "Idealization of harmony",
+        "Overdependence on relational balance"
+      ],
+      "domains": [
+        "relationships",
+        "justice",
+        "social life",
+        "balance"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 33
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_34",
+      "global_decan": 34,
+      "progressed_sign": "Pisces",
+      "decan_number_within_sign": 1,
+      "decan_sign": "Pisces",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Jupiter",
+      "degree_range_within_sign": {
+        "start_inclusive": 0,
+        "end_exclusive": 10
+      },
+      "core_meaning": "Sensitivity, sorrow, compassion and restriction, with the possibility of widening sympathy.",
+      "themes": [
+        "sensitivity",
+        "sorrow",
+        "compassion",
+        "worry",
+        "confinement",
+        "hospitality",
+        "sympathy"
+      ],
+      "constructive_expression": [
+        "Expand compassion",
+        "Help those who suffer",
+        "Strengthen will",
+        "Maintain discernment"
+      ],
+      "cautions": [
+        "Melancholy",
+        "Worry",
+        "Confinement",
+        "Harmful influences"
+      ],
+      "domains": [
+        "compassion",
+        "restriction",
+        "service",
+        "psychic"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 34
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_35",
+      "global_decan": 35,
+      "progressed_sign": "Pisces",
+      "decan_number_within_sign": 2,
+      "decan_sign": "Cancer",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Moon",
+      "degree_range_within_sign": {
+        "start_inclusive": 10,
+        "end_exclusive": 20
+      },
+      "core_meaning": "Hyper-sensitivity, home concerns, romantic attachment and strong receptivity to others.",
+      "themes": [
+        "sensitivity",
+        "home",
+        "emotion",
+        "attachment",
+        "psychic receptivity",
+        "sympathy",
+        "self-reliance"
+      ],
+      "constructive_expression": [
+        "Strengthen self-reliance",
+        "Attend to home carefully",
+        "Use sensitivity compassionately"
+      ],
+      "cautions": [
+        "Emotional dependence",
+        "Weak boundaries",
+        "Hyper-sensitivity"
+      ],
+      "domains": [
+        "home",
+        "relationships",
+        "emotion",
+        "psychic"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 35
+      }
+    },
+    {
+      "id": "progressed_ascendant_decan_36",
+      "global_decan": 36,
+      "progressed_sign": "Pisces",
+      "decan_number_within_sign": 3,
+      "decan_sign": "Scorpio",
+      "sign_ruler": "Jupiter",
+      "decan_ruler": "Mars",
+      "degree_range_within_sign": {
+        "start_inclusive": 20,
+        "end_exclusive": 30
+      },
+      "core_meaning": "Emotional testing, sorrow, passion reawakened and deep psychic sensitivity requiring self-control.",
+      "themes": [
+        "sorrow",
+        "emotion",
+        "passion",
+        "psychic development",
+        "self-control",
+        "jealousy",
+        "discernment"
+      ],
+      "constructive_expression": [
+        "Develop self-control",
+        "Cultivate dignity",
+        "Use psychic sensitivity carefully",
+        "Maintain discernment"
+      ],
+      "cautions": [
+        "Jealousy",
+        "Resentment",
+        "Suggestibility",
+        "Difficult conditions"
+      ],
+      "domains": [
+        "emotion",
+        "psychic",
+        "crisis",
+        "self-control"
+      ],
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 12,
+        "chapter_title": "The Progressed Ascendant",
+        "decan": 36
+      }
+    }
+  ]
+}

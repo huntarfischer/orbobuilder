@@ -1,0 +1,1377 @@
+{
+  "schema": "orbo.interpretation.transits_over_planets.alan_leo.v1",
+  "language": "en",
+  "source": {
+    "author": "Alan Leo",
+    "work": "The Progressed Horoscope",
+    "chapter": 18,
+    "chapter_title": "Transits over Sun, Moon, and Planets",
+    "pages": "244-256",
+    "section_start": 401,
+    "section_end": 465,
+    "basis": "User-supplied page scans transcribed and normalized for Orbo."
+  },
+  "editorial_policy": {
+    "astrological_glyphs": "not_used",
+    "planet_and_aspect_names": "plain_text",
+    "source_text_included": true,
+    "source_text_location": "alan-leo-progressed-horoscope-chapter-xviii-transits-over-sun-moon-and-planets.md",
+    "interpretation_status": "Editorial abstraction from Leo's delineations, with normalized transcription retained per record.",
+    "section_boundary": "Complete Chapter XVIII, paragraphs 401-465, including introductory unnumbered transit rules, lunation rules, lunar transit notes, and footnotes.",
+    "normalization": "Line-break hyphenation removed; typography normalized; source wording otherwise retained. Astrological glyphs and the worked direction example are rendered in plain text."
+  },
+  "engine_rules": {
+    "transit_definition": "An unqualified transit means the transiting body passing over the actual place of the transited body, i.e. a conjunction by transit.",
+    "declination_rule": "The closer the bodies are in declination at the transit, the stronger Leo expects the effect to be.",
+    "aspect_rule": "Oppositions to the Sun, Moon, and important planets are admitted as significant; squares and trines are weaker, while sextiles and smaller aspects are not emphasized.",
+    "direction_coincidence_rule": "A transit similar in nature to a prevailing direction acts more strongly and can precipitate the direction; an opposed transit has less effect.",
+    "progressed_point_rule": "Transits over the progressed Sun or Moon, or in opposition to them, are important; transits over a progressed planet involved in a direction can mark dates when that direction manifests.",
+    "lunation_rule": "New Moons and eclipses near conjunction or opposition to sensitive points are important; Full Moons within two degrees are also noted but treated as weaker than New Moons.",
+    "speed_rule": "The slower the transiting planet, the longer and generally more marked the effect. A stationary planet within two degrees of a sensitive point is especially important.",
+    "slow_planets": [
+      "Neptune",
+      "Uranus",
+      "Saturn",
+      "Jupiter"
+    ],
+    "quick_planets": [
+      "Mars",
+      "Sun",
+      "Venus",
+      "Mercury",
+      "Moon"
+    ],
+    "mars_exception": "Mars can produce prompt and distinct effects at critical times when directions agree.",
+    "moon_rule": "The Moon is fast but important for day selection; its transit through a house or over a planet calls forth the natal meaning of that house or planet, modified by aspects on the day.",
+    "natal_condition_rule": "The natal position and aspects of both the transiting and transited significators condition whether the transit manifests favourably or unfavourably.",
+    "solar_revolution_note": "The numbered planetary transit accounts apply chiefly to contacts occurring on the birthday in the Solar Revolution map, but secondarily to transits occurring at any time."
+  },
+  "introductory_source_text": {
+    "chapter_opening": "A transit is the passage of any heavenly body over the place of the Sun, the Moon, a planet or an angle in the horoscope. This method of ascertaining good or evil days or periods is very important and also very simple and easily applied, for it is quite free from calculations and nothing is needed but a copy of the horoscope and an ephemeris for the current year.\n\nA transit taking place at about the radical or progressed birthday is thought to have more importance than usual and to extend its influence more or less over the following year; but transits can take place at any time in the year, and they always produce an effect, sometimes greater and sometimes less, according to circumstances.\n\nWhen a transit is opposed in nature to the prevailing directions, it produces much less effect than would otherwise be the case; but if it is similar in nature to the directions, it acts with full force. At a time of bad directions, Jupiter will not do much good by transit; and under good directions, Saturn will not do much harm; yet each will produce some little effect in every case.\n\nThe influence of a transiting planet also varies with its position and aspects in the horoscope. For instance, if Jupiter was seriously afflicted at birth, was in its detriment or fall, and had no good aspects, it will not accomplish much good by transit; but if it was well placed and aspected, it can act strongly.",
+    "what_is_a_transit": "The word 'transit,' when not qualified in any way, is understood to be the passage of the transiting body over the actual place of the transited body in the horoscope; i.e., it is a conjunction by transit. The closer the two bodies are in declination at such time of transit the greater will be the effect produced, and the farther apart they are in declination the less will be the effect.\n\nA good deal of difference of opinion has been expressed as to whether transits by aspect should be admitted. It is certain that transits in opposition to Sun, Moon, and important planets in the horoscope produce effect, probably as much as those by conjunction, and that they are always unfortunate in some way. Squares and trines are always very much weaker, so much so that they are ignored by some workers; and yet they generally have some effect; and if two or more happen at nearly the same time and they coincide in nature with directions, they may mark important periods. Sextiles and smaller aspects are not worth noting.\n\nTransits over the progressed Sun or Moon or their opposition generally take effect; those over the progressed Moon are important and may serve to stimulate or precipitate whatever direction is in force for the current month. If a direction is formed from any body to a progressed planet, transits over that planet in the progressed horoscope should be noted, because they mark dates when effects will be felt from the direction. For instance, if such a direction as progressed Mars square radical Sun is due in a given year of life, the positions of the progressed Mars and the radical Sun will constitute very sensitive points in the horoscope for the time being, and any transit, lunation, or eclipse falling on either of these points or in opposition to them may help to precipitate the direction.",
+    "new_moons_and_eclipses_as_transits": "New Moons and Eclipses are of considerable importance when regarded as transits; i.e., when falling near the conjunction or opposition of some important point in the horoscope. Full Moons are also worth noting when they fall within two degrees of some sensitive point, but they probably have less effect than the New. New Moons that are within two degrees of some point of importance in the horoscope produce as much effect as a progressed lunar direction. For instance, a New Moon in opposition to the place of Saturn at birth will be followed by a month full of Saturnian troubles, losses, ill-health, accidents, isolation, and so on, unless strongly contradicted by directions. New Moons should be especially noted during those months when there are no progressed lunar directions.",
+    "effects_of_transits": "The general effect produced by one body in transit over another is, in principle, the same as the conjunction of the two by direction, but the transit is much less important than the direction, and is subject to the various limitations and modifications just mentioned. The effects of directions, as given in Part II, should really be a sufficient guide to the interpretation of transits, if these qualifications are borne in mind; but the pages that follow are added because most readers prefer separate lists to which to refer.\n\nThe slower a planet is in motion the more effect does its transit produce. A planet stationary within two degrees of some sensitive point in the horoscope is always important.\n\nThe rule just given, that a planet produces more effect when slow than when moving quickly at the time of transit, holds good all through. Other things being equal, the slower moving planets are much more marked in the results they bring about than are those that move quickly, and their influence extends over a much longer period. Because of this the planets can be divided for the purpose of transits into two groups: Neptune, Uranus, Saturn, and Jupiter, which are slow, and the remainder, which are quick. Mars, however, is capable of producing distinct effects by transit at critical times when directions agree.\n\nThe slow moving planets oftener mark unfortunate periods than definite dates. The influence of a slow planet is of course strongest on the day when its transit is exact; and yet if the student will take the trouble to examine the transits that were in force on, say, the death of well known persons whose horoscopes have been published, he will find that very often they are not exact but are only within orbs. The reason for this is that the transit is not the only cause at work in producing the effect; there are generally one or more directions also; and the death is, astrologically speaking, the general resultant of the whole of them. In spite of this however, transits should always be noted to the day; for a list of such dates serves to mark the good and bad days through the year. The transits of Mars in particular often act very promptly. The exact day when a direction may be expected to take effect can sometimes be determined better by noting some transit similar in nature than it can by attempting to refine the calculation of the arc of direction down to a definite day.\n\nThe transits of the quickly moving planets mark days rather than periods, for their influence seldom extends over more than two days. Mercury and Venus usually mark quite ephemeral events of only slight interest, except when they happen to coincide with a direction similar in nature. The Moon, although the quickest in motion of all, is of more all round importance, as explained below.",
+    "transits_of_the_moon": "Transits of the Moon are of considerable use in deciding fortunate and unfortunate days. It moves quickly and its influence never extends over more than a few hours before and after the hour when it is exact, but in spite of this its position has a good deal of significance.\n\nWhen the Moon is passing through any house in the horoscope, it gives some degree of prominence and importance to affairs governed by the house, and the result will be fortunate or the reverse according to the condition of that house in the radical horoscope. Thus if the second house was badly afflicted at birth, the Moon's transit through it once a month will always tend to be more or less unfortunate. If the ephemeris shows that the Moon receives bad aspects that day, such as an opposition of Saturn, the tendency to misfortune will be increased; and if it receives some good aspect, such as a trine of Jupiter, not much benefit can be expected from it because of the radical affliction. If, on the other hand, a house is fortunate at birth, the Moon's transit through it will mark a day that is fortunate for affairs governed by that house; and this will be increased if the ephemeris shows that the Moon is well aspected, and not much lessened by afflictions.\n\nWhen the Moon transits the place of a benefic in the horoscope, Jupiter, Venus, or a well aspected Sun, Moon, or Mercury, it will indicate a fortunate day. When it passes over the conjunction or opposition of a malefic or of a seriously afflicted Sun, Moon, or Mercury, a day will be indicated that is unfortunate, when it will be wise to be careful. In each case, if the ephemeris shows that the Moon is well aspected on that day, the good will be increased and the evil lessened; and vice versa if the ephemeris shows that it is badly aspected; but the radical indications are the most important.\n\nGenerally speaking, the transit of the Moon through a house or over the place of a planet tends to call forth the natural meaning of that house or planet for good or for evil according to its significance by position and aspects at birth. If Uranus or Neptune is free from affliction, the Moon's transit will be fortunate for things psychic and occult, and sometimes significant dreams occur on those days. Its transit over the place of Jupiter or Venus will bring enjoyable days, pleasure, social intercourse, or gain; over Mercury, good days for writing, reading, studying, and beginning new undertakings governed by the planet.\n\nIf the Moon was, say, in trine to Jupiter at birth, its transit over either of those two places will indicate fortunate days.\n\nThe Moon's transit through the ascendant is fortunate in most cases, especially for going a journey or making changes, except when a malefic or some seriously afflicted planet was rising or setting at birth.\n\nIn this way fortunate and unfortunate days can be marked out according to the Moon's transit through the horoscope; and although the Moon is not the only factor that has to be taken into account in this way, yet its influence is very important. Journeys should be undertaken when the Moon is going through the first, third, or ninth house, or over its own place if well aspected. Business should be begun when the Moon is passing through the second, sixth, or tenth house, whichever is the most fortunate, or when it transits Jupiter or Venus.",
+    "moon_transit_footnote": "A list of planetary positions for every year since 1850 is contained in Casting the Horoscope, and these are of use in studying transits in the past. There is also published a list of the positions of the four superior planets on the first of each month from 1800 to 1901, and of the five superior planets for the first of each month from 1900 to 2001.",
+    "note_before_planetary_lists": "The accounts that follow of the transits of the various planets apply chiefly to those that happen on the birthday in the map of the Solar Revolution, but to a less extent they apply to a transit that takes place at any time.",
+    "transit_term_footnote": "It will hardly be necessary to explain to the reader that this term is not here used in the sense in which it is employed by astronomers. A transit of Mercury or Venus, in the astronomical sense, can only occur when the node of the planet's orbit has approached very closely to the Sun's position in the ecliptic at the time of conjunction (inferior), and this takes place but rarely; the superior planets Mars, Jupiter, Saturn, Uranus, and Neptune can never thus transit the Sun. The meaning of 'transit,' as here used, has been explained on page 244."
+  },
+  "records": [
+    {
+      "id": "mercury_transit_sun_401",
+      "source_number": 401,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Study, writing, business and new ideas are favoured unless concurrent affliction prevents benefit.",
+      "source_text": "Mercury in transit over the Sun (chiefly at the Solar Revolution, but to a less extent at any time) is fortunate for study, writing, literature, employment, business, and new ideas and undertakings; but if afflicted at the same time either no benefit results or there is trouble.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_moon_402",
+      "source_number": 402,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Journeys, writing, publishing, business and speech are favoured unless serious affliction intervenes.",
+      "source_text": "Mercury in transit over the Moon is fortunate for journeys, publishing, writings, business, speech-making, and most matters governed by the planet, unless seriously afflicted.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_mercury_403",
+      "source_number": 403,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Mercury",
+      "own_place": true,
+      "valence": "condition-dependent",
+      "core_meaning": "Mercury themes are strengthened according to natal condition; affliction turns the emphasis toward worry, false reports and disappointment.",
+      "source_text": "Mercury in transit over its own place strengthens all things signified by the planet according to its capacity as shown by its position and aspects at birth; but if seriously afflicted, disappointment, worries, false reports, and anxiety result.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_venus_404",
+      "source_number": 404,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Social, family, friendship, pleasure and love matters are favoured.",
+      "source_text": "Mercury in transit over Venus is fortunate for social and family matters, for friends, pleasure, love affairs, holiday making, and general success.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_mars_405",
+      "source_number": 405,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "mixed / risky",
+      "core_meaning": "Mental activity is heightened, but disputes, haste, rumours and nervous strain are risks.",
+      "source_text": "Mercury in transit over Mars may make the mind active and have useful results for those who follow Mars occupations, but there is always risk attending it. Danger of disputes, fraud, false rumours, things written or spoken hastily that cause trouble; neuralgia, headache, sleeplessness, for those who are liable to them. Avoid mental excitement.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_jupiter_406",
+      "source_number": 406,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Business, literary work, friendship, social success and honour are favoured.",
+      "source_text": "Mercury in transit over Jupiter is fortunate for business and all literary occupations; it brings friends, social success, honour, and pleasure.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_saturn_407",
+      "source_number": 407,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Mental heaviness and difficulty in writing or study are emphasized, with possible gain only under strong favourable natal conditions.",
+      "source_text": "Mercury in transit over Saturn brings danger of mental trouble, anxiety, depression, loss, and ill success through writings or study; but if very well aspected and free from affliction there may be gain through occupations and matters ruled by either planet.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_uranus_408",
+      "source_number": 408,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "mixed / awakening",
+      "core_meaning": "Original study, science, invention and occult inquiry are stimulated, while an afflicted Uranus can produce trouble.",
+      "source_text": "Mercury in transit over Uranus will make the mind active and inclined to the study or investigation of things signified by Uranus, occultism, out-of-the-way subjects, science, or inventions. If Uranus was seriously afflicted trouble will follow.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 249,
+        "page_end": 249
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mercury_transit_neptune_409",
+      "source_number": 409,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mercury",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "uncertain / intuitive",
+      "core_meaning": "Intuition, psychic sensitivity and artistic imagination are heightened, while practical outcome depends on aspect.",
+      "source_text": "Mercury in transit over Neptune is very uncertain. It makes the mind intuitional and inclines to things psychic; it is good for musicians, artists, poets, novelists, and actors; but whether it is lucky in the worldly sense depends largely upon aspect.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_sun_410",
+      "source_number": 410,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Pleasure, social success and useful friendships are favoured.",
+      "source_text": "Venus in transit over the Sun (chiefly at the Solar Revolution, but to a less extent at any time) brings pleasure, social and general success, and friends among people in good position.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_moon_411",
+      "source_number": 411,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Family, domestic, social and pleasurable affairs are favoured.",
+      "source_text": "Venus in transit over the Moon is fortunate for family, domestic and social affairs; it brings friends, especially among women; and tends to pleasure, holiday making, enjoyment, and success.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_mercury_412",
+      "source_number": 412,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Writing, study, trade, travel and social contacts are favoured.",
+      "source_text": "Venus in transit over Mercury is fortunate for writing, study, and the pursuits of Mercury, for trade, for travelling, and for society and friends.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_venus_413",
+      "source_number": 413,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Venus",
+      "own_place": true,
+      "valence": "favourable / conditional",
+      "core_meaning": "Venus matters are strengthened according to natal condition, with benefit reduced by strong affliction.",
+      "source_text": "Venus in transit over its own place is fortunate for all things signified by the planet according to its house and sign at birth; but if much afflicted in the horoscope not much good will follow.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_mars_414",
+      "source_number": 414,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Pleasure and expenditure can become excessive, while good aspects can convert the contact into productive enterprise.",
+      "source_text": "Venus in transit over Mars brings danger of extravagance, loss, too much pleasure seeking, and idleness; but if well aspected, benefit may result from enterprise and activity in matters signified by either planet.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_jupiter_415",
+      "source_number": 415,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Prosperity, popularity, friendship and pleasure are favoured, though malefic affliction reduces the benefit.",
+      "source_text": "Venus in transit over Jupiter brings good fortune and general prosperity, friends, popularity, and pleasure. If seriously afflicted by malefics its benefic effect will be lessened.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_saturn_416",
+      "source_number": 416,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Benefit is limited unless natal conditions are strong, in which case business or money gains may occur.",
+      "source_text": "Venus in transit over Saturn cannot do much good unless very well placed at birth, when good fortune through business or money matters may follow.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_uranus_417",
+      "source_number": 417,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "slightly favourable",
+      "core_meaning": "Some modest benefit may arise in Uranian matters.",
+      "source_text": "Venus in transit over Uranus will bring some success in affairs that are governed by Uranus, but it is not important.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "venus_transit_neptune_418",
+      "source_number": 418,
+      "record_type": "planetary_transit",
+      "transiting_body": "Venus",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Social, romantic and pleasurable activity is stimulated, with moderate material benefit unless affliction brings loss or scandal.",
+      "source_text": "Venus in transit over Neptune inclines the mind to social activities, friendships, love affairs, and pleasure; it is moderately fortunate for money and business; but much depends upon aspects. If afflicted, loss, disappointment, or scandal may follow.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 250,
+        "page_end": 250
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_sun_419",
+      "source_number": 419,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "mixed / activating",
+      "core_meaning": "Energy and activity increase, but so do rashness, disputes, accidents and health risks.",
+      "source_text": "Mars in transit over the Sun (chiefly at the Solar Revolution, but to a less extent at any time) infuses activity and energy into matters signified by the Sun and the house in which it is placed, and is good for Mars men, those who follow occupations of the planet; but it is accompanied by risk of disputes, accidents, ill health, rashness and extravagance, and requires to be met with caution.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_moon_420",
+      "source_number": 420,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Quarrels, rashness and relational trouble are emphasized, though good aspects may support travel and business activity.",
+      "source_text": "Mars in transit over the Moon causes quarrels, enmity, trouble through females, sometimes a death, danger of rash and imprudent conduct. If well aspected, travelling, and activity in business.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_mercury_421",
+      "source_number": 421,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "mixed / risky",
+      "core_meaning": "Mental speed and ingenuity increase, but sharp speech, disputes, lawsuits and nervous strain are risks.",
+      "source_text": "Mars in transit over Mercury makes the mind busy and ingenious but critical, and enemies are likely to be made by tongue or pen, danger of a lawsuit. If Mercury was afflicted at birth many annoyances may result, nervous excitement, headache or neuralgia.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_venus_422",
+      "source_number": 422,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Pleasure and social activity may prosper under good aspects, while affliction produces extravagance, loss or relational trouble.",
+      "source_text": "Mars in transit over Venus if very well aspected brings pleasure, social enjoyment, holidays, and activity in matters ruled by Venus; but if much afflicted threatens loss, extravagance, suffering through women or friends, or dissipation.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_mars_423",
+      "source_number": 423,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Mars",
+      "own_place": true,
+      "valence": "activating / condition-dependent",
+      "core_meaning": "Natal Mars characteristics are strongly amplified.",
+      "source_text": "Mars in transit over its own place strengthens all the characteristics of the planet according to its position and aspects at birth.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_jupiter_424",
+      "source_number": 424,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Social and business activity can succeed, while afflicted Jupiter can turn expansion into extravagance, loss or legal or religious trouble.",
+      "source_text": "Mars in transit over Jupiter brings activity in social affairs and success through them or through business. But if Jupiter was much afflicted at birth, extravagance or loss, and trouble through law or religion.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_saturn_425",
+      "source_number": 425,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Accidents, occupational conflict, quarrels, health trouble and difficulty with authority or elders are emphasized.",
+      "source_text": "Mars in transit over Saturn threatens accidents, trouble in the occupation or with superiors or the aged; quarrels, danger of ill health; the father may suffer.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_uranus_426",
+      "source_number": 426,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "unfavourable / sudden",
+      "core_meaning": "Sudden trouble, accidents, quarrels, impulsive actions and nervous strain are emphasized.",
+      "source_text": "Mars in transit over Uranus brings sudden trouble, danger of accidents, quarrels, unwise actions, nervous affections.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "mars_transit_neptune_427",
+      "source_number": 427,
+      "record_type": "planetary_transit",
+      "transiting_body": "Mars",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "mixed / uncertain",
+      "core_meaning": "Unrestrained feeling and risky excess are possible, while strong aspects can channel energy into art, music or house matters.",
+      "source_text": "Mars in transit over Neptune brings danger from water or liquids, liability to over indulgence in pleasure, the feelings too unrestrained; but if very well aspected may give activity and energy in art, music, or affairs of the house in which it is placed.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 251,
+        "page_end": 251
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_sun_428",
+      "source_number": 428,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Good fortune, success, support from superiors, material gain, pleasure and improved health are emphasized.",
+      "source_text": "Jupiter in transit over the Sun (chiefly at the Solar revolution, but to a less extent at any time) brings good fortune, success, the favour of superiors, gain through the business or employment, through the father or husband; pleasure, holiday, enjoyment; health improves.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_moon_429",
+      "source_number": 429,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Family, domestic and social life, popularity, health, travel and residence changes are favoured.",
+      "source_text": "Jupiter in transit over the Moon is fortunate in family, domestic, and social matters; benefit through mother or wife; popularity, public success; health improves; good for travelling or change of residence.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_mercury_430",
+      "source_number": 430,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Writing, study and Mercury matters benefit, while the mind becomes more peaceful and optimistic.",
+      "source_text": "Jupiter in transit over Mercury brings benefit through literary work, writing, study, and affairs governed by the planet generally. It removes mental trouble and makes the mind peaceful and well disposed.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_venus_431",
+      "source_number": 431,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "favourable",
+      "core_meaning": "Pleasure, friendship, love, art and Venus occupations are favoured.",
+      "source_text": "Jupiter in transit over Venus inclines to pleasure, holiday making, social amusements, friendship, love making with the young; and may bring success through art, music, drama, the occupations of Venus, and the favour of women.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_mars_432",
+      "source_number": 432,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Enterprise and activity may improve business, while affliction can produce heavy expense and loss.",
+      "source_text": "Jupiter in transit over Mars may improve the business and affairs, especially with those who follow occupations of Mars and may lead to activity and changes; but if afflicted, heavy expenses and loss.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_jupiter_433",
+      "source_number": 433,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Jupiter",
+      "own_place": true,
+      "valence": "favourable / condition-dependent",
+      "core_meaning": "Natal Jupiter themes are amplified toward fortune and pleasure according to natal condition.",
+      "source_text": "Jupiter in transit over its own place brings good fortune and pleasure according to the position and aspects of the planet at birth.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_saturn_434",
+      "source_number": 434,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Benefit is limited unless Saturn is strong, in which case property, money, work or elder-related gains may occur.",
+      "source_text": "Jupiter in transit over Saturn does not do much good unless Saturn was well placed and aspected at birth, when there may be gain of money or property, benefit through superiors or elders, and through occupation and persons ruled by Saturn.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_uranus_435",
+      "source_number": 435,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Occult, scientific, philosophical and public or Uranian affairs can prosper if natal Uranus is strong.",
+      "source_text": "Jupiter in transit over Uranus brings good results from occultism, science, philosophy, from occupying some public position or position of authority, and from occupations and affairs ruled by Uranus. But if weak and afflicted at birth no good will result.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "jupiter_transit_neptune_436",
+      "source_number": 436,
+      "record_type": "planetary_transit",
+      "transiting_body": "Jupiter",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Artistic, psychic and Neptunian matters may benefit, but results depend strongly on natal condition.",
+      "source_text": "Jupiter in transit over Neptune may bring benefit or pleasure through music, art, drama, psychism, or the water; but unless well placed and aspected at birth not much may result.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 252,
+        "page_end": 252
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_general_437",
+      "source_number": 437,
+      "record_type": "transit_general",
+      "transiting_body": "Saturn",
+      "valence": "unfavourable / restrictive",
+      "core_meaning": "Saturn transits restrict, lower vitality and can bring loss or difficulty, with concurrent directions strongly modifying severity.",
+      "source_text": "These always produce trouble in health or affairs or both. Saturn is restricting, limiting, and productive of loss and misfortune; the vitality is lowered when transiting Ascendant, Sun, or Moon, and there is liability to colds, rheumatism, or accidents. If coinciding with bad directions, such transits may mark a very serious time when everything goes wrong, but under good directions the trouble is only temporary.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Use as a general rule for the transiting body and modify by natal condition and concurrent directions."
+    },
+    {
+      "id": "saturn_transit_sun_438",
+      "source_number": 438,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Authority, reputation, business, health and father or husband matters are pressured.",
+      "source_text": "Saturn in transit over the Sun brings trouble with superiors or those in authority, loss follows, the position or reputation is in danger, business and affairs suffer; trouble through father or husband. Unfortunate for health.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_moon_439",
+      "source_number": 439,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Domestic, property, family, health and emotional conditions are restricted and depressed.",
+      "source_text": "Saturn in transit over the Moon brings trouble or loss through business, property, family or domestic matters, and house or land; unfortunate for mother, wife, and female relatives; unpopularity incurred; the health is liable to suffer; the mind may become depressed.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_mercury_440",
+      "source_number": 440,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Writing, study, documents and Mercury occupations face delay or trouble, with worry and nervous strain.",
+      "source_text": "Saturn in transit over Mercury brings trouble through writings, study, books, documents, and occupations and persons ruled by Mercury. The mind is liable to depression and worry, and the nerves to be upset.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_venus_441",
+      "source_number": 441,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Affectional, social and Venus matters are restricted, with possible scandal or loss unless natal Venus is strong.",
+      "source_text": "Saturn in transit over Venus brings trouble through the affections, through social and family matters, and through female friends and relatives. Occupations and pursuits ruled by Venus suffer. Under bad directions there may be scandal or financial loss. If Venus was very well aspected, some gain may occur.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_mars_442",
+      "source_number": 442,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Quarrels, accidents, occupational change and rash enterprises are emphasized.",
+      "source_text": "Saturn in transit over Mars brings danger of quarrels and accidents, change of occupation may occur, rash enterprises are undertaken, sudden troubles crop up.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_jupiter_443",
+      "source_number": 443,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Strong Jupiter can turn Saturn toward disciplined financial or legal gains; affliction brings loss and trouble.",
+      "source_text": "Saturn in transit over Jupiter will bring financial benefits if Jupiter was well placed and aspected at birth; gain through investments and by economy; benefit through religion or law. But if afflicted danger of loss and trouble.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_saturn_444",
+      "source_number": 444,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Saturn",
+      "own_place": true,
+      "valence": "unfavourable / condition-dependent",
+      "core_meaning": "Natal Saturn themes are intensified, more often toward loss, with gain possible under exceptional natal strength.",
+      "source_text": "Saturn in transit over its own place brings trouble according to its position and aspects at birth. If very well aspected gain may result through things signified by the planet; but there is oftener loss.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 253,
+        "page_end": 253
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_uranus_445",
+      "source_number": 445,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Authority conflict, loss and reputational decline are possible, while good aspects can produce benefit in Uranian or public matters.",
+      "source_text": "Saturn in transit over Uranus brings danger of loss and troubles of various kinds, disputes with superiors, loss of favour of authorities, decline in power or reputation. But if well aspected there may be benefit through persons and things ruled by Uranus, occultism, inventions, science, or public affairs.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "saturn_transit_neptune_446",
+      "source_number": 446,
+      "record_type": "planetary_transit",
+      "transiting_body": "Saturn",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Neptunian and house matters are constrained or troubled according to Neptune’s natal placement and aspects.",
+      "source_text": "Saturn in transit over Neptune is unfortunate and brings trouble through things signified by the house in which Neptune is situated and its aspects.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_general_447",
+      "source_number": 447,
+      "record_type": "transit_general",
+      "transiting_body": "Uranus",
+      "valence": "disruptive / condition-dependent",
+      "core_meaning": "Uranus produces sudden change and disruption, strongest on angles and luminaries and strongly conditioned by natal aspects.",
+      "source_text": "These produce sudden troubles and disasters, they bring about great changes, and are seldom or never fortunate unless the planet transited was extremely well aspected at birth. They are strongest over the Ascendant, Mid-Heaven, Sun, and Moon, but are liable to be felt seriously when passing over any planet that was afflicted at birth.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Use as a general rule for the transiting body and modify by natal condition and concurrent directions."
+    },
+    {
+      "id": "uranus_transit_sun_448",
+      "source_number": 448,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "unfavourable / disruptive",
+      "core_meaning": "Career, authority, reputation, health and father or husband matters may be suddenly disrupted.",
+      "source_text": "Uranus in transit over the Sun brings trouble through the occupation, superiors, those in authority, the father or husband; the reputation is in danger; the health may suffer.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_moon_449",
+      "source_number": 449,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "mixed / disruptive",
+      "core_meaning": "Residence, family and health may change suddenly, with possible unusual psychic or occult experiences.",
+      "source_text": "Uranus in transit over the Moon brings journeys, change of residence, family and domestic troubles, and trouble through mother, wife, or female relatives; the health may suffer. In some cases unusual experiences may occur and the attention be attracted towards things psychical or occult.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_mercury_450",
+      "source_number": 450,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "mixed / awakening",
+      "core_meaning": "New ideas, invention and occult study are stimulated, while afflicted Mercury can bring trouble in writing, study and nerves.",
+      "source_text": "Uranus in transit over Mercury if well aspected may bring new ideas into the mind and incline towards science, philosophy, inventions, and the occult or psychical. If Mercury was afflicted there will be trouble through writings, study, and persons and affairs ruled by the planet, and the nerves may be upset.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_venus_451",
+      "source_number": 451,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "unfavourable / disruptive",
+      "core_meaning": "Love, marriage, friendship and social affairs are unsettled or disrupted.",
+      "source_text": "Uranus in transit over Venus brings trouble through the affections, love, marriage, friends, social affairs, and through females.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_mars_452",
+      "source_number": 452,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "unfavourable / sudden",
+      "core_meaning": "Accidents, quarrels, rash action and house-related misfortune are emphasized.",
+      "source_text": "Uranus in transit over Mars is liable to cause serious trouble, quarrels, accidents, danger, rash undertakings, and misfortune through the house occupied by the planet.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_jupiter_453",
+      "source_number": 453,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Religion, law, philosophy and power may bring gain under good aspects or loss and disputes under affliction.",
+      "source_text": "Uranus in transit over Jupiter may bring benefit or gain through religion, law, philosophy, increased power of some sort, if the planet was well aspected; but if afflicted there will be loss, trouble, or disputes through these.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 254,
+        "page_end": 254
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_saturn_454",
+      "source_number": 454,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "unfavourable / disruptive",
+      "core_meaning": "Property, elders, father and Saturn or house matters are disrupted.",
+      "source_text": "Uranus in transit over Saturn brings trouble through land, house, property, the father, elders and other things ruled by the planet as well as by the house in which it is placed.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_uranus_455",
+      "source_number": 455,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Uranus",
+      "own_place": true,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Natal Uranus themes are intensified, generally disruptively, though exceptional natal strength can produce power, prominence or occult interest.",
+      "source_text": "Uranus in transit over its own place is unfortunate for things signified by the planet and house unless it was extremely well aspected at birth, in which case benefit may result, increase of power or prominence or attraction to things occult.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "uranus_transit_neptune_456",
+      "source_number": 456,
+      "record_type": "planetary_transit",
+      "transiting_body": "Uranus",
+      "transited_point": "Neptune",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Psychic and occult pursuits can flourish, while affliction brings confusion, failure and loss in Neptune’s house matters.",
+      "source_text": "Uranus in transit over Neptune is favourable for psychic, occult and uncommon pursuits and experiences, but if afflicted it is a very unfortunate influence, bringing loss, failure of undertakings, and confusion in matters ruled by the house in which it is placed.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_general_457",
+      "source_number": 457,
+      "record_type": "transit_general",
+      "transiting_body": "Neptune",
+      "valence": "uncertain / disruptive",
+      "core_meaning": "Neptune produces uncertainty, confusion and change, sometimes with psychic or occult experiences, and is especially difficult when the transited point is afflicted.",
+      "source_text": "These cause changes and uncertainty, a restless and unsettled state of affairs, entailing anxiety, loss, confusion, and difficulties of all sorts; serious disasters if the point transited is badly afflicted. They cause change of residence, of occupation, of habits and opinions, and incline to travelling and voyaging. Psychic and occult experiences occur in some cases.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Use as a general rule for the transiting body and modify by natal condition and concurrent directions."
+    },
+    {
+      "id": "neptune_transit_sun_458",
+      "source_number": 458,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Sun",
+      "own_place": false,
+      "valence": "unfavourable / conditional",
+      "core_meaning": "Authority, occupation, reputation and health may become uncertain, with outcome improved by a strong natal Sun.",
+      "source_text": "Neptune in transit over the Sun is liable to bring any or all of the above mentioned troubles; difficulties with superiors, those in authority, the father, the husband, the occupation; credit or reputation in danger. If the Sun was well placed and aspected, not much harm is done and the result may be good. The health may suffer.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_moon_459",
+      "source_number": 459,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Moon",
+      "own_place": false,
+      "valence": "unfavourable / psychic",
+      "core_meaning": "Domestic and emotional conditions become restless and uncertain, with possible travel, residence change and psychic experience.",
+      "source_text": "Neptune in transit over the Moon causes changes in domestic, business or general affairs, uncertainty, anxiety, restlessness, travel, change of residence; trouble through mother, wife, or female relatives. Psychic or occult experiences may occur. The health may suffer.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_mercury_460",
+      "source_number": 460,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Mercury",
+      "own_place": false,
+      "valence": "mixed / uncertain",
+      "core_meaning": "Mental habits and ideas shift toward intuition or psychism, while weak Mercury brings trouble in study, documents, trade and nerves.",
+      "source_text": "Neptune in transit over Mercury brings change of opinions, and habits of mind; introduces new ideas and may incline to things psychic. But unless Mercury was very well aspected there is liable to be trouble through writings, study, documents, examinations, trade or profession; the nerves may be affected. It inclines to travel.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 255,
+        "page_end": 255
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_venus_461",
+      "source_number": 461,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Venus",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Love, friendship and social pleasure are emphasized, with gain under good conditions and disappointment or excess under affliction.",
+      "source_text": "Neptune in transit over Venus tends to love affairs, friendship, social pleasures, and to gain or advantage through persons and affairs ruled by Venus. But if afflicted, loss, disappointment, anxiety in these matters, and danger of excesses.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 256,
+        "page_end": 256
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_mars_462",
+      "source_number": 462,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Mars",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Conflict, accidents, illness, Mars-related trouble and heavy expense are emphasized.",
+      "source_text": "Neptune in transit over Mars threatens disputes, quarrels, accidents, fever, infectious disease, trouble through Mars persons, and heavy expenses.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 256,
+        "page_end": 256
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_jupiter_463",
+      "source_number": 463,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Jupiter",
+      "own_place": false,
+      "valence": "favourable / conditional",
+      "core_meaning": "Jupiterian and house matters may bring prosperity, honour, social benefit and pleasure, unless malefic affliction reduces the result.",
+      "source_text": "Neptune in transit over Jupiter brings gain, prosperity, honour, success in religion or law or in other matters ruled by the planet and the house in which it is placed; friends, social advantages, and pleasure. If afflicted by malefics, not much results.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 256,
+        "page_end": 256
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_saturn_464",
+      "source_number": 464,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Saturn",
+      "own_place": false,
+      "valence": "unfavourable",
+      "core_meaning": "Position, occupation and Saturn matters may suffer reversal, loss or discredit.",
+      "source_text": "Neptune in transit over Saturn brings discredit, loss, reversal of position, trouble in the occupation and through persons and things signified by Saturn, and an unfortunate time generally.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 256,
+        "page_end": 256
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    },
+    {
+      "id": "neptune_transit_uranus_465",
+      "source_number": 465,
+      "record_type": "planetary_transit",
+      "transiting_body": "Neptune",
+      "transited_point": "Uranus",
+      "own_place": false,
+      "valence": "mixed / conditional",
+      "core_meaning": "Occult, scientific, inventive and public matters may prosper, while afflicted Uranus can turn the contact toward opposition, failure or loss of standing.",
+      "source_text": "Neptune in transit over Uranus is fortunate for occult and psychic activities, for science, inventions, new ideas, and public undertakings, and gives some power or prominence. But if Uranus was much afflicted at birth there is danger of enmity, opposition, failure, some sort of downfall, disfavour of authorities or of the public.",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 18,
+        "chapter_title": "Transits over Sun, Moon, and Planets",
+        "page_start": 256,
+        "page_end": 256
+      },
+      "engine_note": "Treat as a conjunction by transit over the named natal or progressed point. Modify by natal condition, concurrent directions, and the condition of both bodies as Leo instructs."
+    }
+  ],
+  "qa": {
+    "audited_from_supplied_scans": true,
+    "source_number_range": [
+      401,
+      465
+    ],
+    "record_count": 65,
+    "missing_source_numbers": [],
+    "duplicate_source_numbers": [],
+    "records_by_transiting_body": {
+      "Mercury": 9,
+      "Venus": 9,
+      "Mars": 9,
+      "Jupiter": 9,
+      "Saturn": 10,
+      "Uranus": 10,
+      "Neptune": 9
+    },
+    "general_rule_record_count": 3,
+    "planetary_transit_record_count": 62,
+    "plain_text_only": true
+  }
+}

@@ -1,0 +1,2298 @@
+{
+  "schema": "orbo.interpretation.mutual_aspects.alan_leo.mercury.v1",
+  "language": "en",
+  "source": {
+    "author": "Alan Leo",
+    "work": "The Progressed Horoscope",
+    "chapter": 14,
+    "chapter_title": "Mutual Aspects",
+    "pages": "118-142",
+    "section_end": 172,
+    "basis": "User-supplied page scans transcribed and normalized for Orbo."
+  },
+  "editorial_policy": {
+    "astrological_glyphs": "not_used",
+    "planet_and_aspect_names": "plain_text",
+    "source_text_location": "alan-leo-progressed-horoscope-chapter-xiv-mutual-aspects-mercury.md",
+    "interpretation_status": "editorial abstraction from Leo's delineations, not verbatim source text",
+    "section_boundary": "Venus section on page 142 excluded"
+  },
+  "engine_rules": {
+    "mutual_aspects_definition": "Aspects formed between planets themselves, apart from the luminaries.",
+    "house_modification": "Interpretation is modified by the houses occupied and ruled by the planets involved.",
+    "planetary_modifiers": {
+      "Saturn": "Restricts, delays, limits, and retards the planet it aspects.",
+      "Mars": "Quickens, impels, energizes, and reduces restraint."
+    },
+    "parallel_rule": {
+      "geometry_type": "declination",
+      "duration": "often several years",
+      "character": "more inclining/background than compelling in several of Leo's delineations"
+    },
+    "lunar_modifier": "Many mutual aspects become materially stronger, weaker, or timed by concurrent lunar aspects.",
+    "directionality": {
+      "default": "Interpret the progressed planet aspecting the radical planet when that distinction matters.",
+      "explicit_exception_example": "Paragraph 121 gives separate meanings for progressed Mercury square radical Venus and progressed Venus square radical Mercury."
+    },
+    "aspect_angles_degrees": {
+      "parallel": null,
+      "conjunction": 0,
+      "semi-sextile": 30,
+      "semi-square": 45,
+      "sextile": 60,
+      "square": 90,
+      "trine": 120,
+      "sesquiquadrate": 135,
+      "quincunx": 150,
+      "opposition": 180
+    },
+    "availability_constraints": {
+      "Mercury-Venus_trine": "cannot form during the normal span of earthly life according to Leo",
+      "Mercury-Venus_opposition": "cannot form during the normal span of earthly life according to Leo"
+    }
+  },
+  "records": [
+    {
+      "id": "planet_prominence_109",
+      "source_number": 109,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Mercury"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates thought, intellect, communication, study, writing, travel, servants, siblings, and nerves",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "thought",
+        "intellect",
+        "writing",
+        "study",
+        "short journeys",
+        "siblings",
+        "nerves"
+      ]
+    },
+    {
+      "id": "planet_prominence_110",
+      "source_number": 110,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Venus"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates feeling, love, friendship, family, art, pleasure, society, and finance",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "love",
+        "feelings",
+        "family",
+        "art",
+        "society",
+        "pleasure",
+        "finance"
+      ]
+    },
+    {
+      "id": "planet_prominence_111",
+      "source_number": 111,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Mars"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates force, enterprise, desire, physical energy, conflict, blood, tools, and action",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "energy",
+        "enterprise",
+        "blood",
+        "conflict",
+        "accidents",
+        "tools",
+        "action"
+      ]
+    },
+    {
+      "id": "planet_prominence_112",
+      "source_number": 112,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Jupiter"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates social harmony, religion, law, health, benevolence, institutions, and prosperity",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "law",
+        "religion",
+        "health",
+        "social harmony",
+        "institutions",
+        "prosperity"
+      ]
+    },
+    {
+      "id": "planet_prominence_113",
+      "source_number": 113,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Saturn"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates restraint, patience, practical effort, delay, isolation, losses, and chronic strain",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "delay",
+        "restraint",
+        "patience",
+        "loss",
+        "isolation",
+        "chronic health"
+      ]
+    },
+    {
+      "id": "planet_prominence_114",
+      "source_number": 114,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Uranus"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates sudden change, authority, independence, reform, occult interests, reversals, and prominence",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "sudden change",
+        "authority",
+        "reform",
+        "independence",
+        "occult",
+        "reversal"
+      ]
+    },
+    {
+      "id": "planet_prominence_115",
+      "source_number": 115,
+      "record_type": "planet_prominence",
+      "bodies": [
+        "Neptune"
+      ],
+      "valence": "conditional",
+      "core_meaning": "Activates psychic, mystical, imaginative, aesthetic, hidden, uncertain, and dissolving influences",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "condition": "prominent_in_directions",
+      "themes": [
+        "psychic",
+        "mystical",
+        "imagination",
+        "deception",
+        "uncertainty",
+        "journeys"
+      ]
+    },
+    {
+      "id": "mutual_aspect_116",
+      "source_number": 116,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "favourable",
+      "core_meaning": "Long background inclination toward the conjunction’s social, artistic, and mental benefits",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "themes": [
+        "background influence",
+        "social",
+        "artistic",
+        "mental"
+      ]
+    },
+    {
+      "id": "mutual_aspect_117",
+      "source_number": 117,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "favourable",
+      "core_meaning": "Cheerful mind, social benefit, finance through friends or partners, artistic contacts",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "themes": [
+        "cheerful mind",
+        "friends",
+        "partners",
+        "finance",
+        "music",
+        "art"
+      ]
+    },
+    {
+      "id": "mutual_aspect_118",
+      "source_number": 118,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Weak artistic, poetic, devotional, and mental upliftment",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "themes": [
+        "artistic inspiration",
+        "poetry",
+        "devotion",
+        "weak aspect"
+      ]
+    },
+    {
+      "id": "mutual_aspect_119",
+      "source_number": 119,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Mental and relational disharmony, worry, correspondence caution",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "themes": [
+        "correspondence",
+        "worry",
+        "relationships",
+        "documents"
+      ]
+    },
+    {
+      "id": "mutual_aspect_120",
+      "source_number": 120,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "favourable",
+      "core_meaning": "Social ease, artistic or mental expression, travel, financial and relational benefit",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "themes": [
+        "social advantage",
+        "expression",
+        "travel",
+        "peace",
+        "attachments"
+      ]
+    },
+    {
+      "id": "mutual_aspect_121",
+      "source_number": 121,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "mixed / disruptive",
+      "core_meaning": "Conflict between thought and feeling, conventions and expanding artistic or emotional values",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "bidirectional",
+      "engine_note": "Leo explicitly distinguishes progressed Mercury square radical Venus from progressed Venus square radical Mercury. The same geometric square is interpreted according to which planet is progressed.",
+      "themes": [
+        "thought versus feeling",
+        "convention",
+        "artistic enlightenment",
+        "bidirectional progression"
+      ]
+    },
+    {
+      "id": "mutual_aspect_122",
+      "source_number": 122,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Venus"
+      ],
+      "valence": "unavailable",
+      "core_meaning": "Leo says these progressed aspects cannot form within a normal human lifespan",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": false
+        },
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": false
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Venus",
+      "directionality": "mutual",
+      "engine_note": "Leo states that progressed Mercury–Venus trine and opposition cannot form during the normal span of earthly life.",
+      "themes": [
+        "impossible geometry in normal lifespan"
+      ]
+    },
+    {
+      "id": "mutual_aspect_123",
+      "source_number": 123,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "unfavourable / activating",
+      "core_meaning": "Prolonged mental acceleration, ambition, impulsiveness, nervous strain",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "mental acceleration",
+        "impulsiveness",
+        "nervous system",
+        "travel",
+        "legal caution"
+      ]
+    },
+    {
+      "id": "mutual_aspect_124",
+      "source_number": 124,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "mixed / forceful",
+      "core_meaning": "Sharp practical mind, enterprise and confidence with impulsiveness, sarcasm, and nervous overstimulation",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "shrewdness",
+        "enterprise",
+        "dogmatism",
+        "sarcasm",
+        "nervous overstimulation"
+      ]
+    },
+    {
+      "id": "mutual_aspect_125",
+      "source_number": 125,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Slight mental force, enterprise, assertiveness, and small material benefits",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "mental force",
+        "enterprise",
+        "small gain",
+        "agents"
+      ]
+    },
+    {
+      "id": "mutual_aspect_126",
+      "source_number": 126,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Hasty speech, overactive mind, fraud and travel risk, financial loss",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "hasty speech",
+        "fraud",
+        "financial loss",
+        "travel"
+      ]
+    },
+    {
+      "id": "mutual_aspect_127",
+      "source_number": 127,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Keen mind, writing, travel, correspondence, agents, initiative, and mental success",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "writing",
+        "travel",
+        "agents",
+        "mental success",
+        "initiative"
+      ]
+    },
+    {
+      "id": "mutual_aspect_128",
+      "source_number": 128,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Rash speech and decisions, fraud, correspondence and contract risk, bad timing for changes",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "rash speech",
+        "documents",
+        "fraud",
+        "reputation",
+        "changes"
+      ]
+    },
+    {
+      "id": "mutual_aspect_129",
+      "source_number": 129,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Practical intelligence, learning, enterprise, travel, writing, and material opportunity",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "learning",
+        "writing",
+        "travel",
+        "enterprise",
+        "health"
+      ]
+    },
+    {
+      "id": "mutual_aspect_130",
+      "source_number": 130,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Restlessness, rash speech, nervous strain, deception, travel and document caution",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "anxiety",
+        "documents",
+        "travel",
+        "deception",
+        "nervous system"
+      ]
+    },
+    {
+      "id": "mutual_aspect_131",
+      "source_number": 131,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "mildly unfavourable",
+      "core_meaning": "Weak but stressful mental overactivity, nervous exhaustion, and impulsiveness",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "overactivity",
+        "assertiveness",
+        "nervous exhaustion",
+        "lunar modifier"
+      ]
+    },
+    {
+      "id": "mutual_aspect_132",
+      "source_number": 132,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Mars"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Fraud, quarrels, litigation, scandal, separation, accident risk, and mental agitation",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Mars",
+      "directionality": "mutual",
+      "themes": [
+        "fraud",
+        "litigation",
+        "scandal",
+        "separation",
+        "accident risk"
+      ]
+    },
+    {
+      "id": "mutual_aspect_133",
+      "source_number": 133,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Long background prosperity for mind, travel, literature, social and financial affairs",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "background prosperity",
+        "travel",
+        "literary work",
+        "friendship",
+        "health"
+      ]
+    },
+    {
+      "id": "mutual_aspect_134",
+      "source_number": 134,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Sound judgment, optimism, philosophy, travel, writing, prosperity, and nervous health",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "judgment",
+        "intuition",
+        "philosophy",
+        "travel",
+        "prosperity"
+      ]
+    },
+    {
+      "id": "mutual_aspect_135",
+      "source_number": 135,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Modest mental, social, financial, travel, and friendship benefits",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "friendship",
+        "correspondence",
+        "travel",
+        "philosophy",
+        "weak aspect"
+      ]
+    },
+    {
+      "id": "mutual_aspect_136",
+      "source_number": 136,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "mildly unfavourable",
+      "core_meaning": "Bias, poor judgment, excess expenditure, deception, and weak travel prospects",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "bias",
+        "expenditure",
+        "surety",
+        "deception",
+        "travel"
+      ]
+    },
+    {
+      "id": "mutual_aspect_137",
+      "source_number": 137,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Excellent judgment, writing, travel, financial gain, philosophy, and lasting ties",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "judgment",
+        "writing",
+        "finance",
+        "travel",
+        "philosophy",
+        "lasting ties"
+      ]
+    },
+    {
+      "id": "mutual_aspect_138",
+      "source_number": 138,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Grave errors of judgment, fraud, litigation, scandal, and unreliable promises",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "errors of judgment",
+        "fraud",
+        "litigation",
+        "scandal",
+        "promises"
+      ]
+    },
+    {
+      "id": "mutual_aspect_139",
+      "source_number": 139,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Common sense, philosophy, investment, travel, writing, legal and commercial success",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "common sense",
+        "investment",
+        "travel",
+        "legal affairs",
+        "writing"
+      ]
+    },
+    {
+      "id": "mutual_aspect_140",
+      "source_number": 140,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Prejudice, misconception, investment loss, liability, and poor legal or travel timing",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "prejudice",
+        "investment loss",
+        "liability",
+        "legal caution",
+        "travel"
+      ]
+    },
+    {
+      "id": "mutual_aspect_141",
+      "source_number": 141,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Weak mental harmony, health and nervous support, travel and correspondence benefit",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "mental harmony",
+        "study",
+        "travel",
+        "correspondence",
+        "weak aspect"
+      ]
+    },
+    {
+      "id": "mutual_aspect_142",
+      "source_number": 142,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Jupiter"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Impaired judgment, litigation, financial imbalance, separation, conflict of higher and lower mind",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Jupiter",
+      "directionality": "mutual",
+      "themes": [
+        "judgment",
+        "litigation",
+        "finance",
+        "separation",
+        "higher versus lower mind"
+      ]
+    },
+    {
+      "id": "mutual_aspect_143",
+      "source_number": 143,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "unfavourable / stabilising",
+      "core_meaning": "Long slowing and consolidation of mind, patience and concentration with delay",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "long duration",
+        "concentration",
+        "delay",
+        "patience",
+        "mental slowing"
+      ]
+    },
+    {
+      "id": "mutual_aspect_144",
+      "source_number": 144,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "unfavourable / responsible",
+      "core_meaning": "Mental restriction, suspicion, health strain, responsibility, ambition, and authority pressure",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "restriction",
+        "suspicion",
+        "responsibility",
+        "authority",
+        "nervous health"
+      ]
+    },
+    {
+      "id": "mutual_aspect_145",
+      "source_number": 145,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Calm, serious, economical, dutiful mind with modest benefit",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "calm mind",
+        "economy",
+        "duty",
+        "elders",
+        "weak aspect"
+      ]
+    },
+    {
+      "id": "mutual_aspect_146",
+      "source_number": 146,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Financial loss, authority problems, anxiety, reputation risk, fraud and cold-related health strain",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "financial loss",
+        "authority",
+        "reputation",
+        "fraud",
+        "cold"
+      ]
+    },
+    {
+      "id": "mutual_aspect_147",
+      "source_number": 147,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Prudence, system, responsibility, honour, contracts, elders, and durable thinking",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "prudence",
+        "contracts",
+        "elders",
+        "responsibility",
+        "system"
+      ]
+    },
+    {
+      "id": "mutual_aspect_148",
+      "source_number": 148,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Delay, suspicion, grief, slander, damaged reputation, and difficult correspondence",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "delay",
+        "suspicion",
+        "grief",
+        "slander",
+        "reputation"
+      ]
+    },
+    {
+      "id": "mutual_aspect_149",
+      "source_number": 149,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Steady judgment, duty, research, investment, correspondence, contracts, and long-term planning",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "research",
+        "investment",
+        "contracts",
+        "correspondence",
+        "duty"
+      ]
+    },
+    {
+      "id": "mutual_aspect_150",
+      "source_number": 150,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Depression, narrowed outlook, fraud, bad timing for travel, investment, papers, and relationships",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "depression",
+        "fraud",
+        "investment caution",
+        "travel caution",
+        "attachments"
+      ]
+    },
+    {
+      "id": "mutual_aspect_151",
+      "source_number": 151,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "mildly unfavourable / developmental",
+      "core_meaning": "Delayed thought, anxiety and nervous strain, but stronger critical judgment and useful restraint",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "delay",
+        "critical judgment",
+        "anxiety",
+        "nervous health",
+        "restraint"
+      ]
+    },
+    {
+      "id": "mutual_aspect_152",
+      "source_number": 152,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Saturn"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Fraud, betrayal, depression, estrangement, bad timing for papers, study, law, and disputes",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Saturn",
+      "directionality": "mutual",
+      "themes": [
+        "betrayal",
+        "depression",
+        "estrangement",
+        "law",
+        "documents"
+      ]
+    },
+    {
+      "id": "mutual_aspect_153",
+      "source_number": 153,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "transformative",
+      "core_meaning": "Long mental expansion, originality, metaphysics, travel, engineering, science, and unconventional ties",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "mental expansion",
+        "metaphysics",
+        "science",
+        "engineering",
+        "travel",
+        "occult"
+      ]
+    },
+    {
+      "id": "mutual_aspect_154",
+      "source_number": 154,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "transformative / unstable",
+      "core_meaning": "Sudden mental change, originality, travel, altered beliefs, estrangement, magnetic influence",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "sudden mental change",
+        "originality",
+        "travel",
+        "belief reversal",
+        "estrangement"
+      ]
+    },
+    {
+      "id": "mutual_aspect_155",
+      "source_number": 155,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "mildly favourable",
+      "core_meaning": "Weak mental expansion, metaphysical interest, unexpected gain, unusual acquaintances",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "metaphysics",
+        "unexpected gain",
+        "unusual acquaintances",
+        "romance"
+      ]
+    },
+    {
+      "id": "mutual_aspect_156",
+      "source_number": 156,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Irritable mind, friendship trouble, unexpected loss, travel and correspondence difficulty",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "irritability",
+        "friendship trouble",
+        "financial loss",
+        "travel",
+        "writing"
+      ]
+    },
+    {
+      "id": "mutual_aspect_157",
+      "source_number": 157,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Invention, reform, metaphysics, travel, unusual attachments, persuasive magnetism",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "invention",
+        "reform",
+        "occult",
+        "travel",
+        "magnetism",
+        "unusual attachments"
+      ]
+    },
+    {
+      "id": "mutual_aspect_158",
+      "source_number": 158,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Sudden disruption, sarcasm, nervous tension, extreme reformism, document and reputation risk",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "sudden disruption",
+        "sarcasm",
+        "nervous tension",
+        "documents",
+        "reputation"
+      ]
+    },
+    {
+      "id": "mutual_aspect_159",
+      "source_number": 159,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Originality, astrology, occult study, invention, reform, speculation, literary work, humanitarian thought",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "astrology",
+        "occult",
+        "investment",
+        "literary work",
+        "humanitarian thought"
+      ]
+    },
+    {
+      "id": "mutual_aspect_160",
+      "source_number": 160,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Distorted views, nervous strain, estrangement, travel and document risk",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "distortion",
+        "nervous system",
+        "estrangement",
+        "travel",
+        "documents"
+      ]
+    },
+    {
+      "id": "mutual_aspect_161",
+      "source_number": 161,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "mixed / regenerative",
+      "core_meaning": "Weak but potentially regenerative mental disruption, extremes, occult expansion, nervous reactivity",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "regeneration",
+        "extremes",
+        "occult expansion",
+        "nervous reactivity"
+      ]
+    },
+    {
+      "id": "mutual_aspect_162",
+      "source_number": 162,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Uranus"
+      ],
+      "valence": "strongly critical",
+      "core_meaning": "Persistent opposition, accusations, eccentricity, abruptness, sudden separations, unconventional release",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Uranus",
+      "directionality": "mutual",
+      "themes": [
+        "opposition",
+        "accusations",
+        "eccentricity",
+        "separation",
+        "unconventional release"
+      ]
+    },
+    {
+      "id": "mutual_aspect_163",
+      "source_number": 163,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "subtle / mixed",
+      "core_meaning": "Long subjective inclination toward mysticism, imagination, unusual humour, or decadence",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "parallel",
+          "angle_degrees": null,
+          "geometry_type": "declination",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "mysticism",
+        "subjective",
+        "imagination",
+        "humour",
+        "decadence"
+      ]
+    },
+    {
+      "id": "mutual_aspect_164",
+      "source_number": 164,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "subtle / transformative",
+      "core_meaning": "Creative inspiration, dreams, unusual characters, scheming, Neptunian susceptibility",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "conjunction",
+          "angle_degrees": 0,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "creative inspiration",
+        "dreams",
+        "scheming",
+        "susceptibility",
+        "art"
+      ]
+    },
+    {
+      "id": "mutual_aspect_165",
+      "source_number": 165,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "weak / mystical",
+      "core_meaning": "Mental exaltation, poetry, music, dreams, and possible temporary inhibition of speech",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-sextile",
+          "angle_degrees": 30,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "mental exaltation",
+        "poetry",
+        "music",
+        "dreams",
+        "speech inhibition"
+      ]
+    },
+    {
+      "id": "mutual_aspect_166",
+      "source_number": 166,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "mildly unfavourable",
+      "core_meaning": "Harassment, uncertainty, petty restriction, inexplicable difficulties, divided mind",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "semi-square",
+          "angle_degrees": 45,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "uncertainty",
+        "harassment",
+        "restriction",
+        "divided mind"
+      ]
+    },
+    {
+      "id": "mutual_aspect_167",
+      "source_number": 167,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "strongly favourable",
+      "core_meaning": "Poetic, mystical, literary and artistic inspiration, pleasant journeys and friendships",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sextile",
+          "angle_degrees": 60,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "poetry",
+        "mysticism",
+        "literature",
+        "art",
+        "journeys",
+        "friendship"
+      ]
+    },
+    {
+      "id": "mutual_aspect_168",
+      "source_number": 168,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Vague fears, deception, illness or hypochondria, moral confusion, painful consciousness expansion",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "square",
+          "angle_degrees": 90,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "fears",
+        "deception",
+        "hypochondria",
+        "moral confusion",
+        "consciousness"
+      ]
+    },
+    {
+      "id": "mutual_aspect_169",
+      "source_number": 169,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "favourable",
+      "core_meaning": "Pleasant mind, smooth Mercury affairs, possible pronounced good fortune",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "trine",
+          "angle_degrees": 120,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "pleasant mind",
+        "good fortune",
+        "smooth Mercury affairs"
+      ]
+    },
+    {
+      "id": "mutual_aspect_170",
+      "source_number": 170,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "unfavourable",
+      "core_meaning": "Similar to semi-square but more emotional, romantic trouble or secret grief",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "sesquiquadrate",
+          "angle_degrees": 135,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "romantic trouble",
+        "secret grief",
+        "feelings"
+      ]
+    },
+    {
+      "id": "mutual_aspect_171",
+      "source_number": 171,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "critical / subtle",
+      "core_meaning": "A resolvent cloud over consciousness, difficult to relieve from outside",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "quincunx",
+          "angle_degrees": 150,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "clouded consciousness",
+        "resolvent",
+        "critical"
+      ]
+    },
+    {
+      "id": "mutual_aspect_172",
+      "source_number": 172,
+      "record_type": "mutual_aspect",
+      "bodies": [
+        "Mercury",
+        "Neptune"
+      ],
+      "valence": "strongly unfavourable",
+      "core_meaning": "Desertion, failed speculation, disappointed hopes, trouble through Mercury-ruled persons",
+      "source_reference": {
+        "author": "Alan Leo",
+        "work": "The Progressed Horoscope",
+        "chapter": 14,
+        "chapter_title": "Mutual Aspects",
+        "pages": "118-142"
+      },
+      "aspects": [
+        {
+          "name": "opposition",
+          "angle_degrees": 180,
+          "geometry_type": "ecliptic_longitude",
+          "available_in_normal_progression": true
+        }
+      ],
+      "moving_body_default": "Mercury",
+      "target_body_default": "Neptune",
+      "directionality": "mutual",
+      "themes": [
+        "desertion",
+        "speculation loss",
+        "disappointed hopes",
+        "clerks",
+        "servants",
+        "agents"
+      ]
+    }
+  ],
+  "qa": {
+    "source_number_range": [
+      109,
+      172
+    ],
+    "record_count": 64,
+    "missing_source_numbers": [],
+    "duplicate_source_numbers": [],
+    "venus_section_excluded": true,
+    "plain_text_astrology_labels_only": true
+  }
+}

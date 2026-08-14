@@ -1,0 +1,133 @@
+
+
+               ORBO ONBOARDING SCRIPT - INTRODUCTION
+
+                                   ORBO
+                         Welcome, traveler.
+                         My name is Orbo. What's yours?
+
+               [Traveler enters name]
+
+                                   ORBO
+                         Heya, Traveler. It's nice to meet
+                         you.
+                             (screen)
+                         I am your guide to the
+                         astrosphere-the cosmic dimension on
+                         top of your own.
+                             (screen)
+                         How interested are you in
+                         astrology?
+
+               > [Traveler selects interest level, this sets L1-L2-L3]
+                         (L1) - NOT VERY (it's gonna be a
+                         rough week)
+                         (L2) - INTERESTED (Mercury is
+                         affecting your house of self)
+                         (L3) - VERY INTERESTED (MERCURY
+                         CONJUNCT Your Natal Saturn)
+
+                                   ORBO
+                         Everyone has their place in the
+                         astrosphere. Let's find yours.
+
+
+               ORBO ONBOARDING - PART TWO - BIRTH CHART
+
+                                   ORBO
+                             (Screen)
+                         What day were you born?
+
+               > [Traveler enters birthday]
+
+                                   ORBO
+                         Where were you Born?
+
+               > [Traveler enters birthplace]
+
+                                   ORBO
+                         DO you know what time you were
+                         born?
+
+               > [Traveler enters birth time]
+                         - Yes I know when I was born.
+                         - No, I don't know when I was born.
+                         
+
+               [If KNOW is selected: Natal Ascendant is derived. Orbo goes
+               to Part Four. Traveler doesn't know, move to Part Three.
+
+
+               ORBO ONBOARDING - PART THREE - RECTIFICATION
+
+               TIME PRIOR
+
+                                   ORBO
+                         Do you know what time of day?
+
+                                   TRAVELER
+                         - Morning
+                         - Afternoon
+                         - Evening/Night
+                         - I don't know
+
+               ASCENDANT LOCK
+
+                                   ORBO
+                         - LUNAR LOCK ↓
+                             (Traveler Answers)
+                         - RULER / HOUSE LOCK  (30° window)
+                         ↓
+
+               DECAN LOCK ↓ 10° window ↓
+
+                                   ORBO
+                         - DECAN Q1
+                             (Traveler Answers)
+                         - DECAN Q2
+                             (Traveler Answers)
+
+
+
+               - SABIAN LOCK ↓ (1° window)
+
+                                   ORBO
+                         - Degree comparison
+                             (Traveler Answers)
+                         - Confirmation
+                             (Traveler Answers)
+
+               rAsc is derived.
+
+
+               ORBO ONBOARDING - PART FOUR - THE BIG THREE
+
+                                   ORBO
+                         The moment you were born is as
+                         unique to you as your DNA.
+                             (Screen)
+                         When you were born, SIGN was on the
+                         horizon.
+                             (Screen)
+                         When you were born, the Moon was in
+                         SIGN.
+                             (Screen)
+                         When you were born, the Sun was in
+                         SIGN.
+
+                                   ORBO
+                         Your Sun, Moon and rising are known
+                         as your Big Three.
+                             (screen)
+                         The Big Three focus on how you show
+                         up in the world. And how the
+                         astrosphere shows up for you.
+                             (screen)
+                         Would you like a tour?
+
+                                   TRAVELER
+                         - No thanks.
+                         - Yes please.
+
+                                   ORBO
+                         The astrosphere awaits!

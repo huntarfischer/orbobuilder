@@ -1,0 +1,8 @@
+{
+  "appId": "com.orbo.astrolabe",
+  "appName": "Orbo Astrolabe",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always"
+  }
+}

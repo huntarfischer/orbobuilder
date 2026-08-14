@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbo — sphere test</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<style>
+  html,body{margin:0;height:100%;background:#0a0a14;}
+  three-d-stage:not(:defined){visibility:hidden}
+  .hint{position:fixed;left:16px;bottom:14px;font:13px/1.4 -apple-system,system-ui,sans-serif;color:#8a8aa0;z-index:5;}
+  .hint b{color:#c9c2e8}
+  #panel{position:fixed;top:16px;left:16px;z-index:10;width:250px;padding:14px 16px;
+    background:rgba(16,16,28,.86);border:1px solid rgba(201,194,232,.18);border-radius:12px;
+    backdrop-filter:blur(8px);font:12px/1.4 -apple-system,system-ui,sans-serif;color:#c9c2e8;
+    box-shadow:0 12px 40px rgba(0,0,0,.5);}
+  #panel h3{margin:0 0 10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a8aa0;font-weight:600;}
+  #panel .row{display:flex;align-items:center;gap:8px;margin:9px 0;}
+  #panel .row label{width:74px;color:#9d97b8;}
+  #panel .row input[type=range]{flex:1;accent-color:#a78bfa;}
+  #panel .row .val{width:46px;text-align:right;font-variant-numeric:tabular-nums;color:#e6e1f5;}
+  #panel .out{margin-top:12px;padding:9px 10px;background:rgba(0,0,0,.35);border-radius:8px;
+    font:11px/1.5 ui-monospace,Menlo,monospace;color:#b7f0c8;white-space:pre;user-select:all;}
+  #panel button{margin-top:10px;width:100%;padding:7px;border:0;border-radius:8px;cursor:pointer;
+    background:#3a2f6b;color:#e6e1f5;font:600 12px/1 -apple-system,system-ui;}
+  #panel button:hover{background:#4a3d86;}
+</style>
+</head>
+<body>
+<three-d-stage name="orbo" background="#0a0a14"></three-d-stage>
+<div id="panel">
+  <h3>Orbo orientation</h3>
+  <div class="row"><label>Rotate X</label><input id="rx" type="range" min="-180" max="180" step="0.5" value="0"><span class="val" id="rxv">0°</span></div>
+  <div class="row"><label>Rotate Y</label><input id="ry" type="range" min="-180" max="180" step="0.5" value="0"><span class="val" id="ryv">0°</span></div>
+  <div class="row"><label>Rotate Z</label><input id="rz" type="range" min="-180" max="180" step="0.5" value="0"><span class="val" id="rzv">0°</span></div>
+  <div class="out" id="out">—</div>
+  <button id="reset">Reset to 0,0,0</button>
+</div>
+<div class="hint"><b>orbo</b> — drag to orbit · wheel to zoom. Sliders set the sphere's own X/Y/Z rotation.</div>
+<script src="./three-d-stage.js"></script>
+<script type="module">
+  const stage = document.querySelector('three-d-stage');
+  const { THREE, scene } = await stage.ready;
+
+  const tex = await new THREE.TextureLoader().loadAsync('uploads/Astro Orbo sphere 3.001.png');
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+
+  const group = new THREE.Group();
+  const geo = new THREE.SphereGeometry(1, 96, 96);
+  const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92, metalness: 0.05 });
+  const orbo = new THREE.Mesh(geo, mat);
+  orbo.name = 'orbo';
+  mat.name = 'orbo_skin';
+  // Rotate so the baked eyes face the camera (camera looks down -Z).
+  // Eyes are baked at true front-center on this texture — face camera straight.
+  orbo.rotation.x = 0.000;
+  orbo.rotation.y = -0.052;
+  orbo.rotation.z = 0.000;
+  group.add(orbo);
+
+  // --- live XYZ orientation controls ---
+  const D2R = Math.PI / 180, R2D = 180 / Math.PI;
+  const els = {
+    rx: document.getElementById('rx'), ry: document.getElementById('ry'), rz: document.getElementById('rz'),
+    rxv: document.getElementById('rxv'), ryv: document.getElementById('ryv'), rzv: document.getElementById('rzv'),
+    out: document.getElementById('out'),
+  };
+  // seed sliders from the current mesh rotation
+  els.rx.value = (orbo.rotation.x * R2D).toFixed(1);
+  els.ry.value = (orbo.rotation.y * R2D).toFixed(1);
+  els.rz.value = (orbo.rotation.z * R2D).toFixed(1);
+  function apply() {
+    const x = parseFloat(els.rx.value), y = parseFloat(els.ry.value), z = parseFloat(els.rz.value);
+    orbo.rotation.set(x * D2R, y * D2R, z * D2R);
+    els.rxv.textContent = x + '\u00b0'; els.ryv.textContent = y + '\u00b0'; els.rzv.textContent = z + '\u00b0';
+    els.out.textContent =
+      'orbo.rotation.x = ' + (x * D2R).toFixed(3) + ';\n' +
+      'orbo.rotation.y = ' + (y * D2R).toFixed(3) + ';\n' +
+      'orbo.rotation.z = ' + (z * D2R).toFixed(3) + ';';
+  }
+  ['rx', 'ry', 'rz'].forEach(k => els[k].addEventListener('input', apply));
+  document.getElementById('reset').addEventListener('click', () => {
+    els.rx.value = 0; els.ry.value = 0; els.rz.value = 0; apply();
+  });
+  apply();
+
+  // Symmetric, mostly-frontal lighting so BOTH eyes read equal (no turned-face look).
+  const key = new THREE.PointLight(0xfff1dc, 16, 0, 2);
+  key.position.set(0, 2.6, 4.0);          // top-front-center
+  const fillL = new THREE.PointLight(0xbfd0ff, 9, 0, 2);
+  fillL.position.set(-3.4, 0.4, 2.2);     // cool fill, left
+  const fillR = new THREE.PointLight(0xffd9b0, 9, 0, 2);
+  fillR.position.set(3.4, 0.4, 2.2);      // warm fill, right (mirror intensity)
+  group.add(key, fillL, fillR);
+
+  stage.setObject(group);
+</script>
+</body>
+</html>

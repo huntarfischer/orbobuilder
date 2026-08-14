@@ -1,0 +1,2585 @@
+{
+  "id": "alan-leo-solar-aspects",
+  "attribution": "Alan Leo, The Progressed Horoscope (1906), Ch. XIII",
+  "attributionUrl": "https://archive.org/details/bub_gb_OY7ZLx4jQmcC",
+  "schema": "orbo.interpretation.solar_aspects.alan_leo.v1",
+  "engineRules": {
+    "default_geometry": {
+      "moving_body": "progressed Sun",
+      "target_body": "radical planet",
+      "note": "Leo states that the ensuing Solar aspects are considered as formed between the progressed Sun and the radical position of the planet in question."
+    },
+    "progressed_to_progressed_allowed": {
+      "enabled": true,
+      "interpretation_context": "Progressed Horoscope rather than Nativity",
+      "condition": "The native is affected to the extent that present-life foundations and helpful circumstances can be used."
+    },
+    "solar_clock_model": {
+      "Sun": "short hand / hour",
+      "Moon": "long hand / minute",
+      "activation_rule": "Lunar aspects focus and time the manifestation of solar directions."
+    },
+    "duration": {
+      "typical_minimum_years": 3,
+      "phases": [
+        "approximately one year becoming complete",
+        "approximately one year complete",
+        "approximately one year passing off"
+      ],
+      "note": "Some solar influences, especially parallels and transitions between radical and progressed contacts, can extend for many years."
+    },
+    "modifiers": {
+      "priority_after_planetary_aspect": [
+        "natal Sun sign",
+        "natal Sun house"
+      ],
+      "lunar_aspects": "timing and activation modifier",
+      "natal_condition_of_target": "can materially change the expression of the solar aspect"
+    },
+    "no_solar_aspects": {
+      "effect": "The period is less eventful and other directions are less potent and more restricted in scope.",
+      "lunar_use": "Lunar aspects may be used more finely when no solar aspect is operating."
+    },
+    "aspect_angles_degrees": {
+      "parallel": null,
+      "conjunction": 0,
+      "semi-sextile": 30,
+      "semi-square": 45,
+      "sextile": 60,
+      "quintile": 72,
+      "square": 90,
+      "trine": 120,
+      "sesquiquadrate": 135,
+      "quincunx": 150,
+      "opposition": 180
+    }
+  },
+  "entries": {
+    "progressed.aspect.Sun.Moon.parallel": {
+      "id": "solar_aspect_037",
+      "sourceNumber": 37,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Beneficial change through emotional, domestic, and relational development.",
+      "themes": [
+        "attachments",
+        "domestic affairs",
+        "feelings",
+        "honour",
+        "inner change"
+      ],
+      "constructive": [
+        "Develop emotional maturity",
+        "Use favourable changes constructively",
+        "Strengthen supportive attachments"
+      ],
+      "cautions": [
+        "Source notes reduced favourability for women"
+      ],
+      "conditions": [
+        "Often active for several years"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "A very important position, for it denotes beneficial changes and the forming of new attachments which will eventually prove favourable and helpful. Domestic affairs, feelings, and affections will be to the fore under this influence, and some general improvement or desirable changes will be produced thereby.\n\nIt shows the advent of some inner changes, and the conquest of a certain part of the lower nature, which will expand the consciousness and lift the native to a higher level of thought and feeling. This will also have its corresponding effect in the outer world, and will bring opportunities to rise higher in life socially, mentally or morally. Some credit or honour will be obtained from this aspect, or rather ‘position,’ and as it is generally in operation for a few years, it gives time for all that it indicates to be consummated.\n\nN.B.—It is not so favourable in the case of a female."
+    },
+    "progressed.aspect.Sun.Moon.conjunction": {
+      "id": "solar_aspect_038",
+      "sourceNumber": 38,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "mixed-positive",
+      "strength": "strong",
+      "coreMeaning": "A major life change or crisis that activates vitality, emotion, and advancement.",
+      "themes": [
+        "life change",
+        "crisis",
+        "vitality",
+        "environment",
+        "success",
+        "higher emotions"
+      ],
+      "constructive": [
+        "Use the period to redirect life constructively",
+        "Channel increased vitality",
+        "Accept necessary change"
+      ],
+      "cautions": [
+        "Feverish excess if natal vitality is poorly supported",
+        "Source notes reduced favourability for women"
+      ],
+      "conditions": [],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "This is a powerful influence and denotes an entire change in the native’s life, producing either advancement and elevation to a much better state of things, or a critical period in which a crisis of affairs is reached, and important changes follow.\n\nIt is a beneficial position for the luminaries. The Moon, being a conductor of the solar force, brings heat and vitality into the system and quickens all the vital forces; and this is good, if the natal influences are not too poor to allow the solar fire to permeate the whole system, in which case danger is threatened from too much life, feverish tendencies being then the result.\n\nIn the matter of environment it is good, and a new influence is coming into the life which will materially benefit the native, bringing opportunities for success and gain, more especially where the higher emotions and inner feelings are concerned.\n\nN.B.—It is not so favourable in the case of a female."
+    },
+    "progressed.aspect.Sun.Moon.semi-sextile": {
+      "id": "solar_aspect_039",
+      "sourceNumber": 39,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "Modest improvement in prospects, domestic harmony, and personal benefit.",
+      "themes": [
+        "finance",
+        "advancement",
+        "domestic harmony",
+        "environment",
+        "heart"
+      ],
+      "constructive": [
+        "Improve surroundings",
+        "Advance matters of personal importance",
+        "Use supportive lunar contacts"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "This is a rather weak aspect, but, as the Sun is the greater light, and the Moon the lesser, the Moon benefits by the illumination. It denotes some personal benefits, also beneficial changes with the probability of better prospects in the immediate future.\n\nFrom a financial standpoint it will benefit the native somewhat, and it gives hope of some advancement, either social or mental. It will make domestic conditions peaceful and harmonious, and generally tends to give opportunities for improvement of surroundings and environment.\n\nThis will be a good time to push all affairs of the heart, or those matters in which the greatest interest is taken, and use should be made of all good lunar aspects to take action in these matters."
+    },
+    "progressed.aspect.Sun.Moon.semi-square": {
+      "id": "solar_aspect_040",
+      "sourceNumber": 40,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Difficult change affecting health, finance, domestic life, and dependents.",
+      "themes": [
+        "health",
+        "finance",
+        "domestic affairs",
+        "sorrow",
+        "dependents"
+      ],
+      "constructive": [
+        "Avoid unnecessary changes",
+        "Protect health",
+        "Act cautiously in domestic and financial matters"
+      ],
+      "cautions": [
+        "Prolonged illness",
+        "Financial or domestic trouble"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "This is an unfavourable aspect, which threatens unpleasant and unfavourable changes that will bring trouble unless care is taken to avoid making changes in either environment or general affairs, except when the Moon is otherwise very favourably aspected.\n\nEspecial care should be taken of health, in order to prevent sickness, as ill-health would now tend to be prolonged and not very easily removed. It is an unfortunate period for the native’s financial affairs and for social or domestic concerns, and sometimes brings affliction or other causes for sorrow, so that care should be taken of those dependent upon him, or intimately connected with him, whether by family ties or personal attachments.\n\nIt is a generally unfortunate and unsatisfactory period, especially so for females."
+    },
+    "progressed.aspect.Sun.Moon.sextile": {
+      "id": "solar_aspect_041",
+      "sourceNumber": 41,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "A successful and expansive period supporting health, intuition, relationships, and beneficial change.",
+      "themes": [
+        "success",
+        "health",
+        "intuition",
+        "attachments",
+        "travel",
+        "relocation"
+      ],
+      "constructive": [
+        "Act on opportunities",
+        "Make constructive changes",
+        "Use intuition practically"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "A very fortunate and also generally favourable aspect: all affairs tend to go well, the health is good and the mind hopeful, bright and cheerful. This aspect produces beneficial attachments and some new undertakings which will affect the domestic or social welfare.\n\nThe whole period during which this good solar aspect operates will be successful for the native, and his consciousness will expand, new light coming from various sources: in fact the real nature of this aspect is to influence the mind and enable it to see clearly and intuitively, and therefore able to make the most of opportunities.\n\nIt tends to bring either travel or some entire change of a favourable nature, often bringing satisfactory removals and changes that mean happiness and better conditions. Its influence is towards improvement in every way, physical, mental and moral."
+    },
+    "progressed.aspect.Sun.Moon.square": {
+      "id": "solar_aspect_042",
+      "sourceNumber": 42,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "A severe testing period involving health, grief, domestic conflict, and separation.",
+      "themes": [
+        "illness",
+        "grief",
+        "family",
+        "disappointment",
+        "estrangement",
+        "adversity"
+      ],
+      "constructive": [
+        "Meet adversity with strength",
+        "Avoid needless conflict",
+        "Treat change as a character test"
+      ],
+      "cautions": [
+        "Serious health strain",
+        "Family sorrow",
+        "Separation"
+      ],
+      "conditions": [],
+      "aspects": [
+        "square"
+      ],
+      "quote": "A very unfortunate and unhappy aspect, for it denotes changes in the physical body which will either produce illness or so debilitate the general health as to bring grave liability thereto. This is one of the most unfavourable aspects, producing sorrow and grief, often bringing death into the family circle, and denoting a very sorrowful time generally.\n\nIt signifies disappointment, especially in connection with domestic affairs, also disputes with superiors and acquaintances, separations and estrangements. It is, in fact, a very trying and harassing period, when all things tend to go wrong, and nothing appears to go right. Viewed from a higher standpoint this is a *good* vibration, as it quickens the personality and calls out all its strength to battle with the changing fate; for the changes, although apparently disastrous, are for eventual good."
+    },
+    "progressed.aspect.Sun.Moon.trine": {
+      "id": "solar_aspect_043",
+      "sourceNumber": 43,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "A highly successful period for enterprise, investment, recognition, and lasting unions.",
+      "themes": [
+        "happiness",
+        "investment",
+        "enterprise",
+        "recognition",
+        "attachments",
+        "social success"
+      ],
+      "constructive": [
+        "Start worthwhile enterprises",
+        "Use favourable lunar timing",
+        "Pursue advancement"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo explicitly links full expression to supportive lunar aspects"
+      ],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "An exceedingly favourable and beneficial aspect, tending to bring general sunshine and happiness into the life. It denotes a period when a fortune may be made either by speculation or investment, this being the time for new enterprises and successful undertakings. The health will be good, the mind very hopeful and buoyant, and the ideas sound.\n\nThe native’s consciousness will expand, so that he will be enabled to see the best course to pursue in the future. This aspect either brings lasting attachments, or unions and agreements which bring another influence into the life which is helpful and fortunate; and hence the native will obtain advancement, social success and recognition in the sphere in which he moves.\n\nIt is a period of general success, and whenever the lunar aspects are favourable, the native should push all his affairs to the utmost; for much will depend upon his own action and the attitude of his mind at this time."
+    },
+    "progressed.aspect.Sun.Moon.sesquiquadrate": {
+      "id": "solar_aspect_044",
+      "sourceNumber": 44,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "A trying period affecting health, reputation, finance, and close relationships.",
+      "themes": [
+        "health",
+        "reputation",
+        "finance",
+        "grief",
+        "family"
+      ],
+      "constructive": [
+        "Avoid risk",
+        "Maintain health",
+        "Protect reputation and finances"
+      ],
+      "cautions": [
+        "Loss",
+        "Family grief",
+        "Health problems"
+      ],
+      "conditions": [],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This is an evil aspect, affecting in some degree health, honour and reputation. It brings an altogether unfortunate period, in which unpleasant changes are threatened, and affairs tend to go wrong, bringing much worry, anxiety and disappointment.\n\nThe native should look well to his general health, tone up the system and keep the circulation in good order, avoiding all things that are likely to produce sickness and ill-health. He should enter upon no fresh undertakings, and should keep clear of enterprises involving risk, as financial loss and monetary troubles are threatened.\n\nThis aspect produces a trying period, and either brings deaths in the family circle, causing sorrow and grief in that way, or else affects those to whom the native is attached, thus affecting him indirectly."
+    },
+    "progressed.aspect.Sun.Moon.quincunx": {
+      "id": "solar_aspect_045",
+      "sourceNumber": 45,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "mixed-positive",
+      "strength": "weak",
+      "coreMeaning": "A modestly favourable change cycle with material benefit but bodily adjustment.",
+      "themes": [
+        "material gain",
+        "change",
+        "health adjustment",
+        "mental attitude"
+      ],
+      "constructive": [
+        "Maintain a constructive mental attitude",
+        "Allow gradual adjustment",
+        "Use changes selectively"
+      ],
+      "cautions": [
+        "Feverish tendencies",
+        "Health sensitivity"
+      ],
+      "conditions": [],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "This, although somewhat weak in its influence, is favourable on the whole, for the Moon gains by the influence of any illumination which it receives from the Sun, no matter how slight that may be. It brings some material gain or benefit, but is not good for health; for there is an advent of new life under this influence, and the quickening of the life forces is apt to bring some feverish tendencies until the system has accustomed itself to the new stream of life which is flowing through.\n\nSome changes are denoted about this time, according to the position of the Moon, and the other lunar aspects operating. But much will depend upon the *mental attitude* as to the good that can be derived from this aspect."
+    },
+    "progressed.aspect.Sun.Moon.opposition": {
+      "id": "solar_aspect_046",
+      "sourceNumber": 46,
+      "mover": "Sun",
+      "target": "Moon",
+      "targetState": "radical",
+      "valence": "critical",
+      "strength": "strong",
+      "coreMeaning": "A culmination bringing emotional crisis, separation, broken ties, and deep personal change.",
+      "themes": [
+        "culmination",
+        "separation",
+        "family",
+        "friends",
+        "partners",
+        "psychic development"
+      ],
+      "constructive": [
+        "Accept necessary endings",
+        "Use crisis for inner development",
+        "Avoid retaliatory conflict"
+      ],
+      "cautions": [
+        "Enemies",
+        "Loss",
+        "Severed attachments"
+      ],
+      "conditions": [],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "A very critical position, but in an inner sense a remarkable position for those who are developing psychically. This is the period when a crisis is reached in the native’s life and matters long held in abeyance will now come to a climax, this being a culminating influence in every respect.\n\nSeparations, deaths, disappointments, sorrows and troubles are now threatened him, and enemies will now seek to injure and annoy him. Important changes are made and the native is brought into fresh surroundings; there is every probability of old ties being broken, and the severance of attachments under this opposition.\n\nThis position affects parents, guardians, partners, friends, and all who are bound by social and domestic ties; it awakens emotions and stirs up all feelings that are bound up with the personal side of life.\n\n* The symbol for quincunx denotes the quincunx or ‘inconjunct’ aspect of five signs (150 degrees).\n\n---"
+    },
+    "progressed.aspect.Sun.Mercury.parallel": {
+      "id": "solar_aspect_047",
+      "sourceNumber": 47,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "aspects": [
+        "parallel",
+        "conjunction",
+        "semi-sextile",
+        "sextile",
+        "trine"
+      ],
+      "quote": "The Sun progressed to any of these aspects signifies an important change of consciousness, a much higher state of mentality being experienced under such influence which is good for travel, changes, literary work, correspondence, interviews, writings, and in short for all those affairs in which an active mind, diplomatic dealings with others, and adaptation to new and fresh surroundings or undertakings are required.\n\nAny connection with solicitors, agents, literary persons, and those who act as intermediaries will now be successful and advantageous.\n\nIt is, however, rather the influence of *mental quickening*, and is hence the forerunner of greater activities to come in the future rather than the immediate indicator of events; so that it depends for outward effect much more upon the lunar aspects than any other solar influence."
+    },
+    "progressed.aspect.Sun.Mercury.conjunction": {
+      "id": "solar_aspect_047",
+      "sourceNumber": 47,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "aspects": [
+        "parallel",
+        "conjunction",
+        "semi-sextile",
+        "sextile",
+        "trine"
+      ],
+      "quote": "The Sun progressed to any of these aspects signifies an important change of consciousness, a much higher state of mentality being experienced under such influence which is good for travel, changes, literary work, correspondence, interviews, writings, and in short for all those affairs in which an active mind, diplomatic dealings with others, and adaptation to new and fresh surroundings or undertakings are required.\n\nAny connection with solicitors, agents, literary persons, and those who act as intermediaries will now be successful and advantageous.\n\nIt is, however, rather the influence of *mental quickening*, and is hence the forerunner of greater activities to come in the future rather than the immediate indicator of events; so that it depends for outward effect much more upon the lunar aspects than any other solar influence."
+    },
+    "progressed.aspect.Sun.Mercury.semi-sextile": {
+      "id": "solar_aspect_047",
+      "sourceNumber": 47,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "aspects": [
+        "parallel",
+        "conjunction",
+        "semi-sextile",
+        "sextile",
+        "trine"
+      ],
+      "quote": "The Sun progressed to any of these aspects signifies an important change of consciousness, a much higher state of mentality being experienced under such influence which is good for travel, changes, literary work, correspondence, interviews, writings, and in short for all those affairs in which an active mind, diplomatic dealings with others, and adaptation to new and fresh surroundings or undertakings are required.\n\nAny connection with solicitors, agents, literary persons, and those who act as intermediaries will now be successful and advantageous.\n\nIt is, however, rather the influence of *mental quickening*, and is hence the forerunner of greater activities to come in the future rather than the immediate indicator of events; so that it depends for outward effect much more upon the lunar aspects than any other solar influence."
+    },
+    "progressed.aspect.Sun.Mercury.sextile": {
+      "id": "solar_aspect_047",
+      "sourceNumber": 47,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "aspects": [
+        "parallel",
+        "conjunction",
+        "semi-sextile",
+        "sextile",
+        "trine"
+      ],
+      "quote": "The Sun progressed to any of these aspects signifies an important change of consciousness, a much higher state of mentality being experienced under such influence which is good for travel, changes, literary work, correspondence, interviews, writings, and in short for all those affairs in which an active mind, diplomatic dealings with others, and adaptation to new and fresh surroundings or undertakings are required.\n\nAny connection with solicitors, agents, literary persons, and those who act as intermediaries will now be successful and advantageous.\n\nIt is, however, rather the influence of *mental quickening*, and is hence the forerunner of greater activities to come in the future rather than the immediate indicator of events; so that it depends for outward effect much more upon the lunar aspects than any other solar influence."
+    },
+    "progressed.aspect.Sun.Mercury.trine": {
+      "id": "solar_aspect_047",
+      "sourceNumber": 47,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental quickening supporting travel, writing, diplomacy, correspondence, and adaptation.",
+      "themes": [
+        "mind",
+        "writing",
+        "travel",
+        "correspondence",
+        "interviews",
+        "adaptation"
+      ],
+      "constructive": [
+        "Write",
+        "Travel",
+        "Negotiate",
+        "Use intermediaries and communication channels"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Outward manifestation depends strongly on lunar aspects"
+      ],
+      "aspects": [
+        "parallel",
+        "conjunction",
+        "semi-sextile",
+        "sextile",
+        "trine"
+      ],
+      "quote": "The Sun progressed to any of these aspects signifies an important change of consciousness, a much higher state of mentality being experienced under such influence which is good for travel, changes, literary work, correspondence, interviews, writings, and in short for all those affairs in which an active mind, diplomatic dealings with others, and adaptation to new and fresh surroundings or undertakings are required.\n\nAny connection with solicitors, agents, literary persons, and those who act as intermediaries will now be successful and advantageous.\n\nIt is, however, rather the influence of *mental quickening*, and is hence the forerunner of greater activities to come in the future rather than the immediate indicator of events; so that it depends for outward effect much more upon the lunar aspects than any other solar influence."
+    },
+    "progressed.aspect.Sun.Mercury.semi-square": {
+      "id": "solar_aspect_048",
+      "sourceNumber": 48,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental strain, anxiety, error, difficult correspondence, and delayed fruition.",
+      "themes": [
+        "anxiety",
+        "mistakes",
+        "writing",
+        "contracts",
+        "interviews",
+        "agents"
+      ],
+      "constructive": [
+        "Double-check documents",
+        "Slow decisions",
+        "Use caution in communication"
+      ],
+      "cautions": [
+        "Errors",
+        "Worry",
+        "Business misunderstandings"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square",
+        "square"
+      ],
+      "quote": "The Sun progressed to these afflictions of Mercury, the mental ruler, denotes troubles of a mental nature and the experience of anxiety, worry, &c., in various ways. The mind will be unsettled, changeable, and prone to make mistakes and to look at things from an unfavourable standpoint.\n\nCare is necessary in dealing with agents, messengers, servants, inferiors, or those who transact business for others, such as solicitors, lawyers, and literary persons; caution is advisable with regard to letters, writing, signing papers, and in all correspondence or personal interviews.\n\nThis influence of the Sun and Mercury is not wholly bad, but tends away from full realisation, preventing matters coming to fruition.\n\n† Note that semi-sextile, semi-square, sextile, square, trine, can only apply to the aspect made by the progressed Sun to radical Mercury, for Mercury is never more than about 28 degrees distant from the Sun.\n\n---"
+    },
+    "progressed.aspect.Sun.Mercury.square": {
+      "id": "solar_aspect_048",
+      "sourceNumber": 48,
+      "mover": "Sun",
+      "target": "Mercury",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Mental strain, anxiety, error, difficult correspondence, and delayed fruition.",
+      "themes": [
+        "anxiety",
+        "mistakes",
+        "writing",
+        "contracts",
+        "interviews",
+        "agents"
+      ],
+      "constructive": [
+        "Double-check documents",
+        "Slow decisions",
+        "Use caution in communication"
+      ],
+      "cautions": [
+        "Errors",
+        "Worry",
+        "Business misunderstandings"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square",
+        "square"
+      ],
+      "quote": "The Sun progressed to these afflictions of Mercury, the mental ruler, denotes troubles of a mental nature and the experience of anxiety, worry, &c., in various ways. The mind will be unsettled, changeable, and prone to make mistakes and to look at things from an unfavourable standpoint.\n\nCare is necessary in dealing with agents, messengers, servants, inferiors, or those who transact business for others, such as solicitors, lawyers, and literary persons; caution is advisable with regard to letters, writing, signing papers, and in all correspondence or personal interviews.\n\nThis influence of the Sun and Mercury is not wholly bad, but tends away from full realisation, preventing matters coming to fruition.\n\n† Note that semi-sextile, semi-square, sextile, square, trine, can only apply to the aspect made by the progressed Sun to radical Mercury, for Mercury is never more than about 28 degrees distant from the Sun.\n\n---"
+    },
+    "progressed.aspect.Sun.Venus.parallel": {
+      "id": "solar_aspect_049",
+      "sourceNumber": 49,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "A long beneficial background influence for pleasure, finance, social expansion, and union.",
+      "themes": [
+        "pleasure",
+        "prosperity",
+        "finance",
+        "social life",
+        "attachments",
+        "union"
+      ],
+      "constructive": [
+        "Improve finances",
+        "Cultivate relationships",
+        "Use social opportunities"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Acts most specifically when the Moon simultaneously supports Venus"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "The Sun in parallel with the Planet Venus in a very good position, indicating pleasure, success and prosperity. This very beneficent position is, however, largely dependent upon the corresponding of others in the directions operating, for it extends over rather a long period and has no definite or fixed moment when its influence acts directly, unless the Moon is at the same time forming a favourable aspect to Venus, when it will operate specifically at that time.\n\nThis may therefore be called an indecisive influence, in which good vibrations abound and are thus helpful in many ways. To take full advantage of this position, financial affairs should be looked after and steps taken to increase monetary benefits, or to extend the social sphere of influence, taking all advantage of the opportunity now afforded for cultivating the feelings and emotions, to make attachments more binding and thus bring about union, or to effect permanent amalgamations for mutual benefit."
+    },
+    "progressed.aspect.Sun.Venus.conjunction": {
+      "id": "solar_aspect_050",
+      "sourceNumber": 50,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Affection, happiness, congenial society, social gain, and strong partnership potential.",
+      "themes": [
+        "love",
+        "friendship",
+        "happiness",
+        "society",
+        "marriage",
+        "higher emotions"
+      ],
+      "constructive": [
+        "Strengthen relationships",
+        "Join congenial circles",
+        "Cultivate affection and higher emotion"
+      ],
+      "cautions": [
+        "Overindulgence in pleasure"
+      ],
+      "conditions": [
+        "Leo says this position often denotes marriage"
+      ],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "The Sun in conjunction with the planet Venus gives light and life to all that is signified by this most benefic planet. The native will now come into very close contact with those to whom he will be drawn by sympathy and affection, and his prospects will look brighter and happier than they have done for some time.\n\nHe will enjoy the blissful feelings of gratified emotions, which will thus be expanded for greater indulgence in pleasure and the pursuit of happiness, all things tending to bring increased ability to live in the better and more hopeful and cheerful side of the nature.\n\nThe native will come into new and congenial society, will make new friends, and will gain in many ways through others and through his own attitude towards them. It is a very splendid solar influence, especially in regard to the cultivation of the feelings and higher emotions.\n\n*This position often denotes Marriage.*"
+    },
+    "progressed.aspect.Sun.Venus.semi-sextile": {
+      "id": "solar_aspect_051",
+      "sourceNumber": 51,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "Mild financial, social, and relational improvement.",
+      "themes": [
+        "finance",
+        "attachments",
+        "social ease",
+        "connections"
+      ],
+      "constructive": [
+        "Improve finances",
+        "Invest cautiously",
+        "Build useful connections"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "This solar influence is, on the whole, favourable, although the aspect is one of the weakest, and not at all decisive in its character. It is a good time to improve the general financial conditions, and it is also favourable for social and domestic attachments.\n\nThe native may now profitably invest or seek to gain financially; for the influence of Venus, although weak, is very responsive to all that makes for happiness and improving conditions. He will form good and profitable connections, and find it easy to get on with others, while the feelings will now tend to be refined and keenly sensitive to any call that may be made upon them by or through others.\n\nThe fact of the Sun and Venus being in touch is in itself good, but a great deal depends upon the native’s own ability to avail himself of the benefits it offers."
+    },
+    "progressed.aspect.Sun.Venus.semi-square": {
+      "id": "solar_aspect_052",
+      "sourceNumber": 52,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Financial drain and emotional disappointment affecting family and attachments.",
+      "themes": [
+        "money loss",
+        "domestic trouble",
+        "sorrow",
+        "separation",
+        "friends"
+      ],
+      "constructive": [
+        "Protect money",
+        "Handle relationships carefully",
+        "Avoid unnecessary social or pleasure expenses"
+      ],
+      "cautions": [
+        "Loss of affection or property",
+        "Severed ties"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square",
+        "square"
+      ],
+      "quote": "An unpleasant, and in many ways unfavourable influence. It brings many drains upon the purse, a tendency to lose money, coupled with domestic afflictions, and sorrows and disappointments of many kinds.\n\nMatters in which the feelings and emotions are involved will suffer, and existing ties will be severed, or the native will lose friends and those to whom he is deeply attached under its influence. It is not a good time for any domestic affairs, and all those who make up the family circle will in some way or other feel the influence of this solar aspect operating.\n\nCare is necessary in dealing with those who have a share in the affections, and also with regard to all monetary interests, lest losses of affection or of property, as the case may be, occur under its unfavourable vibration. The mind will not be over-cheerful, nor will any matters related to pleasures, society or entertainments be successfully negotiated.\n\n* The square or trine aspect can, of course, only be formed between the progressed Sun and the radical Venus, and rarely even then."
+    },
+    "progressed.aspect.Sun.Venus.square": {
+      "id": "solar_aspect_054",
+      "sourceNumber": 54,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Same delineation as paragraph 52: financial and emotional strain, domestic trouble, and severed ties.",
+      "themes": [
+        "money loss",
+        "domestic trouble",
+        "sorrow",
+        "separation"
+      ],
+      "constructive": [
+        "Protect money",
+        "Handle relationships carefully"
+      ],
+      "cautions": [
+        "Loss of affection or property"
+      ],
+      "conditions": [
+        "Explicit cross-reference to paragraph 52"
+      ],
+      "aspects": [
+        "square"
+      ],
+      "quote": "See paragraph 52."
+    },
+    "progressed.aspect.Sun.Venus.sextile": {
+      "id": "solar_aspect_053",
+      "sourceNumber": 53,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Marked improvement in finance, social position, affection, unions, and recognition.",
+      "themes": [
+        "finance",
+        "social success",
+        "relationships",
+        "recognition",
+        "happiness"
+      ],
+      "constructive": [
+        "Make the most of opportunities",
+        "Strengthen permanent connections",
+        "Advance socially and financially"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "The native should make the very most of this period in all directions, financially, socially, and also as regards the affections; for he will now be able to improve his financial and social condition according to the capacity within him to respond to the good influence that Venus always brings, for opportunities will come in his way, advancement, recognition and general uplifting being the usual result of this beneficial solar influence.\n\nAttachments and relations with others will now produce unions and permanent connections, while all will go well with the native as regards the feelings and emotions, happiness resulting as the outcome of all present engagements and undertakings; it will, therefore, be advisable to make the most of this very good influence, which marks an important stage in evolution."
+    },
+    "progressed.aspect.Sun.Venus.trine": {
+      "id": "solar_aspect_055",
+      "sourceNumber": 55,
+      "mover": "Sun",
+      "target": "Venus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Prosperity, successful investments, happy attachments, and social expansion.",
+      "themes": [
+        "financial gain",
+        "prosperity",
+        "social life",
+        "attachments",
+        "investment"
+      ],
+      "constructive": [
+        "Invest or build enterprises prudently",
+        "Use expanding social influence",
+        "Strengthen beneficial ties"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo notes trine to Venus is rare and usually requires progressed Sun to radical Venus"
+      ],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "A very fortunate influence, denoting financial gain and many benefits, all of which tend to improve social and domestic affairs, so that the native will now enter upon a happy and pleasurable period in which success and prosperity may be looked for.\n\nAll investments, speculations and enterprises will be prosperous and beneficial and the more he seeks to exalt and improve his position the more success will attend his efforts. His affections will have a good issue and all those to whom he becomes in any way attached will help him to realise his hopes and wishes, and happiness will follow all engagements and connections with others.\n\nBoth socially and mentally his influence will increase and expand, until he has reached the highest point his capacities will allow; for this is an influence which expands the whole of the nature, more especially however the feelings and emotions.\n\n* See previous footnote.\n\n---"
+    },
+    "progressed.aspect.Sun.Mars.parallel": {
+      "id": "solar_aspect_056",
+      "sourceNumber": 56,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "A prolonged period of heightened heat, accident risk, impulsiveness, and provocation.",
+      "themes": [
+        "accidents",
+        "inflammation",
+        "impulse",
+        "anger",
+        "activity"
+      ],
+      "constructive": [
+        "Act temperately",
+        "Slow reactions",
+        "Use lunar timing carefully"
+      ],
+      "cautions": [
+        "Accidents",
+        "Feverish conditions",
+        "Provocation"
+      ],
+      "conditions": [
+        "Often overlaps other aspects for an extended period"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "A malefic influence, in which there is every tendency to accident, inflammatory conditions, and a generally feverish state.\n\nWhile this parallel of the solar orb and Mars operates (which is generally for an extended period overlapping other aspects) it will be necessary to act as discreetly and temperately as possible: a great deal will depend upon the inherent temperament and natural liability to act impulsively and rashly, for all the outgoing energies will now be accentuated.\n\nThe native should on no account allow this feverish state to cause him to act without thought or premeditation, or it may lead to very difficult and trying conditions, through which he will seriously suffer; for he will feel a desire to be more than usually active, and will be very easily excited or provoked. Much will, however, depend upon the current Lunar Aspects, as to how this solar influence will operate."
+    },
+    "progressed.aspect.Sun.Mars.conjunction": {
+      "id": "solar_aspect_057",
+      "sourceNumber": 57,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Extreme vitality and assertiveness that can produce enterprise or aggression depending on restraint.",
+      "themes": [
+        "heat",
+        "anger",
+        "assertiveness",
+        "daring",
+        "enterprise",
+        "extravagance"
+      ],
+      "constructive": [
+        "Practice self-restraint",
+        "Channel energy into work",
+        "Avoid unnecessary changes and quarrels"
+      ],
+      "cautions": [
+        "Aggression",
+        "Inflammation",
+        "Extravagance",
+        "Conflict"
+      ],
+      "conditions": [],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "A very critical and unfavourable position, representing a condition in which the spirit and its counterfeit will be linked together, giving far greater animal heat than is usual. It therefore produces a more feverish state, the native becoming easily excited, much more readily angered than usual; self-assertive and somewhat aggressive; very energetic, active and enterprising, however, and very much inclined to acts of daring, and hence he will need to practise self-restraint lest he should become too adventurous or over-forceful.\n\nHe will now meet with martial persons of various kinds and their influence upon his life will be to accentuate the feelings, stirring them into greater activity, and making him more hopeful and expectant, perhaps, than is desirable. He should safeguard health and not allow the blood to become overheated, should make no more changes than are necessary, and be careful to avoid quarrelling with anyone, or it will bring serious trouble. He will incline to be very liberal, indeed extravagant, at this period."
+    },
+    "progressed.aspect.Sun.Mars.semi-sextile": {
+      "id": "solar_aspect_058",
+      "sourceNumber": 58,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "A mild boost to courage, energy, enterprise, and constructive self-assertion.",
+      "themes": [
+        "courage",
+        "activity",
+        "enterprise",
+        "force",
+        "acquisition"
+      ],
+      "constructive": [
+        "Push affairs forward discreetly",
+        "Use energy constructively"
+      ],
+      "cautions": [
+        "Over-forcefulness"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "This is rather a weak aspect, but slightly good and favourable for new enterprises, and dealings with those who are venturesome and of active habits. The native will not gain anything of a very marked nature from this aspect, but it is good for activities generally and for all actions requiring courage, force and energy.\n\nIt will to some extent awaken any acquisitiveness that he may have latent within him, and if he at the same time comes under similar vibrations from other influences in the nativity he will benefit from this solar aspect weak though it is.\n\nIn any case he may extract some good from it, if he uses discretion in pushing himself and his affairs to the front, without allowing the forceful side of Mars to over-ride the dignity of the Sun; for this influence stimulates the positive and progressive attributes of the Sun and balances the animal tendencies of Mars, making both more harmonised."
+    },
+    "progressed.aspect.Sun.Mars.semi-square": {
+      "id": "solar_aspect_059",
+      "sourceNumber": 59,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Impulsive annoyance, financial errors, inflammatory strain, and turbulent thinking.",
+      "themes": [
+        "irritability",
+        "finance",
+        "judgment",
+        "health",
+        "acquaintances"
+      ],
+      "constructive": [
+        "Avoid disputes",
+        "Check judgments",
+        "Live temperately"
+      ],
+      "cautions": [
+        "Inflammatory complaints",
+        "Monetary loss",
+        "Poor associations"
+      ],
+      "conditions": [
+        "Severity is modified by lunar aspects"
+      ],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "This is an unfavourable aspect, one to cause a great deal of petty annoyance and trouble likely to arise from hasty and impulsive conduct. The native should now avoid disputation of any kind, or any tendency to excess of feeling, living as calmly and as temperately as possible.\n\nHe will find himself liable to monetary losses, to make mistakes in judgment with regard to personal matters, and also to form acquaintances who will be neither creditable nor beneficial. He will be in danger of suffering from feverish complaints and his health will suffer through inflammatory tendencies while this aspect lasts.\n\nIt is a somewhat weak solar influence, but at the same time it denotes a liability to sharp and somewhat acute attacks, which will have effect according to the lunar aspects, whether good or ill; for it stirs up the heat of the body, and renders the native mentally active, but with a rather turbulent state of mind."
+    },
+    "progressed.aspect.Sun.Mars.sextile": {
+      "id": "solar_aspect_060",
+      "sourceNumber": 60,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Enterprise, courage, travel, change, and high executive capacity.",
+      "themes": [
+        "enterprise",
+        "courage",
+        "travel",
+        "change",
+        "friends",
+        "executive power"
+      ],
+      "constructive": [
+        "Start ventures",
+        "Act independently",
+        "Use energy for constructive change"
+      ],
+      "cautions": [
+        "Restlessness",
+        "Risk-taking"
+      ],
+      "conditions": [],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "This is a very favourable aspect for enterprise, new ventures, and all matters requiring independence of action, and where courage and determination are necessary. It increases the vital heat and brings the native into contact with very positive or martial people, awakening in him also a desire for activity, adventure, and risk; he will be very energetic and industrious, ready to enter upon any new scheme or fresh undertaking, and apt to busy himself in all directions.\n\nIt will make the mind alert, and will incline the native to travel, to remove or make changes or to seek fresh outlets for his restless energies. It is a good aspect in many ways, causing him to make new friends, to become attached to others, and to agree with relatives and those who will become bound up with his life. In fact it shows a very active and progressive period, when the executive faculties are at their highest."
+    },
+    "progressed.aspect.Sun.Mars.square": {
+      "id": "solar_aspect_061",
+      "sourceNumber": 61,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "A critical period of accident risk, conflict, domestic trouble, and reputation danger.",
+      "themes": [
+        "accidents",
+        "domestic trouble",
+        "estrangement",
+        "reputation",
+        "failure"
+      ],
+      "constructive": [
+        "Avoid disputes",
+        "Postpone risky undertakings",
+        "Protect health and reputation"
+      ],
+      "cautions": [
+        "Serious misfortune",
+        "Scandal",
+        "Failed undertakings"
+      ],
+      "conditions": [],
+      "aspects": [
+        "square"
+      ],
+      "quote": "A very evil and unfortunate aspect, fraught with disastrous tendencies. It will be necessary for the native to safeguard his health, to avoid all liability to accidents as far as possible, and to refrain from disputes with others. He will have serious domestic troubles, or estrangements and disappointments, and any undertaking or engagement entered into during this period will end disastrously and sorrowfully.\n\nIt is not a good time to remove or to make changes, to have connections with others, or to allow the feelings to enter into any affair in which the native may be engaged. He must now look to his honour, and do nothing likely to produce scandal or injure his reputation; for he will not pass through this period without misfortune.\n\nHe should therefore act discreetly, avoiding impulse or rashness, and quarrelling with no one. *This is a very critical period, necessitating the exercise of great care.*"
+    },
+    "progressed.aspect.Sun.Mars.trine": {
+      "id": "solar_aspect_062",
+      "sourceNumber": 62,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "A successful and eventful period of courage, enterprise, activity, and strong attachments.",
+      "themes": [
+        "courage",
+        "enterprise",
+        "adventure",
+        "attachments",
+        "activity"
+      ],
+      "constructive": [
+        "Use the energy for bold but constructive action",
+        "Recognize temporary external stimulation"
+      ],
+      "cautions": [
+        "Over-identification with excitement"
+      ],
+      "conditions": [],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "This is a very favourable influence, and tends to make this period successful, although nothing very extraordinary can come from Mars alone.\n\nWhile this influence lasts, the native will be courageous, more enterprising, competent, and adventurous than usual. He will come into contact with persons who will stir him up both mentally and physically, and whose influence upon his life will be such as to make it active and bold, generous and free.\n\nHe will be likely to give way to feeling and to form attachments which will be ardent and eventful while they last, but, as it is not an influence that is permanent in its nature, when the magnetic vibrations it has induced pass off, he will realise that he has only been stirred into activity from outside, as it were, more from excitation of the Desires than the energy of the inner Will.\n\n*An eventful period, which will be remembered for many years to come.*"
+    },
+    "progressed.aspect.Sun.Mars.sesquiquadrate": {
+      "id": "solar_aspect_063",
+      "sourceNumber": 63,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Accident, inflammation, loss, dispute, and separation arising from impulsiveness.",
+      "themes": [
+        "accidents",
+        "fire",
+        "health",
+        "loss",
+        "separation",
+        "dispute"
+      ],
+      "constructive": [
+        "Avoid travel and speculation",
+        "Use maximum caution",
+        "Act temperately"
+      ],
+      "cautions": [
+        "Fire",
+        "Accidents",
+        "Inflammatory illness"
+      ],
+      "conditions": [],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This is an evil solar influence and tends to cause feverish conditions, liability to accidents, and many troubles which result from impulsiveness, from over-estimating, and from want of sufficient caution and premeditation.\n\nThe native will have losses and disappointments, and will suffer through separations, disputes and estrangements. He cannot act too temperately, or use too much care to escape the evil effects of this aspect; for it rarely passes without disturbing the health, setting in motion causes that eventuate in illnesses of an inflammatory or feverish nature, and it often moreover affects relatives or those to whom he is attached.\n\nHe should not travel while this influence lasts, neither is it wise to invest money or to speculate, nor to have any dealings with others where enterprise or new ventures are concerned. He is liable to be endangered by fire or accidents, and therefore should use care in all his actions, avoiding above all things rashness or impetuosity."
+    },
+    "progressed.aspect.Sun.Mars.quincunx": {
+      "id": "solar_aspect_064",
+      "sourceNumber": 64,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Health vulnerability and rashness that can become severe in weak constitutions.",
+      "themes": [
+        "health",
+        "inflammation",
+        "family",
+        "impulse",
+        "temperance"
+      ],
+      "constructive": [
+        "Safeguard health",
+        "Avoid extremes",
+        "Act discreetly"
+      ],
+      "cautions": [
+        "Family danger",
+        "Illness",
+        "Rash action"
+      ],
+      "conditions": [
+        "May behave more like conjunction when rashness is indulged"
+      ],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "This solar aspect is the quincunx or ‘inconjunct’ (150 degrees apart). It is not always an important aspect, but when the health is not good and the constitution weak it threatens much sickness and feverish tendencies, giving a liability to inflammatory diseases.\n\nThe native must therefore safeguard his health, and act very discreetly while this solar influence is in force, not giving way to impulse or any rash tendencies; or he will thereby precipitate the evil of Mars and cause the aspect to act as a conjunction, which in this case would be a malefic influence.\n\nIf any of the family are ailing it is a critical time for them, and shows danger to those with whom the native is closely associated, or to whom he is in any way attached. In many cases this aspect has been found to be weak, but in others, especially where there has been a tendency to act impulsively, it has been most unfortunate; therefore, temperance and discretion are imperative while it operates; and extremes of all kinds should be avoided."
+    },
+    "progressed.aspect.Sun.Mars.opposition": {
+      "id": "solar_aspect_065",
+      "sourceNumber": 65,
+      "mover": "Sun",
+      "target": "Mars",
+      "targetState": "radical",
+      "valence": "critical",
+      "strength": "strong",
+      "coreMeaning": "A dangerous crisis of health and action symbolizing conflict between will and desire.",
+      "themes": [
+        "danger",
+        "accidents",
+        "illness",
+        "will",
+        "desire",
+        "crisis"
+      ],
+      "constructive": [
+        "Maintain calm will",
+        "Avoid danger",
+        "Use conflict for self-knowledge"
+      ],
+      "cautions": [
+        "Severe illness",
+        "Accidents",
+        "Impulsive conflict"
+      ],
+      "conditions": [],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "The period during which this influence operates is always one of danger and grave risk, and it is a very evil aspect in many ways, for it gives great liability to accidents, feverish complaints, and inflammatory diseases; the native’s health is seriously threatened, and the utmost care will be necessary to prevent an illness of a severe nature.\n\nHe will do wisely not to exhibit too much bravery, nor to rush headlong into danger, also to use the greatest discretion in everything he does, taking especial care to safeguard his health, and maintaining as far as possible a calm and steadfast will.\n\nThis opposition is not wholly bad, for it has a very deep and important meaning in a higher sense, as it signifies a crisis in human evolution in which the animal and the divine in man struggle for supremacy; and this war between the two sides of the nature, the higher and the lower, will follow the ‘line of least resistance’ in each case.\n\nWill and Desire will be opposed, one part of the spirit striving against the other; and if the native cannot consciously realise the struggle, then trouble and difficulty will fall upon him to awaken him to a realisation of his true nature.\n\n*To most, if not to all, this will prove to be the most memorable period of the life.*\n\n---"
+    },
+    "progressed.aspect.Sun.Jupiter.parallel": {
+      "id": "solar_aspect_066",
+      "sourceNumber": 66,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "A long prosperity cycle supporting health, finance, social success, and new undertakings.",
+      "themes": [
+        "prosperity",
+        "health",
+        "social success",
+        "finance",
+        "undertakings"
+      ],
+      "constructive": [
+        "Plan for future welfare",
+        "Begin constructive undertakings"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Often activated by good lunar aspects to Jupiter"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "This influence will spread over a number of years, and whenever the Moon has good aspects to Jupiter, she will stir into activity this very powerful influence, bringing as a result good fortune, good health and social success.\n\nThe nature of this parallel aspect is such as to bring enduring influences, not specially limited to one month or year, but extending over a number of years; in fact it overlaps, as it were, both previous and subsequent periods to some extent, with an influence more or less beneficial according to the other aspects operating (especially the lunar aspects).\n\nThe native may now enter upon new undertakings, and arrange for his future welfare in the manner he thinks best, for very little harm can come to him under this very good solar position, which tends to a very successful and prosperous time, during which all things will go well, both socially and financially.\n\n[It should be pointed out that Sun parallel Jupiter may coincide with Sun square Jupiter, in which case the losses and difficulties indicated by the latter will be met in a cheerful and buoyant spirit.]"
+    },
+    "progressed.aspect.Sun.Jupiter.conjunction": {
+      "id": "solar_aspect_067",
+      "sourceNumber": 67,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Success, gain, prosperity, travel, strong health, and beneficial ties.",
+      "themes": [
+        "success",
+        "finance",
+        "travel",
+        "health",
+        "unions",
+        "social advantage"
+      ],
+      "constructive": [
+        "Pursue opportunities",
+        "Travel",
+        "Build alliances"
+      ],
+      "cautions": [
+        "Pride",
+        "Overconfidence",
+        "Excess"
+      ],
+      "conditions": [
+        "Less favourable if natal Jupiter is afflicted, especially by Mars"
+      ],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "This is a very fortunate solar position, denoting success, good fortune and much gain, with many social advantages, a favourable issue to all undertakings in hand, financial prosperity, and benefits connected with new undertakings, travel and association with others.\n\nThe health will be good, and the constitution much stronger than hitherto; but care must be taken to avoid excesses, for the life forces are considerably quickened by this conjunction, and some tendency to indulgence is likely in consequence.\n\nThe feelings and sympathies will be awakened and the native will form unions, attachments, and ties that will be very beneficial to him in every way. When the lunar aspects are good he will meet with all the success he can desire; but he must avoid pride and not allow himself to become over-confident, for though success will surely come in the future as a result of this conjunction yet other influences at work must be considered as well, and especially also the radical influences.\n\nFor this position is much less fortunate to one who has an afflicted Jupiter at birth; especially if the affliction be from Mars. Nevertheless, the influence in itself is wholly good, and only foolish extravagance or excess can nullify its beneficial nature."
+    },
+    "progressed.aspect.Sun.Jupiter.semi-sextile": {
+      "id": "solar_aspect_068",
+      "sourceNumber": 68,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "Modest gain, new friends, social advantage, and improving financial prospects.",
+      "themes": [
+        "gain",
+        "friends",
+        "social advantage",
+        "finance",
+        "undertakings"
+      ],
+      "constructive": [
+        "Push useful affairs",
+        "Begin modest undertakings"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Strengthened by similar lunar aspects"
+      ],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "This is not very powerful, but is in a minor sense a good aspect, which will benefit the native according to his power to respond to its influence. It will bring some gain and shows improvement in the general welfare, the advent of new friends, fresh engagements, and social advantages, with every prospect of financial gain and the opportunity to improve the monetary prospects.\n\nIt is on the whole a good aspect, whereby success and prosperity accrue from any effort or endeavour made by the native, so that it will be a good time for him to push his affairs, and to commence new undertakings.\n\nThe sympathies and feelings will be called out by others, he will form attachments that will be favourable; but the best good will come when the lunar aspects are of a like nature, for then this somewhat weak aspect will be strengthened."
+    },
+    "progressed.aspect.Sun.Jupiter.semi-square": {
+      "id": "solar_aspect_069",
+      "sourceNumber": 69,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "weak",
+      "coreMeaning": "Delay, modest financial difficulty, social disappointment, and restrained progress.",
+      "themes": [
+        "delay",
+        "finance",
+        "social affairs",
+        "travel",
+        "associations"
+      ],
+      "constructive": [
+        "Live quietly",
+        "Avoid new undertakings",
+        "Keep finances conservative"
+      ],
+      "cautions": [
+        "Financial loss",
+        "Social disagreement"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "A weak aspect of a more or less adverse nature, threatening financial losses and some difficulty in getting money as easily as usual. It is not good for health, nor for any social affairs; in fact care will be necessary in all dealings with others in the social world.\n\nThis aspect acts chiefly in the direction of hindering and delaying progress, but is very weak in its real power for evil; still the period is not good, notwithstanding the fact that Jupiter is a benefic planet.\n\nDisappointments in dealings with superiors or those with whom the native is associated are probable, and he should take care not to offend, or cause a severance in affection, as the feelings are now likely to suffer, while financial losses may ensue as the result of disagreements between himself and others.\n\nIt is not a good time to travel nor to have dealings with the clergy, lawyers or religious people, nor to commence any new undertakings; but rather a time to live quietly and temperately, keeping in the background as much as possible."
+    },
+    "progressed.aspect.Sun.Jupiter.sextile": {
+      "id": "solar_aspect_070",
+      "sourceNumber": 70,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "One of Leo’s best solar aspects: prosperity, fulfilled ambitions, travel, and successful undertakings.",
+      "themes": [
+        "prosperity",
+        "ambition",
+        "travel",
+        "writing",
+        "friends",
+        "career"
+      ],
+      "constructive": [
+        "Act on opportunities",
+        "Travel",
+        "Launch undertakings",
+        "Use correspondence constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says it may mark an epoch in the career"
+      ],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "This denotes a very prosperous and successful time, when all things will go well, and when the mind will expand and become hopeful, being able to see clearly the best course to adopt for general improvement and success.\n\nUnder this good influence, which is one of the best of solar aspects, the native will obtain his desires, his ambitions will be gratified, his social affairs will profit him, and he will gain from friends or relatives, or those with whom he is associated.\n\nHe will also form honourable and lasting attachments, good and favourable unions or connections with others. Under this influence he will either travel or make important beneficial changes; while correspondence and writings will bring success, new undertakings will turn out successfully, and the whole period during which this aspect lasts will be beneficial and prosperous.\n\nIt is in fact a most fortunate time, and will mark an epoch in the career."
+    },
+    "progressed.aspect.Sun.Jupiter.square": {
+      "id": "solar_aspect_071",
+      "sourceNumber": 71,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Financial and social loss, domestic trouble, deception, and a test of pride.",
+      "themes": [
+        "finance",
+        "domestic affairs",
+        "social trouble",
+        "deception",
+        "loss",
+        "pride"
+      ],
+      "constructive": [
+        "Avoid lending money",
+        "Guard against deception",
+        "Use adversity for moral growth"
+      ],
+      "cautions": [
+        "Loss",
+        "Separation",
+        "Sorrow"
+      ],
+      "conditions": [],
+      "aspects": [
+        "square"
+      ],
+      "quote": "This denotes a period unfavourable and subject to much trouble and difficulty, affecting adversely domestic affairs and also social matters in general. The native will suffer losses and trials which will extend over a somewhat protracted period.\n\nHowever, the planet Jupiter is a benefic, and therefore the square aspect, though evil in itself, will have much of its malignancy lessened by this fact.\n\nThe native must be prepared for financial difficulties, and for many minor troubles, also for losses through others, particularly those that affect the domestic sphere and the social engagements. He will lose someone either by death or separation, and suffer from the actions of others, experiencing sorrow and disappointment.\n\nHe should not lend money at this time, and he should be on his guard against deception, treachery, and hypocrisy. It is an unfortunate time, but may be turned into good, for out of this evil good often comes: it represents the struggle of pride against the spirit, Jacob wrestling with God."
+    },
+    "progressed.aspect.Sun.Jupiter.trine": {
+      "id": "solar_aspect_072",
+      "sourceNumber": 72,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "exceptional",
+      "coreMeaning": "An exceptional life opportunity for prosperity, advancement, philosophical growth, and lasting alliances.",
+      "themes": [
+        "prosperity",
+        "advancement",
+        "ambition",
+        "attachments",
+        "religion",
+        "philosophy"
+      ],
+      "constructive": [
+        "Make full use of opportunity",
+        "Invest or speculate prudently",
+        "Pursue spiritual or material growth"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says this occurs only once in a lifetime"
+      ],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "One of the finest and most fortunate of solar influences. It denotes that the native has reached an epoch in his life, for the opportunities that are now before him surpass those he has had in the past or will have in the future, and he should therefore make the most of this favourable time.\n\nHe may now either invest or speculate to advantage should he so desire; for gain and financial prosperity are shown by this aspect; he will obtain advancement and social successes, and will have the satisfaction of seeing his ambitions gratified; he will form lasting and permanent attachments, and become linked with others to mutual advantage, and all things will go right with him.\n\nThere is a spiritual as well as a material side to this aspect—which only comes once in a life-time—and this will enable the native to obtain a deeper insight into religious matters, and also to become more philosophical in his thought and wise in his actions.\n\nThus he may use the aspect for the uplifting and improvement of character, or for worldly gain and advantage, just as he chooses."
+    },
+    "progressed.aspect.Sun.Jupiter.sesquiquadrate": {
+      "id": "solar_aspect_073",
+      "sourceNumber": 73,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Loss, excess, bodily imbalance, and relational disappointment.",
+      "themes": [
+        "health",
+        "excess",
+        "finance",
+        "separation",
+        "disappointment"
+      ],
+      "constructive": [
+        "Practice moderation",
+        "Avoid lending, investing, or speculating"
+      ],
+      "cautions": [
+        "Monetary loss",
+        "Health strain"
+      ],
+      "conditions": [
+        "Less severe because both bodies are treated as benefic"
+      ],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This influence is unfavourable, and one likely to bring trouble and loss while it lasts. The native will find his circulation affected and his health not at all favourable about this time; but strict temperance and moderation in all things will do much to counteract this influence, which causes suffering to health through surfeit and excess, the balance of forces in the system undergoing readjustment.\n\nIt is an ill time to lend money, to invest or to speculate, and care should be taken in every way to avoid monetary losses. Sorrows and disappointments of some kind are certain, for the native will be either estranged or separated from those to whom he has become attached, or whom he has allowed to share in his feelings and emotions.\n\nNevertheless, although an unfavourable aspect it is between benefic planets, and is therefore not so evil as in other cases, but generally speaking such an aspect otherwise would indicate an unfavourable time, and with discordant lunar aspects this period is likely to prove a very trying and difficult one."
+    },
+    "progressed.aspect.Sun.Jupiter.quincunx": {
+      "id": "solar_aspect_074",
+      "sourceNumber": 74,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "mixed-critical",
+      "strength": "moderate",
+      "coreMeaning": "Strain between expansion and moral or spiritual restraint, especially around finance and speculation.",
+      "themes": [
+        "finance",
+        "speculation",
+        "religion",
+        "expansion",
+        "moral conflict"
+      ],
+      "constructive": [
+        "Watch investments",
+        "Avoid over-expansion",
+        "Resolve inner value conflicts"
+      ],
+      "cautions": [
+        "Speculative loss",
+        "Social or religious disputes"
+      ],
+      "conditions": [],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "This is a rather critical aspect in regard to money affairs, and is likely to bring the native trouble in connection with any speculative enterprises he may be disposed to enter into at this time. He will find himself subjected to considerable strain between two contrasting influences, the desire for expansion and increase—either as regards worldly matters, the emotions, or the religious aspirations—and the internal spiritual or moral nature; and this may lead him into courses he will afterwards regret.\n\nIn a modified form, this may be taken as somewhat analogous to the square aspect, but less crucial in its effects, and related rather to the mental or spiritual than to the physical plane of being.\n\nThe native should keep a watchful eye on all investments he may be concerned with at this time, and look carefully after his pecuniary interests in every way. Social or religious disputes, also, are likely to occasion him annoyance."
+    },
+    "progressed.aspect.Sun.Jupiter.opposition": {
+      "id": "solar_aspect_075",
+      "sourceNumber": 75,
+      "mover": "Sun",
+      "target": "Jupiter",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Opposition, legal difficulty, illusion, financial loss, and social disadvantage.",
+      "themes": [
+        "legal trouble",
+        "illusion",
+        "friends",
+        "finance",
+        "opposition",
+        "health"
+      ],
+      "constructive": [
+        "Stay balanced",
+        "Avoid excess and pride",
+        "Question apparent good fortune"
+      ],
+      "cautions": [
+        "Financial loss",
+        "Disappointment",
+        "Social conflict"
+      ],
+      "conditions": [],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "This is a very unfortunate position and will bring the native a rather trying time: he is liable to suffer through opposition from others, separations, legal difficulties and very serious disappointments.\n\nEither those to whom he has been attached, or with whom his life has been bound up, will now grievously disappoint him, or else he will fall under an illusion and become more bound up in them, only to realise greater trouble later on.\n\nHe will meet with financial losses, and social disadvantages, probably by disagreeing with those who have been his friends, or perhaps through his own peculiar conduct.\n\nIt often happens that *apparent* good comes out of this position (owing to Jupiter being a benefic planet), but the good is only apparent and should be well examined, for it generally brings with it the opposition that the aspect implies.\n\nThe native should not ‘stand upon his dignity’ too much; should not be too expectant; and should moreover avoid excesses of every kind, or his health will seriously suffer. He should endeavour as far as possible to maintain a just and balanced state of mind, but he will find it a difficult task.\n\n---"
+    },
+    "progressed.aspect.Sun.Saturn.parallel": {
+      "id": "solar_aspect_076",
+      "sourceNumber": 76,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "A long period of restriction, debility, sorrow, and prolonged trial.",
+      "themes": [
+        "restriction",
+        "health",
+        "sorrow",
+        "delay",
+        "despondency"
+      ],
+      "constructive": [
+        "Maintain hope",
+        "Protect health",
+        "Use will against discouragement"
+      ],
+      "cautions": [
+        "Long illness",
+        "Loss",
+        "Depression"
+      ],
+      "conditions": [
+        "Leo says Sun-Saturn contacts are generally restrictive"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "This is a truly evil solar influence, for this vibration lasts for a long period and is in operation for several years, on and off, until other influences intervene and counteract its malefic character.\n\nIt has the effect of hindering the vital forces of the Sun, and thus often debilitates the physical system, tending to bring on illnesses of long duration, and also causing a number of sorrows and trials while it lasts; it is therefore an unfortunate aspect, and every care should be taken to keep the body in good order, and to promote a good circulation, so as not to feel its worst physical effects.\n\nWhile this malefic parallel is in operation, all affairs tend to go wrong, and disappointment, deaths, and many trials may be expected. It is therefore especially necessary for the native to keep the mind hopeful and cheerful by the exercise of the will, and not to allow the despondency which often accompanies this influence to overcome him.\n\n(All aspects between the Sun and Saturn are more or less unfavourable owing to the restricting and limiting effect that Saturn has upon the Sun, and to its action upon the individual nature.)"
+    },
+    "progressed.aspect.Sun.Saturn.conjunction": {
+      "id": "solar_aspect_077",
+      "sourceNumber": 77,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "mixed-critical",
+      "strength": "strong",
+      "coreMeaning": "Responsibility, anxiety, ambition, endurance, and major character consolidation.",
+      "themes": [
+        "responsibility",
+        "ambition",
+        "stability",
+        "work",
+        "anxiety",
+        "character"
+      ],
+      "constructive": [
+        "Accept responsibility",
+        "Develop perseverance",
+        "Exercise physically",
+        "Maintain hope"
+      ],
+      "cautions": [
+        "Narrowness",
+        "Poor circulation",
+        "Rheumatic tendency",
+        "Fear"
+      ],
+      "conditions": [],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "The conjunction of the Sun with the Planet Saturn is a very unfavourable position, denoting a very critical time, in which all affairs will tend to go wrong, thereby causing the native to become more than usually suspicious and apprehensive of danger ahead, for though the will is strengthened by this conjunction, yet on the other hand, it tends to cramp and warp the mind when the true nature of this position is unrealised.\n\nIt is a position that brings responsibility, and a more anxious period into the life, and if the native can respond to the higher vibrations of Saturn it need not be at all evil but will prove to be the very best influence for him to rise by; for it increases the ambition, giving more personal character and more stability than usual.\n\nIt is a position that strengthens the individuality and causes the disposition to be more steady, persevering and industrious; as a character-producer it marks an epoch in the life. But it is not a favourable position for those who in ‘forming the crystal’ become too narrow and limited; for in this case the health suffers through poor circulation, resulting in liability to rheumatism and a danger of taking cold or chill easily.\n\nThe faculties of hope and a courageous spirit should be maintained. Physical exercise will be beneficial."
+    },
+    "progressed.aspect.Sun.Saturn.semi-sextile": {
+      "id": "solar_aspect_078",
+      "sourceNumber": 78,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "Mild stabilisation, caution, useful responsibility, and help from elders.",
+      "themes": [
+        "stability",
+        "caution",
+        "elders",
+        "finance",
+        "responsibility"
+      ],
+      "constructive": [
+        "Practice thrift",
+        "Use older advisers",
+        "Build permanence"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Stronger when lunar aspects are good"
+      ],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "The effect of this is almost nil, but it tends somewhat to solidify and strengthen the current ‘directions,’ and shows a tendency to use more caution and forethought in the affairs; hence it may bring some slight financial benefits.\n\nIt will in any case improve the native’s stability, and will induce a more firm and self-reliant attitude, which will be of service if he has realised his latent possibilities. He will come into contact with someone older than himself whose advice will be helpful, while some temporary responsibility may advance his prospects for the future.\n\nA great deal will depend upon himself as to how this aspect will operate, for it is a somewhat weak influence, but if he can exercise thrift and seek by diligence to place himself in a permanent position it will prove beneficial. When the lunar aspects are good it gives new opportunities for development."
+    },
+    "progressed.aspect.Sun.Saturn.semi-square": {
+      "id": "solar_aspect_079",
+      "sourceNumber": 79,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Delay, financial risk, discouragement, and a tendency to defeat oneself through pessimism.",
+      "themes": [
+        "delay",
+        "finance",
+        "fraud",
+        "death",
+        "disappointment",
+        "despondency"
+      ],
+      "constructive": [
+        "Protect finances",
+        "Cultivate hope",
+        "Avoid pessimistic self-sabotage"
+      ],
+      "cautions": [
+        "Loss",
+        "Depression"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "A weak evil aspect, of such nature as to cause hindrances and delays to progress. The native will have to be careful to avoid monetary losses, also to guard against fraud, or financial losses through others.\n\nThis aspect sometimes heralds a death in the family circle, or amongst friends, or those to whom the native is in some way related. This aspect tends to bring disappointments, and probably owing to the manner in which the native will look upon circumstances, he is apt to stand in his own light and to go against his own personal interests.\n\nHe should now endeavour to keep his mind as cheerful as possible and not give way to despondency, or allow himself to look upon the dark side of things, for this aspect will tend to make him unfortunate by his attitude towards the affairs of life, being fearful and lacking in sufficient courage to overcome the difficulties that will appear in his way.\n\nHe should cultivate all the hope he can and assume as cheerful an aspect as possible, or when the Moon forms any adverse aspect to Saturn he will be a pitiable victim of depression and despondency."
+    },
+    "progressed.aspect.Sun.Saturn.sextile": {
+      "id": "solar_aspect_080",
+      "sourceNumber": 80,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Responsibility, reliability, concentration, honour, and long-term security.",
+      "themes": [
+        "responsibility",
+        "honour",
+        "stability",
+        "elders",
+        "concentration",
+        "trust"
+      ],
+      "constructive": [
+        "Assume durable responsibilities",
+        "Build a secure position",
+        "Work with trustworthy elders"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "This is in many respects a very beneficial aspect, as it steadies the mind and makes the character more firm and thoughtful. The native will now have opportunities to assume far greater and more permanent responsibilities than he has previously undertaken.\n\nIt is a very fortunate influence for those whose ‘root of merit’ is fairly established, for the individual characteristics are strengthened and the moral character rendered more reliable and capable of developing the physical virtues.\n\nThe native will now meet with persons older than himself, who are truthful, honest and sincere, and they will benefit him and prove to be reliable and permanent friends and helpers. His mind will become steadier, more concentrative and persevering, and he will go deeper into and endeavour to realise more of his inner nature than formerly.\n\nHonour and reputation will tend to become established under this powerful solar influence, and he should do all in his power to place himself in a position of trust, or where the future will be secure against change or uncertainty."
+    },
+    "progressed.aspect.Sun.Saturn.square": {
+      "id": "solar_aspect_081",
+      "sourceNumber": 81,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Grief, domestic trouble, chronic strain, worry, and restriction.",
+      "themes": [
+        "grief",
+        "home",
+        "health",
+        "worry",
+        "restriction",
+        "elders"
+      ],
+      "constructive": [
+        "Avoid unnecessary change",
+        "Maintain courage",
+        "Protect health"
+      ],
+      "cautions": [
+        "Chronic illness",
+        "Rheumatic tendency",
+        "Bereavement"
+      ],
+      "conditions": [],
+      "aspects": [
+        "square"
+      ],
+      "quote": "This will tend to make the whole of the current directions more or less unfortunate. The native will have sorrow and grief while its influence is in operation, and there is every probability of someone in the domestic circle passing out of this physical world while it is in force.\n\nHe will experience domestic troubles and will find it difficult to keep the mind free from worry and anxiety while the aspect lasts. He should not make any changes unless they are absolutely necessary, and should be very careful in all dealings with others, especially those older than himself.\n\nIt is an evil period, but more so if he despond or allow himself to become depressed, for it will then affect the health and may cause him to suffer from long illnesses of a somewhat protracted nature, as it awakens any latent tendency to rheumatism, and has some tendency to produce chronic disorders.\n\nThe native should be careful in all his actions, and his mental attitude towards others, as he is liable to suffer disappointments and also to be affected by the evil thoughts and wishes of others. Altogether it is a critical period, and calls for caution, steadfastness and courage.\n\n*A very unfortunate and trying influence.*"
+    },
+    "progressed.aspect.Sun.Saturn.trine": {
+      "id": "solar_aspect_082",
+      "sourceNumber": 82,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Permanence, responsibility, reputation, sound investment, and disciplined character building.",
+      "themes": [
+        "permanence",
+        "reputation",
+        "responsibility",
+        "investment",
+        "discipline",
+        "patience"
+      ],
+      "constructive": [
+        "Take sound investments",
+        "Build durable structures",
+        "Practice patience and perseverance"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "This is a good influence, but too much material benefit must never be expected from this aspect, for Saturn is not a very fortunate planet in regard to material things, being the planet of *mind*. However, it is the best aspect the Sun can have to this planet, and it denotes a period in which all things will solidify and make more permanent conditions, so that the native will assume greater responsibilities than formerly, and he will now rise to an important position in life, and secure for himself a fixed condition whereby both honour and reputation will profit.\n\nHe will also come into contact with those whose influence upon his life will have a permanent effect, and by internal strength of character he will mould his future on a much firmer and more solid basis than formerly; he will do well to take up sound investments and improve his financial prospects under this influence.\n\nSaturn is the planet of refinement, chastity and temperance, and by a study of all the virtues which make for purity, industry, patience, and perseverance, much progress may be made. A great deal will depend upon the native himself of course, and the methods he adopts, as to whether he will come under the most favourable side of this good aspect or not."
+    },
+    "progressed.aspect.Sun.Saturn.sesquiquadrate": {
+      "id": "solar_aspect_083",
+      "sourceNumber": 83,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Health weakness, separation, discouragement, and difficult relations with elders or authority.",
+      "themes": [
+        "health",
+        "separation",
+        "elders",
+        "authority",
+        "depression",
+        "circulation"
+      ],
+      "constructive": [
+        "Protect health",
+        "Cultivate hope",
+        "Avoid offending superiors"
+      ],
+      "cautions": [
+        "Cold",
+        "Debility",
+        "Loss",
+        "Melancholia"
+      ],
+      "conditions": [],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This will be for the native a somewhat evil time, and it will be well for him to act discreetly and also to safeguard his health. He should avoid taking chill, and be careful to keep the circulation in order, or he will suffer from colds and general debility.\n\nHe should be wary not to offend others, especially elders, or superiors in rank. This aspect often produces either a death or separation, and severe disappointment or sorrow, therefore he should watch his feelings and not give way to the depression or melancholia which often follows.\n\nThe native’s attitude towards others, and their effect upon him will not be good, as his magnetism will not be attractive under this influence; it is in fact an unfortunate period generally, and he must make a courageous stand against the difficulties and worries that now threaten him.\n\nHis circulation should be kept in good order and his general health up to the highest standard; and he should cultivate hope and remember that all restraints put upon him may be for a good purpose, although this may not be apparent at the time."
+    },
+    "progressed.aspect.Sun.Saturn.quincunx": {
+      "id": "solar_aspect_084",
+      "sourceNumber": 84,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "mixed-critical",
+      "strength": "weak",
+      "coreMeaning": "A weak but restrictive health influence that can deepen steadfastness through balancing expansion and contraction.",
+      "themes": [
+        "health",
+        "perseverance",
+        "family",
+        "restraint",
+        "character"
+      ],
+      "constructive": [
+        "Keep cheerful",
+        "Build perseverance",
+        "Monitor health"
+      ],
+      "cautions": [
+        "Debility",
+        "Family loss if other directions support it"
+      ],
+      "conditions": [],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "The quincunx or ‘inconjunct’ (150 degrees) aspect of the Sun to Saturn is not a good influence and is more than likely to affect the health, owing to its chilling and debilitating effect. It is a rather weak aspect, however, and may not produce any appreciable effect if the mind can be kept cheerful and free from despondency.\n\nIt will, however, strengthen the whole character if the body is able to absorb the united influence of these two forces, the one expansive, and the other contractive; for by blending the two it is possible to obtain that steadfastness and perseverance which Saturn gives; but it will be advisable for the native to look well to his own health, and to expect any of those connected with him, the family circle, etc., who are ailing or suffering to be likewise affected; if the lunar directions indicate it, there is danger of a loss by death under this influence."
+    },
+    "progressed.aspect.Sun.Saturn.opposition": {
+      "id": "solar_aspect_085",
+      "sourceNumber": 85,
+      "mover": "Sun",
+      "target": "Saturn",
+      "targetState": "radical",
+      "valence": "critical",
+      "strength": "strong",
+      "coreMeaning": "Severe obstacles, loss, depression, financial difficulty, and moral testing.",
+      "themes": [
+        "obstacles",
+        "health",
+        "loss",
+        "finance",
+        "depression",
+        "moral struggle"
+      ],
+      "constructive": [
+        "Maintain hope and calmness",
+        "Exercise forethought",
+        "Use adversity for moral development"
+      ],
+      "cautions": [
+        "Death",
+        "Sorrow",
+        "Despair",
+        "Financial trouble"
+      ],
+      "conditions": [
+        "Especially severe when adverse lunar aspects coincide"
+      ],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "A very malefic influence. The native will suffer in health, will experience much opposition, and many obstacles will come in his path while it lasts. Disappointments, losses by death, sorrows and trials of all kinds are indicated by this influence, and he cannot act too wisely while it operates, for the mind will tend to despair and will ever look on the dark side of things.\n\nDespondency and depression will assail him, and it will require all his care and forethought to keep his head above water while it lasts, for he will have both financial difficulties and many other trials to endure.\n\nThere is an occult significance attached to this aspect and that is, the combat between the higher and the lower nature, between moral character and selfishness, between generosity and over-carefulness. The best attitude to this adverse opposition will be one of hope and calmness and the inner feelings that ‘whatever is, is best.’\n\nIf the lunar aspects coincide therewith, especially, it will be a very trying time.\n\n*A very critical and memorable period.*\n\n---"
+    },
+    "progressed.aspect.Sun.Uranus.parallel": {
+      "id": "solar_aspect_086",
+      "sourceNumber": 86,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "mixed",
+      "strength": "strong",
+      "coreMeaning": "A long background period of originality, occult interest, mental expansion, and intermittent irritability.",
+      "themes": [
+        "originality",
+        "occult",
+        "metaphysics",
+        "consciousness",
+        "friends",
+        "irritability"
+      ],
+      "constructive": [
+        "Explore higher thought",
+        "Use unusual contacts constructively",
+        "Accept broader perspectives"
+      ],
+      "cautions": [
+        "Excitability",
+        "Irritability"
+      ],
+      "conditions": [
+        "Acts spasmodically when congenial influences coincide"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "This influence will extend over a period of several years, and will manifest a spasmodic influence at certain times when there are other influences, congenial to the Uranian vibration, operating. This influence will act peculiarly upon the native’s consciousness, causing him to take a deep interest in occult and metaphysical matters, and so to expand and broaden his views, rendering him original in thought and free from conventional limitations.\n\nThis influence will render the native either irritable or excitable at times, passing through magnetic changes that have a peculiar influence upon others. He will meet with persons holding what seem strange ideas, and they will affect him mentally, bringing him into a train of thought above the average commonplace level."
+    },
+    "progressed.aspect.Sun.Uranus.conjunction": {
+      "id": "solar_aspect_087",
+      "sourceNumber": 87,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "transformative",
+      "strength": "strong",
+      "coreMeaning": "A major epoch of sudden consciousness change, reform, unusual associations, and altered future direction.",
+      "themes": [
+        "sudden change",
+        "consciousness",
+        "reform",
+        "friendships",
+        "unions",
+        "adventure"
+      ],
+      "constructive": [
+        "Prepare for major change",
+        "Choose unusual associations carefully",
+        "Use the period for reform"
+      ],
+      "cautions": [
+        "Estrangement",
+        "Unstable ties",
+        "Unexpected events"
+      ],
+      "conditions": [],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "This marks an epoch in the life in which great changes of consciousness will take place and expansion of mind result therefrom. The native will either pass through a very romantic and adventurous period, or be estranged from friends and have intimate associations with others, associations of a far more mental character and of a more exalted type than such usually are.\n\nThis influence denotes *changes*, but rather of a mental and subjective than of an objective nature. It is a period when sudden and unexpected events happen, when ties and attachments of a peculiar nature are formed or broken.\n\nThe native should exercise great care with regard to those who come into his life, as very strange engagements and peculiar episodes occur under this conjunction. This influence only eventuates when the mind is ready to respond to higher vibrations, and when reforms are coming into the life; it brings experiences that are to awaken the higher part of the nature, and therefore it is necessary to be prepared for changes, and events that will tend to alter the future very considerably.\n\nThis aspect affects friendships and unions, more, perhaps, than any other influence."
+    },
+    "progressed.aspect.Sun.Uranus.semi-sextile": {
+      "id": "solar_aspect_088",
+      "sourceNumber": 88,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "New thought, occult study, inventiveness, and possible unexpected benefit.",
+      "themes": [
+        "higher thought",
+        "occult",
+        "friends",
+        "inventiveness",
+        "unexpected gain"
+      ],
+      "constructive": [
+        "Study original subjects",
+        "Develop inventions",
+        "Use new contacts"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "This weak aspect is favourable in a measure for changes, and for the advance of a new thought, or the undertaking of any study connected with the occult or with psychic affairs of any kind.\n\nThe native will meet with friends or acquaintances whose interest in these matters will concern him, or draw his mind into a condition that will enable him to investigate matters relating to higher thought; he will feel more expansive mentally, and much more interested in all metaphysical subjects than formerly. It will probably not affect him directly in any remarkable way, but will make it easier for good aspects to the Moon, etc., to act; he may gain some money unexpectedly or gain benefit from others in a manner not previously thought of.\n\nIt is good for the mind, more especially for all mental pursuits of an original nature, and if the native is that way inclined his inventiveness will be unusually active; some new undertakings may be entered on, productive of future benefit."
+    },
+    "progressed.aspect.Sun.Uranus.semi-square": {
+      "id": "solar_aspect_089",
+      "sourceNumber": 89,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Sudden change, irritability, nervous unrest, and relationship friction.",
+      "themes": [
+        "sudden change",
+        "irritability",
+        "nerves",
+        "relationships",
+        "enemies"
+      ],
+      "constructive": [
+        "Act discreetly",
+        "Avoid impulsive reactions",
+        "Control temper"
+      ],
+      "cautions": [
+        "Enemies",
+        "Social or domestic conflict"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "This is a somewhat weak but adverse aspect, likely to bring sudden and unexpected changes. It shows an unsettled and somewhat anxious period, and it will be well for anyone under its influence if he can avoid trouble and difficulty while it lasts.\n\nThe native will incline to be abrupt, and at times irritable, liable to offend others through his own mental attitude towards them. The native’s magnetic conditions will not be harmonious, and it will be advisable for him to act discreetly and to do nothing impulsively while this aspect lasts—especially where others are concerned with him in any domestic or social relationship.\n\nA great deal depends upon his own attitude at this time; for any exhibition of temper, excitability or nervous irritability will tend to make enemies and cause others to take a sudden dislike to him, and by reaction he will feel resentful of their attitude and inclined to act without careful thought or full control.\n\nWhile this influence lasts the whole period of its operation will be unfavourable."
+    },
+    "progressed.aspect.Sun.Uranus.sextile": {
+      "id": "solar_aspect_090",
+      "sourceNumber": 90,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Unexpected gain, originality, travel, reform, metaphysical study, and new communities.",
+      "themes": [
+        "unexpected gain",
+        "travel",
+        "originality",
+        "astrology",
+        "friends",
+        "reform"
+      ],
+      "constructive": [
+        "Travel",
+        "Study metaphysics or astrology",
+        "Join innovative groups"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "This is likely to bring the native sudden benefits and unexpected gains. His magnetism will increase, so that he will affect others by the magnetic conditions which this solar influence will cause him to generate, and he will probably take some long journey under this influence and gain by travel or changes which will tend to be for his good in some direction which may not at first be apparent.\n\nThis aspect will greatly benefit the native’s mind, and cause him to be inventive, ingenious, and full of original ideas. His mind will expand, becoming interested in the higher thought, and in metaphysical subjects, and he may take some definite step towards embracing occultism or mystical studies.\n\nThis is a very favourable aspect in many ways, but particularly as regards the mental conditions, and under this influence, the native will form new friendships and fresh acquaintances, or join some society or body of persons interested in higher thought, aesthetic culture or original studies.\n\n*It is a good time to study astrology.*"
+    },
+    "progressed.aspect.Sun.Uranus.square": {
+      "id": "solar_aspect_091",
+      "sourceNumber": 91,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Sudden reversals, separation, nervous strain, and severe disruption.",
+      "themes": [
+        "reversal",
+        "separation",
+        "nervous system",
+        "travel",
+        "disappointment",
+        "stress"
+      ],
+      "constructive": [
+        "Postpone major decisions",
+        "Avoid unnecessary travel",
+        "Stay flexible and calm"
+      ],
+      "cautions": [
+        "Unexpected loss",
+        "Estrangement",
+        "Health strain"
+      ],
+      "conditions": [
+        "Becomes especially critical with adverse lunar aspects"
+      ],
+      "aspects": [
+        "square"
+      ],
+      "quote": "This is probably the worst aspect known (except perhaps Mars square Uranus). Matters will now tend to go suddenly wrong, and unexpected events of an unfavourable nature will occur. The native will meet with sudden and severe disappointments and will have unexpected separations and sharp disagreements to contend with.\n\nHis mind will become peculiarly irritable, and his health will suffer from strange ailments and peculiar nervous disorders. This is not a good time to make any changes, although change or removal may be necessitated by circumstances, so that the native may be unable to prevent making unfavourable changes; his feelings will be affected, and those intimately related to him will cause him annoyance and worry, and perhaps be disgraced.\n\nIt is quite an evil period; matters of importance should be postponed, and all travel avoided if possible; estrangements and unfortunate discoveries are likely. If the current lunar aspects are evil then a critical period is at hand; otherwise, until other aspects coincide it will not act with full force.\n\n*A time of great stress, which will challenge the native’s full powers.*"
+    },
+    "progressed.aspect.Sun.Uranus.trine": {
+      "id": "solar_aspect_092",
+      "sourceNumber": 92,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Sudden gains, invention, reform, travel, advanced study, and unusual beneficial experiences.",
+      "themes": [
+        "gain",
+        "invention",
+        "travel",
+        "reform",
+        "astrology",
+        "friends"
+      ],
+      "constructive": [
+        "Pursue reform",
+        "Study advanced subjects",
+        "Use new networks"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "This will bring unexpected and sudden gains and advantages. The native will increase in magnetic power and broaden considerably in mind, taking very advanced views of life, becoming more than usually original, inventive and constructive.\n\nHe will travel, or make important changes of a favourable nature, or will come into intimate contact with original persons and will take up the study of some metaphysical subject, astrology, or occultism in some form. He may gain suddenly through investments or by speculation, especially through railways or other methods of rapid transit.\n\nIt is a good time for such as are of a reforming and advanced turn of mind, anxious to improve surrounding conditions; and the native will gain through friends and acquaintances, and will probably also have some romantic or novel experience which will be quite out of the common."
+    },
+    "progressed.aspect.Sun.Uranus.sesquiquadrate": {
+      "id": "solar_aspect_093",
+      "sourceNumber": 93,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Sudden trouble, nervous strain, harsh criticism, and separation.",
+      "themes": [
+        "nerves",
+        "separation",
+        "criticism",
+        "travel",
+        "strangers"
+      ],
+      "constructive": [
+        "Avoid major changes",
+        "Control irritability",
+        "Use discretion with strangers"
+      ],
+      "cautions": [
+        "Slander",
+        "Harsh criticism",
+        "Friendship rupture"
+      ],
+      "conditions": [
+        "Severity depends on lunar aspects"
+      ],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This is an evil aspect, likely to cause sudden and unexpected troubles, affecting the health and tending to upset the nervous system. The native will feel irritable and inclined to become excitable, or very easily provoked, and will either offend others by his attitude towards them, or strongly and fanatically resent their attitude towards himself.\n\nIt is not a good time to travel or make any important changes, and the native should endeavour to keep always as calm and self-controlled as possible; he will now be liable to disappointments and separations between himself and his friends, and he should act as discreetly as possible, and be guarded in all dealings with strangers, or those with whom he is accidentally brought into contact, as he is liable to misrepresentation and slander or at least very harsh criticism.\n\nIf the lunar aspects are evil in nature while this solar influence is in operation, it will be a very bad time; but if they are good then this solar aspect will not be so severe."
+    },
+    "progressed.aspect.Sun.Uranus.quincunx": {
+      "id": "solar_aspect_094",
+      "sourceNumber": 94,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "mixed-developmental",
+      "strength": "moderate",
+      "coreMeaning": "Separative mental change that can produce lasting expansion of consciousness.",
+      "themes": [
+        "separation",
+        "health",
+        "consciousness",
+        "change",
+        "misunderstanding"
+      ],
+      "constructive": [
+        "Live moderately",
+        "Accept mental expansion",
+        "Use disruption for growth"
+      ],
+      "cautions": [
+        "Health strain",
+        "Minor misunderstandings"
+      ],
+      "conditions": [],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "The quincunx or ‘inconjunct’ aspect between Uranus and the Sun is in general of a similar nature to the semi-sextile, but it is in the main more separative in its nature and somewhat more drastic in its operation (though this is chiefly confined to the mental plane, unless Uranus be badly aspected at birth).\n\nIt is, moreover, far more likely to affect the health, if moderation and simplicity of life are not followed. This is a splendid aspect for the truly regenerate, bringing an expansion of consciousness that will not pass away. For the densely stolid and practical person it will have little advantage, and will effect merely a few minor worries or misunderstandings."
+    },
+    "progressed.aspect.Sun.Uranus.opposition": {
+      "id": "solar_aspect_095",
+      "sourceNumber": 95,
+      "mover": "Sun",
+      "target": "Uranus",
+      "targetState": "radical",
+      "valence": "critical",
+      "strength": "strong",
+      "coreMeaning": "Sudden conflict, separation, rashness, destabilisation, and profound consciousness change.",
+      "themes": [
+        "opposition",
+        "separation",
+        "conflict",
+        "rashness",
+        "legal affairs",
+        "consciousness"
+      ],
+      "constructive": [
+        "Avoid impulsive actions",
+        "Stay out of disputes",
+        "Weigh consequences carefully"
+      ],
+      "cautions": [
+        "Loss",
+        "Disgrace",
+        "Legal trouble",
+        "Destabilisation"
+      ],
+      "conditions": [],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "A very evil influence. All the native’s affairs will now tend to go wrong suddenly, and unexpected events of an astounding nature will happen during this period: he should avoid travel or making any changes or removals, if possible.\n\nHe will meet with strenuous opposition, will suffer through separations and estrangements, and will also be liable to lose friends and to come into unforeseen conflict with strangers and to suffer thereby. His magnetic conditions will be inimical to others, and he will be liable to act suddenly, impulsively, and very rashly while the aspect operates.\n\nHe cannot be too careful in all dealings with others, nor weigh too carefully the consequences of his actions, for he will be very liable to make mistakes, or to be made to act against his will by the desires or the hypnotic influence of others. He should avoid disputes and keep clear of all legal affairs, do nothing to offend others or to bring himself into unmerited disgrace or ill-repute.\n\nThis aspect marks a very critical stage in the career, and it will not pass without causing sorrow, anxiety and trouble, from which an expansion of the consciousness will result.\n\n*An extremely significant and important influence, likely to throw the native off his balance, unless he summons all his strength to combat it.*\n\n---"
+    },
+    "progressed.aspect.Sun.Neptune.parallel": {
+      "id": "solar_aspect_096",
+      "sourceNumber": 96,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "subtle",
+      "strength": "strong",
+      "coreMeaning": "A long-duration version of the Neptune conjunction, acting as an overhanging psychic or spiritual influence.",
+      "themes": [
+        "psychic influence",
+        "spirituality",
+        "subtlety",
+        "duration"
+      ],
+      "constructive": [
+        "Observe subtle changes without forcing them",
+        "Use spiritual sensitivity constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Leo says it mainly affects advanced souls"
+      ],
+      "aspects": [
+        "parallel"
+      ],
+      "quote": "This is the same as the conjunction in its general effect, but operates for a longer period and indicates a general overhanging influence of the nature described. It is unlikely to affect any but the most advanced souls to any great extent."
+    },
+    "progressed.aspect.Sun.Neptune.conjunction": {
+      "id": "solar_aspect_097",
+      "sourceNumber": 97,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "transformative",
+      "strength": "strong",
+      "coreMeaning": "Psychic awakening, inspiration, strange experience, restriction, and renunciation.",
+      "themes": [
+        "psychic awakening",
+        "inspiration",
+        "music",
+        "poetry",
+        "clairaudience",
+        "restriction"
+      ],
+      "constructive": [
+        "Develop creative or spiritual sensitivity",
+        "Accept necessary renunciation"
+      ],
+      "cautions": [
+        "Confinement",
+        "Obscure or disturbing experiences"
+      ],
+      "conditions": [
+        "Expression depends heavily on natal Neptune"
+      ],
+      "aspects": [
+        "conjunction"
+      ],
+      "quote": "This is a deeply mysterious influence and its full effect is scarcely likely to be felt by the majority, at least as regards material matters: much will depend upon the aspects to Neptune at birth, and also on whether this planet is prominent in the nativity in any way; but an extremely remarkable experience of some kind is likely to result from this influence if such should be the case.\n\nA psychic awakening of some sort is sure to take place and according to the stage of unfoldment reached by the soul, this may range from a romantic episode to poetic or musical inspiration or clairaudience; or, on the other hand, some weird experience connected with the sea or with haunted houses.\n\nIn any case the experience is sure to be accompanied with either incarceration or restriction of some kind: at least the renunciation of some long coveted or dearly prized object. For Neptune is peculiarly connected with the *soul* of things."
+    },
+    "progressed.aspect.Sun.Neptune.semi-sextile": {
+      "id": "solar_aspect_098",
+      "sourceNumber": 98,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "subtle",
+      "strength": "weak",
+      "coreMeaning": "Obscure or hidden experience involving institutions, secret activity, or recondite themes.",
+      "themes": [
+        "secrecy",
+        "institutions",
+        "hospitals",
+        "hidden affairs",
+        "mystery"
+      ],
+      "constructive": [
+        "Work carefully with hidden or institutional matters",
+        "Observe subtle patterns"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "semi-sextile"
+      ],
+      "quote": "The general nature of this influence will approximate to that of the conjunction as to the kind of experience denoted, but it is likely to be still more recondite and obscure.\n\nEmployment as a secret service agent would be an appropriate experience under this aspect for one whose nativity denoted such capacities; in a more ordinary horoscope, affairs connected with hospitals, workhouses or mortuaries."
+    },
+    "progressed.aspect.Sun.Neptune.semi-square": {
+      "id": "solar_aspect_099",
+      "sourceNumber": 99,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "weak",
+      "coreMeaning": "Mysterious setbacks and psychic interference of an unusual kind.",
+      "themes": [
+        "mysterious trouble",
+        "psychic matters",
+        "misfortune"
+      ],
+      "constructive": [
+        "Maintain clear boundaries",
+        "Avoid overreacting to strange circumstances"
+      ],
+      "cautions": [
+        "Psychic or emotional disturbance"
+      ],
+      "conditions": [
+        "Usually limited unless natal Neptune is heavily afflicted"
+      ],
+      "aspects": [
+        "semi-square"
+      ],
+      "quote": "This denotes a period of mysterious misfortunes which dog the native’s footsteps in a peculiar and unprecedented way. Psychic matters are sure to enter into the life in some way and affect it injuriously, but the aspect, in any case, is a weak one, and unless the planet is heavily afflicted at birth little serious trouble is to be anticipated."
+    },
+    "progressed.aspect.Sun.Neptune.sextile": {
+      "id": "solar_aspect_100",
+      "sourceNumber": 100,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Mysticism, creativity, contentment, and surprising good fortune.",
+      "themes": [
+        "mysticism",
+        "poetry",
+        "music",
+        "contentment",
+        "good fortune"
+      ],
+      "constructive": [
+        "Create",
+        "Study spiritual subjects",
+        "Use inspiration productively"
+      ],
+      "cautions": [
+        "Refined sensuousness if expressed materially"
+      ],
+      "conditions": [
+        "Depends on supportive natal aspects"
+      ],
+      "aspects": [
+        "sextile"
+      ],
+      "quote": "This is probably the most favourable influence of all, denoting (if other aspects are favourable) an idyllic period of blissful contentment. The musical or poetical faculty will be strongly awakened, and a pronounced tendency to mysticism—or refined sensuousness, according to the type of horoscope—will be displayed.\n\nIn a material sense it denotes a period of surprising ‘good luck’; but this of course depends on the aspects at birth."
+    },
+    "progressed.aspect.Sun.Neptune.square": {
+      "id": "solar_aspect_101",
+      "sourceNumber": 101,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "strong",
+      "coreMeaning": "Confusion, emotional depression, physical sensitivity, and weakened moral or bodily resilience when Neptune is afflicted.",
+      "themes": [
+        "confusion",
+        "depression",
+        "health",
+        "emotion",
+        "rash action"
+      ],
+      "constructive": [
+        "Avoid rash action",
+        "Seek clarity",
+        "Protect health and judgment"
+      ],
+      "cautions": [
+        "Serious destabilisation when natal Neptune is afflicted"
+      ],
+      "conditions": [],
+      "aspects": [
+        "square"
+      ],
+      "quote": "This is the most evil aspect of the Sun to Neptune. If the latter is afflicted at birth the effects are likely to be most serious. An involved state of affairs in every phase of the activities is sure to ensue, and a deep depression of the emotional nature may lead to some rash act.\n\nNeurotics and other physically sensitive persons are the most likely to feel the worst effect of this aspect which tends to weaken the moral fibre and to ruin the constitution: this only when Neptune is much afflicted at birth."
+    },
+    "progressed.aspect.Sun.Neptune.trine": {
+      "id": "solar_aspect_102",
+      "sourceNumber": 102,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "exceptional",
+      "coreMeaning": "Unusual prosperity, blessing, religious exaltation, and intense creative fertility.",
+      "themes": [
+        "prosperity",
+        "blessing",
+        "religion",
+        "creativity",
+        "music",
+        "poetry"
+      ],
+      "constructive": [
+        "Use abundance creatively or spiritually",
+        "Accept unusual opportunities"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Requires other influences to be favourable"
+      ],
+      "aspects": [
+        "trine"
+      ],
+      "quote": "Other influences being favourable, this aspect inaugurates ‘halcyon days.’ Prosperity of the most unusual description—a ‘boom,’ to use a slang word—may be looked for, unless the aspects at birth preclude such good fortune.\n\nRiches and favours will be showered on the native and his cup will be full to overflowing. This as regards material welfare: to those who are more spiritually inclined this period is one of religious exaltation and great blessing in a spiritual sense, or of extreme creative fecundity in the case of a poet or musician."
+    },
+    "progressed.aspect.Sun.Neptune.sesquiquadrate": {
+      "id": "solar_aspect_103",
+      "sourceNumber": 103,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Delays, disappointment, and strange persistent difficulty.",
+      "themes": [
+        "delay",
+        "disappointment",
+        "unusual experiences",
+        "memory"
+      ],
+      "constructive": [
+        "Practice patience",
+        "Avoid forcing resolution"
+      ],
+      "cautions": [
+        "Persistent frustration"
+      ],
+      "conditions": [],
+      "aspects": [
+        "sesquiquadrate"
+      ],
+      "quote": "This is similar in effect to the semi-square. Delays, disappointments, and tantalising experiences of an unusual kind may be anticipated, and the period is one that is likely to live in the memory as unique in its way, grinding, as it were, ‘slowly yet exceedingly small.’"
+    },
+    "progressed.aspect.Sun.Neptune.quincunx": {
+      "id": "solar_aspect_104",
+      "sourceNumber": 104,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "developmental",
+      "strength": "moderate",
+      "coreMeaning": "A subtle, longer, more far-reaching purification process.",
+      "themes": [
+        "purification",
+        "duration",
+        "spiritual development",
+        "subtle change"
+      ],
+      "constructive": [
+        "Allow gradual purification",
+        "Release attachments that obstruct growth"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "quincunx"
+      ],
+      "quote": "This, the quincunx or ‘inconjunct,’ is similar in its effect to the semi-sextile, but is somewhat longer in duration and more far-reaching in its effects.\n\nIts true mission is to effect a purification of the individuality."
+    },
+    "progressed.aspect.Sun.Neptune.opposition": {
+      "id": "solar_aspect_105",
+      "sourceNumber": 105,
+      "mover": "Sun",
+      "target": "Neptune",
+      "targetState": "radical",
+      "valence": "critical",
+      "strength": "strong",
+      "coreMeaning": "Profound spiritual and psychological testing that can dissolve cherished plans and expose weakness.",
+      "themes": [
+        "spiritual test",
+        "collapse",
+        "lower nature",
+        "perseverance",
+        "purification"
+      ],
+      "constructive": [
+        "Continue striving",
+        "Release false structures",
+        "Strengthen inner discipline"
+      ],
+      "cautions": [
+        "Disillusionment",
+        "Collapse of plans",
+        "Psychological overwhelm"
+      ],
+      "conditions": [],
+      "aspects": [
+        "opposition"
+      ],
+      "quote": "This is, perhaps, the most tremendous obstacle that the individuality has to cope with; for the soul is here weighed in the balances—and too often ‘found wanting.’ All the antagonistic forces of the lower nature, or the undeveloped part of man, rise up and seek to swamp him, and powerful indeed must he be if he can breast them.\n\nOnly the pure can do so, and even they must prepare to see their most cherished schemes totter in apparent confusion to the ground. Failure, however, consists not in failing to maintain, but in ceasing to strive; and for the overcomer the reward is great.\n\n### Footnotes on Neptune\n\n* The elusive character of Neptune’s influence renders it extremely difficult to convey in words any idea of its nature. The reader will do well to refer to the information given in *The Art of Synthesis*, as well as to the interpretation of the aspects to Neptune given in this book.\n\n† See also Sun conjunction Neptune above.\n\n---"
+    },
+    "progressed.aspect.Sun.Sun.sextile": {
+      "id": "solar_aspect_106",
+      "sourceNumber": 106,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Vitality, authority support, new responsibility, and possible recognition.",
+      "themes": [
+        "vitality",
+        "career",
+        "authority",
+        "recognition",
+        "enterprise"
+      ],
+      "constructive": [
+        "Take on responsibility",
+        "Begin enterprises",
+        "Use support from superiors"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "parallel"
+      ],
+      "quote": "These are fortunate influences for health and affairs. They increase the vitality and bodily energy, and with it bestow additional powers to cope with the ordinary occupation, whether business, profession, or otherwise.\n\nIt is a good time for undertaking new responsibilities or beginning new enterprises. It brings good fortune through superiors, the great, and those in authority, and friends among people ruled by the Sun.\n\nIn some cases there follows some amount of public recognition, honour, or fame. When falling among a train of good directions it marks a very successful period."
+    },
+    "progressed.aspect.Sun.Sun.parallel": {
+      "id": "solar_aspect_106",
+      "sourceNumber": 106,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "strong",
+      "coreMeaning": "Vitality, authority support, new responsibility, and possible recognition.",
+      "themes": [
+        "vitality",
+        "career",
+        "authority",
+        "recognition",
+        "enterprise"
+      ],
+      "constructive": [
+        "Take on responsibility",
+        "Begin enterprises",
+        "Use support from superiors"
+      ],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "parallel"
+      ],
+      "quote": "These are fortunate influences for health and affairs. They increase the vitality and bodily energy, and with it bestow additional powers to cope with the ordinary occupation, whether business, profession, or otherwise.\n\nIt is a good time for undertaking new responsibilities or beginning new enterprises. It brings good fortune through superiors, the great, and those in authority, and friends among people ruled by the Sun.\n\nIn some cases there follows some amount of public recognition, honour, or fame. When falling among a train of good directions it marks a very successful period."
+    },
+    "progressed.aspect.Sun.Sun.semi-sextile": {
+      "id": "solar_aspect_107",
+      "sourceNumber": 107,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "A milder version of paragraph 106, with modest vitality and opportunity.",
+      "themes": [
+        "vitality",
+        "opportunity",
+        "career"
+      ],
+      "constructive": [
+        "Use small openings constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Produces little if surrounded by adverse directions"
+      ],
+      "aspects": [
+        "semi-sextile",
+        "quintile"
+      ],
+      "quote": "These are similar in nature to the previous paragraph but much less important, and not so much can be expected of them. If falling among bad directions very little will result."
+    },
+    "progressed.aspect.Sun.Sun.quintile": {
+      "id": "solar_aspect_107",
+      "sourceNumber": 107,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "favourable",
+      "strength": "weak",
+      "coreMeaning": "A milder version of paragraph 106, with modest vitality and opportunity.",
+      "themes": [
+        "vitality",
+        "opportunity",
+        "career"
+      ],
+      "constructive": [
+        "Use small openings constructively"
+      ],
+      "cautions": [],
+      "conditions": [
+        "Produces little if surrounded by adverse directions"
+      ],
+      "aspects": [
+        "semi-sextile",
+        "quintile"
+      ],
+      "quote": "These are similar in nature to the previous paragraph but much less important, and not so much can be expected of them. If falling among bad directions very little will result."
+    },
+    "progressed.aspect.Sun.Sun.semi-square": {
+      "id": "solar_aspect_108",
+      "sourceNumber": 108,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Reduced vitality, health disturbance, delay, occupational loss, and reputation difficulty.",
+      "themes": [
+        "health",
+        "career",
+        "reputation",
+        "delay",
+        "superiors",
+        "friends"
+      ],
+      "constructive": [
+        "Protect health",
+        "Avoid reputation risks",
+        "Manage occupational setbacks conservatively"
+      ],
+      "cautions": [
+        "Loss of credit",
+        "Disfavour of superiors",
+        "Sorrow through friends"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square",
+        "square"
+      ],
+      "quote": "These tend to lessen or disorganise the vitality and to disturb the health. They bring delay or loss in connection with occupation and affairs; the public position or reputation may suffer, and there may be loss of credit, the disfavour of superiors, and sorrow through friends.\n\n---\n\n\nThis table is an editorial abstraction from Leo’s delineations for use in Orbo’s interpretation layer. It is not part of Leo’s original text.\n\n| No. | Target | Aspect | General valence | Core interpretation |\n|---:|---|---|---|---|\n| 37 | Moon | parallel | favourable | Beneficial change, attachments, domestic and emotional development, honour |\n| 38 | Moon | conjunction | mixed-positive / critical | Major life change, vitality, emotional activation, crisis leading to advancement |\n| 39 | Moon | semi-sextile | mildly favourable | Personal benefit, better prospects, domestic harmony, modest financial improvement |\n| 40 | Moon | semi-square | unfavourable | Difficult changes, health strain, financial and domestic trouble |\n| 41 | Moon | sextile | strongly favourable | Success, health, intuition, beneficial attachments, favourable travel or relocation |\n| 42 | Moon | square | strongly unfavourable | Illness, grief, domestic conflict, separation, testing through adversity |\n| 43 | Moon | trine | strongly favourable | Happiness, enterprise, investment, advancement, lasting unions, recognition |\n| 44 | Moon | sesquiquadrate | unfavourable | Health and reputation strain, financial loss, grief, avoid risk |\n| 45 | Moon | quincunx | mildly favourable / health caution | Material benefit and change with bodily adjustment and feverish tendency |\n| 46 | Moon | opposition | critical / unfavourable | Culmination, separations, broken ties, emotional crisis, psychic development |\n| 47 | Mercury | parallel/conjunction/semi-sextile/sextile/trine | favourable | Mental quickening, writing, travel, diplomacy, adaptation |\n| 48 | Mercury | semi-square/square | unfavourable | Anxiety, errors, communication trouble, delayed fruition |\n| 49 | Venus | parallel | favourable | Pleasure, prosperity, finance, social expansion, union |\n| 50 | Venus | conjunction | strongly favourable | Affection, happiness, friendships, social gain, marriage potential |\n| 51 | Venus | semi-sextile | mildly favourable | Finance, social ease, attachments, profitable connections |\n| 52 | Venus | semi-square/square | unfavourable | Financial drain, emotional disappointment, severed ties |\n| 53 | Venus | sextile | strongly favourable | Financial and social improvement, unions, recognition, happiness |\n| 54 | Venus | square | unfavourable | Same interpretation as paragraph 52 |\n| 55 | Venus | trine | strongly favourable | Prosperity, successful investments, affection, social expansion |\n| 56 | Mars | parallel | strongly unfavourable | Accident and inflammatory risk, impulsiveness, provocation |\n| 57 | Mars | conjunction | strongly unfavourable / energetic | Heat, aggression, daring, enterprise, need for restraint |\n| 58 | Mars | semi-sextile | mildly favourable | Courage, activity, enterprise, constructive assertiveness |\n| 59 | Mars | semi-square | unfavourable | Irritability, impulsive trouble, financial error, inflammatory health strain |\n| 60 | Mars | sextile | strongly favourable | Enterprise, courage, travel, change, executive power |\n| 61 | Mars | square | strongly unfavourable | Accidents, conflict, domestic trouble, reputation risk, failed undertakings |\n| 62 | Mars | trine | favourable | Courage, activity, adventurousness, eventful attachments |\n| 63 | Mars | sesquiquadrate | strongly unfavourable | Accidents, inflammation, losses, disputes, avoid travel and speculation |\n| 64 | Mars | quincunx | unfavourable / conditional | Health vulnerability, rashness, family danger, moderation required |\n| 65 | Mars | opposition | strongly critical | Danger, accidents, inflammatory illness, conflict between will and desire |\n| 66 | Jupiter | parallel | strongly favourable | Long prosperity cycle, health, social and financial success |\n| 67 | Jupiter | conjunction | strongly favourable | Success, gain, travel, prosperity, beneficial ties; caution against excess |\n| 68 | Jupiter | semi-sextile | mildly favourable | Gain, new friends, social advantage, new undertakings |\n| 69 | Jupiter | semi-square | mildly unfavourable | Delay, financial difficulty, social disappointment, avoid expansion |\n| 70 | Jupiter | sextile | strongly favourable | Prosperity, fulfilled ambitions, travel, successful undertakings |\n| 71 | Jupiter | square | unfavourable | Financial and social losses, domestic trouble, deception, pride tested |\n| 72 | Jupiter | trine | exceptionally favourable | Major opportunity, prosperity, advancement, philosophy, life epoch |\n| 73 | Jupiter | sesquiquadrate | unfavourable | Loss, excess, health strain, separation, avoid speculation |\n| 74 | Jupiter | quincunx | critical / mixed | Financial strain, expansion versus moral restraint, speculative caution |\n| 75 | Jupiter | opposition | strongly unfavourable | Opposition, legal trouble, illusion, loss, social disadvantage |\n| 76 | Saturn | parallel | strongly unfavourable | Long restriction, debility, sorrow, delay, prolonged trials |\n| 77 | Saturn | conjunction | mixed / critical | Responsibility, anxiety, ambition, endurance, character consolidation |\n| 78 | Saturn | semi-sextile | weakly favourable | Stability, caution, helpful elders, modest material benefit |\n| 79 | Saturn | semi-square | unfavourable | Delay, loss, discouragement, fraud risk, difficult mental attitude |\n| 80 | Saturn | sextile | strongly favourable | Responsibility, reliability, concentration, honour, secure position |\n| 81 | Saturn | square | strongly unfavourable | Grief, domestic trouble, chronic strain, worry, restriction |\n| 82 | Saturn | trine | favourable | Permanence, responsibility, reputation, sound investments, discipline |\n| 83 | Saturn | sesquiquadrate | unfavourable | Health weakness, separation, discouragement, difficult relations with authority |\n| 84 | Saturn | quincunx | mildly unfavourable / developmental | Debility, health caution, perseverance through balanced restraint |\n| 85 | Saturn | opposition | strongly critical | Obstacles, loss, depression, financial difficulty, moral testing |\n| 86 | Uranus | parallel | mixed | Long-term mental awakening, originality, occult interests, irritability |\n| 87 | Uranus | conjunction | critical / transformative | Sudden change, expanded consciousness, reform, unusual ties |\n| 88 | Uranus | semi-sextile | mildly favourable | New thought, occult study, inventiveness, unexpected benefit |\n| 89 | Uranus | semi-square | unfavourable | Sudden change, irritability, relationship tension, nervous unrest |\n| 90 | Uranus | sextile | strongly favourable | Unexpected gain, originality, travel, reform, metaphysical study |\n| 91 | Uranus | square | strongly unfavourable | Sudden reversals, separations, nervous strain, postpone major moves |\n| 92 | Uranus | trine | strongly favourable | Sudden gain, invention, reform, travel, advanced study |\n| 93 | Uranus | sesquiquadrate | unfavourable | Sudden trouble, nervous strain, criticism, separation |\n| 94 | Uranus | quincunx | mixed / developmental | Separation, mental change, health adjustment, lasting consciousness expansion |\n| 95 | Uranus | opposition | strongly critical | Sudden conflict, separation, rashness, destabilisation, consciousness expansion |\n| 96 | Neptune | parallel | subtle / mixed | Long-term version of Neptune conjunction; background psychic influence |\n| 97 | Neptune | conjunction | mysterious / transformative | Psychic awakening, inspiration, restriction, renunciation |\n| 98 | Neptune | semi-sextile | subtle / mixed | Obscure experiences, institutions, secret or hidden affairs |\n| 99 | Neptune | semi-square | mildly unfavourable | Mysterious setbacks, psychic interference, unusual misfortune |\n| 100 | Neptune | sextile | strongly favourable | Mysticism, creativity, contentment, surprising good fortune |\n| 101 | Neptune | square | strongly unfavourable | Confusion, emotional depression, weakened constitution when natal Neptune is afflicted |\n| 102 | Neptune | trine | exceptionally favourable | Unusual prosperity, blessing, religious exaltation, creative fecundity |\n| 103 | Neptune | sesquiquadrate | unfavourable | Delay, disappointment, strange persistent difficulty |\n| 104 | Neptune | quincunx | developmental | Purification, subtle long-duration transformation |\n| 105 | Neptune | opposition | strongly critical | Profound spiritual and psychological testing, collapse of cherished schemes |\n| 106 | Sun | sextile/parallel | favourable | Vitality, recognition, authority support, new responsibilities |\n| 107 | Sun | semi-sextile/quintile | mildly favourable | Weak version of 106, modest vitality and opportunity |\n| 108 | Sun | semi-square/square | unfavourable | Reduced vitality, delay, occupational and reputation difficulty |"
+    },
+    "progressed.aspect.Sun.Sun.square": {
+      "id": "solar_aspect_108",
+      "sourceNumber": 108,
+      "mover": "Sun",
+      "target": "Sun",
+      "targetState": "radical",
+      "valence": "unfavourable",
+      "strength": "moderate",
+      "coreMeaning": "Reduced vitality, health disturbance, delay, occupational loss, and reputation difficulty.",
+      "themes": [
+        "health",
+        "career",
+        "reputation",
+        "delay",
+        "superiors",
+        "friends"
+      ],
+      "constructive": [
+        "Protect health",
+        "Avoid reputation risks",
+        "Manage occupational setbacks conservatively"
+      ],
+      "cautions": [
+        "Loss of credit",
+        "Disfavour of superiors",
+        "Sorrow through friends"
+      ],
+      "conditions": [],
+      "aspects": [
+        "semi-square",
+        "square"
+      ],
+      "quote": "These tend to lessen or disorganise the vitality and to disturb the health. They bring delay or loss in connection with occupation and affairs; the public position or reputation may suffer, and there may be loss of credit, the disfavour of superiors, and sorrow through friends.\n\n---\n\n\nThis table is an editorial abstraction from Leo’s delineations for use in Orbo’s interpretation layer. It is not part of Leo’s original text.\n\n| No. | Target | Aspect | General valence | Core interpretation |\n|---:|---|---|---|---|\n| 37 | Moon | parallel | favourable | Beneficial change, attachments, domestic and emotional development, honour |\n| 38 | Moon | conjunction | mixed-positive / critical | Major life change, vitality, emotional activation, crisis leading to advancement |\n| 39 | Moon | semi-sextile | mildly favourable | Personal benefit, better prospects, domestic harmony, modest financial improvement |\n| 40 | Moon | semi-square | unfavourable | Difficult changes, health strain, financial and domestic trouble |\n| 41 | Moon | sextile | strongly favourable | Success, health, intuition, beneficial attachments, favourable travel or relocation |\n| 42 | Moon | square | strongly unfavourable | Illness, grief, domestic conflict, separation, testing through adversity |\n| 43 | Moon | trine | strongly favourable | Happiness, enterprise, investment, advancement, lasting unions, recognition |\n| 44 | Moon | sesquiquadrate | unfavourable | Health and reputation strain, financial loss, grief, avoid risk |\n| 45 | Moon | quincunx | mildly favourable / health caution | Material benefit and change with bodily adjustment and feverish tendency |\n| 46 | Moon | opposition | critical / unfavourable | Culmination, separations, broken ties, emotional crisis, psychic development |\n| 47 | Mercury | parallel/conjunction/semi-sextile/sextile/trine | favourable | Mental quickening, writing, travel, diplomacy, adaptation |\n| 48 | Mercury | semi-square/square | unfavourable | Anxiety, errors, communication trouble, delayed fruition |\n| 49 | Venus | parallel | favourable | Pleasure, prosperity, finance, social expansion, union |\n| 50 | Venus | conjunction | strongly favourable | Affection, happiness, friendships, social gain, marriage potential |\n| 51 | Venus | semi-sextile | mildly favourable | Finance, social ease, attachments, profitable connections |\n| 52 | Venus | semi-square/square | unfavourable | Financial drain, emotional disappointment, severed ties |\n| 53 | Venus | sextile | strongly favourable | Financial and social improvement, unions, recognition, happiness |\n| 54 | Venus | square | unfavourable | Same interpretation as paragraph 52 |\n| 55 | Venus | trine | strongly favourable | Prosperity, successful investments, affection, social expansion |\n| 56 | Mars | parallel | strongly unfavourable | Accident and inflammatory risk, impulsiveness, provocation |\n| 57 | Mars | conjunction | strongly unfavourable / energetic | Heat, aggression, daring, enterprise, need for restraint |\n| 58 | Mars | semi-sextile | mildly favourable | Courage, activity, enterprise, constructive assertiveness |\n| 59 | Mars | semi-square | unfavourable | Irritability, impulsive trouble, financial error, inflammatory health strain |\n| 60 | Mars | sextile | strongly favourable | Enterprise, courage, travel, change, executive power |\n| 61 | Mars | square | strongly unfavourable | Accidents, conflict, domestic trouble, reputation risk, failed undertakings |\n| 62 | Mars | trine | favourable | Courage, activity, adventurousness, eventful attachments |\n| 63 | Mars | sesquiquadrate | strongly unfavourable | Accidents, inflammation, losses, disputes, avoid travel and speculation |\n| 64 | Mars | quincunx | unfavourable / conditional | Health vulnerability, rashness, family danger, moderation required |\n| 65 | Mars | opposition | strongly critical | Danger, accidents, inflammatory illness, conflict between will and desire |\n| 66 | Jupiter | parallel | strongly favourable | Long prosperity cycle, health, social and financial success |\n| 67 | Jupiter | conjunction | strongly favourable | Success, gain, travel, prosperity, beneficial ties; caution against excess |\n| 68 | Jupiter | semi-sextile | mildly favourable | Gain, new friends, social advantage, new undertakings |\n| 69 | Jupiter | semi-square | mildly unfavourable | Delay, financial difficulty, social disappointment, avoid expansion |\n| 70 | Jupiter | sextile | strongly favourable | Prosperity, fulfilled ambitions, travel, successful undertakings |\n| 71 | Jupiter | square | unfavourable | Financial and social losses, domestic trouble, deception, pride tested |\n| 72 | Jupiter | trine | exceptionally favourable | Major opportunity, prosperity, advancement, philosophy, life epoch |\n| 73 | Jupiter | sesquiquadrate | unfavourable | Loss, excess, health strain, separation, avoid speculation |\n| 74 | Jupiter | quincunx | critical / mixed | Financial strain, expansion versus moral restraint, speculative caution |\n| 75 | Jupiter | opposition | strongly unfavourable | Opposition, legal trouble, illusion, loss, social disadvantage |\n| 76 | Saturn | parallel | strongly unfavourable | Long restriction, debility, sorrow, delay, prolonged trials |\n| 77 | Saturn | conjunction | mixed / critical | Responsibility, anxiety, ambition, endurance, character consolidation |\n| 78 | Saturn | semi-sextile | weakly favourable | Stability, caution, helpful elders, modest material benefit |\n| 79 | Saturn | semi-square | unfavourable | Delay, loss, discouragement, fraud risk, difficult mental attitude |\n| 80 | Saturn | sextile | strongly favourable | Responsibility, reliability, concentration, honour, secure position |\n| 81 | Saturn | square | strongly unfavourable | Grief, domestic trouble, chronic strain, worry, restriction |\n| 82 | Saturn | trine | favourable | Permanence, responsibility, reputation, sound investments, discipline |\n| 83 | Saturn | sesquiquadrate | unfavourable | Health weakness, separation, discouragement, difficult relations with authority |\n| 84 | Saturn | quincunx | mildly unfavourable / developmental | Debility, health caution, perseverance through balanced restraint |\n| 85 | Saturn | opposition | strongly critical | Obstacles, loss, depression, financial difficulty, moral testing |\n| 86 | Uranus | parallel | mixed | Long-term mental awakening, originality, occult interests, irritability |\n| 87 | Uranus | conjunction | critical / transformative | Sudden change, expanded consciousness, reform, unusual ties |\n| 88 | Uranus | semi-sextile | mildly favourable | New thought, occult study, inventiveness, unexpected benefit |\n| 89 | Uranus | semi-square | unfavourable | Sudden change, irritability, relationship tension, nervous unrest |\n| 90 | Uranus | sextile | strongly favourable | Unexpected gain, originality, travel, reform, metaphysical study |\n| 91 | Uranus | square | strongly unfavourable | Sudden reversals, separations, nervous strain, postpone major moves |\n| 92 | Uranus | trine | strongly favourable | Sudden gain, invention, reform, travel, advanced study |\n| 93 | Uranus | sesquiquadrate | unfavourable | Sudden trouble, nervous strain, criticism, separation |\n| 94 | Uranus | quincunx | mixed / developmental | Separation, mental change, health adjustment, lasting consciousness expansion |\n| 95 | Uranus | opposition | strongly critical | Sudden conflict, separation, rashness, destabilisation, consciousness expansion |\n| 96 | Neptune | parallel | subtle / mixed | Long-term version of Neptune conjunction; background psychic influence |\n| 97 | Neptune | conjunction | mysterious / transformative | Psychic awakening, inspiration, restriction, renunciation |\n| 98 | Neptune | semi-sextile | subtle / mixed | Obscure experiences, institutions, secret or hidden affairs |\n| 99 | Neptune | semi-square | mildly unfavourable | Mysterious setbacks, psychic interference, unusual misfortune |\n| 100 | Neptune | sextile | strongly favourable | Mysticism, creativity, contentment, surprising good fortune |\n| 101 | Neptune | square | strongly unfavourable | Confusion, emotional depression, weakened constitution when natal Neptune is afflicted |\n| 102 | Neptune | trine | exceptionally favourable | Unusual prosperity, blessing, religious exaltation, creative fecundity |\n| 103 | Neptune | sesquiquadrate | unfavourable | Delay, disappointment, strange persistent difficulty |\n| 104 | Neptune | quincunx | developmental | Purification, subtle long-duration transformation |\n| 105 | Neptune | opposition | strongly critical | Profound spiritual and psychological testing, collapse of cherished schemes |\n| 106 | Sun | sextile/parallel | favourable | Vitality, recognition, authority support, new responsibilities |\n| 107 | Sun | semi-sextile/quintile | mildly favourable | Weak version of 106, modest vitality and opportunity |\n| 108 | Sun | semi-square/square | unfavourable | Reduced vitality, delay, occupational and reputation difficulty |"
+    }
+  }
+}

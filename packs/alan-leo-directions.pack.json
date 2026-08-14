@@ -1,0 +1,1658 @@
+{
+  "id": "alan-leo-directions",
+  "attribution": "Alan Leo, The Progressed Horoscope (1906), Ch. XVI (Directions to MC/Ascendant)",
+  "attributionUrl": "https://archive.org/details/bub_gb_OY7ZLx4jQmcC",
+  "schema": "orbo.interpretation.directions_to_angles.alan_leo.v1",
+  "engineRules": {
+    "angle_function": {
+      "Ascendant": "Directions to the Ascendant primarily affect general health and may also produce mental disturbances.",
+      "Midheaven": "Directions to the Midheaven primarily affect honour, employment, reputation and parents."
+    },
+    "timing_sensitivity": "Leo states that an error of four minutes in birth time corresponds to about one year of error in directions to the angles, whether Primary or Secondary.",
+    "rectification_note": "Leo explicitly presents directions of the Ascendant to Saturn or Mars as potentially useful in birth-time rectification.",
+    "natal_condition_modifier": "The natal condition of the planet must modify the delineation. An afflicted benefic may yield comparatively little good under a favourable direction, while a dignified and well-aspected malefic may produce comparatively little evil.",
+    "aspect_angles_degrees": {
+      "conjunction": 0,
+      "sextile": 60,
+      "square": 90,
+      "trine": 120,
+      "opposition": 180
+    },
+    "grouped_aspect_rule": "Where Leo groups multiple aspect geometries under one numbered delineation, apply the record only when Orbo calculates one of the explicitly listed geometries.",
+    "neptune_conjunction_rule": "For records 373, 391 and 400 Leo states that the conjunction is doubtful in effect; it is therefore not included as a matching geometry."
+  },
+  "entries": {
+    "progressed.aspect.Moon.Ascendant.square": {
+      "id": "ascendant_direction_365",
+      "sourceNumber": 365,
+      "mover": "Moon",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Enemies, travel difficulties, depleted vitality and health vulnerability are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Difficulties in connection with enemies. Liability to suffer through cancerous or tumorous diseases if the nativity shows any likelihood of this. Difficulties in connection with voyages or travel: a very unpopular period generally, in which health suffers through vitality or want of it, and also through depletion."
+    },
+    "progressed.aspect.Moon.Ascendant.opposition": {
+      "id": "ascendant_direction_365",
+      "sourceNumber": 365,
+      "mover": "Moon",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Enemies, travel difficulties, depleted vitality and health vulnerability are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Difficulties in connection with enemies. Liability to suffer through cancerous or tumorous diseases if the nativity shows any likelihood of this. Difficulties in connection with voyages or travel: a very unpopular period generally, in which health suffers through vitality or want of it, and also through depletion."
+    },
+    "progressed.aspect.Mercury.Ascendant.square": {
+      "id": "ascendant_direction_366",
+      "sourceNumber": 366,
+      "mover": "Mercury",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Nervous and bowel troubles, fraud and difficulties through enemies are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Nervous disorders. Bowel troubles. Liability to suffer through fraud or enemies."
+    },
+    "progressed.aspect.Mercury.Ascendant.opposition": {
+      "id": "ascendant_direction_366",
+      "sourceNumber": 366,
+      "mover": "Mercury",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Nervous and bowel troubles, fraud and difficulties through enemies are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Nervous disorders. Bowel troubles. Liability to suffer through fraud or enemies."
+    },
+    "progressed.aspect.Venus.Ascendant.square": {
+      "id": "ascendant_direction_367",
+      "sourceNumber": 367,
+      "mover": "Venus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Extravagance, relational troubles and difficulties concerning affection or the generative system are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Losses through extravagance or intemperate habits; troubles through women, and serious difficulties where affections and attachments are concerned. Difficulties in connection with the generative system."
+    },
+    "progressed.aspect.Venus.Ascendant.opposition": {
+      "id": "ascendant_direction_367",
+      "sourceNumber": 367,
+      "mover": "Venus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Extravagance, relational troubles and difficulties concerning affection or the generative system are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Losses through extravagance or intemperate habits; troubles through women, and serious difficulties where affections and attachments are concerned. Difficulties in connection with the generative system."
+    },
+    "progressed.aspect.Sun.Ascendant.square": {
+      "id": "ascendant_direction_368",
+      "sourceNumber": 368,
+      "mover": "Sun",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Reduced stamina, weakened enterprise and stagnation are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Lack of stamina, both as regards health and enterprise; tendency to stagnation in ideals; poverty of blood."
+    },
+    "progressed.aspect.Sun.Ascendant.opposition": {
+      "id": "ascendant_direction_368",
+      "sourceNumber": 368,
+      "mover": "Sun",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Reduced stamina, weakened enterprise and stagnation are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Lack of stamina, both as regards health and enterprise; tendency to stagnation in ideals; poverty of blood."
+    },
+    "progressed.aspect.Mars.Ascendant.conjunction": {
+      "id": "ascendant_direction_369",
+      "sourceNumber": 369,
+      "mover": "Mars",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Inflammation, accidents, disputes, injury and acute health strain are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Feverish and inflammatory complaints; liability to accidents; very adverse time for disputes; liability to suffer from the disfavour of others and to have some violent or unexpected hurt or injury. This is a very adverse influence where health is concerned."
+    },
+    "progressed.aspect.Mars.Ascendant.square": {
+      "id": "ascendant_direction_369",
+      "sourceNumber": 369,
+      "mover": "Mars",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Inflammation, accidents, disputes, injury and acute health strain are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Feverish and inflammatory complaints; liability to accidents; very adverse time for disputes; liability to suffer from the disfavour of others and to have some violent or unexpected hurt or injury. This is a very adverse influence where health is concerned."
+    },
+    "progressed.aspect.Mars.Ascendant.opposition": {
+      "id": "ascendant_direction_369",
+      "sourceNumber": 369,
+      "mover": "Mars",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Inflammation, accidents, disputes, injury and acute health strain are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Feverish and inflammatory complaints; liability to accidents; very adverse time for disputes; liability to suffer from the disfavour of others and to have some violent or unexpected hurt or injury. This is a very adverse influence where health is concerned."
+    },
+    "progressed.aspect.Jupiter.Ascendant.square": {
+      "id": "ascendant_direction_370",
+      "sourceNumber": 370,
+      "mover": "Jupiter",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Excess, misplaced optimism, false friends and financial or health troubles are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Blood disorders; liver complaints; many troubles either through false friends or extravagances. Liability for affairs to go wrong through intemperance, unwise enthusiasm, undue hopefulness, etc."
+    },
+    "progressed.aspect.Jupiter.Ascendant.opposition": {
+      "id": "ascendant_direction_370",
+      "sourceNumber": 370,
+      "mover": "Jupiter",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Excess, misplaced optimism, false friends and financial or health troubles are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Blood disorders; liver complaints; many troubles either through false friends or extravagances. Liability for affairs to go wrong through intemperance, unwise enthusiasm, undue hopefulness, etc."
+    },
+    "progressed.aspect.Saturn.Ascendant.conjunction": {
+      "id": "ascendant_direction_371",
+      "sourceNumber": 371,
+      "mover": "Saturn",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Cold, lingering ailments, setbacks, elderly persons and reputation or family difficulties are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to accidents; many colds or a tendency to take chill easily, and to disorders of a lingering character. Troubles in connection with elderly persons, and a time when all affairs appear to go wrong, particularly in connection with honour and reputation and family affairs."
+    },
+    "progressed.aspect.Saturn.Ascendant.square": {
+      "id": "ascendant_direction_371",
+      "sourceNumber": 371,
+      "mover": "Saturn",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Cold, lingering ailments, setbacks, elderly persons and reputation or family difficulties are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to accidents; many colds or a tendency to take chill easily, and to disorders of a lingering character. Troubles in connection with elderly persons, and a time when all affairs appear to go wrong, particularly in connection with honour and reputation and family affairs."
+    },
+    "progressed.aspect.Saturn.Ascendant.opposition": {
+      "id": "ascendant_direction_371",
+      "sourceNumber": 371,
+      "mover": "Saturn",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Cold, lingering ailments, setbacks, elderly persons and reputation or family difficulties are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to accidents; many colds or a tendency to take chill easily, and to disorders of a lingering character. Troubles in connection with elderly persons, and a time when all affairs appear to go wrong, particularly in connection with honour and reputation and family affairs."
+    },
+    "progressed.aspect.Uranus.Ascendant.conjunction": {
+      "id": "ascendant_direction_372",
+      "sourceNumber": 372,
+      "mover": "Uranus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden, unusual and nervous disturbances, including possible operations or abrupt events, are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Strange and peculiar complaints; nervous disorders, liability to undergo operation, sudden actions, peculiar happenings, and a somewhat unfavourable period in all affairs."
+    },
+    "progressed.aspect.Uranus.Ascendant.square": {
+      "id": "ascendant_direction_372",
+      "sourceNumber": 372,
+      "mover": "Uranus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden, unusual and nervous disturbances, including possible operations or abrupt events, are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Strange and peculiar complaints; nervous disorders, liability to undergo operation, sudden actions, peculiar happenings, and a somewhat unfavourable period in all affairs."
+    },
+    "progressed.aspect.Uranus.Ascendant.opposition": {
+      "id": "ascendant_direction_372",
+      "sourceNumber": 372,
+      "mover": "Uranus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden, unusual and nervous disturbances, including possible operations or abrupt events, are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Strange and peculiar complaints; nervous disorders, liability to undergo operation, sudden actions, peculiar happenings, and a somewhat unfavourable period in all affairs."
+    },
+    "progressed.aspect.Neptune.Ascendant.square": {
+      "id": "ascendant_direction_373",
+      "sourceNumber": 373,
+      "mover": "Neptune",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Nervous and psychic disturbance, strange imaginings and instability are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Nervous troubles, psychic disorders, peculiar fancies, strange imaginations, and general upset of the nerve aura. (The influence of the conjunction is doubtful in its effect.)"
+    },
+    "progressed.aspect.Neptune.Ascendant.opposition": {
+      "id": "ascendant_direction_373",
+      "sourceNumber": 373,
+      "mover": "Neptune",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Nervous and psychic disturbance, strange imaginings and instability are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Nervous troubles, psychic disorders, peculiar fancies, strange imaginations, and general upset of the nerve aura. (The influence of the conjunction is doubtful in its effect.)"
+    },
+    "progressed.aspect.Moon.Ascendant.conjunction": {
+      "id": "ascendant_direction_374",
+      "sourceNumber": 374,
+      "mover": "Moon",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, public favour, gain and successful attachments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long sea voyage; some public favour; general gain; attachments of a successful character, and with married women the birth of a daughter."
+    },
+    "progressed.aspect.Moon.Ascendant.sextile": {
+      "id": "ascendant_direction_374",
+      "sourceNumber": 374,
+      "mover": "Moon",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, public favour, gain and successful attachments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long sea voyage; some public favour; general gain; attachments of a successful character, and with married women the birth of a daughter."
+    },
+    "progressed.aspect.Moon.Ascendant.trine": {
+      "id": "ascendant_direction_374",
+      "sourceNumber": 374,
+      "mover": "Moon",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, public favour, gain and successful attachments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long sea voyage; some public favour; general gain; attachments of a successful character, and with married women the birth of a daughter."
+    },
+    "progressed.aspect.Mercury.Ascendant.conjunction": {
+      "id": "ascendant_direction_375",
+      "sourceNumber": 375,
+      "mover": "Mercury",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Study, learning, knowledge acquisition and general gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Studious period; acquisition of knowledge and general gain."
+    },
+    "progressed.aspect.Mercury.Ascendant.sextile": {
+      "id": "ascendant_direction_375",
+      "sourceNumber": 375,
+      "mover": "Mercury",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Study, learning, knowledge acquisition and general gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Studious period; acquisition of knowledge and general gain."
+    },
+    "progressed.aspect.Mercury.Ascendant.trine": {
+      "id": "ascendant_direction_375",
+      "sourceNumber": 375,
+      "mover": "Mercury",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Study, learning, knowledge acquisition and general gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Studious period; acquisition of knowledge and general gain."
+    },
+    "progressed.aspect.Venus.Ascendant.conjunction": {
+      "id": "ascendant_direction_376",
+      "sourceNumber": 376,
+      "mover": "Venus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Pleasure, wealth, property and durable attachments or marriage are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much pleasure; strong attachments; acquisition of wealth and property; marriage or strong permanent attachment."
+    },
+    "progressed.aspect.Venus.Ascendant.sextile": {
+      "id": "ascendant_direction_376",
+      "sourceNumber": 376,
+      "mover": "Venus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Pleasure, wealth, property and durable attachments or marriage are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much pleasure; strong attachments; acquisition of wealth and property; marriage or strong permanent attachment."
+    },
+    "progressed.aspect.Venus.Ascendant.trine": {
+      "id": "ascendant_direction_376",
+      "sourceNumber": 376,
+      "mover": "Venus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Pleasure, wealth, property and durable attachments or marriage are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much pleasure; strong attachments; acquisition of wealth and property; marriage or strong permanent attachment."
+    },
+    "progressed.aspect.Sun.Ascendant.conjunction": {
+      "id": "ascendant_direction_377",
+      "sourceNumber": 377,
+      "mover": "Sun",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Public honour, health, government-related gain and relational success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Public honour. Gain through government. Good health, general toning up of the whole system. Success in attachments and marriage."
+    },
+    "progressed.aspect.Sun.Ascendant.sextile": {
+      "id": "ascendant_direction_377",
+      "sourceNumber": 377,
+      "mover": "Sun",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Public honour, health, government-related gain and relational success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Public honour. Gain through government. Good health, general toning up of the whole system. Success in attachments and marriage."
+    },
+    "progressed.aspect.Sun.Ascendant.trine": {
+      "id": "ascendant_direction_377",
+      "sourceNumber": 377,
+      "mover": "Sun",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Public honour, health, government-related gain and relational success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Public honour. Gain through government. Good health, general toning up of the whole system. Success in attachments and marriage."
+    },
+    "progressed.aspect.Mars.Ascendant.sextile": {
+      "id": "ascendant_direction_378",
+      "sourceNumber": 378,
+      "mover": "Mars",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Activity, confidence and stronger impulses toward attachment or family formation are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Great activity; much self-confidence; with females, impulse to form attachments, or desire for birth of a son."
+    },
+    "progressed.aspect.Mars.Ascendant.trine": {
+      "id": "ascendant_direction_378",
+      "sourceNumber": 378,
+      "mover": "Mars",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Activity, confidence and stronger impulses toward attachment or family formation are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Great activity; much self-confidence; with females, impulse to form attachments, or desire for birth of a son."
+    },
+    "progressed.aspect.Jupiter.Ascendant.conjunction": {
+      "id": "ascendant_direction_379",
+      "sourceNumber": 379,
+      "mover": "Jupiter",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social expansion, distinction, advancement and financial gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Many new friends. Much social activity. Some distinction in position, general rise in life and financial gain."
+    },
+    "progressed.aspect.Jupiter.Ascendant.sextile": {
+      "id": "ascendant_direction_379",
+      "sourceNumber": 379,
+      "mover": "Jupiter",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social expansion, distinction, advancement and financial gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Many new friends. Much social activity. Some distinction in position, general rise in life and financial gain."
+    },
+    "progressed.aspect.Jupiter.Ascendant.trine": {
+      "id": "ascendant_direction_379",
+      "sourceNumber": 379,
+      "mover": "Jupiter",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social expansion, distinction, advancement and financial gain are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Many new friends. Much social activity. Some distinction in position, general rise in life and financial gain."
+    },
+    "progressed.aspect.Saturn.Ascendant.sextile": {
+      "id": "ascendant_direction_380",
+      "sourceNumber": 380,
+      "mover": "Saturn",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Inheritance, property, perseverance and industrious effort are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Gain through inheritance, acquisition of land or house property. Grave and seriously disposed, and inclined to be persevering, industrious and painstaking."
+    },
+    "progressed.aspect.Saturn.Ascendant.trine": {
+      "id": "ascendant_direction_380",
+      "sourceNumber": 380,
+      "mover": "Saturn",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Inheritance, property, perseverance and industrious effort are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Gain through inheritance, acquisition of land or house property. Grave and seriously disposed, and inclined to be persevering, industrious and painstaking."
+    },
+    "progressed.aspect.Uranus.Ascendant.sextile": {
+      "id": "ascendant_direction_381",
+      "sourceNumber": 381,
+      "mover": "Uranus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected benefits, unusual attachments and successful friendships are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Unexpected events of a favourable character; satisfactory flow of nervous fluids; many gains and unexpected benefits. Strange attachments and successful friendships."
+    },
+    "progressed.aspect.Uranus.Ascendant.trine": {
+      "id": "ascendant_direction_381",
+      "sourceNumber": 381,
+      "mover": "Uranus",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected benefits, unusual attachments and successful friendships are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Unexpected events of a favourable character; satisfactory flow of nervous fluids; many gains and unexpected benefits. Strange attachments and successful friendships."
+    },
+    "progressed.aspect.Neptune.Ascendant.sextile": {
+      "id": "ascendant_direction_382",
+      "sourceNumber": 382,
+      "mover": "Neptune",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Psychic receptivity, visions, dreams and pleasant unusual experiences are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of clairvoyance, remarkable visions, strange dreams, and very pleasant happenings."
+    },
+    "progressed.aspect.Neptune.Ascendant.trine": {
+      "id": "ascendant_direction_382",
+      "sourceNumber": 382,
+      "mover": "Neptune",
+      "target": "Ascendant",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Psychic receptivity, visions, dreams and pleasant unusual experiences are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of clairvoyance, remarkable visions, strange dreams, and very pleasant happenings."
+    },
+    "progressed.aspect.Moon.Midheaven.square": {
+      "id": "midheaven_direction_383",
+      "sourceNumber": 383,
+      "mover": "Moon",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Domestic strain, public difficulties and discredit are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Difficulties in connection with domestic affairs; sometimes death of mother; troubles in connection with the populace, and discredit in the circle in which the native moves."
+    },
+    "progressed.aspect.Moon.Midheaven.opposition": {
+      "id": "midheaven_direction_383",
+      "sourceNumber": 383,
+      "mover": "Moon",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Domestic strain, public difficulties and discredit are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Difficulties in connection with domestic affairs; sometimes death of mother; troubles in connection with the populace, and discredit in the circle in which the native moves."
+    },
+    "progressed.aspect.Mercury.Midheaven.square": {
+      "id": "midheaven_direction_384",
+      "sourceNumber": 384,
+      "mover": "Mercury",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Difficulties involving writing, correspondence, travel, relatives and professional intermediaries are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Trouble in connection with writings, correspondence, literature, solicitors, travel, relatives, etc."
+    },
+    "progressed.aspect.Mercury.Midheaven.opposition": {
+      "id": "midheaven_direction_384",
+      "sourceNumber": 384,
+      "mover": "Mercury",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Difficulties involving writing, correspondence, travel, relatives and professional intermediaries are indicated.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Trouble in connection with writings, correspondence, literature, solicitors, travel, relatives, etc."
+    },
+    "progressed.aspect.Venus.Midheaven.square": {
+      "id": "midheaven_direction_385",
+      "sourceNumber": 385,
+      "mover": "Venus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Jealousy, separations, domestic trouble, scandal and imprudent losses are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Trouble through jealousy, attachments, separations; difficulties in domestic affairs; loss through rash conduct; scandals and extravagances through lack of prudence."
+    },
+    "progressed.aspect.Venus.Midheaven.opposition": {
+      "id": "midheaven_direction_385",
+      "sourceNumber": 385,
+      "mover": "Venus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Jealousy, separations, domestic trouble, scandal and imprudent losses are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Trouble through jealousy, attachments, separations; difficulties in domestic affairs; loss through rash conduct; scandals and extravagances through lack of prudence."
+    },
+    "progressed.aspect.Sun.Midheaven.square": {
+      "id": "midheaven_direction_386",
+      "sourceNumber": 386,
+      "mover": "Sun",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Loss of position, unpopularity and difficulty with authorities are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Loss of position. Death of parent; and an unpopular period, with a liability to offend others grievously. No success with government or persons in authority or power."
+    },
+    "progressed.aspect.Sun.Midheaven.opposition": {
+      "id": "midheaven_direction_386",
+      "sourceNumber": 386,
+      "mover": "Sun",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Loss of position, unpopularity and difficulty with authorities are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Loss of position. Death of parent; and an unpopular period, with a liability to offend others grievously. No success with government or persons in authority or power."
+    },
+    "progressed.aspect.Mars.Midheaven.conjunction": {
+      "id": "midheaven_direction_387",
+      "sourceNumber": 387,
+      "mover": "Mars",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Heavy losses, disputes, business trouble, parental difficulties and injury are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to heavy losses; disputes with others, and difficulties in connection with business affairs, also liability to trouble through parents; it usually causes the death of a parent, and a liability to some grievous injury."
+    },
+    "progressed.aspect.Mars.Midheaven.square": {
+      "id": "midheaven_direction_387",
+      "sourceNumber": 387,
+      "mover": "Mars",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Heavy losses, disputes, business trouble, parental difficulties and injury are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to heavy losses; disputes with others, and difficulties in connection with business affairs, also liability to trouble through parents; it usually causes the death of a parent, and a liability to some grievous injury."
+    },
+    "progressed.aspect.Mars.Midheaven.opposition": {
+      "id": "midheaven_direction_387",
+      "sourceNumber": 387,
+      "mover": "Mars",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Heavy losses, disputes, business trouble, parental difficulties and injury are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to heavy losses; disputes with others, and difficulties in connection with business affairs, also liability to trouble through parents; it usually causes the death of a parent, and a liability to some grievous injury."
+    },
+    "progressed.aspect.Jupiter.Midheaven.square": {
+      "id": "midheaven_direction_388",
+      "sourceNumber": 388,
+      "mover": "Jupiter",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Legal, business, social and financial disputes or losses are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Danger of lawsuits; loss in business; legal disputes; difficulties in social life, troubles in connection with persons having power and influence, monetary losses, and a liability to financial disputes."
+    },
+    "progressed.aspect.Jupiter.Midheaven.opposition": {
+      "id": "midheaven_direction_388",
+      "sourceNumber": 388,
+      "mover": "Jupiter",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Legal, business, social and financial disputes or losses are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Danger of lawsuits; loss in business; legal disputes; difficulties in social life, troubles in connection with persons having power and influence, monetary losses, and a liability to financial disputes."
+    },
+    "progressed.aspect.Saturn.Midheaven.conjunction": {
+      "id": "midheaven_direction_389",
+      "sourceNumber": 389,
+      "mover": "Saturn",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Dishonour, legal trouble, vocational strain and burdens involving responsibility or trust are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to suffer dishonour and disgrace; legal troubles; difficulties connected with avocation and a liability to suffer at the hands of those of inferior birth or position; difficulties in connection with responsibilities, and any occupation requiring trust and integrity."
+    },
+    "progressed.aspect.Saturn.Midheaven.square": {
+      "id": "midheaven_direction_389",
+      "sourceNumber": 389,
+      "mover": "Saturn",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Dishonour, legal trouble, vocational strain and burdens involving responsibility or trust are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to suffer dishonour and disgrace; legal troubles; difficulties connected with avocation and a liability to suffer at the hands of those of inferior birth or position; difficulties in connection with responsibilities, and any occupation requiring trust and integrity."
+    },
+    "progressed.aspect.Saturn.Midheaven.opposition": {
+      "id": "midheaven_direction_389",
+      "sourceNumber": 389,
+      "mover": "Saturn",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Dishonour, legal trouble, vocational strain and burdens involving responsibility or trust are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Liability to suffer dishonour and disgrace; legal troubles; difficulties connected with avocation and a liability to suffer at the hands of those of inferior birth or position; difficulties in connection with responsibilities, and any occupation requiring trust and integrity."
+    },
+    "progressed.aspect.Uranus.Midheaven.conjunction": {
+      "id": "midheaven_direction_390",
+      "sourceNumber": 390,
+      "mover": "Uranus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden reversals, losses, reputation damage and disruptive parental events are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Sudden and unexpected troubles and disasters; sudden losses and tax upon the reputation and a liability to suffer much discredit; a tendency for all things to go wrong, suddenly and unexpectedly. This often produces the death of parents, generally that of the father."
+    },
+    "progressed.aspect.Uranus.Midheaven.square": {
+      "id": "midheaven_direction_390",
+      "sourceNumber": 390,
+      "mover": "Uranus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden reversals, losses, reputation damage and disruptive parental events are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Sudden and unexpected troubles and disasters; sudden losses and tax upon the reputation and a liability to suffer much discredit; a tendency for all things to go wrong, suddenly and unexpectedly. This often produces the death of parents, generally that of the father."
+    },
+    "progressed.aspect.Uranus.Midheaven.opposition": {
+      "id": "midheaven_direction_390",
+      "sourceNumber": 390,
+      "mover": "Uranus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Sudden reversals, losses, reputation damage and disruptive parental events are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "square",
+        "opposition"
+      ],
+      "quote": "Sudden and unexpected troubles and disasters; sudden losses and tax upon the reputation and a liability to suffer much discredit; a tendency for all things to go wrong, suddenly and unexpectedly. This often produces the death of parents, generally that of the father."
+    },
+    "progressed.aspect.Neptune.Midheaven.square": {
+      "id": "midheaven_direction_391",
+      "sourceNumber": 391,
+      "mover": "Neptune",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Fraud, treachery, misleading advice and unusual reputation damage are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Peculiar and unexpected events. Liability to suffer through fraud or treachery, or the advice of friends, and a liability to peculiar and strange remarks against the reputation. (The influence of the conjunction is doubtful in its effect.)"
+    },
+    "progressed.aspect.Neptune.Midheaven.opposition": {
+      "id": "midheaven_direction_391",
+      "sourceNumber": 391,
+      "mover": "Neptune",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "adverse",
+      "coreMeaning": "Fraud, treachery, misleading advice and unusual reputation damage are emphasized.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "square",
+        "opposition"
+      ],
+      "quote": "Peculiar and unexpected events. Liability to suffer through fraud or treachery, or the advice of friends, and a liability to peculiar and strange remarks against the reputation. (The influence of the conjunction is doubtful in its effect.)"
+    },
+    "progressed.aspect.Moon.Midheaven.conjunction": {
+      "id": "midheaven_direction_392",
+      "sourceNumber": 392,
+      "mover": "Moon",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, responsibility, domestic success and family developments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long voyage, some responsibility, probably marriage and birth of children. Domestic success."
+    },
+    "progressed.aspect.Moon.Midheaven.sextile": {
+      "id": "midheaven_direction_392",
+      "sourceNumber": 392,
+      "mover": "Moon",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, responsibility, domestic success and family developments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long voyage, some responsibility, probably marriage and birth of children. Domestic success."
+    },
+    "progressed.aspect.Moon.Midheaven.trine": {
+      "id": "midheaven_direction_392",
+      "sourceNumber": 392,
+      "mover": "Moon",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Travel, responsibility, domestic success and family developments are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Probability of a long voyage, some responsibility, probably marriage and birth of children. Domestic success."
+    },
+    "progressed.aspect.Mercury.Midheaven.conjunction": {
+      "id": "midheaven_direction_393",
+      "sourceNumber": 393,
+      "mover": "Mercury",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Business activity, travel, enterprise, learning and professional dealings are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "New enterprises, journeys and a very active period where business is concerned, much dealing with lawyers, merchants, and great access of learning and education."
+    },
+    "progressed.aspect.Mercury.Midheaven.sextile": {
+      "id": "midheaven_direction_393",
+      "sourceNumber": 393,
+      "mover": "Mercury",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Business activity, travel, enterprise, learning and professional dealings are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "New enterprises, journeys and a very active period where business is concerned, much dealing with lawyers, merchants, and great access of learning and education."
+    },
+    "progressed.aspect.Mercury.Midheaven.trine": {
+      "id": "midheaven_direction_393",
+      "sourceNumber": 393,
+      "mover": "Mercury",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Business activity, travel, enterprise, learning and professional dealings are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "New enterprises, journeys and a very active period where business is concerned, much dealing with lawyers, merchants, and great access of learning and education."
+    },
+    "progressed.aspect.Venus.Midheaven.conjunction": {
+      "id": "midheaven_direction_394",
+      "sourceNumber": 394,
+      "mover": "Venus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Favourable attachments, marriage, children, prosperity and relational good fortune are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Strong attachments of a favourable character. Marriage, the birth of children, good fortune where the affections are concerned, and gain and prosperity generally are denoted by this influence."
+    },
+    "progressed.aspect.Venus.Midheaven.sextile": {
+      "id": "midheaven_direction_394",
+      "sourceNumber": 394,
+      "mover": "Venus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Favourable attachments, marriage, children, prosperity and relational good fortune are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Strong attachments of a favourable character. Marriage, the birth of children, good fortune where the affections are concerned, and gain and prosperity generally are denoted by this influence."
+    },
+    "progressed.aspect.Venus.Midheaven.trine": {
+      "id": "midheaven_direction_394",
+      "sourceNumber": 394,
+      "mover": "Venus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Favourable attachments, marriage, children, prosperity and relational good fortune are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Strong attachments of a favourable character. Marriage, the birth of children, good fortune where the affections are concerned, and gain and prosperity generally are denoted by this influence."
+    },
+    "progressed.aspect.Sun.Midheaven.conjunction": {
+      "id": "midheaven_direction_395",
+      "sourceNumber": 395,
+      "mover": "Sun",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Honour, achievement, elevation and expanded influence are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Increase of honour, desire for achievement, elevation as regards sphere of influence, added breadth of view."
+    },
+    "progressed.aspect.Sun.Midheaven.sextile": {
+      "id": "midheaven_direction_395",
+      "sourceNumber": 395,
+      "mover": "Sun",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Honour, achievement, elevation and expanded influence are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Increase of honour, desire for achievement, elevation as regards sphere of influence, added breadth of view."
+    },
+    "progressed.aspect.Sun.Midheaven.trine": {
+      "id": "midheaven_direction_395",
+      "sourceNumber": 395,
+      "mover": "Sun",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Honour, achievement, elevation and expanded influence are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Increase of honour, desire for achievement, elevation as regards sphere of influence, added breadth of view."
+    },
+    "progressed.aspect.Mars.Midheaven.sextile": {
+      "id": "midheaven_direction_396",
+      "sourceNumber": 396,
+      "mover": "Mars",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Enterprise, ambition, activity and success in mechanical or worldly undertakings are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Very enterprising spirit, much activity and general success in all matters of a mechanical nature, and great access of ambition or worldly enterprise."
+    },
+    "progressed.aspect.Mars.Midheaven.trine": {
+      "id": "midheaven_direction_396",
+      "sourceNumber": 396,
+      "mover": "Mars",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Enterprise, ambition, activity and success in mechanical or worldly undertakings are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Very enterprising spirit, much activity and general success in all matters of a mechanical nature, and great access of ambition or worldly enterprise."
+    },
+    "progressed.aspect.Jupiter.Midheaven.conjunction": {
+      "id": "midheaven_direction_397",
+      "sourceNumber": 397,
+      "mover": "Jupiter",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social influence, advancement, prosperity and general success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much gain and influence accruing through social affairs; rise in life and general success, all things now tending to go well and looking prosperous."
+    },
+    "progressed.aspect.Jupiter.Midheaven.sextile": {
+      "id": "midheaven_direction_397",
+      "sourceNumber": 397,
+      "mover": "Jupiter",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social influence, advancement, prosperity and general success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much gain and influence accruing through social affairs; rise in life and general success, all things now tending to go well and looking prosperous."
+    },
+    "progressed.aspect.Jupiter.Midheaven.trine": {
+      "id": "midheaven_direction_397",
+      "sourceNumber": 397,
+      "mover": "Jupiter",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Social influence, advancement, prosperity and general success are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "conjunction",
+        "sextile",
+        "trine"
+      ],
+      "quote": "Much gain and influence accruing through social affairs; rise in life and general success, all things now tending to go well and looking prosperous."
+    },
+    "progressed.aspect.Saturn.Midheaven.sextile": {
+      "id": "midheaven_direction_398",
+      "sourceNumber": 398,
+      "mover": "Saturn",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Responsibility, trust, organisation, vocational advancement and possible inheritance are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Some responsibility or position of trust; increase of position, organising power, and general improvement of matters concerned with employment or avocation; gain through elderly persons. Probably gain through inheritance, and general success."
+    },
+    "progressed.aspect.Saturn.Midheaven.trine": {
+      "id": "midheaven_direction_398",
+      "sourceNumber": 398,
+      "mover": "Saturn",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Responsibility, trust, organisation, vocational advancement and possible inheritance are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Some responsibility or position of trust; increase of position, organising power, and general improvement of matters concerned with employment or avocation; gain through elderly persons. Probably gain through inheritance, and general success."
+    },
+    "progressed.aspect.Uranus.Midheaven.sextile": {
+      "id": "midheaven_direction_399",
+      "sourceNumber": 399,
+      "mover": "Uranus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected popularity, social credit, associations and beneficial changes are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Sudden and unexpected popularity; much credit and success in dealing with societies and associations. Generally signifies a new series of experiences of a favourable character, and may produce unexpected changes that work for good."
+    },
+    "progressed.aspect.Uranus.Midheaven.trine": {
+      "id": "midheaven_direction_399",
+      "sourceNumber": 399,
+      "mover": "Uranus",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected popularity, social credit, associations and beneficial changes are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Sudden and unexpected popularity; much credit and success in dealing with societies and associations. Generally signifies a new series of experiences of a favourable character, and may produce unexpected changes that work for good."
+    },
+    "progressed.aspect.Neptune.Midheaven.sextile": {
+      "id": "midheaven_direction_400",
+      "sourceNumber": 400,
+      "mover": "Neptune",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected gains, ideal attachments, pleasant travel and unusual benefits are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Unexpected gain, peculiar and strange benefits, ideal attachments, pleasant travel and general success. (The influence of the conjunction is doubtful in its effect.)"
+    },
+    "progressed.aspect.Neptune.Midheaven.trine": {
+      "id": "midheaven_direction_400",
+      "sourceNumber": 400,
+      "mover": "Neptune",
+      "target": "Midheaven",
+      "targetState": "radical",
+      "valence": "benefic",
+      "coreMeaning": "Unexpected gains, ideal attachments, pleasant travel and unusual benefits are supported.",
+      "themes": [],
+      "constructive": [],
+      "cautions": [],
+      "conditions": [],
+      "aspects": [
+        "sextile",
+        "trine"
+      ],
+      "quote": "Unexpected gain, peculiar and strange benefits, ideal attachments, pleasant travel and general success. (The influence of the conjunction is doubtful in its effect.)"
+    }
+  }
+}
