@@ -1,0 +1,53 @@
+start_date,end_date,days,max_peak_lot_count,lots_in_peak_examples
+2026-01-03,2026-01-05,3,3,Spirit | Death | Victory
+2026-01-07,2026-01-08,2,2,Nemesis | Victory
+2026-01-11,2026-01-19,9,4,Necessity | Spirit | Fortune / Eros / Courage | Death || Death | Victory || Nemesis | Death || Necessity | Fortune / Eros / Courage || Necessity | Death | Victory
+2026-01-21,2026-01-27,7,5,Necessity | Spirit | Fortune / Eros / Courage | Death | Victory || Necessity | Fortune / Eros / Courage | Death | Victory || Nemesis | Spirit || Spirit | Fortune / Eros / Courage
+2026-02-06,2026-02-09,4,3,Necessity | Death || Necessity | Death | Victory
+2026-02-13,2026-02-18,6,3,Nemesis | Spirit | Fortune / Eros / Courage || Nemesis | Necessity | Death || Spirit | Fortune / Eros / Courage || Nemesis | Spirit | Death || Necessity | Death
+2026-02-21,2026-02-24,4,4,Fortune / Eros / Courage | Victory || Necessity | Spirit | Fortune / Eros / Courage | Victory || Spirit | Fortune / Eros / Courage | Victory || Nemesis | Spirit
+2026-03-02,2026-03-04,3,3,Death | Victory || Nemesis | Death | Victory
+2026-03-06,2026-03-08,3,3,Necessity | Spirit | Fortune / Eros / Courage || Spirit | Fortune / Eros / Courage
+2026-03-13,2026-03-17,5,4,Spirit | Fortune / Eros / Courage | Victory || Nemesis | Spirit | Fortune / Eros / Courage | Victory || Nemesis | Necessity | Victory || Nemesis | Spirit | Victory || Nemesis | Victory
+2026-03-23,2026-03-25,3,4,Nemesis | Necessity | Death || Nemesis | Necessity | Death | Victory
+2026-03-29,2026-04-05,8,3,Spirit | Fortune / Eros / Courage | Death || Nemesis | Necessity | Death || Spirit | Fortune / Eros / Courage || Necessity | Death || Nemesis | Victory
+2026-04-09,2026-04-09,1,2,Necessity | Fortune / Eros / Courage
+2026-04-11,2026-04-25,15,5,Spirit | Fortune / Eros / Courage | Victory || Necessity | Spirit | Fortune / Eros / Courage | Death || Necessity | Spirit | Fortune / Eros / Courage | Death | Victory || Nemesis | Necessity | Fortune / Eros / Courage || Necessity | Fortune / Eros / Courage | Death
+2026-05-01,2026-05-07,7,4,Necessity | Spirit | Fortune / Eros / Courage | Death || Nemesis | Death | Victory || Necessity | Fortune / Eros / Courage || Spirit | Death | Victory || Spirit | Death
+2026-05-13,2026-05-17,5,4,Nemesis | Fortune / Eros / Courage || Nemesis | Fortune / Eros / Courage | Victory || Necessity | Fortune / Eros / Courage | Death | Victory || Necessity | Fortune / Eros / Courage
+2026-05-25,2026-05-31,7,5,Necessity | Fortune / Eros / Courage | Death | Victory || Nemesis | Fortune / Eros / Courage | Victory || Nemesis | Necessity | Fortune / Eros / Courage | Death | Victory || Nemesis | Spirit || Nemesis | Fortune / Eros / Courage
+2026-06-04,2026-06-08,5,3,Fortune / Eros / Courage | Victory || Nemesis | Death || Fortune / Eros / Courage | Death | Victory
+2026-06-10,2026-06-14,5,3,Necessity | Spirit || Spirit | Death || Necessity | Spirit | Victory || Necessity | Victory
+2026-06-16,2026-06-18,3,3,Fortune / Eros / Courage | Victory || Fortune / Eros / Courage | Death | Victory || Fortune / Eros / Courage | Death
+2026-06-20,2026-06-25,6,3,Nemesis | Necessity | Fortune / Eros / Courage || Nemesis | Necessity || Nemesis | Fortune / Eros / Courage || Nemesis | Necessity | Spirit || Spirit | Victory
+2026-07-02,2026-07-08,7,3,Necessity | Death || Nemesis | Necessity || Necessity | Death | Victory
+2026-07-11,2026-07-17,7,5,Nemesis | Spirit | Fortune / Eros / Courage || Nemesis | Fortune / Eros / Courage | Victory || Nemesis | Necessity | Fortune / Eros / Courage | Death | Victory || Nemesis | Spirit || Fortune / Eros / Courage | Victory
+2026-07-23,2026-07-23,1,2,Nemesis | Spirit
+2026-07-26,2026-07-29,4,3,Death | Victory || Necessity | Death | Victory
+2026-08-03,2026-08-07,5,4,Spirit | Death || Necessity | Spirit | Death | Victory || Spirit | Death | Victory || Nemesis | Spirit
+2026-08-09,2026-08-14,6,3,Nemesis | Spirit | Fortune / Eros / Courage || Nemesis | Fortune / Eros / Courage
+2026-08-16,2026-08-22,7,4,Nemesis | Necessity | Fortune / Eros / Courage | Victory || Nemesis | Necessity | Fortune / Eros / Courage || Death | Victory || Necessity | Death | Victory || Necessity | Victory
+2026-08-27,2026-08-27,1,2,Spirit | Death
+2026-08-29,2026-08-30,2,2,Necessity | Spirit
+2026-09-01,2026-09-04,4,4,Nemesis | Death || Nemesis | Fortune / Eros / Courage || Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-09-06,2026-09-06,1,2,Fortune / Eros / Courage | Death
+2026-09-08,2026-09-08,1,2,Spirit | Death
+2026-09-11,2026-09-15,5,3,Nemesis | Necessity | Victory || Nemesis | Necessity || Necessity | Death | Victory
+2026-09-19,2026-09-20,2,2,Spirit | Fortune / Eros / Courage
+2026-09-22,2026-09-29,8,4,Spirit | Fortune / Eros / Courage | Victory || Nemesis | Necessity | Spirit | Victory || Nemesis | Necessity | Victory || Nemesis | Necessity | Death || Fortune / Eros / Courage | Death
+2026-10-02,2026-10-04,3,2,Nemesis | Necessity
+2026-10-09,2026-10-12,4,4,Nemesis | Spirit | Victory || Spirit | Fortune / Eros / Courage | Victory || Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-10-14,2026-10-15,2,2,Nemesis | Necessity
+2026-10-17,2026-10-23,7,4,Spirit | Fortune / Eros / Courage | Victory || Necessity | Spirit | Death | Victory || Necessity | Death || Nemesis | Fortune / Eros / Courage || Spirit | Victory
+2026-10-26,2026-10-26,1,2,Necessity | Death
+2026-10-28,2026-10-28,1,2,Spirit | Death
+2026-10-30,2026-11-02,4,3,Nemesis | Spirit | Victory || Spirit | Victory
+2026-11-07,2026-11-16,10,4,Necessity | Spirit | Fortune / Eros / Courage | Death || Spirit | Fortune / Eros / Courage | Death || Fortune / Eros / Courage | Death || Nemesis | Death || Necessity | Death
+2026-11-20,2026-11-20,1,2,Spirit | Fortune / Eros / Courage
+2026-11-22,2026-11-23,2,2,Spirit | Death || Nemesis | Death
+2026-11-26,2026-11-26,1,2,Nemesis | Necessity
+2026-11-29,2026-12-05,7,4,Necessity | Spirit | Fortune / Eros / Courage | Victory || Nemesis | Fortune / Eros / Courage | Death | Victory || Fortune / Eros / Courage | Victory || Necessity | Spirit || Nemesis | Fortune / Eros / Courage | Death
+2026-12-11,2026-12-15,5,3,Nemesis | Spirit | Death || Nemesis | Death || Spirit | Fortune / Eros / Courage | Victory || Spirit | Death | Victory
+2026-12-19,2026-12-22,4,3,Necessity | Spirit || Nemesis | Necessity || Necessity | Spirit | Death || Necessity | Spirit | Victory
+2026-12-24,2026-12-27,4,2,Fortune / Eros / Courage | Victory
+2026-12-31,2026-12-31,1,2,Necessity | Death

@@ -1,0 +1,366 @@
+date,nemesis_sign,nemesis_y,nemesis_is_peak,necessity_sign,necessity_y,necessity_is_peak,spirit_sign,spirit_y,spirit_is_peak,fortune_eros_courage_sign,fortune_eros_courage_y,fortune_eros_courage_is_peak,death_sign,death_y,death_is_peak,victory_sign,victory_y,victory_is_peak,peak_lot_count,lots_in_peak
+2026-01-01,Virgo,5,False,,,,,,,,,,Libra,6,False,,,,0,Necessity | Spirit | Fortune / Eros / Courage | Victory
+2026-01-02,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,,,,Libra,6,False,,,,1,Spirit | Fortune / Eros / Courage | Victory
+2026-01-03,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,Sagittarius,8.0,False,Scorpio,7,True,,,,2,Spirit | Death | Victory
+2026-01-04,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,Sagittarius,8.0,False,Scorpio,7,True,,,,2,Spirit | Death | Victory
+2026-01-05,Libra,6,False,Capricorn,9.0,False,Leo,4.0,True,Capricorn,9.0,False,Scorpio,7,True,Leo,4.0,True,3,Spirit | Death | Victory
+2026-01-06,Libra,6,False,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Sagittarius,8,False,Leo,4.0,True,1,Victory
+2026-01-07,Scorpio,7,True,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Sagittarius,8,False,Leo,4.0,True,2,Nemesis | Victory
+2026-01-08,Scorpio,7,True,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Sagittarius,8,False,Leo,4.0,True,2,Nemesis | Victory
+2026-01-09,Scorpio,7,True,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Capricorn,9,False,Virgo,5.0,False,1,Nemesis
+2026-01-10,Sagittarius,8,False,Capricorn,9.0,False,Libra,6.0,False,Capricorn,9.0,False,Capricorn,9,False,Virgo,5.0,False,0,
+2026-01-11,Sagittarius,8,False,Aquarius,10.0,True,Libra,6.0,False,Aquarius,10.0,True,Capricorn,9,False,Virgo,5.0,False,2,Necessity | Fortune / Eros / Courage
+2026-01-12,Capricorn,9,False,Aquarius,10.0,True,Scorpio,7.0,True,Aquarius,10.0,True,Capricorn,9,False,Virgo,5.0,False,3,Necessity | Spirit | Fortune / Eros / Courage
+2026-01-13,Capricorn,9,False,Aquarius,10.0,True,Scorpio,7.0,True,Taurus,1.0,True,Capricorn,9,False,Libra,6.0,False,3,Necessity | Spirit | Fortune / Eros / Courage
+2026-01-14,Capricorn,9,False,Aquarius,10.0,True,Scorpio,7.0,True,Taurus,1.0,True,Aquarius,10,True,Libra,6.0,False,4,Necessity | Spirit | Fortune / Eros / Courage | Death
+2026-01-15,Capricorn,9,False,Aquarius,10.0,True,Sagittarius,8.0,False,Gemini,2.0,False,Aquarius,10,True,Scorpio,7.0,True,3,Necessity | Death | Victory
+2026-01-16,Capricorn,9,False,Aquarius,10.0,True,Sagittarius,8.0,False,Gemini,2.0,False,Aquarius,10,True,Scorpio,7.0,True,3,Necessity | Death | Victory
+2026-01-17,Capricorn,9,False,Pisces,11.0,False,Sagittarius,8.0,False,Gemini,2.0,False,Aquarius,10,True,Scorpio,7.0,True,2,Death | Victory
+2026-01-18,Aquarius,10,True,Pisces,11.0,False,Capricorn,9.0,False,Gemini,2.0,False,Aquarius,10,True,Sagittarius,8.0,False,2,Nemesis | Death
+2026-01-19,Aquarius,10,True,Aries,0.0,False,Capricorn,9.0,False,Cancer,3.0,False,Aquarius,10,True,Sagittarius,8.0,False,2,Nemesis | Death
+2026-01-20,Aquarius,10,True,Aries,0.0,False,Capricorn,9.0,False,Cancer,3.0,False,Pisces,11,False,Capricorn,9.0,False,1,Nemesis
+2026-01-21,Aquarius,10,True,Pisces,11.0,False,Aquarius,10.0,True,Cancer,3.0,False,Pisces,11,False,Capricorn,9.0,False,2,Nemesis | Spirit
+2026-01-22,Aquarius,10,True,Pisces,11.0,False,Aquarius,10.0,True,Cancer,3.0,False,Pisces,11,False,Capricorn,9.0,False,2,Nemesis | Spirit
+2026-01-23,Aquarius,10,True,Aries,0.0,False,Aquarius,10.0,True,Cancer,3.0,False,Aries,0,False,Capricorn,9.0,False,2,Nemesis | Spirit
+2026-01-24,Pisces,11,False,Aries,0.0,False,Aquarius,10.0,True,Leo,4.0,True,Aries,0,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-01-25,Pisces,11,False,Aries,0.0,False,Aquarius,10.0,True,Leo,4.0,True,Aries,0,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-01-26,Pisces,11,False,Taurus,1.0,True,Aquarius,10.0,True,Leo,4.0,True,Taurus,1,True,Aquarius,10.0,True,5,Necessity | Spirit | Fortune / Eros / Courage | Death | Victory
+2026-01-27,Aries,0,False,Taurus,1.0,True,Pisces,11.0,False,Leo,4.0,True,Taurus,1,True,Aquarius,10.0,True,4,Necessity | Fortune / Eros / Courage | Death | Victory
+2026-01-28,Pisces,11,False,Gemini,2.0,False,Pisces,11.0,False,Virgo,5.0,False,Gemini,2,False,Aquarius,10.0,True,1,Victory
+2026-01-29,Pisces,11,False,Gemini,2.0,False,Aries,0.0,False,Virgo,5.0,False,Gemini,2,False,Aquarius,10.0,True,1,Victory
+2026-01-30,Pisces,11,False,Gemini,2.0,False,Aries,0.0,False,Virgo,5.0,False,Gemini,2,False,Aquarius,10.0,True,1,Victory
+2026-01-31,Aries,0,False,Gemini,2.0,False,Aries,0.0,False,Virgo,5.0,False,Gemini,2,False,Aquarius,10.0,True,1,Victory
+2026-02-01,Aries,0,False,Cancer,3.0,False,Taurus,1.0,True,Libra,6.0,False,Cancer,3,False,Pisces,11.0,False,1,Spirit
+2026-02-02,Aries,0,False,Cancer,3.0,False,Taurus,1.0,True,Gemini,2.0,False,Cancer,3,False,Pisces,11.0,False,1,Spirit
+2026-02-03,Taurus,1,True,Cancer,3.0,False,Gemini,2.0,False,Gemini,2.0,False,Cancer,3,False,Pisces,11.0,False,1,Nemesis
+2026-02-04,Gemini,2,False,Cancer,3.0,False,Gemini,2.0,False,Gemini,2.0,False,Cancer,3,False,Aries,0.0,False,0,
+2026-02-05,Gemini,2,False,Cancer,3.0,False,Gemini,2.0,False,Gemini,2.0,False,Cancer,3,False,Aries,0.0,False,0,
+2026-02-06,Gemini,2,False,Leo,4.0,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10,True,Aries,0.0,False,2,Necessity | Death
+2026-02-07,Gemini,2,False,Leo,4.0,True,Cancer,3.0,False,Cancer,3.0,False,Aquarius,10,True,Taurus,1.0,True,3,Necessity | Death | Victory
+2026-02-08,Gemini,2,False,Leo,4.0,True,Cancer,3.0,False,Cancer,3.0,False,Aquarius,10,True,Taurus,1.0,True,3,Necessity | Death | Victory
+2026-02-09,Cancer,3,False,Leo,4.0,True,Cancer,3.0,False,Cancer,3.0,False,Aquarius,10,True,Sagittarius,8.0,False,2,Necessity | Death
+2026-02-10,Cancer,3,False,Virgo,5.0,False,Cancer,3.0,False,Cancer,3.0,False,Virgo,5,False,Sagittarius,8.0,False,0,
+2026-02-11,Cancer,3,False,Virgo,5.0,False,Cancer,3.0,False,Leo,4.0,True,Virgo,5,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-02-12,Cancer,3,False,Virgo,5.0,False,Cancer,3.0,False,Leo,4.0,True,Virgo,5,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-02-13,Cancer,3,False,Virgo,5.0,False,Leo,4.0,True,Leo,4.0,True,Virgo,5,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-02-14,Leo,4,True,Libra,6.0,False,Leo,4.0,True,Leo,4.0,True,Libra,6,False,Capricorn,9.0,False,3,Nemesis | Spirit | Fortune / Eros / Courage
+2026-02-15,Leo,4,True,Libra,6.0,False,Leo,4.0,True,Virgo,5.0,False,Scorpio,7,True,Cancer,3.0,False,3,Nemesis | Spirit | Death
+2026-02-16,Leo,4,True,Scorpio,7.0,True,Virgo,5.0,False,Virgo,5.0,False,Scorpio,7,True,Cancer,3.0,False,3,Nemesis | Necessity | Death
+2026-02-17,Leo,4,True,Scorpio,7.0,True,Virgo,5.0,False,Virgo,5.0,False,Scorpio,7,True,Cancer,3.0,False,3,Nemesis | Necessity | Death
+2026-02-18,Virgo,5,False,Scorpio,7.0,True,Virgo,5.0,False,Virgo,5.0,False,Scorpio,7,True,Cancer,3.0,False,2,Necessity | Death
+2026-02-19,Virgo,5,False,Sagittarius,8.0,False,Virgo,5.0,False,Virgo,5.0,False,Sagittarius,8,False,Cancer,3.0,False,0,
+2026-02-20,Virgo,5,False,Aries,0.0,False,Virgo,5.0,False,Libra,6.0,False,Sagittarius,8,False,Leo,4.0,True,1,Victory
+2026-02-21,Virgo,5,False,Aries,0.0,False,Libra,6.0,False,Scorpio,7.0,True,Capricorn,9,False,Leo,4.0,True,2,Fortune / Eros / Courage | Victory
+2026-02-22,Libra,6,False,Aries,0.0,False,Scorpio,7.0,True,Scorpio,7.0,True,Capricorn,9,False,Leo,4.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-02-23,Libra,6,False,Taurus,1.0,True,Scorpio,7.0,True,Scorpio,7.0,True,Capricorn,9,False,Leo,4.0,True,4,Necessity | Spirit | Fortune / Eros / Courage | Victory
+2026-02-24,Scorpio,7,True,Gemini,2.0,False,Scorpio,7.0,True,Sagittarius,8.0,False,Capricorn,9,False,Virgo,5.0,False,2,Nemesis | Spirit
+2026-02-25,Scorpio,7,True,Gemini,2.0,False,Sagittarius,8.0,False,Sagittarius,8.0,False,Capricorn,9,False,Virgo,5.0,False,1,Nemesis
+2026-02-26,Scorpio,7,True,Gemini,2.0,False,Sagittarius,8.0,False,Sagittarius,8.0,False,Capricorn,9,False,Virgo,5.0,False,1,Nemesis
+2026-02-27,Aries,0,False,Gemini,2.0,False,Sagittarius,8.0,False,Capricorn,9.0,False,Aquarius,10,True,Virgo,5.0,False,1,Death
+2026-02-28,Aries,0,False,Gemini,2.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Aquarius,10,True,Libra,6.0,False,1,Death
+2026-03-01,Aries,0,False,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Aquarius,10,True,Libra,6.0,False,1,Death
+2026-03-02,Taurus,1,True,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Aquarius,10,True,Scorpio,7.0,True,3,Nemesis | Death | Victory
+2026-03-03,Taurus,1,True,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Aquarius,10,True,Scorpio,7.0,True,3,Nemesis | Death | Victory
+2026-03-04,Gemini,2,False,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Aquarius,10,True,Scorpio,7.0,True,2,Death | Victory
+2026-03-05,Gemini,2,False,Cancer,3.0,False,Capricorn,9.0,False,Aquarius,10.0,True,Pisces,11,False,Sagittarius,8.0,False,1,Fortune / Eros / Courage
+2026-03-06,Gemini,2,False,Leo,4.0,True,Leo,4.0,True,Aquarius,10.0,True,Pisces,11,False,Sagittarius,8.0,False,3,Necessity | Spirit | Fortune / Eros / Courage
+2026-03-07,Gemini,2,False,Pisces,11.0,False,Leo,4.0,True,Aquarius,10.0,True,Aries,0,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-03-08,Cancer,3,False,Pisces,11.0,False,Leo,4.0,True,Aquarius,10.0,True,Aries,0,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-03-09,Cancer,3,False,Aries,0.0,False,Virgo,5.0,False,Aquarius,10.0,True,Aries,0,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-03-10,Cancer,3,False,Aries,0.0,False,Virgo,5.0,False,Aquarius,10.0,True,Aries,0,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-03-11,Cancer,3,False,Aries,0.0,False,Virgo,5.0,False,Pisces,11.0,False,Taurus,1,True,Capricorn,9.0,False,1,Death
+2026-03-12,Cancer,3,False,Taurus,1.0,True,Virgo,5.0,False,Pisces,11.0,False,Gemini,2,False,Capricorn,9.0,False,1,Necessity
+2026-03-13,Leo,4,True,Taurus,1.0,True,Virgo,5.0,False,Aries,0.0,False,Gemini,2,False,Aquarius,10.0,True,3,Nemesis | Necessity | Victory
+2026-03-14,Leo,4,True,Gemini,2.0,False,Libra,6.0,False,Aries,0.0,False,Gemini,2,False,Aquarius,10.0,True,2,Nemesis | Victory
+2026-03-15,Leo,4,True,Gemini,2.0,False,Scorpio,7.0,True,Aries,0.0,False,Gemini,2,False,Aquarius,10.0,True,3,Nemesis | Spirit | Victory
+2026-03-16,Leo,4,True,Gemini,2.0,False,Scorpio,7.0,True,Taurus,1.0,True,Cancer,3,False,Aquarius,10.0,True,4,Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-03-17,Virgo,5,False,Gemini,2.0,False,Scorpio,7.0,True,Taurus,1.0,True,Cancer,3,False,Aquarius,10.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-03-18,Virgo,5,False,Cancer,3.0,False,Sagittarius,8.0,False,Sagittarius,8.0,False,Cancer,3,False,Aquarius,10.0,True,1,Victory
+2026-03-19,Virgo,5,False,Cancer,3.0,False,Sagittarius,8.0,False,Sagittarius,8.0,False,Cancer,3,False,Pisces,11.0,False,0,
+2026-03-20,Virgo,5,False,Cancer,3.0,False,Sagittarius,8.0,False,Sagittarius,8.0,False,Cancer,3,False,Pisces,11.0,False,0,
+2026-03-21,Libra,6,False,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Cancer,3,False,Pisces,11.0,False,0,
+2026-03-22,Libra,6,False,Cancer,3.0,False,Capricorn,9.0,False,Capricorn,9.0,False,Leo,4,True,Aries,0.0,False,1,Death
+2026-03-23,Scorpio,7,True,Leo,4.0,True,Capricorn,9.0,False,Capricorn,9.0,False,Leo,4,True,Aries,0.0,False,3,Nemesis | Necessity | Death
+2026-03-24,Scorpio,7,True,Leo,4.0,True,Capricorn,9.0,False,Cancer,3.0,False,Leo,4,True,Aries,0.0,False,3,Nemesis | Necessity | Death
+2026-03-25,Scorpio,7,True,Leo,4.0,True,Capricorn,9.0,False,Cancer,3.0,False,Leo,4,True,Taurus,1.0,True,4,Nemesis | Necessity | Death | Victory
+2026-03-26,Sagittarius,8,False,Leo,4.0,True,Capricorn,9.0,False,Cancer,3.0,False,Pisces,11,False,Gemini,2.0,False,1,Necessity
+2026-03-27,Sagittarius,8,False,Virgo,5.0,False,Aquarius,10.0,True,Cancer,3.0,False,Pisces,11,False,Gemini,2.0,False,1,Spirit
+2026-03-28,Sagittarius,8,False,Virgo,5.0,False,Aquarius,10.0,True,Cancer,3.0,False,Aries,0,False,Gemini,2.0,False,1,Spirit
+2026-03-29,Capricorn,9,False,Virgo,5.0,False,Aquarius,10.0,True,Leo,4.0,True,Aries,0,False,Gemini,2.0,False,2,Spirit | Fortune / Eros / Courage
+2026-03-30,Capricorn,9,False,Virgo,5.0,False,Aquarius,10.0,True,Leo,4.0,True,Aries,0,False,Gemini,2.0,False,2,Spirit | Fortune / Eros / Courage
+2026-03-31,Capricorn,9,False,Libra,6.0,False,Aquarius,10.0,True,Leo,4.0,True,Taurus,1,True,Capricorn,9.0,False,3,Spirit | Fortune / Eros / Courage | Death
+2026-04-01,Capricorn,9,False,Libra,6.0,False,Aquarius,10.0,True,Leo,4.0,True,Libra,6,False,Capricorn,9.0,False,2,Spirit | Fortune / Eros / Courage
+2026-04-02,Capricorn,9,False,Scorpio,7.0,True,Pisces,11.0,False,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,2,Necessity | Death
+2026-04-03,Aquarius,10,True,Scorpio,7.0,True,Pisces,11.0,False,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,3,Nemesis | Necessity | Death
+2026-04-04,Aquarius,10,True,Scorpio,7.0,True,Aries,0.0,False,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,3,Nemesis | Necessity | Death
+2026-04-05,Aquarius,10,True,Sagittarius,8.0,False,Aries,0.0,False,Virgo,5.0,False,Sagittarius,8,False,Aquarius,10.0,True,2,Nemesis | Victory
+2026-04-06,Taurus,1,True,Aries,0.0,False,Pisces,11.0,False,Libra,6.0,False,Sagittarius,8,False,Capricorn,9.0,False,1,Nemesis
+2026-04-07,Gemini,2,False,Aries,0.0,False,Pisces,11.0,False,Libra,6.0,False,Sagittarius,8,False,Capricorn,9.0,False,0,
+2026-04-08,Gemini,2,False,Aries,0.0,False,Aries,0.0,False,Scorpio,7.0,True,Capricorn,9,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-04-09,Gemini,2,False,Taurus,1.0,True,Aries,0.0,False,Scorpio,7.0,True,Capricorn,9,False,Capricorn,9.0,False,2,Necessity | Fortune / Eros / Courage
+2026-04-10,Gemini,2,False,Gemini,2.0,False,Aries,0.0,False,Scorpio,7.0,True,Capricorn,9,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-04-11,Cancer,3,False,Gemini,2.0,False,Taurus,1.0,True,Sagittarius,8.0,False,Capricorn,9,False,Aquarius,10.0,True,2,Spirit | Victory
+2026-04-12,Cancer,3,False,Gemini,2.0,False,Taurus,1.0,True,Sagittarius,8.0,False,Capricorn,9,False,Aquarius,10.0,True,2,Spirit | Victory
+2026-04-13,Cancer,3,False,Gemini,2.0,False,Gemini,2.0,False,Sagittarius,8.0,False,Aquarius,10,True,Aquarius,10.0,True,2,Death | Victory
+2026-04-14,Cancer,3,False,Gemini,2.0,False,Gemini,2.0,False,Capricorn,9.0,False,Aquarius,10,True,Aquarius,10.0,True,2,Death | Victory
+2026-04-15,Cancer,3,False,Cancer,3.0,False,Gemini,2.0,False,Capricorn,9.0,False,Aquarius,10,True,Aquarius,10.0,True,2,Death | Victory
+2026-04-16,Cancer,3,False,Cancer,3.0,False,Gemini,2.0,False,Capricorn,9.0,False,Aquarius,10,True,Aquarius,10.0,True,2,Death | Victory
+2026-04-17,Leo,4,True,Cancer,3.0,False,Cancer,3.0,False,Capricorn,9.0,False,Aquarius,10,True,Pisces,11.0,False,2,Nemesis | Death
+2026-04-18,Leo,4,True,Cancer,3.0,False,Cancer,3.0,False,Capricorn,9.0,False,Aquarius,10,True,Pisces,11.0,False,2,Nemesis | Death
+2026-04-19,Leo,4,True,Cancer,3.0,False,Cancer,3.0,False,Aquarius,10.0,True,Aquarius,10,True,Pisces,11.0,False,3,Nemesis | Fortune / Eros / Courage | Death
+2026-04-20,Leo,4,True,Leo,4.0,True,Cancer,3.0,False,Aquarius,10.0,True,Pisces,11,False,Aries,0.0,False,3,Nemesis | Necessity | Fortune / Eros / Courage
+2026-04-21,Virgo,5,False,Leo,4.0,True,Cancer,3.0,False,Aquarius,10.0,True,Scorpio,7,True,Aries,0.0,False,3,Necessity | Fortune / Eros / Courage | Death
+2026-04-22,Virgo,5,False,Leo,4.0,True,Leo,4.0,True,Aquarius,10.0,True,Scorpio,7,True,Aries,0.0,False,4,Necessity | Spirit | Fortune / Eros / Courage | Death
+2026-04-23,Virgo,5,False,Leo,4.0,True,Leo,4.0,True,Aquarius,10.0,True,Scorpio,7,True,Taurus,1.0,True,5,Necessity | Spirit | Fortune / Eros / Courage | Death | Victory
+2026-04-24,Virgo,5,False,Virgo,5.0,False,Leo,4.0,True,Aquarius,10.0,True,Sagittarius,8,False,Taurus,1.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-04-25,Libra,6,False,Virgo,5.0,False,Leo,4.0,True,Aquarius,10.0,True,Sagittarius,8,False,Gemini,2.0,False,2,Spirit | Fortune / Eros / Courage
+2026-04-26,Gemini,2,False,Virgo,5.0,False,Virgo,5.0,False,Pisces,11.0,False,Capricorn,9,False,Gemini,2.0,False,0,
+2026-04-27,Gemini,2,False,Virgo,5.0,False,Virgo,5.0,False,Pisces,11.0,False,Capricorn,9,False,Gemini,2.0,False,0,
+2026-04-28,Gemini,2,False,Libra,6.0,False,Virgo,5.0,False,Aries,0.0,False,Capricorn,9,False,Gemini,2.0,False,0,
+2026-04-29,Gemini,2,False,Libra,6.0,False,Virgo,5.0,False,Aries,0.0,False,Capricorn,9,False,Cancer,3.0,False,0,
+2026-04-30,Cancer,3,False,Scorpio,7.0,True,Libra,6.0,False,Aries,0.0,False,Capricorn,9,False,Cancer,3.0,False,1,Necessity
+2026-05-01,Cancer,3,False,Scorpio,7.0,True,Libra,6.0,False,Taurus,1.0,True,Capricorn,9,False,Cancer,3.0,False,2,Necessity | Fortune / Eros / Courage
+2026-05-02,Cancer,3,False,Scorpio,7.0,True,Scorpio,7.0,True,Taurus,1.0,True,Aquarius,10,True,Cancer,3.0,False,4,Necessity | Spirit | Fortune / Eros / Courage | Death
+2026-05-03,Cancer,3,False,Sagittarius,8.0,False,Scorpio,7.0,True,Gemini,2.0,False,Aquarius,10,True,Cancer,3.0,False,2,Spirit | Death
+2026-05-04,Cancer,3,False,Sagittarius,8.0,False,Scorpio,7.0,True,Gemini,2.0,False,Aquarius,10,True,Leo,4.0,True,3,Spirit | Death | Victory
+2026-05-05,Leo,4,True,Capricorn,9.0,False,Sagittarius,8.0,False,Gemini,2.0,False,Aquarius,10,True,Leo,4.0,True,3,Nemesis | Death | Victory
+2026-05-06,Leo,4,True,Capricorn,9.0,False,Aries,0.0,False,Gemini,2.0,False,Aquarius,10,True,Leo,4.0,True,3,Nemesis | Death | Victory
+2026-05-07,Leo,4,True,Capricorn,9.0,False,Aries,0.0,False,Capricorn,9.0,False,Aquarius,10,True,Leo,4.0,True,3,Nemesis | Death | Victory
+2026-05-08,Leo,4,True,Capricorn,9.0,False,Aries,0.0,False,Capricorn,9.0,False,Pisces,11,False,Virgo,5.0,False,1,Nemesis
+2026-05-09,Virgo,5,False,Capricorn,9.0,False,Taurus,1.0,True,Capricorn,9.0,False,Pisces,11,False,Virgo,5.0,False,1,Spirit
+2026-05-10,Virgo,5,False,Capricorn,9.0,False,Gemini,2.0,False,Capricorn,9.0,False,Pisces,11,False,Virgo,5.0,False,0,
+2026-05-11,Virgo,5,False,Aquarius,10.0,True,Gemini,2.0,False,Capricorn,9.0,False,Aries,0,False,Virgo,5.0,False,1,Necessity
+2026-05-12,Virgo,5,False,Aquarius,10.0,True,Gemini,2.0,False,Capricorn,9.0,False,Aries,0,False,Libra,6.0,False,1,Necessity
+2026-05-13,Libra,6,False,Taurus,1.0,True,Gemini,2.0,False,Aquarius,10.0,True,Aries,0,False,Libra,6.0,False,2,Necessity | Fortune / Eros / Courage
+2026-05-14,Libra,6,False,Taurus,1.0,True,Gemini,2.0,False,Aquarius,10.0,True,Taurus,1,True,Scorpio,7.0,True,4,Necessity | Fortune / Eros / Courage | Death | Victory
+2026-05-15,Scorpio,7,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Scorpio,7.0,True,3,Nemesis | Fortune / Eros / Courage | Victory
+2026-05-16,Scorpio,7,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Scorpio,7.0,True,3,Nemesis | Fortune / Eros / Courage | Victory
+2026-05-17,Scorpio,7,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Sagittarius,8.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-05-18,Sagittarius,8,False,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Sagittarius,8.0,False,1,Fortune / Eros / Courage
+2026-05-19,Sagittarius,8,False,Cancer,3.0,False,Cancer,3.0,False,Pisces,11.0,False,Gemini,2,False,Sagittarius,8.0,False,0,
+2026-05-20,Capricorn,9,False,Cancer,3.0,False,Leo,4.0,True,Pisces,11.0,False,Cancer,3,False,Cancer,3.0,False,1,Spirit
+2026-05-21,Capricorn,9,False,Cancer,3.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Cancer,3.0,False,1,Spirit
+2026-05-22,Capricorn,9,False,Cancer,3.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Cancer,3.0,False,1,Spirit
+2026-05-23,Capricorn,9,False,Cancer,3.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Cancer,3.0,False,1,Spirit
+2026-05-24,Capricorn,9,False,Leo,4.0,True,Virgo,5.0,False,Aries,0.0,False,Cancer,3,False,Cancer,3.0,False,1,Necessity
+2026-05-25,Capricorn,9,False,Leo,4.0,True,Virgo,5.0,False,Taurus,1.0,True,Leo,4,True,Leo,4.0,True,4,Necessity | Fortune / Eros / Courage | Death | Victory
+2026-05-26,Aquarius,10,True,Leo,4.0,True,Virgo,5.0,False,Leo,4.0,True,Leo,4,True,Leo,4.0,True,5,Nemesis | Necessity | Fortune / Eros / Courage | Death | Victory
+2026-05-27,Aquarius,10,True,Leo,4.0,True,Virgo,5.0,False,Leo,4.0,True,Leo,4,True,Leo,4.0,True,5,Nemesis | Necessity | Fortune / Eros / Courage | Death | Victory
+2026-05-28,Aquarius,10,True,Virgo,5.0,False,Libra,6.0,False,Leo,4.0,True,Sagittarius,8,False,Leo,4.0,True,3,Nemesis | Fortune / Eros / Courage | Victory
+2026-05-29,Aquarius,10,True,Virgo,5.0,False,Libra,6.0,False,Leo,4.0,True,Sagittarius,8,False,Virgo,5.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-05-30,Aquarius,10,True,Virgo,5.0,False,Scorpio,7.0,True,Virgo,5.0,False,Sagittarius,8,False,Virgo,5.0,False,2,Nemesis | Spirit
+2026-05-31,Aquarius,10,True,Virgo,5.0,False,Scorpio,7.0,True,Virgo,5.0,False,Capricorn,9,False,Virgo,5.0,False,2,Nemesis | Spirit
+2026-06-01,Pisces,11,False,Libra,6.0,False,Scorpio,7.0,True,Virgo,5.0,False,Capricorn,9,False,Virgo,5.0,False,1,Spirit
+2026-06-02,Pisces,11,False,Gemini,2.0,False,Sagittarius,8.0,False,Virgo,5.0,False,Capricorn,9,False,Libra,6.0,False,0,
+2026-06-03,Pisces,11,False,Gemini,2.0,False,Sagittarius,8.0,False,Libra,6.0,False,Capricorn,9,False,Libra,6.0,False,0,
+2026-06-04,Aries,0,False,Gemini,2.0,False,Capricorn,9.0,False,Scorpio,7.0,True,Capricorn,9,False,Scorpio,7.0,True,2,Fortune / Eros / Courage | Victory
+2026-06-05,Aries,0,False,Gemini,2.0,False,Capricorn,9.0,False,Scorpio,7.0,True,Aquarius,10,True,Scorpio,7.0,True,3,Fortune / Eros / Courage | Death | Victory
+2026-06-06,Aries,0,False,Cancer,3.0,False,Capricorn,9.0,False,Scorpio,7.0,True,Aquarius,10,True,Scorpio,7.0,True,3,Fortune / Eros / Courage | Death | Victory
+2026-06-07,Taurus,1,True,Cancer,3.0,False,Capricorn,9.0,False,Sagittarius,8.0,False,Aquarius,10,True,Sagittarius,8.0,False,2,Nemesis | Death
+2026-06-08,Taurus,1,True,Cancer,3.0,False,Capricorn,9.0,False,Sagittarius,8.0,False,Aquarius,10,True,Sagittarius,8.0,False,2,Nemesis | Death
+2026-06-09,Sagittarius,8,False,Cancer,3.0,False,Capricorn,9.0,False,Sagittarius,8.0,False,Aquarius,10,True,Capricorn,9.0,False,1,Death
+2026-06-10,Sagittarius,8,False,Cancer,3.0,False,Aquarius,10.0,True,Capricorn,9.0,False,Aquarius,10,True,Capricorn,9.0,False,2,Spirit | Death
+2026-06-11,Capricorn,9,False,Leo,4.0,True,Aquarius,10.0,True,Capricorn,9.0,False,Pisces,11,False,Capricorn,9.0,False,2,Necessity | Spirit
+2026-06-12,Capricorn,9,False,Leo,4.0,True,Taurus,1.0,True,Capricorn,9.0,False,Pisces,11,False,Aquarius,10.0,True,3,Necessity | Spirit | Victory
+2026-06-13,Capricorn,9,False,Leo,4.0,True,Taurus,1.0,True,Capricorn,9.0,False,Pisces,11,False,Aquarius,10.0,True,3,Necessity | Spirit | Victory
+2026-06-14,Capricorn,9,False,Leo,4.0,True,Gemini,2.0,False,Capricorn,9.0,False,Aries,0,False,Aquarius,10.0,True,2,Necessity | Victory
+2026-06-15,Cancer,3,False,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9.0,False,Aries,0,False,Aquarius,10.0,True,1,Victory
+2026-06-16,Cancer,3,False,Virgo,5.0,False,Gemini,2.0,False,Aquarius,10.0,True,Aries,0,False,Aquarius,10.0,True,2,Fortune / Eros / Courage | Victory
+2026-06-17,Cancer,3,False,Virgo,5.0,False,Gemini,2.0,False,Aquarius,10.0,True,Taurus,1,True,Aquarius,10.0,True,3,Fortune / Eros / Courage | Death | Victory
+2026-06-18,Cancer,3,False,Virgo,5.0,False,Cancer,3.0,False,Aquarius,10.0,True,Taurus,1,True,Pisces,11.0,False,2,Fortune / Eros / Courage | Death
+2026-06-19,Cancer,3,False,Virgo,5.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Pisces,11.0,False,1,Fortune / Eros / Courage
+2026-06-20,Leo,4,True,Libra,6.0,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Pisces,11.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-06-21,Leo,4,True,Scorpio,7.0,True,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2,False,Aries,0.0,False,3,Nemesis | Necessity | Fortune / Eros / Courage
+2026-06-22,Leo,4,True,Scorpio,7.0,True,Cancer,3.0,False,Pisces,11.0,False,Gemini,2,False,Aries,0.0,False,2,Nemesis | Necessity
+2026-06-23,Leo,4,True,Scorpio,7.0,True,Leo,4.0,True,Pisces,11.0,False,Cancer,3,False,Aries,0.0,False,3,Nemesis | Necessity | Spirit
+2026-06-24,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Taurus,1.0,True,2,Spirit | Victory
+2026-06-25,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Taurus,1.0,True,2,Spirit | Victory
+2026-06-26,Virgo,5,False,Sagittarius,8.0,False,Leo,4.0,True,Aries,0.0,False,Cancer,3,False,Gemini,2.0,False,1,Spirit
+2026-06-27,Virgo,5,False,Capricorn,9.0,False,Virgo,5.0,False,Taurus,1.0,True,Capricorn,9,False,Gemini,2.0,False,1,Fortune / Eros / Courage
+2026-06-28,Libra,6,False,Capricorn,9.0,False,Virgo,5.0,False,Taurus,1.0,True,Capricorn,9,False,Gemini,2.0,False,1,Fortune / Eros / Courage
+2026-06-29,Libra,6,False,Capricorn,9.0,False,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9,False,Gemini,2.0,False,0,
+2026-06-30,Scorpio,7,True,Capricorn,9.0,False,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9,False,Cancer,3.0,False,1,Nemesis
+2026-07-01,Scorpio,7,True,Capricorn,9.0,False,Libra,6.0,False,Gemini,2.0,False,Capricorn,9,False,Cancer,3.0,False,1,Nemesis
+2026-07-02,Scorpio,7,True,Aquarius,10.0,True,Gemini,2.0,False,Gemini,2.0,False,Capricorn,9,False,Cancer,3.0,False,2,Nemesis | Necessity
+2026-07-03,Sagittarius,8,False,Aquarius,10.0,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10,True,Cancer,3.0,False,2,Necessity | Death
+2026-07-04,Sagittarius,8,False,Aquarius,10.0,True,Gemini,2.0,False,Cancer,3.0,False,Aquarius,10,True,Cancer,3.0,False,2,Necessity | Death
+2026-07-05,Capricorn,9,False,Aquarius,10.0,True,Gemini,2.0,False,Sagittarius,8.0,False,Aquarius,10,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-06,Capricorn,9,False,Aquarius,10.0,True,Cancer,3.0,False,Sagittarius,8.0,False,Aquarius,10,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-07,Capricorn,9,False,Aquarius,10.0,True,Cancer,3.0,False,Capricorn,9.0,False,Aquarius,10,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-08,Capricorn,9,False,Aquarius,10.0,True,Cancer,3.0,False,Capricorn,9.0,False,Aquarius,10,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-09,Capricorn,9,False,Pisces,11.0,False,Cancer,3.0,False,Capricorn,9.0,False,Pisces,11,False,Virgo,5.0,False,0,
+2026-07-10,Capricorn,9,False,Pisces,11.0,False,Cancer,3.0,False,Capricorn,9.0,False,Pisces,11,False,Virgo,5.0,False,0,
+2026-07-11,Aquarius,10,True,Aries,0.0,False,Leo,4.0,True,Capricorn,9.0,False,Aries,0,False,Virgo,5.0,False,2,Nemesis | Spirit
+2026-07-12,Aquarius,10,True,Aries,0.0,False,Leo,4.0,True,Capricorn,9.0,False,Aries,0,False,Virgo,5.0,False,2,Nemesis | Spirit
+2026-07-13,Aquarius,10,True,Aries,0.0,False,Leo,4.0,True,Aquarius,10.0,True,Aries,0,False,Libra,6.0,False,3,Nemesis | Spirit | Fortune / Eros / Courage
+2026-07-14,Aquarius,10,True,Taurus,1.0,True,Leo,4.0,True,Aquarius,10.0,True,Aries,0,False,Libra,6.0,False,4,Nemesis | Necessity | Spirit | Fortune / Eros / Courage
+2026-07-15,Aquarius,10,True,Taurus,1.0,True,Virgo,5.0,False,Aquarius,10.0,True,Taurus,1,True,Scorpio,7.0,True,5,Nemesis | Necessity | Fortune / Eros / Courage | Death | Victory
+2026-07-16,Aquarius,10,True,Sagittarius,8.0,False,Virgo,5.0,False,Aquarius,10.0,True,Gemini,2,False,Scorpio,7.0,True,3,Nemesis | Fortune / Eros / Courage | Victory
+2026-07-17,Pisces,11,False,Sagittarius,8.0,False,Virgo,5.0,False,Aquarius,10.0,True,Gemini,2,False,Scorpio,7.0,True,2,Fortune / Eros / Courage | Victory
+2026-07-18,Pisces,11,False,Sagittarius,8.0,False,Virgo,5.0,False,Aquarius,10.0,True,Gemini,2,False,Sagittarius,8.0,False,1,Fortune / Eros / Courage
+2026-07-19,Pisces,11,False,Capricorn,9.0,False,Virgo,5.0,False,Pisces,11.0,False,Gemini,2,False,Sagittarius,8.0,False,0,
+2026-07-20,Aries,0,False,Capricorn,9.0,False,Libra,6.0,False,Pisces,11.0,False,Cancer,3,False,Capricorn,9.0,False,0,
+2026-07-21,Aries,0,False,Capricorn,9.0,False,Scorpio,7.0,True,Aries,0.0,False,Cancer,3,False,Capricorn,9.0,False,1,Spirit
+2026-07-22,Aries,0,False,Cancer,3.0,False,Scorpio,7.0,True,Aries,0.0,False,Cancer,3,False,Capricorn,9.0,False,1,Spirit
+2026-07-23,Taurus,1,True,Cancer,3.0,False,Scorpio,7.0,True,Aries,0.0,False,Cancer,3,False,Capricorn,9.0,False,2,Nemesis | Spirit
+2026-07-24,Gemini,2,False,Cancer,3.0,False,Sagittarius,8.0,False,Aries,0.0,False,Cancer,3,False,Capricorn,9.0,False,0,
+2026-07-25,Gemini,2,False,Cancer,3.0,False,Sagittarius,8.0,False,Taurus,1.0,True,Cancer,3,False,Capricorn,9.0,False,1,Fortune / Eros / Courage
+2026-07-26,Gemini,2,False,Cancer,3.0,False,Sagittarius,8.0,False,Gemini,2.0,False,Leo,4,True,Leo,4.0,True,2,Death | Victory
+2026-07-27,Gemini,2,False,Leo,4.0,True,Capricorn,9.0,False,Gemini,2.0,False,Leo,4,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-28,Gemini,2,False,Leo,4.0,True,Capricorn,9.0,False,Gemini,2.0,False,Leo,4,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-29,Capricorn,9,False,Leo,4.0,True,Capricorn,9.0,False,Gemini,2.0,False,Leo,4,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-07-30,Capricorn,9,False,Leo,4.0,True,Capricorn,9.0,False,Cancer,3.0,False,Virgo,5,False,Virgo,5.0,False,1,Necessity
+2026-07-31,Capricorn,9,False,Virgo,5.0,False,Capricorn,9.0,False,Cancer,3.0,False,Virgo,5,False,Virgo,5.0,False,0,
+2026-08-01,Capricorn,9,False,Virgo,5.0,False,Aquarius,10.0,True,Cancer,3.0,False,Virgo,5,False,Virgo,5.0,False,1,Spirit
+2026-08-02,Capricorn,9,False,Virgo,5.0,False,Aquarius,10.0,True,Cancer,3.0,False,Virgo,5,False,Virgo,5.0,False,1,Spirit
+2026-08-03,Aquarius,10,True,Virgo,5.0,False,Aquarius,10.0,True,Cancer,3.0,False,Libra,6,False,Libra,6.0,False,2,Nemesis | Spirit
+2026-08-04,Capricorn,9,False,Libra,6.0,False,Aquarius,10.0,True,Capricorn,9.0,False,Scorpio,7,True,Libra,6.0,False,2,Spirit | Death
+2026-08-05,Capricorn,9,False,Libra,6.0,False,Aquarius,10.0,True,Capricorn,9.0,False,Scorpio,7,True,Scorpio,7.0,True,3,Spirit | Death | Victory
+2026-08-06,Capricorn,9,False,Scorpio,7.0,True,Aquarius,10.0,True,Capricorn,9.0,False,Scorpio,7,True,Scorpio,7.0,True,4,Necessity | Spirit | Death | Victory
+2026-08-07,Capricorn,9,False,Scorpio,7.0,True,Aquarius,10.0,True,Capricorn,9.0,False,Scorpio,7,True,Scorpio,7.0,True,4,Necessity | Spirit | Death | Victory
+2026-08-08,Capricorn,9,False,Scorpio,7.0,True,Pisces,11.0,False,Capricorn,9.0,False,Sagittarius,8,False,Sagittarius,8.0,False,1,Necessity
+2026-08-09,Aquarius,10,True,Sagittarius,8.0,False,Pisces,11.0,False,Aquarius,10.0,True,Sagittarius,8,False,Sagittarius,8.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-08-10,Aquarius,10,True,Sagittarius,8.0,False,Aries,0.0,False,Aquarius,10.0,True,Cancer,3,False,Capricorn,9.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-08-11,Aquarius,10,True,Sagittarius,8.0,False,Aries,0.0,False,Aquarius,10.0,True,Cancer,3,False,Capricorn,9.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-08-12,Aquarius,10,True,Capricorn,9.0,False,Aries,0.0,False,Aquarius,10.0,True,Cancer,3,False,Capricorn,9.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-08-13,Aquarius,10,True,Capricorn,9.0,False,Taurus,1.0,True,Aquarius,10.0,True,Cancer,3,False,Capricorn,9.0,False,3,Nemesis | Spirit | Fortune / Eros / Courage
+2026-08-14,Aquarius,10,True,Capricorn,9.0,False,Taurus,1.0,True,Aquarius,10.0,True,Cancer,3,False,Capricorn,9.0,False,3,Nemesis | Spirit | Fortune / Eros / Courage
+2026-08-15,Pisces,11,False,Capricorn,9.0,False,Sagittarius,8.0,False,Pisces,11.0,False,Leo,4,True,Capricorn,9.0,False,1,Death
+2026-08-16,Pisces,11,False,Capricorn,9.0,False,Sagittarius,8.0,False,Pisces,11.0,False,Leo,4,True,Aquarius,10.0,True,2,Death | Victory
+2026-08-17,Pisces,11,False,Aquarius,10.0,True,Sagittarius,8.0,False,Pisces,11.0,False,Leo,4,True,Aquarius,10.0,True,3,Necessity | Death | Victory
+2026-08-18,Aries,0,False,Aquarius,10.0,True,Capricorn,9.0,False,Aries,0.0,False,Leo,4,True,Aquarius,10.0,True,3,Necessity | Death | Victory
+2026-08-19,Aries,0,False,Aquarius,10.0,True,Capricorn,9.0,False,Aries,0.0,False,Virgo,5,False,Aquarius,10.0,True,2,Necessity | Victory
+2026-08-20,Aries,0,False,Aquarius,10.0,True,Capricorn,9.0,False,Aries,0.0,False,Virgo,5,False,Aquarius,10.0,True,2,Necessity | Victory
+2026-08-21,Taurus,1,True,Aquarius,10.0,True,Capricorn,9.0,False,Taurus,1.0,True,Virgo,5,False,Aquarius,10.0,True,4,Nemesis | Necessity | Fortune / Eros / Courage | Victory
+2026-08-22,Taurus,1,True,Aquarius,10.0,True,Capricorn,9.0,False,Taurus,1.0,True,Virgo,5,False,Pisces,11.0,False,3,Nemesis | Necessity | Fortune / Eros / Courage
+2026-08-23,Gemini,2,False,Aquarius,10.0,True,Capricorn,9.0,False,Gemini,2.0,False,Libra,6,False,Pisces,11.0,False,1,Necessity
+2026-08-24,Gemini,2,False,Pisces,11.0,False,Capricorn,9.0,False,Gemini,2.0,False,Libra,6,False,Pisces,11.0,False,0,
+2026-08-25,Gemini,2,False,Pisces,11.0,False,Capricorn,9.0,False,Gemini,2.0,False,Scorpio,7,True,Aries,0.0,False,1,Death
+2026-08-26,Gemini,2,False,Aries,0.0,False,Capricorn,9.0,False,Gemini,2.0,False,Scorpio,7,True,Pisces,11.0,False,1,Death
+2026-08-27,Cancer,3,False,Aries,0.0,False,Aquarius,10.0,True,Cancer,3.0,False,Scorpio,7,True,Pisces,11.0,False,2,Spirit | Death
+2026-08-28,Cancer,3,False,Aries,0.0,False,Aquarius,10.0,True,Cancer,3.0,False,Sagittarius,8,False,Pisces,11.0,False,1,Spirit
+2026-08-29,Cancer,3,False,Taurus,1.0,True,Aquarius,10.0,True,Cancer,3.0,False,Sagittarius,8,False,Aries,0.0,False,2,Necessity | Spirit
+2026-08-30,Cancer,3,False,Taurus,1.0,True,Aquarius,10.0,True,Cancer,3.0,False,Sagittarius,8,False,Aries,0.0,False,2,Necessity | Spirit
+2026-08-31,Cancer,3,False,Gemini,2.0,False,Aquarius,10.0,True,Cancer,3.0,False,Capricorn,9,False,Aries,0.0,False,1,Spirit
+2026-09-01,Leo,4,True,Gemini,2.0,False,Aquarius,10.0,True,Leo,4.0,True,Capricorn,9,False,Taurus,1.0,True,4,Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-09-02,Leo,4,True,Gemini,2.0,False,Pisces,11.0,False,Leo,4.0,True,Capricorn,9,False,Gemini,2.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-09-03,Leo,4,True,Gemini,2.0,False,Pisces,11.0,False,Aries,0.0,False,Aquarius,10,True,Gemini,2.0,False,2,Nemesis | Death
+2026-09-04,Leo,4,True,Capricorn,9.0,False,Aries,0.0,False,Aries,0.0,False,Aquarius,10,True,Gemini,2.0,False,2,Nemesis | Death
+2026-09-05,Virgo,5,False,Capricorn,9.0,False,Aries,0.0,False,Aries,0.0,False,Aquarius,10,True,Gemini,2.0,False,1,Death
+2026-09-06,Virgo,5,False,Capricorn,9.0,False,Aries,0.0,False,Taurus,1.0,True,Aquarius,10,True,Gemini,2.0,False,2,Fortune / Eros / Courage | Death
+2026-09-07,Virgo,5,False,Capricorn,9.0,False,Aries,0.0,False,Gemini,2.0,False,Aquarius,10,True,Cancer,3.0,False,1,Death
+2026-09-08,Virgo,5,False,Capricorn,9.0,False,Taurus,1.0,True,Gemini,2.0,False,Aquarius,10,True,Cancer,3.0,False,2,Spirit | Death
+2026-09-09,Libra,6,False,Capricorn,9.0,False,Gemini,2.0,False,Gemini,2.0,False,Pisces,11,False,Cancer,3.0,False,0,
+2026-09-10,Libra,6,False,Aquarius,10.0,True,Gemini,2.0,False,Gemini,2.0,False,Pisces,11,False,Cancer,3.0,False,1,Necessity
+2026-09-11,Scorpio,7,True,Aquarius,10.0,True,Gemini,2.0,False,Gemini,2.0,False,Aries,0,False,Cancer,3.0,False,2,Nemesis | Necessity
+2026-09-12,Scorpio,7,True,Aquarius,10.0,True,Gemini,2.0,False,Cancer,3.0,False,Aries,0,False,Leo,4.0,True,3,Nemesis | Necessity | Victory
+2026-09-13,Scorpio,7,True,Aquarius,10.0,True,Cancer,3.0,False,Cancer,3.0,False,Aries,0,False,Leo,4.0,True,3,Nemesis | Necessity | Victory
+2026-09-14,Sagittarius,8,False,Aquarius,10.0,True,Cancer,3.0,False,Cancer,3.0,False,Taurus,1,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-09-15,Sagittarius,8,False,Aquarius,10.0,True,Cancer,3.0,False,Cancer,3.0,False,Taurus,1,True,Leo,4.0,True,3,Necessity | Death | Victory
+2026-09-16,Sagittarius,8,False,Pisces,11.0,False,Cancer,3.0,False,Cancer,3.0,False,Gemini,2,False,Virgo,5.0,False,0,
+2026-09-17,Cancer,3,False,Pisces,11.0,False,Cancer,3.0,False,Leo,4.0,True,Gemini,2,False,Virgo,5.0,False,1,Fortune / Eros / Courage
+2026-09-18,Cancer,3,False,Aries,0.0,False,Cancer,3.0,False,Leo,4.0,True,Gemini,2,False,Virgo,5.0,False,1,Fortune / Eros / Courage
+2026-09-19,Cancer,3,False,Aries,0.0,False,Leo,4.0,True,Leo,4.0,True,Gemini,2,False,Virgo,5.0,False,2,Spirit | Fortune / Eros / Courage
+2026-09-20,Cancer,3,False,Aries,0.0,False,Leo,4.0,True,Leo,4.0,True,Cancer,3,False,Libra,6.0,False,2,Spirit | Fortune / Eros / Courage
+2026-09-21,Cancer,3,False,Aries,0.0,False,Leo,4.0,True,Virgo,5.0,False,Cancer,3,False,Libra,6.0,False,1,Spirit
+2026-09-22,Leo,4,True,Taurus,1.0,True,Leo,4.0,True,Virgo,5.0,False,Cancer,3,False,Scorpio,7.0,True,4,Nemesis | Necessity | Spirit | Victory
+2026-09-23,Leo,4,True,Leo,4.0,True,Virgo,5.0,False,Virgo,5.0,False,Cancer,3,False,Scorpio,7.0,True,3,Nemesis | Necessity | Victory
+2026-09-24,Leo,4,True,Leo,4.0,True,Virgo,5.0,False,Virgo,5.0,False,Cancer,3,False,Scorpio,7.0,True,3,Nemesis | Necessity | Victory
+2026-09-25,Leo,4,True,Leo,4.0,True,Virgo,5.0,False,Libra,6.0,False,Leo,4,True,Aries,0.0,False,3,Nemesis | Necessity | Death
+2026-09-26,Virgo,5,False,Leo,4.0,True,Virgo,5.0,False,Libra,6.0,False,Leo,4,True,Aries,0.0,False,2,Necessity | Death
+2026-09-27,Virgo,5,False,Virgo,5.0,False,Libra,6.0,False,Scorpio,7.0,True,Leo,4,True,Aries,0.0,False,2,Fortune / Eros / Courage | Death
+2026-09-28,Virgo,5,False,Virgo,5.0,False,Scorpio,7.0,True,Scorpio,7.0,True,Leo,4,True,Taurus,1.0,True,4,Spirit | Fortune / Eros / Courage | Death | Victory
+2026-09-29,Virgo,5,False,Virgo,5.0,False,Scorpio,7.0,True,Scorpio,7.0,True,Virgo,5,False,Taurus,1.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-09-30,Libra,6,False,Virgo,5.0,False,Scorpio,7.0,True,Sagittarius,8.0,False,Virgo,5,False,Gemini,2.0,False,1,Spirit
+2026-10-01,Libra,6,False,Libra,6.0,False,Scorpio,7.0,True,Sagittarius,8.0,False,Virgo,5,False,Gemini,2.0,False,1,Spirit
+2026-10-02,Scorpio,7,True,Scorpio,7.0,True,Sagittarius,8.0,False,Capricorn,9.0,False,Virgo,5,False,Gemini,2.0,False,2,Nemesis | Necessity
+2026-10-03,Scorpio,7,True,Scorpio,7.0,True,Sagittarius,8.0,False,Capricorn,9.0,False,Virgo,5,False,Gemini,2.0,False,2,Nemesis | Necessity
+2026-10-04,Scorpio,7,True,Scorpio,7.0,True,Cancer,3.0,False,Capricorn,9.0,False,Libra,6,False,Cancer,3.0,False,2,Nemesis | Necessity
+2026-10-05,Sagittarius,8,False,Sagittarius,8.0,False,Cancer,3.0,False,Capricorn,9.0,False,Scorpio,7,True,Cancer,3.0,False,1,Death
+2026-10-06,Sagittarius,8,False,Sagittarius,8.0,False,Cancer,3.0,False,Capricorn,9.0,False,Scorpio,7,True,Cancer,3.0,False,1,Death
+2026-10-07,Capricorn,9,False,Sagittarius,8.0,False,Cancer,3.0,False,Capricorn,9.0,False,Scorpio,7,True,Cancer,3.0,False,1,Death
+2026-10-08,Capricorn,9,False,Capricorn,9.0,False,Cancer,3.0,False,Aquarius,10.0,True,Sagittarius,8,False,Cancer,3.0,False,1,Fortune / Eros / Courage
+2026-10-09,Capricorn,9,False,Capricorn,9.0,False,Leo,4.0,True,Aquarius,10.0,True,Sagittarius,8,False,Leo,4.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-10-10,Aquarius,10,True,Capricorn,9.0,False,Leo,4.0,True,Taurus,1.0,True,Sagittarius,8,False,Leo,4.0,True,4,Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-10-11,Aquarius,10,True,Capricorn,9.0,False,Leo,4.0,True,Taurus,1.0,True,Capricorn,9,False,Leo,4.0,True,4,Nemesis | Spirit | Fortune / Eros / Courage | Victory
+2026-10-12,Aquarius,10,True,Capricorn,9.0,False,Leo,4.0,True,Gemini,2.0,False,Capricorn,9,False,Leo,4.0,True,3,Nemesis | Spirit | Victory
+2026-10-13,Aquarius,10,True,Capricorn,9.0,False,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9,False,Virgo,5.0,False,1,Nemesis
+2026-10-14,Aquarius,10,True,Aquarius,10.0,True,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9,False,Virgo,5.0,False,2,Nemesis | Necessity
+2026-10-15,Aquarius,10,True,Aquarius,10.0,True,Virgo,5.0,False,Gemini,2.0,False,Capricorn,9,False,Virgo,5.0,False,2,Nemesis | Necessity
+2026-10-16,Pisces,11,False,Aquarius,10.0,True,Virgo,5.0,False,Cancer,3.0,False,Capricorn,9,False,Virgo,5.0,False,1,Necessity
+2026-10-17,Pisces,11,False,Aquarius,10.0,True,Libra,6.0,False,Cancer,3.0,False,Leo,4,True,Libra,6.0,False,2,Necessity | Death
+2026-10-18,Pisces,11,False,Aquarius,10.0,True,Libra,6.0,False,Cancer,3.0,False,Leo,4,True,Libra,6.0,False,2,Necessity | Death
+2026-10-19,Aries,0,False,Aquarius,10.0,True,Scorpio,7.0,True,Cancer,3.0,False,Leo,4,True,Scorpio,7.0,True,4,Necessity | Spirit | Death | Victory
+2026-10-20,Aries,0,False,Pisces,11.0,False,Scorpio,7.0,True,Cancer,3.0,False,Virgo,5,False,Scorpio,7.0,True,2,Spirit | Victory
+2026-10-21,Aries,0,False,Pisces,11.0,False,Scorpio,7.0,True,Leo,4.0,True,Virgo,5,False,Scorpio,7.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-10-22,Taurus,1,True,Aries,0.0,False,Sagittarius,8.0,False,Leo,4.0,True,Virgo,5,False,Sagittarius,8.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-10-23,Taurus,1,True,Aries,0.0,False,Sagittarius,8.0,False,Leo,4.0,True,Virgo,5,False,Sagittarius,8.0,False,2,Nemesis | Fortune / Eros / Courage
+2026-10-24,Gemini,2,False,Aries,0.0,False,Sagittarius,8.0,False,Leo,4.0,True,Virgo,5,False,Sagittarius,8.0,False,1,Fortune / Eros / Courage
+2026-10-25,Gemini,2,False,Taurus,1.0,True,Capricorn,9.0,False,Virgo,5.0,False,Libra,6,False,Capricorn,9.0,False,1,Necessity
+2026-10-26,Gemini,2,False,Taurus,1.0,True,Capricorn,9.0,False,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,2,Necessity | Death
+2026-10-27,Gemini,2,False,Gemini,2.0,False,Capricorn,9.0,False,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,1,Death
+2026-10-28,Cancer,3,False,Gemini,2.0,False,Aquarius,10.0,True,Virgo,5.0,False,Scorpio,7,True,Capricorn,9.0,False,2,Spirit | Death
+2026-10-29,Cancer,3,False,Gemini,2.0,False,Aquarius,10.0,True,Libra,6.0,False,Sagittarius,8,False,Capricorn,9.0,False,1,Spirit
+2026-10-30,Cancer,3,False,Gemini,2.0,False,Aquarius,10.0,True,Gemini,2.0,False,Sagittarius,8,False,Aquarius,10.0,True,2,Spirit | Victory
+2026-10-31,Cancer,3,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2.0,False,Sagittarius,8,False,Aquarius,10.0,True,2,Spirit | Victory
+2026-11-01,Cancer,3,False,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2.0,False,Capricorn,9,False,Aquarius,10.0,True,2,Spirit | Victory
+2026-11-02,Leo,4,True,Cancer,3.0,False,Aquarius,10.0,True,Gemini,2.0,False,Capricorn,9,False,Taurus,1.0,True,3,Nemesis | Spirit | Victory
+2026-11-03,Leo,4,True,Cancer,3.0,False,Pisces,11.0,False,Cancer,3.0,False,Capricorn,9,False,Gemini,2.0,False,1,Nemesis
+2026-11-04,Leo,4,True,Cancer,3.0,False,Pisces,11.0,False,Cancer,3.0,False,Capricorn,9,False,Gemini,2.0,False,1,Nemesis
+2026-11-05,Leo,4,True,Cancer,3.0,False,Aries,0.0,False,Cancer,3.0,False,Capricorn,9,False,Gemini,2.0,False,1,Nemesis
+2026-11-06,Virgo,5,False,Aquarius,10.0,True,Aries,0.0,False,Cancer,3.0,False,Capricorn,9,False,Gemini,2.0,False,1,Necessity
+2026-11-07,Virgo,5,False,Aquarius,10.0,True,Aries,0.0,False,Cancer,3.0,False,Aquarius,10,True,Cancer,3.0,False,2,Necessity | Death
+2026-11-08,Virgo,5,False,Aquarius,10.0,True,Taurus,1.0,True,Leo,4.0,True,Aquarius,10,True,Cancer,3.0,False,4,Necessity | Spirit | Fortune / Eros / Courage | Death
+2026-11-09,Virgo,5,False,Virgo,5.0,False,Taurus,1.0,True,Leo,4.0,True,Aquarius,10,True,Cancer,3.0,False,3,Spirit | Fortune / Eros / Courage | Death
+2026-11-10,Libra,6,False,Virgo,5.0,False,Gemini,2.0,False,Leo,4.0,True,Aquarius,10,True,Cancer,3.0,False,2,Fortune / Eros / Courage | Death
+2026-11-11,Libra,6,False,Virgo,5.0,False,Gemini,2.0,False,Leo,4.0,True,Aquarius,10,True,Cancer,3.0,False,2,Fortune / Eros / Courage | Death
+2026-11-12,Scorpio,7,True,Virgo,5.0,False,Gemini,2.0,False,Virgo,5.0,False,Aquarius,10,True,Cancer,3.0,False,2,Nemesis | Death
+2026-11-13,Scorpio,7,True,Libra,6.0,False,Gemini,2.0,False,Virgo,5.0,False,Pisces,11,False,Leo,4.0,True,2,Nemesis | Victory
+2026-11-14,Scorpio,7,True,Libra,6.0,False,Cancer,3.0,False,Virgo,5.0,False,Pisces,11,False,Leo,4.0,True,2,Nemesis | Victory
+2026-11-15,Sagittarius,8,False,Scorpio,7.0,True,Cancer,3.0,False,Virgo,5.0,False,Aries,0,False,Leo,4.0,True,2,Necessity | Victory
+2026-11-16,Sagittarius,8,False,Scorpio,7.0,True,Cancer,3.0,False,Virgo,5.0,False,Aries,0,False,Leo,4.0,True,2,Necessity | Victory
+2026-11-17,Capricorn,9,False,Scorpio,7.0,True,Cancer,3.0,False,Libra,6.0,False,Pisces,11,False,Virgo,5.0,False,1,Necessity
+2026-11-18,Capricorn,9,False,Sagittarius,8.0,False,Cancer,3.0,False,Scorpio,7.0,True,Pisces,11,False,Virgo,5.0,False,1,Fortune / Eros / Courage
+2026-11-19,Capricorn,9,False,Sagittarius,8.0,False,Cancer,3.0,False,Scorpio,7.0,True,Aries,0,False,Virgo,5.0,False,1,Fortune / Eros / Courage
+2026-11-20,Capricorn,9,False,Sagittarius,8.0,False,Leo,4.0,True,Scorpio,7.0,True,Aries,0,False,Virgo,5.0,False,2,Spirit | Fortune / Eros / Courage
+2026-11-21,Capricorn,9,False,Capricorn,9.0,False,Leo,4.0,True,Sagittarius,8.0,False,Aries,0,False,Libra,6.0,False,1,Spirit
+2026-11-22,Capricorn,9,False,Capricorn,9.0,False,Leo,4.0,True,Sagittarius,8.0,False,Taurus,1,True,Gemini,2.0,False,2,Spirit | Death
+2026-11-23,Leo,4,True,Capricorn,9.0,False,Virgo,5.0,False,Sagittarius,8.0,False,Taurus,1,True,Gemini,2.0,False,2,Nemesis | Death
+2026-11-24,Leo,4,True,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Gemini,2,False,Gemini,2.0,False,1,Nemesis
+2026-11-25,Leo,4,True,Capricorn,9.0,False,Virgo,5.0,False,Capricorn,9.0,False,Gemini,2,False,Gemini,2.0,False,1,Nemesis
+2026-11-26,Leo,4,True,Aquarius,10.0,True,Virgo,5.0,False,Capricorn,9.0,False,Gemini,2,False,Cancer,3.0,False,2,Nemesis | Necessity
+2026-11-27,Virgo,5,False,Aquarius,10.0,True,Virgo,5.0,False,Capricorn,9.0,False,Gemini,2,False,Cancer,3.0,False,1,Necessity
+2026-11-28,Virgo,5,False,Aquarius,10.0,True,Libra,6.0,False,Capricorn,9.0,False,Cancer,3,False,Cancer,3.0,False,1,Necessity
+2026-11-29,Virgo,5,False,Aquarius,10.0,True,Scorpio,7.0,True,Capricorn,9.0,False,Cancer,3,False,Cancer,3.0,False,2,Necessity | Spirit
+2026-11-30,Virgo,5,False,Aquarius,10.0,True,Scorpio,7.0,True,Aquarius,10.0,True,Cancer,3,False,Cancer,3.0,False,3,Necessity | Spirit | Fortune / Eros / Courage
+2026-12-01,Libra,6,False,Aquarius,10.0,True,Scorpio,7.0,True,Aquarius,10.0,True,Cancer,3,False,Leo,4.0,True,4,Necessity | Spirit | Fortune / Eros / Courage | Victory
+2026-12-02,Libra,6,False,Pisces,11.0,False,Sagittarius,8.0,False,Aquarius,10.0,True,Cancer,3,False,Leo,4.0,True,2,Fortune / Eros / Courage | Victory
+2026-12-03,Scorpio,7,True,Pisces,11.0,False,Sagittarius,8.0,False,Aquarius,10.0,True,Leo,4,True,Leo,4.0,True,4,Nemesis | Fortune / Eros / Courage | Death | Victory
+2026-12-04,Scorpio,7,True,Pisces,11.0,False,Sagittarius,8.0,False,Aquarius,10.0,True,Leo,4,True,Leo,4.0,True,4,Nemesis | Fortune / Eros / Courage | Death | Victory
+2026-12-05,Scorpio,7,True,Aries,0.0,False,Capricorn,9.0,False,Aquarius,10.0,True,Leo,4,True,Virgo,5.0,False,3,Nemesis | Fortune / Eros / Courage | Death
+2026-12-06,Sagittarius,8,False,Aries,0.0,False,Capricorn,9.0,False,Pisces,11.0,False,Leo,4,True,Virgo,5.0,False,1,Death
+2026-12-07,Sagittarius,8,False,Aries,0.0,False,Capricorn,9.0,False,Pisces,11.0,False,Virgo,5,False,Virgo,5.0,False,0,
+2026-12-08,Capricorn,9,False,Taurus,1.0,True,Capricorn,9.0,False,Aries,0.0,False,Virgo,5,False,Virgo,5.0,False,1,Necessity
+2026-12-09,Capricorn,9,False,Taurus,1.0,True,Capricorn,9.0,False,Aries,0.0,False,Virgo,5,False,Libra,6.0,False,1,Necessity
+2026-12-10,Capricorn,9,False,Gemini,2.0,False,Capricorn,9.0,False,Aries,0.0,False,Virgo,5,False,Libra,6.0,False,0,
+2026-12-11,Capricorn,9,False,Gemini,2.0,False,Leo,4.0,True,Taurus,1.0,True,Libra,6,False,Scorpio,7.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-12-12,Capricorn,9,False,Gemini,2.0,False,Leo,4.0,True,Taurus,1.0,True,Libra,6,False,Scorpio,7.0,True,3,Spirit | Fortune / Eros / Courage | Victory
+2026-12-13,Capricorn,9,False,Gemini,2.0,False,Leo,4.0,True,Sagittarius,8.0,False,Scorpio,7,True,Scorpio,7.0,True,3,Spirit | Death | Victory
+2026-12-14,Aquarius,10,True,Cancer,3.0,False,Leo,4.0,True,Sagittarius,8.0,False,Scorpio,7,True,Sagittarius,8.0,False,3,Nemesis | Spirit | Death
+2026-12-15,Aquarius,10,True,Cancer,3.0,False,Virgo,5.0,False,Sagittarius,8.0,False,Scorpio,7,True,Sagittarius,8.0,False,2,Nemesis | Death
+2026-12-16,Aquarius,10,True,Cancer,3.0,False,Virgo,5.0,False,Capricorn,9.0,False,Sagittarius,8,False,Capricorn,9.0,False,1,Nemesis
+2026-12-17,Aquarius,10,True,Cancer,3.0,False,Virgo,5.0,False,Capricorn,9.0,False,Aries,0,False,Capricorn,9.0,False,1,Nemesis
+2026-12-18,Aquarius,10,True,Cancer,3.0,False,Virgo,5.0,False,Capricorn,9.0,False,Aries,0,False,Capricorn,9.0,False,1,Nemesis
+2026-12-19,Aquarius,10,True,Leo,4.0,True,Libra,6.0,False,Cancer,3.0,False,Aries,0,False,Capricorn,9.0,False,2,Nemesis | Necessity
+2026-12-20,Pisces,11,False,Leo,4.0,True,Scorpio,7.0,True,Cancer,3.0,False,Taurus,1,True,Capricorn,9.0,False,3,Necessity | Spirit | Death
+2026-12-21,Pisces,11,False,Leo,4.0,True,Scorpio,7.0,True,Cancer,3.0,False,Gemini,2,False,Capricorn,9.0,False,2,Necessity | Spirit
+2026-12-22,Pisces,11,False,Leo,4.0,True,Scorpio,7.0,True,Cancer,3.0,False,Gemini,2,False,Aquarius,10.0,True,3,Necessity | Spirit | Victory
+2026-12-23,Aries,0,False,Pisces,11.0,False,Sagittarius,8.0,False,Cancer,3.0,False,Gemini,2,False,Aquarius,10.0,True,1,Victory
+2026-12-24,Pisces,11,False,Pisces,11.0,False,Sagittarius,8.0,False,Leo,4.0,True,Gemini,2,False,Aquarius,10.0,True,2,Fortune / Eros / Courage | Victory
+2026-12-25,Pisces,11,False,Pisces,11.0,False,Sagittarius,8.0,False,Leo,4.0,True,Gemini,2,False,Aquarius,10.0,True,2,Fortune / Eros / Courage | Victory
+2026-12-26,Pisces,11,False,Aries,0.0,False,Capricorn,9.0,False,Leo,4.0,True,Cancer,3,False,Aquarius,10.0,True,2,Fortune / Eros / Courage | Victory
+2026-12-27,Aries,0,False,Aries,0.0,False,Capricorn,9.0,False,Leo,4.0,True,Cancer,3,False,Aquarius,10.0,True,2,Fortune / Eros / Courage | Victory
+2026-12-28,Aries,0,False,Aries,0.0,False,Capricorn,9.0,False,Virgo,5.0,False,Cancer,3,False,Pisces,11.0,False,0,
+2026-12-29,Aries,0,False,Libra,6.0,False,Capricorn,9.0,False,Virgo,5.0,False,Cancer,3,False,Pisces,11.0,False,0,
+2026-12-30,Taurus,1,True,Libra,6.0,False,Capricorn,9.0,False,Virgo,5.0,False,Cancer,3,False,Pisces,11.0,False,1,Nemesis
+2026-12-31,Gemini,2,False,Scorpio,7.0,True,Capricorn,9.0,False,Virgo,5.0,False,Leo,4,True,Aries,0.0,False,2,Necessity | Death
