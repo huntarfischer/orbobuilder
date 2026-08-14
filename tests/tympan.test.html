@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the Tympan · the twelve whole-sign frames and the governance index</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:940px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}.note{color:#c99a4a}td{padding:1px 10px 1px 0;vertical-align:top}pre{color:#b6aed2;white-space:pre-wrap;margin:4px 0 0}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=2"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=7"></script>
+<script src="../astrodna.browser.js?v=6"></script>
+</head><body>
+<h1>The Tympan · the frames and the reverse index</h1>
+<p class="dim">Twelve stampings, 144 rows forward and 144 reverse, stamped from constants at load. No native,
+no place, no time: it takes an ASC SIGN, never a lat/lon. THE CONTRACT IS PINNED HERE BEFORE ANY CALL SITE
+MOVES, as the Ring's was. What this file guards: the frames are stamped ONCE (they left the Mater and did
+not leave a copy behind), the reverse index agrees with the forward one it inverts, THE MODERN INDEX IS
+SEPARATE and the traditional one cannot see it, the error contract is the Ring's exactly, and no house
+meaning word ever entered the table.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const T = window.__ORBO_TYMPAN, M = window.__ORBO_MATER, F = window.__ORBO_FRAMING, A = window.__ORBO_ASTRODNA;
+  const out = document.getElementById('out');
+  if (!T) { out.innerHTML = '<span class="bad">tympan.browser.js did not register __ORBO_TYMPAN</span>'; return; }
+
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const threw = (fn) => { try { fn(); return false; } catch (e) { return true; } };
+  const src = await (await fetch('../tympan.js')).text().catch(() => '');
+  const code = (src || '').replace(/^\s*\/\/.*$/gm, '');
+
+  sec('1 · the twelve frames, forward · a lookup, not a rotation per call');
+  check('twelve frames of twelve', T.HOUSE_FRAMES.length === 12 && T.HOUSE_FRAMES.every((f) => f.length === 12));
+  check('every frame puts its own ASC sign in the first house', T.HOUSE_FRAMES.every((f, asc) => f[asc] === 1));
+  let hBad = 0;
+  for (let asc = 0; asc < 12; asc++) for (let sg = 0; sg < 12; sg++) if (T.houseOfSign(sg, asc) !== ((sg - asc + 12) % 12) + 1) hBad++;
+  check('all 144 lookups equal the whole-sign rotation they replaced', hBad === 0, hBad + ' disagree');
+  check('every answer is a house ORDINAL 1-12, so 0 is never a valid answer and truthiness is safe', T.HOUSE_FRAMES.every((f) => f.every((h) => Number.isInteger(h) && h >= 1 && h <= 12)));
+  check('houseOfLon reads through the sign index', T.houseOfLon(215.4, 187.2) === T.houseOfSign(7, 6) && T.houseOfLon(0, 0) === 1);
+  check('houseFrame hands back the whole stamped row', T.houseFrame(7).join() === T.HOUSE_FRAMES[7].join() && T.houseFrame(0)[0] === 1);
+  check('a frame is frozen (the die does not leave the module mutable)', (() => { try { T.HOUSE_FRAMES[0][0] = 99; } catch (e) {} return T.HOUSE_FRAMES[0][0] === 1; })());
+
+  sec('2 · the same 144 rows, inverted · frame + house → sign');
+  let iBad = 0;
+  for (let asc = 0; asc < 12; asc++) for (let h = 1; h <= 12; h++) if (T.houseOfSign(T.signOfHouse(h, asc), asc) !== h) iBad++;
+  check('signOfHouse round-trips houseOfSign in all 144 cells', iBad === 0, iBad + ' disagree');
+  check('the first house is always the ASC sign', [0, 3, 7, 11].every((asc) => T.signOfHouse(1, asc) === asc));
+  check('rulerOfHouse is the traditional lord of that house\u2019s sign', T.rulerOfHouse(1, 7) === M.RULERS[7] && T.rulerOfHouse(7, 7) === M.RULERS[1]);
+  check('house is indexed ordinal-minus-one in exactly ONE place in the source', ((code.match(/- 1\]/g) || []).length === 1), (code.match(/- 1\]/g) || []).length + ' occurrence(s)');
+
+  sec('3 · THE REVERSE INDEX · frame + planet \u2192 the houses it governs (why the file exists)');
+  // The instrument hand-walked this twice: `for (let i=0;i<12;i++) if (_rulerOfSign(i)===name)`.
+  let rBad = 0, walked = 0;
+  for (let asc = 0; asc < 12; asc++) for (const p of M.DISPOSITORS) {
+    const want = []; for (let sg = 0; sg < 12; sg++) if (M.RULERS[sg] === p) want.push(T.houseOfSign(sg, asc));
+    want.sort((a, b) => a - b); walked++;
+    if (T.housesRuledBy(p, asc).join() !== want.join()) rBad++;
+  }
+  check('all 84 frame/planet reverse reads equal the hand-walk they replace', rBad === 0, walked + ' checked, ' + rBad + ' disagree');
+  check('the seven account for all twelve houses in every frame, nothing doubled', [...Array(12).keys()].every((asc) => M.DISPOSITORS.reduce((n, p) => n + T.housesRuledBy(p, asc).length, 0) === 12));
+  check('the doubles are right: Mercury, Venus, Mars, Jupiter and Saturn govern two houses, the lights one',
+    ['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].every((p) => T.housesRuledBy(p, 0).length === 2) && T.housesRuledBy('Sun', 0).length === 1 && T.housesRuledBy('Moon', 0).length === 1);
+  check('Scorpio rising: Mars governs the 1st and the 6th, Mercury the 8th and the 11th',
+    T.housesRuledBy('Mars', 7).join() === '1,6' && T.housesRuledBy('Mercury', 7).join() === '8,11', 'Mars ' + T.housesRuledBy('Mars', 7).join(' & '));
+  check('a returned index is frozen, so a reader cannot push a house onto the die', Object.isFrozen(T.housesRuledBy('Mars', 7)));
+
+  sec('4 · the modern index, SEPARATE · never a column, never a skip-flag');
+  check('three co-rulers, on Scorpio, Aquarius and Pisces', T.coRulerOfSign(7) === 'Pluto' && T.coRulerOfSign(10) === 'Uranus' && T.coRulerOfSign(11) === 'Neptune');
+  check('every other sign has NO co-ruler, and the absence is null', [0, 1, 2, 3, 4, 5, 6, 8, 9].every((sg) => T.coRulerOfSign(sg) === null));
+  check('each modern co-rules exactly ONE house in every frame', [...Array(12).keys()].every((asc) => T.MODERNS.every((p) => T.housesCoRuledBy(p, asc).length === 1)));
+  check('Scorpio rising: Pluto co-rules the 1st, Uranus the 4th, Neptune the 5th',
+    T.housesCoRuledBy('Pluto', 7)[0] === 1 && T.housesCoRuledBy('Uranus', 7)[0] === 4 && T.housesCoRuledBy('Neptune', 7)[0] === 5);
+  // THE SPLIT IS THE POINT: the dispositor walker is never handed this table, so it is structurally
+  // incapable of branching into a modern.
+  check('NO modern appears in the traditional reverse index, in any frame', [...Array(12).keys()].every((asc) => T.MODERNS.every((p) => T.RULES_HOUSES[asc][p] === undefined)));
+  check('and no traditional planet co-rules anything: the seven read [] here, well-formed and empty', M.DISPOSITORS.every((p) => Array.isArray(T.housesCoRuledBy(p, 0)) && T.housesCoRuledBy(p, 0).length === 0));
+  check('an empty index is TRUTHY, so a loose caller still behaves', !!T.housesCoRuledBy('Mars', 0));
+  check('asking the traditional index for a modern THROWS, and the message says where to go instead',
+    threw(() => T.housesRuledBy('Pluto', 0)) && (() => { try { T.housesRuledBy('Pluto', 0); } catch (e) { return /housesCoRuledBy/.test(e.message); } })());
+  check('no modern reached the Mater\u2019s traditional table', !T.MODERNS.some((p) => M.RULERS.includes(p) || M.DISPOSITORS.includes(p)));
+  check('no sign has one lord under two names', [...Array(12).keys()].every((sg) => M.rulerOf(sg) !== T.coRulerOfSign(sg)));
+
+  sec('5 · the frame record · addresses, ordinals and lord names, and nothing else');
+  const fr = T.frameOf(7);
+  check('twelve houses, in house order', fr.houses.length === 12 && fr.houses.every((h, i) => h.house === i + 1));
+  check('the record\u2019s houses agree with the two stamped tables', fr.houses.every((h) => h.signIndex === T.signOfHouse(h.house, 7) && h.ruler === T.rulerOfHouse(h.house, 7) && h.coRuler === T.coRulerOfSign(h.signIndex)));
+  check('the record IS the stamped index, not a copy that agrees', fr.rulesHouses === T.RULES_HOUSES[7] && fr.coRulesHouses === T.CO_RULES_HOUSES[7]);
+  check('the record is frozen all the way down', Object.isFrozen(fr) && Object.isFrozen(fr.houses) && Object.isFrozen(fr.houses[0]));
+
+  sec('6 · the flip law · free from the geometry');
+  // A synchronic placement lives in the 180° arc centred on its natal degree, and under the natal
+  // whole-sign law a sign boundary IS a house boundary.
+  check('a flip moves a placement exactly SIX houses, from every house', [...Array(12).keys()].every((i) => { const h = i + 1, f = T.flipHouse(h); return Math.min(Math.abs(f - h), 12 - Math.abs(f - h)) === T.FLIP_HOUSES; }));
+  check('and it is an involution: flipping twice returns', [...Array(12).keys()].every((i) => T.flipHouse(T.flipHouse(i + 1)) === i + 1));
+  check('the 1st flips to the 7th, the 8th to the 2nd', T.flipHouse(1) === 7 && T.flipHouse(8) === 2);
+  check('FLIP_HOUSES is six', T.FLIP_HOUSES === 6);
+
+  sec('7 · the error contract · THE RING\u2019S, EXACTLY');
+  check('absence is null (a sign with no co-ruler)', T.coRulerOfSign(0) === null);
+  check('well-formed and empty is [] (Mars co-rules nothing)', T.housesCoRuledBy('Mars', 3).length === 0);
+  check('house 13 THROWS \u2014 the canonical malformed address', threw(() => T.signOfHouse(13, 0)) && threw(() => T.flipHouse(0)) && threw(() => T.flipHouse(13)));
+  check('a sign address outside 0-11 THROWS rather than folding (the Mater\u2019s old reads answered for sign 37)',
+    threw(() => T.houseOfSign(0, 12)) && threw(() => T.houseOfSign(37, 0)) && threw(() => T.houseOfSign(-1, 0)) && threw(() => T.frameOf(12)));
+  check('a non-integer address THROWS: one validator per argument kind, no exemption', threw(() => T.houseOfSign(1.5, 0)) && threw(() => T.signOfHouse('3', 0)) && threw(() => T.houseOfSign(null, 0)) && threw(() => T.houseFrame(undefined)));
+  check('an unknown planet THROWS', threw(() => T.housesRuledBy('Chiron', 0)) && threw(() => T.housesCoRuledBy('Fortune', 0)) && threw(() => T.housesRuledBy(null, 0)));
+  check('every throw names the file, so a stack trace points at the die', (() => { try { T.signOfHouse(13, 0); } catch (e) { return /^tympan: /.test(e.message); } })());
+  check('a malformed row would throw AT LOAD, not at read time', /throw new Error\(who \+ 'frame '/.test(src || ''));
+
+  sec('8 · the refusals · what the Tympan is not');
+  check('it imports the Mater and NOTHING else', !!src && (src.match(/^import /gm) || []).length === 1 && /from '\.\/mater\.js'/.test(src));
+  check('no occupant, no time, no place: no lat, no lon, no jd anywhere in the code', !/\b(lat|lon|jd|julian)\b/i.test(code.replace(/ascLon|houseOfLon|coRulerOf|signIndexOf|MODERN|lord/gi, '')));
+  check('no aspect, no mark, no orb (that is the Ring\u2019s)', typeof T.MARKS === 'undefined' && typeof T.ASPECTS === 'undefined' && !/MARKS|ASPECT|\borb\b/i.test(code));
+  check('no sect, no lot, no decan, term, face or triplicity', !/\bsect\b|\blots?\b|decan|\bterms?\b|\bfaces?\b|triplicit/i.test(code));
+  // THE REFUSAL IT WILL BE PUSHED ON HARDEST. The Tympan gives the number; a glossary reader gives
+  // the word. If house meaning text lives here, it stops being inherent.
+  const MEANING = ['sibling', 'marriage', 'career', 'children', 'money', 'friend', 'enemy', 'partner', 'journey', 'illness', 'inherit', 'vocation', 'reputation'];
+  check('NO HOUSE MEANING WORD entered the table \u2014 the Tympan gives the number, a glossary gives the word', !MEANING.some((w) => new RegExp(w, 'i').test(code)), MEANING.length + ' words grepped against the source, comments stripped');
+  const FORBIDDEN = ['good', 'bad', 'strong', 'weak', 'fortunate', 'difficult'];
+  check('and no interpretation word: it records structure, packs speak meaning', !FORBIDDEN.some((w) => new RegExp('\\b' + w + '\\b', 'i').test(code)));
+
+  sec('9 · ONE DIE · the frames are stamped once, and the readers read this one');
+  // Identity, not equality: what proves nobody kept a private copy that happens to agree today.
+  check('THE FRAMES LEFT THE MATER: it holds no HOUSE_FRAMES and no house read at all',
+    M.HOUSE_FRAMES === undefined && M.houseOfSign === undefined && M.houseOfLon === undefined && M.houseFrame === undefined);
+  const msrc = await (await fetch('../mater.js')).text().catch(() => '');
+  check('and its source keeps no copy either', !!msrc && !/HOUSE_FRAMES|houseOfSign/.test(msrc));
+  if (F) {
+    let fBad = 0;
+    for (let a = 0; a < 360; a += 7) for (let b = 0; b < 360; b += 13) if (F.houseOf(a, b) !== T.houseOfLon(a, b)) fBad++;
+    check('framing.houseOf still returns exactly what it always did, now through the Tympan', fBad === 0, fBad + ' of 2132 disagree');
+  }
+  if (A) {
+    // The genome's houses come through the Tympan now; the fixture natal must be unchanged.
+    const NAT = { y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4 / 60, lon: -(89 + 24 / 60) };
+    const E = window.__ORBO_EPH;
+    let dna = null; try { dna = A.buildAstroDNA(E.julianDay(NAT.y, NAT.mo, NAT.d, NAT.h, NAT.mi, 0, NAT.tz), NAT.lat, NAT.lon); } catch (e) {}
+    check('the fixture genome still builds, twelve nodes', !!dna && Object.keys(dna.nodes).length === 12);
+    if (dna) {
+      const ascSg = dna.nodes.Ascendant.signIndex;
+      let nBad = 0;
+      for (const n of Object.keys(dna.nodes)) if (dna.nodes[n].house !== T.houseOfSign(dna.nodes[n].signIndex, ascSg)) nBad++;
+      check('every node\u2019s house is the Tympan\u2019s frame lookup', nBad === 0, nBad + ' disagree');
+      check('the Ascendant is in the first house', dna.nodes.Ascendant.house === 1);
+      check('and the chart ruler governs the 1st in its own frame', T.housesRuledBy(dna.ruler.rulerPlanet, ascSg).includes(1), dna.ruler.rulerPlanet + ' governs ' + T.housesRuledBy(dna.ruler.rulerPlanet, ascSg).join(' & '));
+    }
+  }
+  check('the tables are frozen', ['HOUSE_FRAMES', 'SIGN_FRAMES', 'RULES_HOUSES', 'CO_RULES_HOUSES', 'MODERNS', 'MODERN_RULERS', 'FRAMES'].every((k) => Object.isFrozen(T[k])));
+  check('a push onto the die does not take', (() => { try { T.MODERNS.push('Eris'); } catch (e) {} return T.MODERNS.length === 3; })());
+
+  out.innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span> \u00b7 ' + fails.join(' \u00b7 ') : '<span class="ok">all checks pass</span>') + '</h2>';
+})();
+</script>
+</body></html>

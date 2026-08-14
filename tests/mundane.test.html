@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the embryo · the eclipse block diffed against the canon (S3)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:960px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}table{border-collapse:collapse}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=4"></script>
+<script src="../mundane.browser.js?v=7"></script>
+</head><body>
+<h1>Phase 5 · S3 — a syzygy scan is not an eclipse</h1>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+// The published canon, 2015 to 2027 inclusive. Verified once, here, and then never scanned again at
+// runtime: this block is the whole reason the embryo is shipped rather than computed.
+const CANON_SOLAR = [
+  ['2015-03-20','total'],['2015-09-13','partial'],['2016-03-09','total'],['2016-09-01','annular'],
+  ['2017-02-26','annular'],['2017-08-21','total'],['2018-02-15','partial'],['2018-07-13','partial'],
+  ['2018-08-11','partial'],['2019-01-06','partial'],['2019-07-02','total'],['2019-12-26','annular'],
+  ['2020-06-21','annular'],['2020-12-14','total'],['2021-06-10','annular'],['2021-12-04','total'],
+  ['2022-04-30','partial'],['2022-10-25','partial'],['2023-04-20','hybrid'],['2023-10-14','annular'],
+  ['2024-04-08','total'],['2024-10-02','annular'],['2025-03-29','partial'],['2025-09-21','partial'],
+  ['2026-02-17','annular'],['2026-08-12','total'],['2027-02-06','annular'],['2027-08-02','total'],
+];
+const CANON_LUNAR = [
+  ['2015-04-04','total'],['2015-09-28','total'],['2016-03-23','penumbral'],['2016-08-18','penumbral'],['2016-09-16','penumbral'],
+  ['2017-02-11','penumbral'],['2017-08-07','partial'],['2018-01-31','total'],['2018-07-27','total'],
+  ['2019-01-21','total'],['2019-07-16','partial'],['2020-01-10','penumbral'],['2020-06-05','penumbral'],
+  ['2020-07-05','penumbral'],['2020-11-30','penumbral'],['2021-05-26','total'],['2021-11-19','partial'],
+  ['2022-05-16','total'],['2022-11-08','total'],['2023-05-05','penumbral'],['2023-10-28','partial'],
+  ['2024-03-25','penumbral'],['2024-09-18','partial'],['2025-03-14','total'],['2025-09-07','total'],
+  ['2026-03-03','total'],['2026-08-28','partial'],['2027-02-20','penumbral'],['2027-07-18','penumbral'],
+  ['2027-08-17','penumbral'],
+];
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, L = window.__ORBO_LOOM, M = window.__ORBO_MUNDANE;
+  if (!E || !F || !L || !M) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [], soft = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const note = (name, detail) => rows.push('<tr><td class="dim">·</td><td class="dim">' + name + ' ' + (detail || '') + '</td></tr>');
+
+  const pmemo = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pmemo.get(k); if (!v) pmemo.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const dep = { moonState: E.moonState, sunState: E.sunState };
+  const iso = (jd) => E.jdToDate(jd).toISOString().slice(0, 16).replace('T', ' ');
+  const day = (jd) => E.jdToDate(jd).toISOString().slice(0, 10);
+
+  sec('the 3D doors exist (longitude alone cannot see an eclipse)');
+  const ms = E.moonState(E.julianDay(2017, 8, 21, 18, 26, 0, 0));
+  check('moonState returns lon, lat and a plausible distance', Number.isFinite(ms.lat) && ms.r > 356000 && ms.r < 407000,
+    'lat ' + ms.lat.toFixed(3) + '° · r ' + Math.round(ms.r) + ' km');
+  const ss = E.sunState(E.julianDay(2017, 8, 21, 18, 26, 0, 0));
+  check('sunState distance is inside the annual range', ss.r > 1.46e8 && ss.r < 1.53e8, Math.round(ss.r) + ' km');
+  // Not zero: a central eclipse only needs the shadow AXIS inside the Earth's disc, which is about
+  // a degree wide as seen from the Moon, so half a degree of latitude is an ordinary totality.
+  check('the Moon was within the Earth\u2019s own angular width of the ecliptic at the 2017 totality', Math.abs(ms.lat) < 1.1, ms.lat.toFixed(4) + '\u00b0');
+
+  sec('the eclipse block, diffed against the canon 2015 to 2027');
+  const jdA = E.julianDay(2015, 1, 1, 0, 0, 0, 0), jdB = E.julianDay(2028, 1, 1, 0, 0, 0, 0);
+  const t0 = performance.now();
+  const found = M.eclipsesIn({ jdStart: jdA, jdEnd: jdB, probe, bodyProbe, moonState: E.moonState, sunState: E.sunState });
+  const scanMs = performance.now() - t0;
+  const sol = found.filter((e) => e.of === 'solar'), lun = found.filter((e) => e.of === 'lunar');
+  note('13 years scanned in ' + scanMs.toFixed(0) + 'ms · ' + sol.length + ' solar, ' + lun.length + ' lunar');
+
+  const diff = (canon, mine, label) => {
+    let hit = 0, wrongType = [], missed = [], spurious = [];
+    const used = new Set();
+    for (const [d, type] of canon) {
+      const jdC = E.julianDay(+d.slice(0,4), +d.slice(5,7), +d.slice(8,10), 12, 0, 0, 0);
+      let best = -1, bd = 1.6;
+      mine.forEach((e, i) => { const dd = Math.abs(e.jd - jdC); if (dd < bd && !used.has(i)) { bd = dd; best = i; } });
+      if (best < 0) { missed.push(d + ' (' + type + ')'); continue; }
+      used.add(best);
+      const e = mine[best];
+      // A hybrid is a statement about the whole track, not about one ratio at greatest eclipse, and
+      // the geometry deliberately does not claim it: what it must do is put the eclipse on the knife
+      // edge, and then the canon supplies the word (applyCanon, below).
+      const ok = e.type === type || (type === 'hybrid' && e.knife);
+      if (ok) hit++;
+      else wrongType.push(d + ' canon ' + type + ', ours ' + e.type + ' (mag ' + e.mag.toFixed(3) + ', gamma ' + e.gamma.toFixed(3) + ')');
+      if (day(e.jd) !== d && Math.abs(e.jd - jdC) > 0.55) wrongType.push(d + ' date drift ' + iso(e.jd));
+    }
+    mine.forEach((e, i) => { if (!used.has(i)) spurious.push(iso(e.jd) + ' ' + e.type + ' mag ' + e.mag.toFixed(3)); });
+    check(label + ': every canon eclipse found', missed.length === 0, missed.join(' · ') || canon.length + '/' + canon.length);
+    check(label + ': no eclipse invented', spurious.length === 0, spurious.join(' · ') || 'none');
+    check(label + ': type matches the canon', wrongType.length === 0, wrongType.join(' · ') || hit + '/' + canon.length + ' exact');
+    return { hit, wrongType, missed, spurious };
+  };
+  const ds = diff(CANON_SOLAR, sol, 'solar');
+  const dl = diff(CANON_LUNAR, lun, 'lunar');
+
+  sec('the classifications that carry the reading');
+  const at = (list, d) => list.find((e) => day(e.jd) === d);
+  const e2017 = at(sol, '2017-08-21'), e2024 = at(sol, '2024-04-08'), e2023 = at(sol, '2023-10-14');
+  check('2017-08-21 is total and central', e2017 && e2017.type === 'total' && Math.abs(e2017.gamma) < 1,
+    e2017 ? 'gamma ' + e2017.gamma.toFixed(3) + ' · greatest ' + iso(e2017.jd) + ' UT' : 'not found');
+  check('2024-04-08 is total', e2024 && e2024.type === 'total', e2024 ? 'gamma ' + e2024.gamma.toFixed(3) + ' · ' + iso(e2024.jd) : 'not found');
+  check('2023-10-14 is annular, not total', e2023 && e2023.type === 'annular', e2023 ? 'mag ' + e2023.mag.toFixed(3) : 'not found');
+  const eh = at(sol, '2023-04-20');
+  check('2023-04-20 sits on the total/annular knife edge', eh && (eh.type === 'hybrid' || eh.mag > 0.995), eh ? eh.type + ' · mag ' + eh.mag.toFixed(4) : 'not found');
+  const l2025 = at(lun, '2025-03-14');
+  check('2025-03-14 is a total lunar eclipse', l2025 && l2025.type === 'total', l2025 ? 'umbral mag ' + l2025.mag.toFixed(3) : 'not found');
+  check('every eclipse is near a node', found.every((e) => Math.abs(e.node) < 20),
+    'worst node distance ' + found.reduce((m, e) => Math.max(m, Math.abs(e.node)), 0).toFixed(2) + '°');
+  check('a total lunar eclipse always has umbral magnitude above 1', lun.filter((e) => e.type === 'total').every((e) => e.mag > 1));
+  check('a penumbral eclipse never has umbral magnitude above 0', lun.filter((e) => e.type === 'penumbral').every((e) => e.mag <= 0));
+
+  sec('the canon has the last word (applyCanon at build time, never at runtime)');
+  const canonAll = CANON_SOLAR.map(([d, ty]) => [d, ty, 'solar']).concat(CANON_LUNAR.map(([d, ty]) => [d, ty, 'lunar']));
+  const rep = M.applyCanon(found.map((e) => Object.assign({}, e)), canonAll);
+  check('every canon entry matched a found eclipse', rep.missed.length === 0, rep.missed.join(' · ') || canonAll.length + ' entries');
+  check('nothing found was left unaccounted for', rep.unmatched.length === 0, rep.unmatched.map((e) => iso(e.jd)).join(' · ') || 'none');
+  check('after the diff every type is the canon\u2019s', rep.rows.every((e) => e.canon), rep.corrected.length + ' corrected: ' + (rep.corrected.join(' · ') || 'none'));
+
+  sec('the syzygy the eclipse replaces');
+  const sl = M.buildMundane({ jdStart: E.julianDay(2024, 1, 1, 0,0,0,0), jdEnd: E.julianDay(2025, 1, 1, 0,0,0,0),
+    probe, bodyProbe, moonState: E.moonState, sunState: E.sunState, bodies: ['Sun','Moon'], aspects: [0, 180] });
+  const syz = sl.filter((e) => e.kind === 'syzygy'), ecl = sl.filter((e) => e.kind === 'eclipse');
+  check('2024 carries four eclipses', ecl.length === 4, ecl.map((e) => day(e.jd) + ' ' + e.of + ' ' + e.type).join(' · '));
+  check('no instant appears twice under two names',
+    !ecl.some((e) => syz.some((s) => Math.abs(s.jd - e.jd) < 0.05)), syz.length + ' plain syzygies beside them');
+
+  sec('the codec');
+  const packed = M.packEmbryo(sl, { jdStart: E.julianDay(2024, 1, 1, 0,0,0,0) });
+  const json = JSON.stringify(packed);
+  const back = M.readEmbryo(JSON.parse(json), {});
+  check('roundtrip keeps every row', back.length === sl.length, sl.length + ' rows · ' + (json.length / sl.length).toFixed(1) + ' bytes per row on the wire');
+  const worst = back.reduce((m, r, i) => Math.max(m, Math.abs(r.jd - sl[i].jd) * 1440), 0);
+  check('timestamps survive to the minute', worst <= 0.5, worst.toFixed(3) + ' min worst');
+  const ing = sl.filter((e) => e.kind === 'ingress'), ingB = back.filter((e) => e.kind === 'ingress');
+  check('an ingress keeps its sign, its direction and its government',
+    ing.length === ingB.length && ing.every((e, i) => e.to.sign === ingB[i].to.sign && e.from.sign === ingB[i].from.sign
+      && !!e.retro === !!ingB[i].retro && e.governed === ingB[i].governed), ing.length + ' ingresses');
+  const eclB = back.filter((e) => e.kind === 'eclipse');
+  check('an eclipse keeps its kind, its type and its magnitude (negative for a penumbral)',
+    eclB.length === ecl.length && ecl.every((e, i) => e.of === eclB[i].of && e.type === eclB[i].type && Math.abs(e.mag - eclB[i].mag) < 0.001));
+  const win = M.readEmbryo(packed, { jdStart: E.julianDay(2024, 4, 1, 0,0,0,0), jdEnd: E.julianDay(2024, 5, 1, 0,0,0,0) });
+  check('a window read returns only that window', win.length > 0 && win.every((r) => day(r.jd) >= '2024-04-01' && day(r.jd) <= '2024-05-01'), win.length + ' rows in April 2024');
+  check('the cuts are applied at READ, so no filter choice invalidates the build',
+    M.readEmbryo(packed, { kinds: ['eclipse'] }).length === 4
+    && M.readEmbryo(packed, { bodies: ['Sun'] }).every((r) => r.body === 'Sun' || r.other === 'Sun'));
+
+  sec('the chunked build (the engrave-time contract)');
+  const it = M.mundaneChunks({ jdStart: E.julianDay(2024, 1, 1, 0,0,0,0), jdEnd: E.julianDay(2026, 1, 1, 0,0,0,0),
+    slice: 200, probe, bodyProbe, moonState: E.moonState, sunState: E.sunState, bodies: ['Sun','Moon','Mercury'], aspects: [0, 90, 180] });
+  let chunks = 0, seen = [], r = it.next();
+  while (!r.done) { chunks++; seen = seen.concat(r.value.rows); check('slice ' + r.value.i + '/' + r.value.n + ' yielded', r.value.rows.length >= 0, r.value.rows.length + ' rows · ' + day(r.value.jdStart) + ' to ' + day(r.value.jdEnd)); r = it.next(); }
+  check('the build yields between slices so onboarding never stalls', chunks === 4, chunks + ' slices');
+  const dups = seen.filter((e, i) => i && Math.abs(e.jd - seen[i-1].jd) < 1e-6 && e.kind === seen[i-1].kind && e.body === seen[i-1].body);
+  check('slices are half-open, so a root on a boundary is emitted once', dups.length === 0, dups.length + ' duplicates');
+
+  const el = document.getElementById('out');
+  el.innerHTML = '<table>' + rows.join('') + '</table><h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span>' : '<span class="ok">ALL PASS</span>') + '</h2>';
+  }, 0);
+})();
+</script>
+</body></html>

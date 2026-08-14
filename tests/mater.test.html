@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the Mater · the inherent meaning of the twelve signs</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:940px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}.note{color:#c99a4a}td{padding:1px 10px 1px 0;vertical-align:top}pre{color:#b6aed2;white-space:pre-wrap;margin:4px 0 0}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=2"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=7"></script>
+<script src="../astrodna.browser.js?v=5"></script>
+<script src="../rulers.browser.js?v=2"></script>
+</head><body>
+<h1>The Mater · the inherent meaning to the Ring's inherent relation</h1>
+<p class="dim">Four stamped tables: signs, rulership, exaltation, and detriment/fall derived
+at stamp time. The house frames LEFT for tympan.js (the Connectome pass), and section 3 now guards their
+absence rather than their contents — one die, whichever file holds it. No arguments, no time, no native, no place. This file checks the tables themselves, the
+CO-RULERSHIP BOUNDARY (no modern attribution may enter the traditional table), and that the four files
+that used to carry their own copies now read THIS one rather than agreeing with it by luck.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const M = window.__ORBO_MATER, F = window.__ORBO_FRAMING, A = window.__ORBO_ASTRODNA, U = window.__ORBO_RULERS, T = window.__ORBO_TYMPAN;
+  const out = document.getElementById('out');
+  if (!M) { out.innerHTML = '<span class="bad">mater.browser.js did not register __ORBO_MATER</span>'; return; }
+
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const src = await (await fetch('../mater.js')).text().catch(() => '');
+
+  sec('1 · the signs');
+  check('twelve names, in zodiacal order', M.SIGNS.length === 12 && M.SIGNS[0] === 'Aries' && M.SIGNS[11] === 'Pisces', M.SIGNS.join(' '));
+  check('twelve glyphs, U+2648 through U+2653', M.SIGN_GLYPHS.length === 12 && M.SIGN_GLYPHS.every((g, i) => g.codePointAt(0) === 0x2648 + i), M.SIGN_GLYPHS.join(' '));
+  check('the element cycle is every four signs from Aries', M.SIGN_ELEMENT.every((e, i) => e === ['fire', 'earth', 'air', 'water'][i % 4]), M.SIGN_ELEMENT.join(' '));
+  check('the modality cycle is every three signs from Aries', M.SIGN_MODALITY.every((m, i) => m === ['cardinal', 'fixed', 'mutable'][i % 3]));
+  check('each element holds three signs, each modality four', ['fire', 'earth', 'air', 'water'].every((e) => M.SIGN_ELEMENT.filter((x) => x === e).length === 3) && ['cardinal', 'fixed', 'mutable'].every((m) => M.SIGN_MODALITY.filter((x) => x === m).length === 4));
+  check('the name-keyed element view agrees with the index-keyed one', M.SIGNS.every((s, i) => M.SIGN_ELEMENTS[s] === M.SIGN_ELEMENT[i]));
+  check('SIGN_TABLE carries all four facts per sign', M.SIGN_TABLE.length === 12 && M.SIGN_TABLE.every((r, i) => r.index === i && r.name === M.SIGNS[i] && r.glyph === M.SIGN_GLYPHS[i] && r.element === M.SIGN_ELEMENT[i] && r.modality === M.SIGN_MODALITY[i]));
+  check('signIndexOf folds any real longitude', M.signIndexOf(0) === 0 && M.signIndexOf(29.999) === 0 && M.signIndexOf(30) === 1 && M.signIndexOf(359.9) === 11 && M.signIndexOf(-1) === 11 && M.signIndexOf(720) === 0);
+
+  sec('2 · rulership, traditional, and THE CO-RULERSHIP BOUNDARY');
+  check('the traditional set: Mars/Scorpio, Saturn/Aquarius, Jupiter/Pisces', M.RULERS[7] === 'Mars' && M.RULERS[10] === 'Saturn' && M.RULERS[11] === 'Jupiter', M.RULERS.join(' '));
+  check('every ruler is one of the classical seven', M.RULERS.every((r) => M.DISPOSITORS.includes(r)));
+  // The landmine, asserted rather than commented: a modern co-ruler in this table silently rewrites
+  // dignity, the disposition chains, the rules-houses loops, ZR period lengths and the election engine.
+  check('NO modern attribution is in the traditional table (Pluto · Uranus · Neptune)', !['Pluto', 'Uranus', 'Neptune'].some((p) => M.RULERS.includes(p) || Object.values(M.DOMICILE).includes(p) || M.DISPOSITORS.includes(p)));
+  check('and no modern attribution appears anywhere in the Mater\u2019s source', !!src && !/Pluto|Uranus|Neptune/.test(src.replace(/^\/\/.*$/gm, '')), src ? 'source read' : 'SOURCE FETCH FAILED');
+  check('a non-classical ruler would throw AT LOAD, not at read time', /is not one of the classical seven/.test(src || ''));
+  check('the name-keyed domicile view agrees with the index-keyed one', M.SIGNS.every((s, i) => M.DOMICILE[s] === M.RULERS[i]));
+  check('RULES_SIGNS is stamped, and the doubles are right', M.RULES_SIGNS.Mercury.join() === '2,5' && M.RULES_SIGNS.Venus.join() === '1,6' && M.RULES_SIGNS.Mars.join() === '0,7' && M.RULES_SIGNS.Jupiter.join() === '8,11' && M.RULES_SIGNS.Saturn.join() === '9,10' && M.RULES_SIGNS.Sun.join() === '4' && M.RULES_SIGNS.Moon.join() === '3');
+  check('rulerOf folds an out-of-range sign index', M.rulerOf(12) === M.RULERS[0] && M.rulerOf(-1) === M.RULERS[11]);
+
+  sec('3 · the house frames LEFT · they are the Tympan’s, and nothing is stamped twice');
+  // The frames were table 3 here, as the FORWARD stamping only. tympan.js absorbed them and added
+  // the reverse index and the modern index this file deferred. What the Mater guards now is that it
+  // did not leave a copy behind: the contents are pinned in tests/tympan.test.html.
+  check('no HOUSE_FRAMES and no house read remain on the Mater', M.HOUSE_FRAMES === undefined && M.houseOfSign === undefined && M.houseOfLon === undefined && M.houseFrame === undefined);
+  check('and the source keeps no copy either', !!src && !/HOUSE_FRAMES|houseOfSign/.test(src));
+  check('the Tympan registered, and it holds the twelve frames', !!T && T.HOUSE_FRAMES.length === 12 && T.HOUSE_FRAMES.every((f, asc) => f[asc] === 1));
+  check('the Tympan imports the MATER for them (the frames sit one tier up, on this file)', !!T && T.houseOfSign(7, 6) === 2);
+
+  sec('4 · exaltation, sign AND degree');
+  check('the classical seven are exalted, and nobody else', Object.keys(M.EXALT).length === 7 && Object.keys(M.EXALT).every((p) => M.DISPOSITORS.includes(p)));
+  check('Sun 19 Aries \u00b7 Moon 3 Taurus', M.EXALT.Sun === 0 && M.EXALT_DEGREE.Sun === 19 && M.EXALT.Moon === 1 && M.EXALT_DEGREE.Moon === 3);
+  check('Mercury 15 Virgo \u00b7 Venus 27 Pisces \u00b7 Mars 28 Capricorn \u00b7 Jupiter 15 Cancer \u00b7 Saturn 21 Libra',
+    M.EXALT.Mercury === 5 && M.EXALT_DEGREE.Mercury === 15 && M.EXALT.Venus === 11 && M.EXALT_DEGREE.Venus === 27 &&
+    M.EXALT.Mars === 9 && M.EXALT_DEGREE.Mars === 28 && M.EXALT.Jupiter === 3 && M.EXALT_DEGREE.Jupiter === 15 &&
+    M.EXALT.Saturn === 6 && M.EXALT_DEGREE.Saturn === 21);
+  check('the sign-keyed view round-trips the planet-keyed one', Object.keys(M.EXALT).every((p) => M.EXALTATION[M.SIGNS[M.EXALT[p]]].planet === p && M.EXALTATION[M.SIGNS[M.EXALT[p]]].degree === M.EXALT_DEGREE[p]));
+  check('EXALT_BY_SIGN is null for the five signs with no exaltation', M.EXALT_BY_SIGN.filter((x) => x === null).length === 5);
+  check('an exaltation with no degree would throw at LOAD', /is exalted with no degree/.test(src || ''));
+
+  sec('5 · detriment and fall, derived ONCE at stamp time');
+  check('detriment is the sign opposite a domicile, for all twelve', M.DETRIMENT_BY_SIGN.every((p, i) => p === M.RULERS[(i + 6) % 12]));
+  check('fall is the sign opposite an exaltation, for all twelve', M.FALL_BY_SIGN.every((p, i) => p === M.EXALT_BY_SIGN[(i + 6) % 12]));
+  check('per-planet detriment carries both signs where a planet rules two', M.DETRIMENT.Mars.join() === '6,1' && M.DETRIMENT.Mercury.join() === '8,11' && M.DETRIMENT.Sun.join() === '10');
+  check('per-planet fall is one sign', M.FALL.Sun === 6 && M.FALL.Mars === 3 && M.FALL.Saturn === 0);
+
+  sec('the dignity ladder · one vocabulary, and absence is null');
+  check('Sun: Leo domicile \u00b7 Aries exaltation \u00b7 Aquarius detriment \u00b7 Libra fall',
+    M.dignityOfSign('Sun', 4) === 'domicile' && M.dignityOfSign('Sun', 0) === 'exaltation' &&
+    M.dignityOfSign('Sun', 10) === 'detriment' && M.dignityOfSign('Sun', 6) === 'fall');
+  check('Mars: Scorpio domicile \u00b7 Capricorn exaltation \u00b7 Taurus detriment \u00b7 Cancer fall',
+    M.dignityOfSign('Mars', 7) === 'domicile' && M.dignityOfSign('Mars', 9) === 'exaltation' &&
+    M.dignityOfSign('Mars', 1) === 'detriment' && M.dignityOfSign('Mars', 3) === 'fall');
+  // Absence is null, never the word peregrine and never 0: the Ring's own contract, one tier up.
+  check('no dignity is NULL here \u2014 the word peregrine belongs to the reader, not the table', M.dignityOfSign('Sun', 1) === null && M.dignityOfSign('Pluto', 7) === null);
+  check('dignityOfLon reads through the sign index', M.dignityOfLon('Sun', 125.5) === 'domicile');
+
+  sec('the four files that used to carry copies now READ this one');
+  // Identity, not equality: `===` on the table object is what proves nobody kept a private copy that
+  // happens to agree today. This is the whole point of D2 and the only check that cannot be faked.
+  check('framing.RULERS IS the Mater\u2019s table (same object, not a copy that agrees)', !!F && F.RULERS === M.RULERS);
+  check('framing.SIGNS and SIGN_GLYPHS are the Mater\u2019s', !!F && F.SIGNS === M.SIGNS && F.SIGN_GLYPHS === M.SIGN_GLYPHS);
+  check('astrodna.SIGNS and SIGN_ELEMENTS are the Mater\u2019s', !!A && A.SIGNS === M.SIGNS && A.SIGN_ELEMENTS === M.SIGN_ELEMENTS);
+  check('astrodna.SIGN_RULERS IS the Mater\u2019s name-keyed domicile table', !!A && A.SIGN_RULERS === M.DOMICILE);
+  check('rulers.DOMICILE, EXALTATION, DISPOSITORS and SIGNS are the Mater\u2019s', !!U && U.DOMICILE === M.DOMICILE && U.EXALTATION === M.EXALTATION && U.DISPOSITORS === M.DISPOSITORS && U.SIGNS === M.SIGNS);
+  if (F) {
+    let fBad = 0;
+    for (let a = 0; a < 360; a += 7) for (let b = 0; b < 360; b += 13) if (F.houseOf(a, b) !== T.houseOfLon(a, b)) fBad++;
+    check('framing.houseOf still returns exactly what it always did', fBad === 0, fBad + ' disagree');
+    let dBad = 0;
+    for (const p of M.DISPOSITORS) for (let s = 0; s < 12; s++) if (F.dignityOf(p, s) !== M.dignityOfSign(p, s)) dBad++;
+    check('framing.dignityOf keeps its own vocabulary (domicile \u00b7 exaltation \u00b7 detriment \u00b7 fall \u00b7 null)', dBad === 0);
+  }
+  if (U) {
+    // rulers.js speaks differently on purpose, and translates at its own edge.
+    let rBad = 0;
+    for (const p of M.DISPOSITORS) for (let s = 0; s < 12; s++) {
+      const want = M.dignityOfSign(p, s);
+      const got = U.dignityOf(p, s * 30 + 12);
+      const expect = want === 'exaltation' ? 'exalt' : (want || 'peregrine');
+      if (got !== expect) rBad++;
+    }
+    check('rulers.dignityOf still says exalt and peregrine, 84 planet/sign pairs', rBad === 0, rBad + ' disagree');
+    check('rulers.lordOf still answers with the traditional lord and the exaltation degree', U.lordOf(19.5).ruler === 'Mars' && U.lordOf(19.5).exalted === 'Sun' && U.lordOf(19.5).exaltDegree === 19);
+  }
+  if (A) {
+    // The genome's houses come through the Mater now; the fixture natal must be unchanged.
+    const NAT = { y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4 / 60, lon: -(89 + 24 / 60) };
+    const E = window.__ORBO_EPH;
+    let dna = null; try { dna = A.buildAstroDNA(E.julianDay(NAT.y, NAT.mo, NAT.d, NAT.h, NAT.mi, 0, NAT.tz), NAT.lat, NAT.lon); } catch (e) {}
+    check('the fixture genome still builds, twelve nodes', !!dna && Object.keys(dna.nodes).length === 12);
+    if (dna) {
+      const ascSg = dna.nodes.Ascendant.signIndex;
+      let nBad = 0;
+      for (const n of Object.keys(dna.nodes)) if (dna.nodes[n].house !== T.houseOfSign(dna.nodes[n].signIndex, ascSg)) nBad++;
+      check('every node\u2019s house is the Tympan\u2019s frame lookup', nBad === 0);
+      check('the Ascendant is in the first house, and its element is the Mater\u2019s', dna.nodes.Ascendant.house === 1 && dna.nodes.Ascendant.element === M.elementOf(ascSg));
+      check('the chart ruler is the traditional lord of the rising sign', dna.ruler.rulerPlanet === M.rulerOf(ascSg), dna.ruler.rulerPlanet);
+    }
+  }
+
+  sec('the standing guards');
+  check('the Mater imports nothing (it is a floor, like the Ring)', !!src && !/^import /m.test(src));
+  check('no aspect angle, orb or mark entered the Mater (that is the Ring\u2019s)', typeof M.MARKS === 'undefined' && typeof M.ASPECTS === 'undefined' && !/MARKS|orb/i.test(src.replace(/^\/\/.*$/gm, '')));
+  check('the tables are frozen', Object.isFrozen(M.SIGNS) && Object.isFrozen(M.RULERS) && Object.isFrozen(M.EXALT) && Object.isFrozen(M.DETRIMENT_BY_SIGN));
+  check('a push onto the die does not take', (() => { try { M.RULERS.push('Pluto'); } catch (e) {} return M.RULERS.length === 12; })());
+
+  out.innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span> \u00b7 ' + fails.join(' \u00b7 ') : '<span class="ok">all checks pass</span>') + '</h2>';
+})();
+</script>
+</body></html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the embryo, as shipped (S3)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:960px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}table{border-collapse:collapse}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=4"></script>
+<script src="../mundane.browser.js?v=7"></script>
+<script src="../embryo.browser.js?v=3"></script>
+</head><body>
+<h1>Phase 5 · S3 — the embryo, as shipped</h1>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, M = window.__ORBO_MUNDANE, X = window.__ORBO_EMBRYO;
+  if (!E || !M || !X) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const day = (jd) => E.jdToDate(jd).toISOString().slice(0, 10);
+  const iso = (jd) => E.jdToDate(jd).toISOString().slice(0, 16).replace('T', ' ');
+  const jdY = (y) => E.julianDay(y, 1, 1, 0, 0, 0, 0);
+
+  sec('the artifact');
+  check('one global, no fetch, no module (the standalone-export law)', typeof X === 'object' && typeof X.data === 'string', X.n.toLocaleString() + ' rows · ' + (X.data.length / 1048576).toFixed(2) + ' MB of base64');
+  check('the span is 1700 to 2100', X.span && X.span.y0 === 1700 && X.span.y1 === 2100, day(X.span.jdStart) + ' to ' + day(X.span.jdEnd));
+  check('it carries its own dictionaries, so a row on the wire is integers', Array.isArray(X.bodies) && Array.isArray(X.kinds) && Array.isArray(X.eclTypes));
+  check('the wire cost is under ten bytes a row', X.data.length / X.n < 10, (X.data.length / X.n).toFixed(2) + ' bytes per row');
+
+  sec('reading it costs the window, not the table');
+  let t0 = performance.now();
+  const first = M.readEmbryo(X, { jdStart: jdY(2026), jdEnd: jdY(2027) });
+  const firstMs = performance.now() - t0;
+  t0 = performance.now();
+  const week = M.readEmbryo(X, { jdStart: jdY(2026), jdEnd: jdY(2026) + 7 });
+  const weekMs = performance.now() - t0;
+  check('the index pass happens once', firstMs < 3000, 'first read ' + firstMs.toFixed(0) + 'ms including the index');
+  check('a week costs a week', weekMs < 20, weekMs.toFixed(1) + 'ms for ' + week.length + ' rows');
+  check('a year of the floor is a readable number of rows', first.length > 400 && first.length < 1400, first.length + ' rows in 2026');
+
+  sec('the whole table is there, and it is honest');
+  const all = {};
+  for (const y of [1700, 1800, 1900, 2000, 2050, 2099]) {
+    const yr = M.readEmbryo(X, { jdStart: jdY(y), jdEnd: jdY(y + 1) });
+    const k = {}; yr.forEach((r) => k[r.kind] = (k[r.kind] || 0) + 1);
+    all[y] = yr.length;
+    check(y + ' is populated', yr.length > 400, Object.entries(k).map(([a, b]) => b + ' ' + a).join(' · '));
+  }
+  check('density is steady across four centuries', Math.max(...Object.values(all)) / Math.min(...Object.values(all)) < 1.4,
+    'thinnest ' + Math.min(...Object.values(all)) + ', thickest ' + Math.max(...Object.values(all)) + ' rows a year');
+  const ecl = M.readEmbryo(X, { kinds: ['eclipse'] });
+  check('the eclipse block spans the whole embryo', ecl.length > 1800 && ecl.length < 2100, ecl.length + ' eclipses · ' + day(ecl[0].jd) + ' to ' + day(ecl[ecl.length - 1].jd));
+  check('about 4.8 eclipses a year, as the sky has it', Math.abs(ecl.length / 401 - 4.8) < 0.5, (ecl.length / 401).toFixed(2) + ' a year');
+  const canonEcl = ecl.filter((e) => e.canon);
+  check('the canon\u2019s word is packed with the row, not recomputed at runtime', canonEcl.length === 58, canonEcl.length + ' rows carry canon:true');
+  const hyb = ecl.filter((e) => e.type === 'hybrid');
+  check('2023-04-20 ships as hybrid because the canon says so', hyb.some((e) => day(e.jd) === '2023-04-20'), hyb.length + ' hybrids in the table');
+
+  sec('spot-checks against the live scan (the same geometry, freshly run)');
+  const pm = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pm.get(k); if (!v) pm.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  for (const y of [1755, 1987, 2044]) {
+    const live = M.buildMundane({ jdStart: jdY(y), jdEnd: jdY(y) + 120, probe, bodyProbe, moonState: E.moonState, sunState: E.sunState });
+    const ship = M.readEmbryo(X, { jdStart: jdY(y), jdEnd: jdY(y) + 120 })
+      .filter((r) => r.kind !== 'retrograde' || live.some((l) => l.kind === 'retrograde'));
+    const l2 = live.filter((r) => r.kind !== 'retrograde'), s2 = ship.filter((r) => r.kind !== 'retrograde');
+    let worst = 0, missing = 0;
+    for (const l of l2) {
+      const m = s2.find((r) => r.kind === l.kind && r.body === l.body && Math.abs(r.jd - l.jd) < 0.01);
+      if (!m) { missing++; continue; }
+      worst = Math.max(worst, Math.abs(m.jd - l.jd) * 1440);
+    }
+    // Extras at the very edges are expected and are not a disagreement: the shipped table was built
+    // on its own slice grid, so a root within one grid step of this window's bound can be inside the
+    // shipped slice and outside the live one. Extras anywhere in the MIDDLE would be a real fault.
+    const extras = s2.filter((r) => !l2.some((l) => l.kind === r.kind && l.body === r.body && Math.abs(l.jd - r.jd) < 0.01));
+    const inner = extras.filter((r) => r.jd - jdY(y) > 5 && jdY(y) + 120 - r.jd > 5);
+    check(y + ': 120 days agree row for row', missing === 0 && inner.length === 0,
+      l2.length + ' live, ' + s2.length + ' shipped, ' + missing + ' missing, ' + extras.length + ' at the edges, worst ' + worst.toFixed(2) + ' min');
+  }
+
+  sec('the read-time cuts');
+  const yr = { jdStart: jdY(2026), jdEnd: jdY(2027) };
+  check('kinds cut', M.readEmbryo(X, Object.assign({ kinds: ['ingress'] }, yr)).every((r) => r.kind === 'ingress'));
+  check('bodies cut takes both ends of a contact', M.readEmbryo(X, Object.assign({ bodies: ['Saturn', 'Jupiter'] }, yr))
+    .every((r) => ['Saturn', 'Jupiter'].includes(r.body) && (!r.other || ['Saturn', 'Jupiter'].includes(r.other))));
+  check('aspects cut', M.readEmbryo(X, Object.assign({ aspects: [0, 180] }, yr)).every((r) => r.kind !== 'aspect' || [0, 180].includes(Math.abs(r.angle))));
+  const ing = M.readEmbryo(X, Object.assign({ kinds: ['ingress'] }, yr));
+  check('an ingress still reads as a change of government', ing.length > 0 && ing.every((r) => r.to.signName && r.from.dispositor && typeof r.governed === 'boolean'),
+    ing.length + ' in 2026 · e.g. ' + (ing[0] ? ing[0].body + ' enters ' + ing[0].to.signName + ', answers now to ' + ing[0].to.dispositor : ''));
+  const rt = M.readEmbryo(X, Object.assign({ kinds: ['retrograde'] }, yr));
+  check('a retrograde period keeps its arc', rt.length > 0 && rt.every((r) => r.days > 0 && r.from.lon != null && r.to.lon != null),
+    rt.length + ' in 2026 · e.g. ' + (rt[0] ? rt[0].body + ' ' + Math.round(rt[0].days) + ' days, ' + rt[0].from.signName + ' back to ' + rt[0].to.signName : ''));
+  const syz = M.readEmbryo(X, Object.assign({ kinds: ['syzygy'] }, yr));
+  check('the syzygies are all four phases', syz.length > 40 && new Set(syz.map((r) => r.angle)).size >= 3, syz.length + ' in 2026');
+  const stn = M.readEmbryo(X, Object.assign({ kinds: ['station'] }, yr));
+  check('every station says which way it turns', stn.length > 0 && stn.every((r) => r.dir === 'direct' || r.dir === 'retrograde'), stn.length + ' in 2026');
+  // The slow bodies were the ones the old residency rule silently dropped: Neptune never moves the
+  // 0.05 degrees a day that rule demanded, so it had no stations at all and therefore no retrogrades.
+  const dec = { jdStart: jdY(2020), jdEnd: jdY(2030), kinds: ['station'] };
+  const byBody = M.readEmbryo(X, dec).reduce((m, r) => (m[r.body] = (m[r.body] || 0) + 1, m), {});
+  check('the slow bodies station twice a year, as they must', [2, 2, 2, 2].every((_, i) => true)
+    && ['Uranus', 'Neptune', 'Pluto', 'Chiron'].every((b) => byBody[b] >= 18 && byBody[b] <= 22),
+    ['Uranus', 'Neptune', 'Pluto', 'Chiron', 'Saturn', 'Jupiter', 'Mercury'].map((b) => b + ' ' + (byBody[b] || 0)).join(' · ') + ' per decade');
+  const rtd = M.readEmbryo(X, { jdStart: jdY(2020), jdEnd: jdY(2030), kinds: ['retrograde'] });
+  check('and their retrograde periods come with them', ['Uranus', 'Neptune', 'Pluto'].every((b) => rtd.some((r) => r.body === b)),
+    ['Uranus', 'Neptune', 'Pluto'].map((b) => b + ' ' + rtd.filter((r) => r.body === b).length).join(' · '));
+  check('nothing lunar and dense is in the table (she is generated, never materialised)',
+    M.readEmbryo(X, yr).every((r) => r.kind !== 'aspect' || (r.body !== 'Moon' && r.other !== 'Moon')));
+
+  const el = document.getElementById('out');
+  el.innerHTML = '<table>' + rows.join('') + '</table><h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span>' : '<span class="ok">ALL PASS</span>') + '</h2>';
+  }, 0);
+})();
+</script>
+</body></html>

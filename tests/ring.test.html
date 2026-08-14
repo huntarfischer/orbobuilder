@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the Ring</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ring.browser.js?v=1"></script>
+</head><body>
+<h1>The Ring · the relation of any degree to any other degree</h1>
+<div id="out" class="dim">running… (parsing the atlas fixture)</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const R = window.__ORBO_RING;
+  if (!R) { document.getElementById('out').innerHTML = '<span class="bad">ring.browser.js did not register __ORBO_RING</span>'; return; }
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+
+  sec('the die · eleven marks');
+  check('eleven marks, ascending', R.MARKS.length === 11 && R.MARKS.every((a, i) => !i || a > R.MARKS[i - 1]), R.MARKS.join(' · '));
+  check('every mark is an integer', R.MARKS.every((a) => Number.isInteger(a)));
+  // n is the HARMONIC denominator, so it is bounded: n=360 would make this vacuous (it admits any
+  // integer, including 7, 13 and 359). Bounding at 12 is what excludes 360/7.
+  const wholeDiv = (a) => { for (let n = 1; n <= 12; n++) if (360 % n === 0 && Number.isInteger(a * n / 360)) return true; return false; };
+  check('every mark is a whole-degree division: 360·k/n with n | 360, n ≤ 12', R.MARKS.every(wholeDiv));
+  check('negative control: the assertion can fail (360/7, 13, 359 all rejected)', ![360 / 7, 13, 359].some(wholeDiv));
+  const lattT = R.PLATE.snapshot().targets;
+  let latt = 0; for (const v of lattT) if (Number.isInteger(v) && v >= 0 && v < 360) latt++;
+  check('a perfect lattice: every stamped target is a whole degree in 0-359', latt === lattT.length, latt + ' of ' + lattT.length);
+  check('septiles absent, deliberately — 7 does not divide 360, so 360/7 is not a whole degree', ![51.4286, 102.8571, 154.2857].some((s) => R.MARKS.includes(s)) && !Number.isInteger(360 / 7));
+  check('tie rule declared as lower', R.TIE === 'lower');
+
+  sec('the state encoding · 0-719');
+  check('720 states, 360 degrees', R.STATES === 720 && R.DEGREES === 360);
+  let encOk = true;
+  for (let s = 0; s < 720; s++) if (R.degreeOf(s) !== s % 360 || R.isRetro(s) !== (s >= 360)) encOk = false;
+  check('absolute degree = state mod 360, motion = state >= 360, all 720', encOk);
+  check('retrograde state of a degree is degree + 360', [0, 1, 20, 359].every((d) => R.retroState(d) === d + 360 && R.directState(d) === d));
+  check('two Mars at 0 Aries are distinguishable', R.stateOf(0.4, false) === 0 && R.stateOf(0.4, true) === 360);
+  check('stateOf floors a real longitude', R.stateOf(7.93, false) === 7 && R.stateOf(359.99, false) === 359);
+  // retro chooses between the two HALVES of the address space, so a truthy string must not decide it.
+  const thr = (fn) => { try { fn(); return false; } catch (e) { return e instanceof RangeError; } };
+  check('stateOf requires an explicit boolean for retrograde',
+    thr(() => R.stateOf(10, 'false')) && thr(() => R.stateOf(10, '0')) && thr(() => R.stateOf(10, {})) &&
+    thr(() => R.stateOf(10)) && thr(() => R.stateOf(10, 1)) && thr(() => R.stateOf(10, null)) &&
+    R.stateOf(10, false) === 10 && R.stateOf(10, true) === 370);
+
+  sec('the fine address space · arcseconds');
+  // THE DIE DOES NOT GROW: the plate stays at 360 rows because every mark is a whole degree. What is
+  // finer is the OCCUPANT's address, because precision is a property of the occupant.
+  check('the unit is inherent: 3600 to a degree, 1,296,000 to a circle, two halves',
+    R.ARCSEC === 3600 && R.ARCSECONDS === 1296000 && R.FINE_STATES === 2592000);
+  check('the plate did NOT grow with the unit', R.PLATE.degrees === 360 && R.PLATE.size === 360 * 11 * 2);
+  check('fineStateOf floors a real longitude to the arcsecond',
+    R.fineStateOf(21 + 8 / 60 + 37 / 3600, false) === 21 * 3600 + 8 * 60 + 37 &&
+    R.fineStateOf(0.9999999, false) === 3599 && R.fineStateOf(359.99999999, false) === 1295999);
+  check('two Mars at 0 Aries are still distinguishable, one scale down',
+    R.fineStateOf(0.0001, false) === 0 && R.fineStateOf(0.0001, true) === R.ARCSECONDS &&
+    R.fineIsRetro(R.ARCSECONDS) === true && R.fineIsRetro(R.ARCSECONDS - 1) === false);
+  check('dmsOf decomposes the circle, and it is unit arithmetic with no meanings in it',
+    JSON.stringify(R.dmsOf(21 * 3600 + 8 * 60 + 37)) === JSON.stringify({ degree: 21, minute: 8, second: 37 }) &&
+    JSON.stringify(R.dmsOf(R.ARCSECONDS + 45)) === JSON.stringify({ degree: 0, minute: 0, second: 45 }));
+  // THE PROJECTION. A cache key is a deliberate cut at the resolution the artifact is sensitive to,
+  // and coarse-from-fine is exact by construction, so the two spaces cannot disagree about a placement.
+  let projOk = true;
+  for (let d = 0; d < 360; d++) {
+    for (const off of [0, 1, 1800, 3599]) {
+      if (R.stateOfFine(d * 3600 + off) !== d) projOk = false;
+      if (R.stateOfFine(R.ARCSECONDS + d * 3600 + off) !== d + 360) projOk = false;
+    }
+  }
+  check('stateOfFine projects every arcsecond onto its own coarse state, both halves', projOk);
+  check('the projection agrees with stateOf on the same longitude, so a key never moves',
+    [0, 7.5, 116.37, 359.999, -370.5].every((l) => [true, false].every((r) =>
+      R.stateOfFine(R.fineStateOf(l, r)) === R.stateOf(l, r))));
+  check('fineStatesFor gives both halves so no caller reduces anything',
+    JSON.stringify(R.fineStatesFor(21.5)) === JSON.stringify([77400, 77400 + R.ARCSECONDS]));
+  // The guard is the whole risk of the widening: at this scale a missed reduction reads a position
+  // 360 degrees away with nothing thrown, which is the 720 % 360 trap one scale down.
+  check('every fine door validates: non-integer, out of range, non-finite, non-boolean',
+    [() => R.arcsecOf(1.5), () => R.arcsecOf(R.FINE_STATES), () => R.arcsecOf(-1),
+     () => R.stateOfFine(R.FINE_STATES), () => R.dmsOf(0.5), () => R.fineIsRetro(R.FINE_STATES),
+     () => R.fineStateOf(10, 1), () => R.fineStateOf(10), () => R.fineStateOf(NaN, false),
+     () => R.fineStatesFor('7')].every(thr));
+  check('0 is a valid value on every fine read too',
+    R.arcsecOf(0) === 0 && R.stateOfFine(0) === 0 && R.fineStateOf(0.0001, false) === 0 &&
+    R.dmsOf(0).degree === 0 && R.dmsOf(0).minute === 0 && R.dmsOf(0).second === 0);
+
+  sec('the plate · stamped at load');
+  const snap = R.PLATE.snapshot();
+  check('targets table is typed and complete', snap.targets instanceof Int16Array && snap.targets.length === 360 * 11 * 2 && R.PLATE.size === 360 * 11 * 2, R.PLATE.size + ' entries · stride ' + R.PLATE.stride);
+  check('markAt is total (every whole separation answers)', snap.markAt instanceof Int8Array && snap.markAt.length === 360);
+  // INHERENT has to be structural, not asserted in a comment.
+  check('the die is frozen', Object.isFrozen(R.MARKS) && Object.isFrozen(R.PLATE));
+  check('the live buffers never leave the module', R.PLATE.targets === undefined && R.PLATE.markAt === undefined && typeof R.PLATE.snapshot === 'function');
+  check('snapshot() hands out a fresh copy each time', R.PLATE.snapshot().targets !== snap.targets && R.PLATE.snapshot().targets[0] === snap.targets[0]);
+  snap.targets[0] = 999;
+  check('mutating a snapshot cannot reach the plate', R.targetDegree(0, 0, 1) === 0 && R.PLATE.snapshot().targets[0] === 0);
+  const before = R.row(1).length;
+  try { R.MARKS.push(51.4286); } catch (e) {}
+  try { R.PLATE.stride = 99; } catch (e) {}
+  check('a stray write to the die does not stick, and row() cannot follow it',
+    R.MARKS.length === 11 && R.PLATE.stride === 22 && R.row(1).length === before && before === 11);
+  let dirOk = 0, dirBad = 0;
+  for (let d = 0; d < 360; d++) for (const a of R.MARKS) {
+    const back = R.targetDegree(R.targetDegree(d, a, -1), a, +1);
+    if (back === d) dirOk++; else dirBad++;
+  }
+  check('directedness: the +θ target of the −θ target returns the source', dirBad === 0, dirOk + ' of ' + (360 * 11));
+  check('relation() is exact and motion-blind', R.relation(0, 90) === 90 && R.relation(0, 270) === 90 && R.relation(360, 450) === 90 && R.relation(0, 91) === null);
+  // THE FALSY-ZERO CONTRACT. Conjunction is 0 and 0 is falsy; absence is null. A truthiness test at a
+  // call site would silently drop every conjunction, so pin it here before anything is rewired.
+  check('conjunction is 0, not null: relation()', R.relation(0, 0) === 0 && R.relation(37, 37) === 0 && R.relation(360, 0) === 0 && R.relation(37, 397) === 0);
+  check('conjunction is 0, not null: exact() and nearest()', R.exact(0) === 0 && R.nearest(0).angle === 0 && R.nearest(0).residual === 0);
+  check('absence is null and is distinguishable from 0', R.relation(0, 91) === null && R.exact(1) === null && R.relation(0, 0) !== null && R.exact(0) !== null);
+  check('related() is the trap-free door, true for a conjunction', R.related(0, 0) === true && R.related(37, 37) === true && R.related(0, 90) === true && R.related(0, 91) === false);
+  // targetDegree: 0 Aries is a REAL target (270 + 90), so a valid answer is falsy here too.
+  check('targetDegree returns 0 for a real target at 0 Aries', R.targetDegree(270, 90, 1) === 0 && R.targetDegree(90, 90, -1) === 0 && R.targetDegree(180, 180, 1) === 0);
+  check('targetStates pairs it correctly and never returns null', JSON.stringify(R.targetStates(270, 90, 1)) === '[0,360]');
+  const throws = (fn) => { try { fn(); return false; } catch (e) { return e instanceof RangeError; } };
+  check('an unknown angle THROWS rather than returning a truthy sentinel', throws(() => R.targetDegree(0, 999, 1)) && throws(() => R.targetDegree(0, 51.4286, 1)));
+  check('a malformed state THROWS rather than indexing negatively into the plate',
+    throws(() => R.targetDegree(-1, 90, 1)) && throws(() => R.targetDegree(720, 90, 1)) && throws(() => R.targetDegree(7.5, 90, 1)));
+  // sign was the last unvalidated argument: nine of eleven marks have two DISTINCT targets, so a
+  // forgotten third argument quietly returned the +θ half.
+  check('a missing or malformed sign THROWS instead of defaulting to the +θ half',
+    throws(() => R.targetDegree(270, 90)) && throws(() => R.targetDegree(270, 90, 0)) && throws(() => R.targetDegree(270, 90, 'x')) &&
+    throws(() => R.targetDegree(270, 90, NaN)) && throws(() => R.targetDegree(270, 90, null)) && throws(() => R.targetStates(270, 90)));
+  check('sign still selects the two distinct halves', R.targetDegree(270, 90, -1) === 180 && R.targetDegree(270, 90, 1) === 0 && R.targetDegree(270, 90, -0.5) === 180 && R.targetDegree(270, 90, 42) === 0);
+  // the sweep: every 0-based read, asserted at 0, so this can never need a third pass.
+  check('0 is a valid value on every read', R.degreeOf(360) === 0 && R.directState(0) === 0 && R.stateOf(0.4, false) === 0 &&
+    R.separation(0, 0) === 0 && R.arcOf(0) === 0 && R.relation(0, 0) === 0 && R.exact(0) === 0 &&
+    R.targetDegree(0, 0, 1) === 0 && R.supplementOf(180) === 0 && R.nearest(120).residual === 0);
+  check('a residual of 0 means EXACT, not absent', R.nearest(120).residual === 0 && R.nearest(120).angle === 120 && R.exact(120) === 120);
+  // EVERY entry point validates, not just targetDegree. A contract enforced by one function of six
+  // is not a contract, and each of these returned a plausible wrong answer instead of throwing.
+  check('relation/related throw on a fractional state (they used to return undefined)',
+    throws(() => R.relation(7.5, 98)) && throws(() => R.related(7.5, 98)));
+  check('relation/related throw on an out-of-range state (720 % 360 is 0, so it read row 0)',
+    throws(() => R.relation(720, 810)) && throws(() => R.relation(-1, 90)) && throws(() => R.related(720, 810)));
+  check('row() throws rather than emitting eleven entries of undefined degrees',
+    throws(() => R.row(-1)) && throws(() => R.row(720)) && throws(() => R.row(7.5)) && R.row(719).length === 11);
+  check('supplementOf throws on a non-mark — it used to assert the closure the law denies (108→72, 36→144)',
+    throws(() => R.supplementOf(108)) && throws(() => R.supplementOf(36)) && throws(() => R.supplementOf(7)));
+  check('non-finite input throws rather than fabricating a conjunction at angle 0',
+    throws(() => R.nearest(NaN)) && throws(() => R.arcOf(Infinity)) && throws(() => R.separation(0, NaN)) && throws(() => R.stateOf(NaN, false)));
+  // the invariant the two doors must never break, over states that include the shapes that broke it
+  let agree = 0, disagree = 0;
+  const probe = [0, 1, 29, 30, 90, 179, 180, 181, 270, 359, 360, 380, 450, 719];
+  for (const a of probe) for (const b of probe) { if ((R.relation(a, b) !== null) === R.related(a, b)) agree++; else disagree++; }
+  for (const bad of [7.5, -1, 720, 1000, NaN]) { if (throws(() => R.relation(bad, 90)) && throws(() => R.related(bad, 90))) agree++; else disagree++; }
+  check('related() === (relation() !== null) on every input either accepts, and both reject the rest', disagree === 0, agree + ' agreements');
+  // TWO INPUT KINDS, TWO CONTRACTS. A state is an integer address in 0-719. A longitude or separation
+  // is any finite real, normalized on the way in. Do not read "throws on -1" as universal: -1 is a
+  // malformed state and a perfectly good separation.
+  const stateDoors = [(v) => R.degreeOf(v), (v) => R.isRetro(v), (v) => R.row(v), (v) => R.relation(v, 90), (v) => R.related(v, 90), (v) => R.targetDegree(v, 90, 1), (v) => R.targetStates(v, 90, 1)];
+  const realDoors = [(v) => R.stateOf(v, false), (v) => R.directState(v), (v) => R.arcOf(v), (v) => R.nearest(v), (v) => R.exact(v), (v) => R.separation(0, v)];
+  const nonFinite = [NaN, Infinity, -Infinity, null, undefined, '0', {}, []];
+  check('every state door rejects non-integers, out-of-range and non-numbers',
+    stateDoors.every((f) => [7.5, -1, 720, 1000].concat(nonFinite).every((v) => throws(() => f(v)))));
+  check('every longitude door accepts any finite real and normalizes it',
+    realDoors.every((f) => [0, 7.5, -1, 116.37, 359.999, 720, 1000, -370.5].every((v) => { try { f(v); return true; } catch (e) { return false; } })) &&
+    R.stateOf(7.5, false) === 7 && R.arcOf(-1) === 1 && R.separation(0, 720) === 0 && R.directState(-370.5) === 349);
+  check('every longitude door rejects non-finite and non-numbers', realDoors.every((f) => nonFinite.every((v) => throws(() => f(v)))));
+
+  sec('nearest mark, ties, and the residual');
+  check('nearest is measured to the exact angle, not a state', Math.abs(R.nearest(116.37).residual - 3.63) < 1e-9 && R.nearest(116.37).angle === 120);
+  check('no quantization: 116 and 116.37 give different residuals', R.nearest(116).residual !== R.nearest(116.37).residual);
+  const TIES = [37.5, 52.5, 66, 81, 105, 127.5, 139.5, 147, 165];
+  const LOWER = [30, 45, 60, 72, 90, 120, 135, 144, 150];
+  check('all nine ties resolve to the lower angle', TIES.every((t, i) => R.nearest(t).angle === LOWER[i]), TIES.map((t, i) => t + '→' + R.nearest(t).angle).join(' '));
+  check('arc folds a directed separation into 0-180', R.arcOf(270) === 90 && R.arcOf(90) === 90 && R.arcOf(244) === 116);
+  check('exact() has no tolerance', R.exact(120) === 120 && R.exact(120.01) === null);
+
+  sec('supplement closure · a fact of the set');
+  check('0/180, 30/150, 45/135, 60/120 pair; 90 is self-paired',
+    R.supplementOf(0) === 180 && R.supplementOf(30) === 150 && R.supplementOf(45) === 135 && R.supplementOf(60) === 120 && R.supplementOf(90) === 90);
+  check('72 and 144 do NOT close (108 and 36 are not marks)', R.supplementOf(72) === null && R.supplementOf(144) === null);
+  check('the supplement of 180 is 0 — valid, falsy, and distinguishable from absence', R.supplementOf(180) === 0 && R.supplementOf(180) !== null);
+
+  sec('the doctrine example · two Moons, 7 Capricorn and 3 Taurus');
+  const a = 277, b = 33, sep = R.separation(b, a);
+  check('natal separation is 116, four short of trine', R.arcOf(sep) === 116 && R.nearest(sep).angle === 120 && R.nearest(sep).residual === 4);
+  check('synchronically 58 or 122, and two off in BOTH', R.nearest(58).angle === 60 && R.nearest(58).residual === 2 && R.nearest(122).angle === 120 && R.nearest(122).residual === 2);
+  check('the flip inverts the bond and preserves the tightness', R.supplementOf(60) === 120 && R.nearest(58).residual === R.nearest(122).residual);
+
+  sec('the atlas fixture · 720 states, 14,400 targets');
+  let txt = null;
+  try { const r = await fetch('fixtures/aspect-atlas.md'); if (r.ok) txt = await r.text(); } catch (e) {}
+  if (!txt) {
+    check('fixture readable at fixtures/aspect-atlas.md', false, 'fetch failed — serve this test over http, not file://');
+  } else {
+    const dataRows = txt.split('\n').filter((l) => /^\|\s*\d+\s*\|\s*(Direct|Retrograde)\s*\|/.test(l));
+    check('720 rows parsed', dataRows.length === 720, dataRows.length + ' rows · ' + txt.length + ' bytes');
+    let tgt = 0, bad = 0, pairBad = 0, metaBad = 0;
+    const cells = {};
+    for (const l of dataRows) {
+      const c = l.split('|').map((s) => s.trim());
+      const state = +c[1], motion = c[2], abs = +c[3];
+      cells[state] = c.slice(5, 16).join('|');
+      if (abs !== R.degreeOf(state) || motion !== (R.isRetro(state) ? 'Retrograde' : 'Direct')) metaBad++;
+      for (let i = 5; i <= 15; i++) {
+        const cell = c[i]; if (cell == null) continue;
+        const m = i - 5, angle = R.MARKS[m];
+        const doubled = [...cell.matchAll(/([+\u2212-])(\d+)\u00b0:[^\[]*\[D (\d+) \/ R (\d+)\]/g)];
+        for (const g of doubled) {
+          const sign = g[1] === '+' ? 1 : -1, mk = +g[2], D = +g[3], Rt = +g[4];
+          const want = R.targetDegree(state, mk, sign);
+          tgt++;
+          if (mk !== angle || D !== want) bad++;
+          if (Rt !== D + 360) pairBad++;
+        }
+        if (!doubled.length) {
+          const g = cell.match(/\[D (\d+) \/ R (\d+)\]/);
+          if (g) { const want = R.targetDegree(state, angle, +1); tgt++; if (+g[1] !== want) bad++; if (+g[2] !== +g[1] + 360) pairBad++; }
+        }
+      }
+    }
+    check('all 14,400 targets match the stamped plate', tgt === 14400 && bad === 0, tgt + ' checked, ' + bad + ' mismatched');
+    check('every target carries both state IDs, direct t and retrograde t+360', pairBad === 0);
+    check('absolute degree and motion columns correct on all 720 rows', metaBad === 0);
+    let dup = 0; for (let d = 0; d < 360; d++) if (cells[d] === cells[d + 360]) dup++;
+    check('the retrograde half is a provable restatement of the direct half', dup === 360, dup + ' of 360 identical');
+  }
+
+  sec('pending · cannot pass until the rewire lands');
+  rows.push('<tr><td class="dim">TODO</td><td class="dim">rewire conformance: every DC glyph, name and default unchanged, and no number a reader sees moves</td></tr>');
+
+  document.getElementById('out').innerHTML =
+    '<p class="' + (fails.length ? 'bad' : 'ok') + '">' + (fails.length ? fails.length + ' FAILED: ' + fails.join(', ') : 'all checks pass') + '</p><table>' + rows.join('') + '</table>';
+})();
+</script>
+</body></html>

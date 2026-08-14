@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the Connectome · the compiler, occupants + Tympan + sect → a frozen Expression</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:940px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}.note{color:#c99a4a}td{padding:1px 10px 1px 0;vertical-align:top}pre{color:#b6aed2;white-space:pre-wrap;margin:4px 0 0}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=2"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../dispositor.browser.js?v=1"></script>
+<script src="../connectome.browser.js?v=1"></script>
+<script src="../astrodna.browser.js?v=6"></script>
+</head><body>
+<h1>The Connectome · express(occupants, ascSignIdx, sect, meta) → a frozen Expression</h1>
+<p class="dim">The join: occupants (the same sign map dispositor.walk takes) + a Tympan selector (a sign
+address, or null for a placeless field) + sect (true/false/null) compile to an Expression. No longitude,
+no degree, no retrograde on a node — sign resolution, by law. The house-routing graph is the twin of the
+planet graph, built here (own-house · house-exchange · routing-loop), deliberately NOT sharing the planet
+graph's words (domicile · mutual-reception · dispositor-loop) because they name different relations.</p>
+<p class="note">v0.886 · TWO CONTRACT CHANGES, pinned in §7b. `keeper` is a `{kind, id}` record on both
+graphs, and a fixed point is REGISTERED as a cycle of length 1, so `cycleByPlanet` answers for a planet
+at home and no reader special-cases a terminal by the shape of a string. And the Expression PUBLISHES
+its own cache key (`metadata.frameKey`): the store used to rebuild it out of planetTable, houseTable and
+light, which is a second projection of the one thing §3.11 says must have only one.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const C = window.__ORBO_CONNECTOME, M = window.__ORBO_MATER, T = window.__ORBO_TYMPAN, D = window.__ORBO_DISPOSITOR, A = window.__ORBO_ASTRODNA;
+  const out = document.getElementById('out');
+  if (!C) { out.innerHTML = '<span class="bad">connectome.browser.js did not register __ORBO_CONNECTOME</span>'; return; }
+
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const threw = (fn) => { try { fn(); return false; } catch (e) { return true; } };
+  const sg = (name) => M.SIGN_INDEX[name];
+  const src = await (await fetch('../connectome.js')).text().catch(() => '');
+  const code = (src || '').replace(/^\s*\/\/.*$/gm, '');
+
+  sec('1 \u00b7 a full natal-shaped occupant set \u00b7 planetTable and houseTable are complete');
+  const nat = { Ascendant: sg('Scorpio'), Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Virgo'), Venus: sg('Libra'), Mars: sg('Aries'), Jupiter: sg('Pisces'), Saturn: sg('Capricorn') };
+  const eNat = C.express(nat, sg('Scorpio'), true, { source: 'natal', stateKey: 'fixture-1' });
+  check('planetTable has one row per occupant', eNat.planetTable.length === Object.keys(nat).length);
+  check('houseTable is twelve houses, in order', eNat.houseTable.length === 12 && eNat.houseTable.every((h, i) => h.house === i + 1));
+  check('Ascendant node carries no longitude, no degree, no retrograde', Object.keys(eNat.indexes.planetByName.Ascendant).every((k) => !['longitude', 'degree', 'retrograde'].includes(k)));
+  check('Scorpio rising: agency is Mars (its domicile ruler)', eNat.agency === 'Mars');
+  check('day sect: light is the Sun', eNat.light === 'Sun');
+  check('Mars\u2019s own PlanetNode reads sign, house and dignity, no coordinates', eNat.indexes.planetByName.Mars.sign === sg('Aries') && eNat.indexes.planetByName.Mars.dignity === 'domicile');
+
+  sec('2 \u00b7 the worked example \u00b7 Venus in Aries / Mars in Taurus, both in detriment, mutual reception');
+  const worked = { Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Gemini'), Venus: sg('Aries'), Mars: sg('Taurus'), Jupiter: sg('Sagittarius'), Saturn: sg('Capricorn') };
+  const eW = C.express(worked, null, null);
+  const pn = (n) => eW.indexes.planetByName[n];
+  check('Venus is in detriment', pn('Venus').dignity === 'detriment');
+  check('Mars is in detriment', pn('Mars').dignity === 'detriment');
+  check('Venus is received by Mars, mediating dignity domicile', pn('Venus').receptions.some((r) => r.with === 'Mars' && r.kind === 'domicile'));
+  check('Mars is received by Venus, mediating dignity domicile (reciprocal)', pn('Mars').receptions.some((r) => r.with === 'Venus' && r.kind === 'domicile'));
+  check('Venus and Mars terminate in the SAME 2-cycle, keeper Mars+Venus', pn('Venus').keeper.id === 'Mars+Venus' && pn('Mars').keeper.id === 'Mars+Venus' && pn('Venus').keeper.kind === 'mutual-reception');
+  check('neither routes outward: terminalKind is mutual-reception for both', pn('Venus').terminalKind === 'mutual-reception' && pn('Mars').terminalKind === 'mutual-reception');
+
+  sec('3 \u00b7 the house-routing graph \u00b7 own-house \u00b7 house-exchange \u00b7 routing-loop, in one fixture (Aries rising)');
+  // Mars home in Aries (house1, its own house) \u00b7 Mercury home in Gemini (house3, its own house) \u00b7
+  // Venus/Moon swap houses 2 & 4 \u00b7 Sun/Jupiter/Saturn form a 3-loop across houses 5, 9, 10.
+  const houseFix = { Mars: sg('Aries'), Mercury: sg('Gemini'), Venus: sg('Cancer'), Moon: sg('Taurus'), Sun: sg('Sagittarius'), Jupiter: sg('Capricorn'), Saturn: sg('Leo') };
+  const eH = C.express(houseFix, sg('Aries'), true);
+  const hb = (h) => eH.indexes.houseByNumber[h];
+  check('house 1 (Mars\u2019s own Aries) is an own-house fixed point', hb(1).destinationHouse === 1 && eH.houseChains.find((c) => c.start === 1).terminalKind === 'own-house');
+  check('house 3 (Mercury\u2019s own Gemini) is ALSO an own-house fixed point', hb(3).destinationHouse === 3);
+  check('houses 2 and 4 form a house-exchange (Venus in house4, Moon in house2)', hb(2).destinationHouse === 4 && hb(4).destinationHouse === 2);
+  const exchangeCycle = eH.houseCycles.find((c) => c.kind === 'house-exchange');
+  check('the house-exchange cycle record has length 2 and members [2,4]', !!exchangeCycle && exchangeCycle.length === 2 && exchangeCycle.members.join(',') === '2,4');
+  check('houses 5, 9 and 10 form a routing-loop (Sun\u2192Jupiter\u2192Saturn\u2192Sun by house)', hb(5).destinationHouse === 9 && hb(9).destinationHouse === 10 && hb(10).destinationHouse === 5);
+  const loopCycle = eH.houseCycles.find((c) => c.kind === 'routing-loop');
+  check('the routing-loop cycle record has length 3 and members [5,9,10]', !!loopCycle && loopCycle.length === 3 && loopCycle.members.join(',') === '5,9,10');
+  check('a leaf house (7, ruled by Venus) chains INTO the house-exchange rather than starting its own', eH.houseChains.find((c) => c.start === 7).keeper.id === exchangeCycle.id);
+  check('housesRoutingToHouse[5] lists every house whose ruler sits in house 5 (10, and 5 itself is not self-listed unless it routes to itself)', eH.indexes.housesRoutingToHouse[5].includes(10));
+
+  sec('4 \u00b7 the two graphs are independent facts, not the same relation under two names');
+  // In the SAME fixture, Venus/Moon ALSO form a planet-level mutual reception (Venus in Cancer = Moon's
+  // domicile, Moon in Taurus = Venus's domicile) \u2014 a totally different pair-relationship than the
+  // houses-2/4 exchange, even though both are "two things pointing at each other".
+  const pn2fn = (e, n) => e.indexes.planetByName[n];
+  check('Venus/Moon: planet-level mutual-reception (a SIGN relation)', pn2fn(eH, 'Venus').terminalKind === 'mutual-reception' && pn2fn(eH, 'Venus').keeper.id === pn2fn(eH, 'Moon').keeper.id);
+  check('Houses 2/4: a house-exchange (a HOUSE relation), a different pair, different domain, same fixture', exchangeCycle.members.join(',') === '2,4' && pn2fn(eH, 'Venus').keeper.id !== exchangeCycle.id);
+  check('Sun/Jupiter/Saturn ALSO form a planet-level dispositor-loop, independent of the house 5/9/10 routing-loop', pn2fn(eH, 'Sun').terminalKind === 'dispositor-loop' && pn2fn(eH, 'Sun').keeper.id !== loopCycle.id);
+
+  sec('5 \u00b7 the placeless field \u00b7 no Tympan, no sect: three honest absences');
+  const eless = C.express(worked, null, null);
+  check('houseTable is null', eless.houseTable === null);
+  check('agency is null (it starts from the Ascendant, which a placeless field has none of)', eless.agency === null);
+  check('light is null (sect was never supplied)', eless.light === null);
+  check('charged is null (nothing to compare)', eless.charged === null);
+  check('the planet graph is still FULL \u2014 a placeless field gets a full seven-planet graph', Object.keys(eless.indexes.planetByName).length === Object.keys(worked).length);
+  check('housesRuledByPlanet is null on a placeless field', eless.indexes.housesRuledByPlanet === null);
+
+  sec('6 \u00b7 agency, light and the charged reading');
+  // Scorpio rising, Mars in Aries (agency\u2019s own chain is a length-1 domicile fixed point) \u2014 day sect,
+  // light is the Sun (Leo, also a length-1 fixed point). Two DIFFERENT keepers: not charged.
+  check('agency (Mars) and light (Sun) are different chains here, so charged is false', eNat.agency === 'Mars' && eNat.light === 'Sun' && eNat.charged === false);
+  // Build a charged case: Scorpio rising (agency=Mars), night sect (light=Moon), Mars and Moon in the
+  // SAME domicile cycle by placing Moon so it shares Mars\u2019s keeper. Simplest charged case: Mars at
+  // home (Aries) is its own keeper (Mars); put the Moon in mutual reception with Mars is impossible
+  // (Moon is not one of Mars\u2019s dignities), so charge the reading directly: Moon ALSO landing on Mars
+  // as keeper via a chain (Moon in Aries would make Moon\u2019s bearer Mars, and if Mars is home, Moon\u2019s
+  // keeper is Mars too \u2014 the same keeper as agency).
+  const charged1 = { Ascendant: sg('Scorpio'), Mars: sg('Aries'), Moon: sg('Aries'), Sun: sg('Leo'), Mercury: sg('Virgo'), Venus: sg('Libra'), Jupiter: sg('Pisces'), Saturn: sg('Capricorn') };
+  const eCharged = C.express(charged1, sg('Scorpio'), false); // night: light = Moon
+  check('night sect: light is the Moon', eCharged.light === 'Moon');
+  check('Keeper of Agency (Mars, home) == Keeper of Light (Moon, whose bearer is Mars): charged', eCharged.charged === true);
+
+  sec('7 \u00b7 the frame-vector memo \u00b7 a scrubbed sample that keeps landing on the same signs costs one compile');
+  C.clearExpressionMemo();
+  const m1 = C.express(nat, sg('Scorpio'), true, { source: 'a', timestamp: 111, stateKey: 'k1' });
+  const m2 = C.express(nat, sg('Scorpio'), true, { source: 'b', timestamp: 222, stateKey: 'k2' });
+  check('two calls with identical signs share the SAME planetTable/houseTable/indexes objects (memo hit)', m1.planetTable === m2.planetTable && m1.indexes === m2.indexes && m1.houseTable === m2.houseTable);
+  check('but metadata is per-call, never leaked from the first caller', m1.metadata.source === 'a' && m2.metadata.source === 'b' && m1.metadata.stateKey === 'k1' && m2.metadata.stateKey === 'k2');
+  const natShifted = Object.assign({}, nat, { Mars: sg('Taurus') });
+  const m3 = C.express(natShifted, sg('Scorpio'), true);
+  check('a changed sign produces a DIFFERENT compiled object', m3.planetTable !== m1.planetTable);
+  check('frameVector ignores metadata entirely (same occupants/asc/sect, different meta, same key)', C.frameVector(nat, sg('Scorpio'), true) === C.frameVector(nat, sg('Scorpio'), true));
+  check('frameVector changes when sect changes', C.frameVector(nat, sg('Scorpio'), true) !== C.frameVector(nat, sg('Scorpio'), false));
+  check('frameVector changes when the Tympan selector changes, even with identical occupants', C.frameVector(nat, sg('Scorpio'), true) !== C.frameVector(nat, sg('Libra'), true));
+  check('the Expression PUBLISHES its own key: metadata.frameKey IS frameVector, on every call', m1.metadata.frameKey === C.frameVector(nat, sg('Scorpio'), true) && m2.metadata.frameKey === m1.metadata.frameKey && m3.metadata.frameKey !== m1.metadata.frameKey);
+
+  sec('7b \u00b7 the two contract changes (v0.886) \u00b7 one terminal SHAPE, one published KEY');
+  // (a) ONE TERMINAL SHAPE. A fixed point is a cycle of length 1 on BOTH graphs, and keeper names its
+  // own kind, so a pack matching on cycle shape never has to special-case a planet at home.
+  check('cycleByPlanet answers for a planet AT HOME, not only for a pair or a loop', !!eNat.indexes.cycleByPlanet.Mars && eNat.indexes.cycleByPlanet.Mars.length === 1 && eNat.indexes.cycleByPlanet.Mars.kind === 'domicile');
+  check('every terminating planet chain resolves to a registered cycle by id AND kind', eNat.chains.filter((c) => c.keeper).every((c) => eNat.cycles.some((cy) => cy.id === c.keeper.id && cy.kind === c.keeper.kind)));
+  check('keeper is a {kind, id} record on every planet chain, never a bare string', eNat.chains.every((c) => c.keeper === null || (typeof c.keeper === 'object' && typeof c.keeper.id === 'string' && typeof c.keeper.kind === 'string')));
+  check('and on every HOUSE chain, in the house graph\u2019s own vocabulary', eH.houseChains.every((c) => c.keeper === null || (typeof c.keeper === 'object' && typeof c.keeper.id === 'string' && typeof c.keeper.kind === 'string')));
+  check('an own-house fixed point is REGISTERED as a house cycle of length 1', (() => {
+    const own = eH.houseCycles.find((c) => c.kind === 'own-house');
+    return !!own && own.length === 1 && eH.houseChains.find((c) => c.start === 1).keeper.kind === 'own-house';
+  })());
+  check('keeper.kind and terminalKind never disagree, on either graph', eNat.chains.every((c) => (c.keeper ? c.keeper.kind : null) === c.terminalKind) && eH.houseChains.every((c) => (c.keeper ? c.keeper.kind : null) === c.terminalKind));
+  check('charged compares keeper IDS, and still reads true on the charged fixture', eCharged.charged === true && eNat.charged === false);
+  // (b) ONE KEY, PUBLISHED. connKey takes the Expression itself; the pre-compile form is kept for a
+  // caller holding occupants and no Expression yet, and the two share one builder so they cannot drift.
+  check('connKey(expr, doctrine) and connKey(occ, asc, sect, doctrine) produce the identical string', C.connKey(eNat, 'doc|1') === C.connKey(nat, sg('Scorpio'), true, 'doc|1'));
+  check('connKey carries the codec prefix and the doctrine tail', /^c\d+\|/.test(C.connKey(eNat, 'doc|1')) && C.connKey(eNat, 'doc|1').slice(-6) === '|doc|1');
+  check('a doctrine change MISSES: the key differs', C.connKey(eNat, 'doc|1') !== C.connKey(eNat, 'doc|2'));
+  check('a placeless Expression still keys (asc and sect both absent)', typeof C.connKey(eless, 'doc|1') === 'string' && C.connKey(eless, 'doc|1') === C.connKey(worked, null, null, 'doc|1'));
+
+  sec('7c \u00b7 the six kept measurements are INDEX READS (v0.887), and the cut four stay cut');
+  // \u00a75.4 kept six and put none of them on the Expression by name, which read as skipped work. Five
+  // are one field read; the sixth needed a walk, so it became a row, which is \u00a73.10 firing exactly
+  // once.
+  check('path length is a chain read', eNat.indexes.chainByPlanet.Mars.path.length === 1);
+  check('inbound degree is planetsDisposedByPlanet[p].length', Array.isArray(eNat.indexes.planetsDisposedByPlanet.Mars) && eNat.indexes.planetsDisposedByPlanet.Mars.length >= 1);
+  check('cycle membership is cycleByPlanet[p], and fixed-point membership is its length === 1', !!eNat.indexes.cycleByPlanet.Mars && eNat.indexes.cycleByPlanet.Mars.length === 1);
+  check('house routing load is housesRoutingToHouse[h].length', Array.isArray(eH.indexes.housesRoutingToHouse[5]));
+  check('DESCENDANT COUNT became a row: descendantsByPlanet is TRANSITIVE, not the immediate inbound set', (() => {
+    // Mercury > Mars > Saturn (Saturn home): Saturn's descendants include BOTH, Mars\u2019s only Mercury,
+    // while planetsDisposedByPlanet.Saturn holds Mars alone.
+    const chain = { Mercury: sg('Aries'), Mars: sg('Capricorn'), Saturn: sg('Aquarius'), Sun: sg('Leo'), Moon: sg('Cancer'), Venus: sg('Taurus'), Jupiter: sg('Sagittarius') };
+    const eC = C.express(chain, null, null);
+    const d = eC.indexes.descendantsByPlanet, imm = eC.indexes.planetsDisposedByPlanet;
+    return d.Saturn.includes('Mercury') && d.Saturn.includes('Mars') && d.Mars.includes('Mercury')
+      && imm.Saturn.includes('Mars') && !imm.Saturn.includes('Mercury');
+  })());
+  check('descendantsByPlanet is frozen, like every other index', Object.isFrozen(eNat.indexes.descendantsByPlanet));
+  check('the CUT four never came back: no outbound degree, density, diameter or centrality', !/\bcentrality\b|\bdensity\b|\bdiameter\b|outboundDegree|outDegree/i.test(code));
+  check('and no unnamed metrics bag', !/\bmetrics\b/i.test(code) && eNat.metrics === undefined);
+
+  sec('8 \u00b7 told rather than derived \u00b7 synchronic/composite housing is the caller\u2019s parameter, never occupants.Ascendant');
+  // Occupants carry a DIFFERENT Ascendant sign than the Tympan selector passed in \u2014 proving housing
+  // never re-derives the frame from the occupant set's own Ascendant entry.
+  const synth = { Ascendant: sg('Gemini'), Mars: sg('Aries'), Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Virgo'), Venus: sg('Libra'), Jupiter: sg('Pisces'), Saturn: sg('Capricorn') };
+  const eSynth = C.express(synth, sg('Scorpio'), true); // housed in Scorpio's frame, NOT Gemini's
+  check('Mars\u2019s house is computed off the PASSED-IN ascSignIdx (Scorpio), not occupants.Ascendant (Gemini)', eSynth.indexes.planetByName.Mars.house === T.houseOfSign(sg('Aries'), sg('Scorpio')) && eSynth.indexes.planetByName.Mars.house !== T.houseOfSign(sg('Aries'), sg('Gemini')));
+  check('agency is Scorpio\u2019s ruler (Mars), not Gemini\u2019s (Mercury)', eSynth.agency === 'Mars');
+
+  sec('9 \u00b7 the mechanical trap \u00b7 validate the state before reducing it');
+  check('a sign of 12 throws rather than folding', threw(() => C.express({ Sun: 12 }, null, null)));
+  check('a sign of 720 throws (720 % 360 is 0 and must not silently read row 0)', threw(() => C.express({ Sun: 720 }, null, null)));
+  check('a non-integer sign throws', threw(() => C.express({ Sun: 4.5 }, null, null)));
+  check('a malformed ascSignIdx throws', threw(() => C.express({ Sun: 4 }, 12, null)) && threw(() => C.express({ Sun: 4 }, -1, null)));
+  check('a non-boolean, non-null sect throws', threw(() => C.express({ Sun: 4 }, null, 'day')));
+  check('null occupants throws', threw(() => C.express(null, null, null)));
+  check('every throw names the file', (() => { try { C.express({ Sun: 12 }, null, null); } catch (e) { return /^connectome: /.test(e.message); } })());
+
+  sec('10 \u00b7 the Expression is frozen all the way down');
+  check('top level, planetTable, houseTable and their rows are frozen', Object.isFrozen(eNat) && Object.isFrozen(eNat.planetTable) && Object.isFrozen(eNat.planetTable[0]) && Object.isFrozen(eNat.houseTable) && Object.isFrozen(eNat.houseTable[0]));
+  check('indexes and every nested index map are frozen', Object.isFrozen(eNat.indexes) && Object.isFrozen(eNat.indexes.planetByName) && Object.isFrozen(eNat.indexes.chainByPlanet));
+  check('metadata is frozen', Object.isFrozen(eNat.metadata));
+  check('a push onto planetTable does not take', (() => { try { eNat.planetTable.push({}); } catch (e) {} return eNat.planetTable.length === Object.keys(nat).length; })());
+
+  sec('11 \u00b7 genome parity \u00b7 a real chart, projected through mater.signIndexOf');
+  if (A) {
+    const NAT = { y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4 / 60, lon: -(89 + 24 / 60) };
+    const E = window.__ORBO_EPH;
+    let dna = null; try { dna = A.buildAstroDNA(E.julianDay(NAT.y, NAT.mo, NAT.d, NAT.h, NAT.mi, 0, NAT.tz), NAT.lat, NAT.lon); } catch (e) {}
+    check('the fixture genome still builds', !!dna);
+    if (dna) {
+      const occ = {};
+      for (const n in dna.nodes) occ[n] = M.signIndexOf(dna.nodes[n].longitude);
+      const ascSg = occ.Ascendant;
+      const isDay = dna.extras.angles.isDay;
+      const eG = C.express(occ, ascSg, isDay, { source: 'natal', stateKey: A.sequenceString(dna) });
+      check('twelve nodes in the planetTable, one per genome node', eG.planetTable.length === Object.keys(dna.nodes).length);
+      check('agency is the Ascendant\u2019s domicile ruler, matching astrodna\u2019s own chartRuler', eG.agency === dna.ruler.rulerPlanet);
+      check('every node\u2019s house matches the Tympan\u2019s own lookup', Object.keys(occ).every((n) => eG.indexes.planetByName[n].house === T.houseOfSign(occ[n], ascSg)));
+      check('light matches the natal sect the genome itself recorded', eG.light === (isDay ? 'Sun' : 'Moon'));
+    }
+  } else { check('astrodna.browser.js present for the genome check', false); }
+
+  sec('12 \u00b7 the refusals \u00b7 what the Connectome is not');
+  check('it imports the Mater, the Tympan and the walker \u2014 nothing else', !!src && (src.match(/^import /gm) || []).length === 3 && /from '\.\/mater\.js'/.test(src) && /from '\.\/tympan\.js'/.test(src) && /from '\.\/dispositor\.js'/.test(src));
+  check('no genome, no lat/lon/jd anywhere in the code', !/\b(lat|lon|jd|julian|sequence|genome)\b/i.test(code));
+  check('no aspect, no mark, no orb (that is the Ring\u2019s)', !/\bMARKS\b|\bASPECT\b|\borb\b/i.test(code));
+  check('no lot, no decan, term, face or triplicity (rulers.js\u2019s own layer, untouched)', !/\blots?\b|decan|\bterms?\b|\bfaces?\b|triplicit/i.test(code));
+  const FORBIDDEN = ['good', 'bad', 'strong', 'weak', 'fortunate', 'difficult'];
+  check('no interpretation word: it records structure, packs speak meaning', !FORBIDDEN.some((w) => new RegExp('\\b' + w + '\\b', 'i').test(code)));
+  check('the house-graph kind strings never reuse the planet-graph\u2019s own (mutual-reception, dispositor-loop)', !/'mutual-reception'|'dispositor-loop'/.test(code));
+
+  out.innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span> \u00b7 ' + fails.join(' \u00b7 ') : '<span class="ok">all checks pass</span>') + '</h2>';
+})();
+</script>
+</body></html>

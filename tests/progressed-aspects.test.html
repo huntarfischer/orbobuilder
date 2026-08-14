@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>progressed-aspects.js tests</title>
+<style>body{font:13px monospace;background:#120f24;color:#dcd7f0;padding:20px}.pass{color:#7ee787}.fail{color:#ff7b72}</style>
+</head><body>
+<h3>progressed-aspects.js</h3><div id="out"></div>
+<script src="../progressions.browser.js"></script>
+<script src="../progressed-aspects.browser.js"></script>
+<script>
+const A = window.__ORBO_PROGRESSED_ASPECTS;
+const out = document.getElementById('out');
+let pass = 0, fail = 0;
+function check(label, cond) {
+  const div = document.createElement('div');
+  div.className = cond ? 'pass' : 'fail';
+  div.textContent = (cond ? 'PASS ' : 'FAIL ') + label;
+  out.appendChild(div);
+  cond ? pass++ : fail++;
+}
+function findHit(hits, bodyA, bodyB, angle, kind) {
+  return hits.find((h) => h.angle === angle && h.kind === kind &&
+    ((h.bodyA === bodyA && h.bodyB === bodyB) || (h.bodyA === bodyB && h.bodyB === bodyA)));
+}
+
+// Synthetic chart: natal Sun/Moon at 0°, Mars fixed at 170°. Progressed Sun moves 1°/progressed-year,
+// progressed Moon 13°/progressed-year (their real mean daily motions), so every crossing has a
+// hand-computable exact age.
+const natal = { jd: 2440000, pos: { Sun: 0, Moon: 0, Mars: 170 } };
+const sample = (age) => ({ Sun: (age * 1) % 360, Moon: (age * 13) % 360, Mars: (age * 0.524) % 360 });
+const table = A.build(natal, sample, { spanYears: 110, bodies: ['Sun', 'Moon', 'Mars'] });
+
+check('build() returns a frozen table with hits', !!table && Array.isArray(table.hits) && table.hits.length > 0);
+check('table is frozen (Object.isFrozen)', Object.isFrozen(table) && Object.isFrozen(table.hits));
+
+// progressed Sun square natal Mars: sep(age*1, 170) == 90 at age == 80 (wrap180(80-170) == -90).
+(() => {
+  const h = findHit(table.hits, 'Sun', 'Mars', 90, 'prog-natal');
+  check('progressed Sun square natal Mars found near age 80', !!h && Math.abs(h.age - 80) < 0.1);
+  check('its jd matches realJdFromAge(natalJd, age)', !!h && Math.abs(h.jd - window.__ORBO_PROGRESSIONS.realJdFromAge(natal.jd, h.age)) < 1e-6);
+})();
+
+// progressed Sun / progressed Moon: relative motion is 12 deg/yr (13-1), both starting at 0 —
+// square at age 7.5, trine at age 10, opposition at age 15, conjunction again at age 30.
+(() => {
+  const sq = findHit(table.hits, 'Sun', 'Moon', 90, 'prog-prog');
+  const tr = findHit(table.hits, 'Sun', 'Moon', 120, 'prog-prog');
+  const opp = findHit(table.hits, 'Sun', 'Moon', 180, 'prog-prog');
+  check('progressed Sun square progressed Moon near age 7.5', !!sq && Math.abs(sq.age - 7.5) < 0.1);
+  check('progressed Sun trine progressed Moon near age 10', !!tr && Math.abs(tr.age - 10) < 0.1);
+  check('progressed Sun opposite progressed Moon near age 15', !!opp && Math.abs(opp.age - 15) < 0.1);
+})();
+
+// Mutual is undirected: stored once per unordered pair (bodyA is always the earlier-indexed body).
+(() => {
+  const asOrdered = table.hits.filter((h) => h.kind === 'prog-prog' && h.angle === 90 && h.bodyA === 'Sun' && h.bodyB === 'Moon');
+  const reversed = table.hits.filter((h) => h.kind === 'prog-prog' && h.angle === 90 && h.bodyA === 'Moon' && h.bodyB === 'Sun');
+  check('prog-prog Sun/Moon square stored once per crossing, never both orderings', asOrdered.length > 0 && reversed.length === 0);
+})();
+
+// prog-natal is directional: A vs B and B vs A are scanned separately (own-place asymmetry law).
+(() => {
+  const sunVsMars = table.hits.filter((h) => h.kind === 'prog-natal' && h.bodyA === 'Sun' && h.bodyB === 'Mars');
+  const marsVsSun = table.hits.filter((h) => h.kind === 'prog-natal' && h.bodyA === 'Mars' && h.bodyB === 'Sun');
+  check('prog-natal scans both (Sun,Mars) and (Mars,Sun) as distinct ordered pairs', sunVsMars.length > 0 && marsVsSun.length > 0);
+})();
+
+// hitsNear: nearest-first within a window.
+(() => {
+  const nearJd = window.__ORBO_PROGRESSIONS.realJdFromAge(natal.jd, 7.5);
+  const near = A.hitsNear(table, nearJd, 400); // ~400d window catches the age-7.5 exact hit
+  check('hitsNear finds the age-7.5 square within its window', near.length > 0 && Math.abs(near[0].jd - nearJd) < 5);
+  check('hitsNear sorts nearest-first', near.every((h, i) => i === 0 || Math.abs(h.jd - nearJd) >= Math.abs(near[i - 1].jd - nearJd)));
+})();
+
+check('tableKey is natal jd + sorted body list', A.tableKey(natal, ['Sun', 'Moon']) === (natal.jd + '|Moon,Sun'));
+
+// Performance regression guard (2026-08-11 fix): sample(age) must be called roughly once per grid
+// point for the WHOLE build, never once per (pair x age x bisection step). With 9 bodies that's the
+// difference between ~500 calls and >100,000.
+(() => {
+  let calls = 0;
+  const counted = (age) => { calls++; return sample(age); };
+  const t0 = performance.now();
+  const bigNatal = { jd: 2440000, pos: { Sun: 0, Moon: 0, Mercury: 10, Venus: 20, Mars: 170, Jupiter: 90, Saturn: 200, Uranus: 300, Neptune: 50 } };
+  A.build(bigNatal, counted, { spanYears: 110, bodies: A.DEFAULT_BODIES });
+  const ms = performance.now() - t0;
+  check('sample() called well under 5000 times for a 9-body/110yr build (was 100,000+)', calls < 5000);
+  check('9-body/110yr build completes in well under 1s synthetically', ms < 1000);
+})();
+
+document.title += ' — ' + pass + ' pass, ' + fail + ' fail';
+const summary = document.createElement('h4');
+summary.textContent = pass + ' passed, ' + fail + ' failed';
+summary.className = fail ? 'fail' : 'pass';
+out.before(summary);
+</script>
+</body></html>

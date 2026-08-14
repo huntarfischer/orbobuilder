@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Depth contract — Phase 2 tests</title>
+<style>
+  body { background: #0b081c; color: #dcd7f0; font: 13px/1.6 ui-monospace, Menlo, monospace; padding: 24px; }
+  h1 { font-size: 15px; letter-spacing: 0.16em; text-transform: uppercase; color: #8f86c0; font-weight: 400; }
+  .pass { color: #7fc98a; } .fail { color: #d64541; font-weight: 700; }
+  .grp { margin: 18px 0 6px; color: #e8ab41; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px; }
+  #sum { margin-top: 22px; padding-top: 12px; border-top: 1px solid rgba(190,184,226,0.2); font-size: 14px; }
+  .note { color: #8478b8; font-size: 11px; }
+</style>
+</head>
+<body>
+<h1>Depth contract &amp; co-rulership law</h1>
+<p class="note">Probes the DC's logic-class prototype directly — the instrument's own boot is heavy
+(three.js + ephemeris tables) and irrelevant to ranking. Pure-ish methods are called on a
+hand-built instance so no canvas, RAF or pack load is needed.</p>
+<div id="out"></div>
+<div id="sum"></div>
+<script>
+const out = document.getElementById('out');
+let pass = 0, fail = 0;
+function grp(n) { const d = document.createElement('div'); d.className = 'grp'; d.textContent = n; out.appendChild(d); }
+function ok(name, cond, got) {
+  const d = document.createElement('div');
+  d.className = cond ? 'pass' : 'fail';
+  d.textContent = (cond ? '✓ ' : '✗ ') + name + (cond ? '' : '   → got: ' + JSON.stringify(got));
+  out.appendChild(d); cond ? pass++ : fail++;
+}
+function eq(name, a, b) { ok(name + '  (= ' + JSON.stringify(b) + ')', JSON.stringify(a) === JSON.stringify(b), a); }
+
+(async () => {
+  const src = await (await fetch('../Orbo Astrolabe.dc.html')).text();
+  const baseSrc = await (await fetch('../archive/Orbo Astrolabe 2026-07-28d.dc.html')).text().catch(() => '');
+  const tpl = (src.match(/<x-dc[^>]*>([\s\S]*)<\/x-dc>/) || [, ''])[1];
+  const btpl = (baseSrc.match(/<x-dc[^>]*>([\s\S]*)<\/x-dc>/) || [, ''])[1];
+  const m = src.match(/<script[^>]*data-dc-script[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) { ok('extract logic class from the DC', false, 'no data-dc-script block'); return done(); }
+  ok('extract logic class from the DC', true);
+
+  let Component;
+  try {
+    const DCLogic = class {};
+    const React = { createRef: () => ({ current: null }), createElement: () => null };
+    Component = new Function('DCLogic', 'React', m[1] + '\n; return Component;')(DCLogic, React);
+    ok('logic class parses and evaluates', typeof Component === 'function');
+  } catch (e) { ok('logic class parses and evaluates', false, e.message); return done(); }
+
+  // A hand-built instance: prototype methods, plus only the constructor fields the depth and
+  // rulership doors touch. Deliberately NOT the real constructor — no canvas, no RAF, no pack.
+  const real = Object.create(Component.prototype);
+  const proto = Component.prototype;
+  const seed = (depth, sunLon) => {
+    const inst = Object.create(proto);
+    inst.state = { depth: depth };
+    inst.RULER_BY_SIGN = ['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+    inst.CO_RULER = { 7: 'Pluto', 10: 'Uranus', 11: 'Neptune' };
+    inst.GLYPH = { Sun:'\u2609', Moon:'\u263D', Mercury:'\u263F', Venus:'\u2640', Mars:'\u2642',
+      Jupiter:'\u2643', Saturn:'\u2644', Uranus:'\u2645', Neptune:'\u2646', Pluto:'\u2647' };
+    inst.SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+    inst.ELEM_NAME = ['fire','earth','air','water'];
+    inst.EXALT = { Sun: 0, Moon: 1, Mercury: 5, Venus: 11, Mars: 9, Jupiter: 3, Saturn: 6 };
+    // Sun wherever the test wants it; the other bodies parked so dispositor lookups resolve.
+    inst.pos = { Sun: sunLon != null ? sunLon : 134, Moon: 10, Mercury: 40, Venus: 70,
+      Mars: 100, Jupiter: 130, Saturn: 160, Uranus: 190, Neptune: 220, Pluto: 250 };
+    inst.asc = 0; // Aries rising → house = sign index + 1
+    return inst;
+  };
+
+  // –––– the three doors ––––
+  grp('the doors');
+  eq('_depthRank(plain) = 1', seed('plain')._depthRank(), 1);
+  eq('_depthRank(studied) = 2', seed('studied')._depthRank(), 2);
+  eq('_depthRank(scholarly) = 3', seed('scholarly')._depthRank(), 3);
+  eq('_depthRank() defaults to studied when unset', seed(undefined)._depthRank(), 2);
+  ok('_atLeast(2) is false at plain', seed('plain')._atLeast(2) === false);
+  ok('_atLeast(2) is true at studied', seed('studied')._atLeast(2) === true);
+  ok('_atLeast(3) is false at studied', seed('studied')._atLeast(3) === false);
+  ok('_atLeast() with no argument is true at every depth',
+    seed('plain')._atLeast() === true && seed('scholarly')._atLeast() === true);
+
+  grp('_atDepth filters, cumulatively, absent d = L1');
+  const rows = [{ k: 'a' }, { k: 'b', d: 2 }, { k: 'c', d: 3 }, { k: 'd', d: 1 }];
+  const keys = (r) => r.map((x) => x.k);
+  eq('at plain', keys(seed('plain')._atDepth(rows)), ['a', 'd']);
+  eq('at studied — CUMULATIVE, not ===', keys(seed('studied')._atDepth(rows)), ['a', 'b', 'd']);
+  eq('at scholarly — everything', keys(seed('scholarly')._atDepth(rows)), ['a', 'b', 'c', 'd']);
+  eq('null-safe', seed('studied')._atDepth(null), []);
+  ok('drops null rows without throwing', keys(seed('studied')._atDepth([null, { k: 'x' }])).join() === 'x');
+  // ABSENCE half: the filter must REMOVE, never annotate-and-hide (nothing above rank survives)
+  ok('nothing above the floor survives at plain (absence)',
+    seed('plain')._atDepth(rows).every((r) => (r.d || 1) <= 1));
+  ok('nothing above the floor survives at studied (absence)',
+    seed('studied')._atDepth(rows).every((r) => (r.d || 1) <= 2));
+  // supersession guard: each level is a superset of the one below
+  const L1 = keys(seed('plain')._atDepth(rows)), L2 = keys(seed('studied')._atDepth(rows)), L3 = keys(seed('scholarly')._atDepth(rows));
+  ok('L2 ⊇ L1 and L3 ⊇ L2 — the dial only ever adds',
+    L1.every((k) => L2.includes(k)) && L2.every((k) => L3.includes(k)));
+
+  // –––– the co-rulership law ––––
+  grp('co-rulership — display only');
+  const s = seed('studied');
+  eq('_coRuler(Scorpio) = Pluto', s._coRuler(7), 'Pluto');
+  eq('_coRuler(Aquarius) = Uranus', s._coRuler(10), 'Uranus');
+  eq('_coRuler(Pisces) = Neptune', s._coRuler(11), 'Neptune');
+  eq('_coRuler(Aries) = null', s._coRuler(0), null);
+  eq('_coRuler(Leo) = null', s._coRuler(4), null);
+  ok('_coRuler wraps out-of-range indices', s._coRuler(19) === 'Pluto' && s._coRuler(-5) === 'Pluto');
+  eq('_lordOf(Scorpio).trad is Mars — the ONE computational lord', s._lordOf(7).trad, 'Mars');
+  eq('_lordOf(Scorpio).co is Pluto', s._lordOf(7).co, 'Pluto');
+  eq('_lordOf(Scorpio).label — manifest acceptance test 2', s._lordOf(7).label, '\u2642 Mars \u00b7 with \u2647 Pluto');
+  eq('_lordOf(Aquarius).label', s._lordOf(10).label, '\u2644 Saturn \u00b7 with \u2645 Uranus');
+  eq('_lordOf(Pisces).label', s._lordOf(11).label, '\u2643 Jupiter \u00b7 with \u2646 Neptune');
+  eq('_lordOf(Aries).label — no co-ruler, NO trailing separator', s._lordOf(0).label, '\u2642 Mars');
+  ok('no single-lord sign gets a "with" clause (absence)',
+    [0,1,2,3,4,5,6,8,9].every((i) => s._lordOf(i).label.indexOf('with') === -1));
+  ok('every co-ruled sign keeps its traditional lord unchanged (absence)',
+    [7,10,11].every((i) => s._lordOf(i).trad === s.RULER_BY_SIGN[i]));
+
+  // –––– _signifRows: the split, and the ladder ––––
+  grp('_signifRows — the split and the ladder');
+  const kOf = (r) => r.map((x) => x.k);
+  const sunLeo = 134;          // Leo 14° — the manifest's worked example
+  const r1 = seed('plain', sunLeo)._signifRows('Sun');
+  const r2 = seed('studied', sunLeo)._signifRows('Sun');
+  const r3 = seed('scholarly', sunLeo)._signifRows('Sun');
+  eq('L1 — what is: sign only', kOf(r1), ['sign']);
+  eq('L2 — + dignity, + its lord, + house', kOf(r2), ['sign', 'dignity', 'ruler', 'house']);
+  ok('dignity is L2, not L1 — it is "what it belongs to" (caught by this suite)',
+    (r3.find((x) => x.k === 'dignity') || {}).d === 2);
+  eq('L3 — + dispositor, + rules houses', kOf(r3), ['sign', 'dignity', 'ruler', 'dispositor', 'house', 'rules houses']);
+  ok('L1 has NO dispositor, NO rules houses (absence)',
+    !kOf(r1).includes('dispositor') && !kOf(r1).includes('rules houses'));
+  ok('L2 has NO dispositor, NO rules houses, NO co-ruler (absence)',
+    !kOf(r2).includes('dispositor') && !kOf(r2).includes('rules houses') && !kOf(r2).includes('co-ruler'));
+  ok('the ladder is cumulative — every L2 key survives into L3',
+    kOf(r2).every((k) => kOf(r3).includes(k)));
+  ok('no key appears twice at any depth — no row restates another',
+    new Set(kOf(r3)).size === kOf(r3).length);
+  eq('worked example: sign row reads Leo · fire', (r1[0] || {}).v, 'Leo \u00b7 fire');
+  eq('worked example: house is 5 (Aries rising, whole sign)',
+    (r2.find((x) => x.k === 'house') || {}).v, '5 \u00b7 whole sign');
+
+  grp('acceptance test 2 — Scorpio at the default depth');
+  const scorp = seed('studied', 220)._signifRows('Sun'); // Sun at Scorpio 10°
+  const rulerRow = scorp.find((x) => x.k === 'ruler');
+  ok('a Scorpio body HAS a ruler row at studied', !!rulerRow);
+  eq('and it reads Mars · with Pluto', rulerRow && rulerRow.v, '\u2642 Mars \u00b7 with \u2647 Pluto');
+  ok('the ruler row is L2', rulerRow && rulerRow.d === 2, rulerRow);
+  // Sun in Scorpio: traditional lord Mars, so peregrine. If CO_RULER ever reached the dignity
+  // scorer this would read 'domicile' — the single cheapest tell that the boundary broke.
+  eq('ABSENCE: Sun in Scorpio is peregrine, not domicile — Pluto is never scored',
+    (scorp.find((x) => x.k === 'dignity') || {}).v, 'peregrine');
+  const scorp3 = seed('scholarly', 220)._signifRows('Sun');
+  eq('at scholarly the co-ruler rationale appears, once',
+    scorp3.filter((x) => x.k === 'co-ruler').length, 1);
+  eq('and the dispositor points at Mars\u2019s own sign (a CHAIN, hence L3)',
+    (scorp3.find((x) => x.k === 'dispositor') || {}).v, '\u2642 Mars in Cancer');
+
+  grp('acceptance test 3 — no L3 row renders without lineage');
+  const producers = [];
+  for (const body of ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn']) {
+    for (const lon of [10, 40, 70, 100, 134, 160, 190, 220, 250, 280, 310, 340]) {
+      const inst = seed('scholarly', lon);
+      inst.pos[body] = lon;
+      producers.push(...inst._signifRows(body));
+    }
+  }
+  const naked = producers.filter((r) => r.d === 3 && !r.lin);
+  eq('every L3 row across 7 bodies × 12 signs carries lin', naked.map((r) => r.k), []);
+  // the vacuity guard the corpus pass learned the hard way: assert the L3 set is NON-EMPTY,
+  // so "every L3 has lineage" cannot pass by there being no L3 rows at all
+  ok('…and the L3 set is non-empty, so that assertion cannot pass vacuously',
+    producers.some((r) => r.d === 3));
+  ok('no L1/L2 row carries a lineage label it has not earned (absence)',
+    producers.filter((r) => (r.d || 1) < 3 && r.lin).length === 0);
+  ok('the dispositor lineage names the traditional scheme, not the modern one',
+    producers.filter((r) => r.k === 'dispositor').every((r) => /traditional domicile rulers/.test(r.lin)));
+  ok('the co-ruler lineage names the MODERN attribution, and only there',
+    producers.filter((r) => r.k === 'co-ruler').every((r) => /modern rulership/.test(r.lin)) &&
+    producers.filter((r) => r.k !== 'co-ruler').every((r) => !/modern rulership/.test(r.lin || '')));
+
+  grp('_snapshotLines — one argument now, ranks at read time');
+  const asp = Array.from({ length: 8 }, (_, i) => 'contact' + i);
+  eq('plain keeps the headline contact', seed('plain')._snapshotLines(asp).length, 1);
+  eq('studied keeps three', seed('studied')._snapshotLines(asp).length, 3);
+  eq('scholarly keeps all eight', seed('scholarly')._snapshotLines(asp).length, 8);
+  ok('a stale second argument cannot change the answer',
+    seed('plain')._snapshotLines(asp, 'scholarly').length === 1);
+  ok('the pin is not mutated — no data lost to a display setting (acceptance 6)', asp.length === 8);
+  eq('null-safe', seed('studied')._snapshotLines(null), []);
+
+  grp('the boundary — CO_RULER must not reach computation');
+  const body = m[1];
+  // every mention of the modern table, and what function it sits in
+  // walk BACK from each mention to its enclosing 2-space function header. (A slice-and-count
+  // heuristic mis-attributed hits to the preceding function — the boundary test has to be exact
+  // or it cries wolf on a law this important.)
+  const lines = body.split('\n');
+  const sites = [];
+  lines.forEach((line, i) => {
+    if (!/CO_RULER|_coRuler\s*\(|_lordOf\s*\(/.test(line)) return;
+    let fn = '(top level)';
+    for (let j = i; j >= 0; j--) { const h = lines[j].match(/^  (_?[A-Za-z0-9_]+)\s*\(/); if (h) { fn = h[1]; break; } }
+    sites.push(fn);
+  });
+  const ALLOWED = ['(top level)', 'constructor', '_coRuler', '_lordOf', '_signifRows', '_sheetDataNatal', '_sheetDataCompositeBody'];
+  const strays = sites.filter((fn) => !ALLOWED.includes(fn));
+  eq('CO_RULER/_coRuler/_lordOf appear only in display producers', Array.from(new Set(strays)), []);
+  ok('dignity scoring reads RULER_BY_SIGN only (absence)',
+    !/dig = 'domicile'[\s\S]{0,400}CO_RULER/.test(body));
+  ok('the rules-houses loops read RULER_BY_SIGN only (absence)',
+    (body.match(/for \(let i = 0; i < 12; i\+\+\) if \(this\.RULER_BY_SIGN\[i\]/g) || []).length >= 2 &&
+    !/CO_RULER\[i\]/.test(body));
+  ok('no raw depth-string comparison survives outside the chips and the dial (absence)',
+    (body.match(/\(s\.depth \|\| 'studied'\) [!=]==/g) || []).length <= 2);
+
+  // –––– step 3: lineage on its row, and the retirement of the global gate ––––
+  grp('step 3 — lineage renders on its row, depthScholarly retired');
+  ok('depthScholarly no longer appears in the template', !/depthScholarly/.test(tpl));
+  eq('six doctrine gates now ask the one door', (tpl.match(/\{\{ showDoctrine \}\}/g) || []).length, 6);
+  eq('four sheets keep an unconditional honesty line', (tpl.match(/\{\{ doctrineHidden \}\}/g) || []).length, 4);
+  ok('renderVals exposes showDoctrine / doctrineHidden / sheetHonesty',
+    /showDoctrine: this\._atLeast\(3\)/.test(body) && /doctrineHidden: !this\._atLeast\(3\)/.test(body) && /sheetHonesty:/.test(body));
+  eq('a lineage gate in each of the two row templates', (tpl.match(/<sc-if value="\{\{ r\.lin \}\}"/g) || []).length, 2);
+  eq('and the lineage text rendered in each', (tpl.match(/>\{\{ r\.lin \}\}</g) || []).length, 2);
+  ok('ABSENCE: lineage is gated by the ROW, never by a depth flag',
+    !/showDoctrine[\s\S]{0,160}r\.lin/.test(tpl));
+  ok('ABSENCE: the honesty line is never itself depth-gated',
+    !/doctrineHidden[\s\S]{0,200}depth ===/.test(body));
+  if (btpl) {
+    const cnt = (x) => [(x.match(/<sc-if\b/g) || []).length, (x.match(/<\/sc-if>/g) || []).length];
+    const a = cnt(tpl), b = cnt(btpl);
+    eq('step-3 conditionals are balanced (delta open = delta close)', [a[0] - b[0], a[1] - b[1]], [6, 6]);
+    // NOTE: the template carries a pre-existing unclosed sc-if (orboOn, template line 177) that
+    // predates Phase 2 — asserted as UNCHANGED so this suite neither owns nor masks it.
+    eq('pre-existing sc-if imbalance unchanged, not introduced by us', a[0] - a[1], b[0] - b[1]);
+  }
+  eq('sc-for tags balance', (tpl.match(/<sc-for\b/g) || []).length, (tpl.match(/<\/sc-for>/g) || []).length);
+
+  // –––– step 5: state.doctrine, _doctrineKey(), and the dial's new home ––––
+  grp('step 5 — doctrine + the dial moves to Orbo');
+  const seedS = (st) => { const i = seed('studied'); Object.assign(i.state, st); return i; };
+  const d0 = seedS({});
+  eq('_doc() defaults', ['sect','lots','zrLot','zrPeak','yearStart','progAngle'].map((k) => d0._doc(k)),
+    ['brennan','pauline','Spirit','trueAngles','birthday','naibod']);
+  eq('_doctrineKey() default signature', d0._doctrineKey(), 'brennan|pauline|Spirit|trueAngles|birthday|naibod');
+  eq('the key always has six positions', d0._doctrineKey().split('|').length, 6);
+  // the migration is the risky half: a session saved BEFORE doctrine existed must answer
+  // correctly on its first render, not after the next write.
+  const legacy = seedS({ doctrine: undefined, zrLot: 'Fortune', zrPeakDef: 'brennanSelf' });
+  eq('MIGRATION: legacy zrLot reads through _doc', legacy._doc('zrLot'), 'Fortune');
+  eq('MIGRATION: legacy zrPeakDef reads through _doc', legacy._doc('zrPeak'), 'brennanSelf');
+  eq('MIGRATION: a legacy session gets its OWN key, not the default',
+    legacy._doctrineKey(), 'brennan|pauline|Fortune|brennanSelf|birthday|naibod');
+  eq('doctrine wins over the legacy mirror once written',
+    seedS({ doctrine: { zrLot: 'Eros' }, zrLot: 'Fortune' })._doc('zrLot'), 'Eros');
+  const fields = { sect:'valens', lots:'hermetic', zrLot:'Nemesis', zrPeak:'brennanSelf', yearStart:'jan1', progAngle:'solarArc' };
+  ok('every doctrinal field moves the key',
+    Object.keys(fields).every((k) => seedS({ doctrine: { [k]: fields[k] } })._doctrineKey() !== d0._doctrineKey()));
+  ok('the key is order-stable, never sorted per call',
+    seedS({ doctrine: { sect:'valens', progAngle:'solarArc' } })._doctrineKey() === 'valens|pauline|Spirit|trueAngles|birthday|solarArc');
+  eq('ABSENCE: no s.zrLot / s.zrPeakDef reads survive', (body.match(/s\.zrLot|s\.zrPeakDef/g) || []).length, 0);
+  ok('legacy keys are still mirrored on persist (rollback safety)',
+    /zrLot: this\._doc\('zrLot'\), zrPeakDef: this\._doc\('zrPeak'\)/.test(body));
+  ok('doctrine + depthSeeded are persisted', /doctrine: s\.doctrine, depthSeeded: s\.depthSeeded/.test(body));
+  ok('_setDoctrine keeps the legacy mirror in step', /if \(k === 'zrLot'\) patch\.zrLot = v/.test(body));
+  // doctrine reaches computeLots via the `lots` field, so the ZR memo can no longer key on jd alone
+  ok('the ZR memo key includes the doctrine signature',
+    /const zKey = dna\.jd \+ '\|' \+ this\._doctrineKey\(\)/.test(body));
+  ok('the dial is gone from the Moon panel', !/reading depth/.test(tpl));
+  eq('depthChips mounts exactly once', (tpl.match(/\{\{ depthChips \}\}/g) || []).length, 1);
+  ok('it mounts inside Orbo\u2019s panel', tpl.indexOf('{{ depthChips }}') > tpl.indexOf('{{ orboCtxLabel }}'));
+  ok('and above his input, not below it', tpl.indexOf('{{ depthChips }}') < tpl.indexOf('ask Orbo anything'));
+  ok('renderVals exposes depthBlurb keyed by rank', /depthBlurb: \{ 1:/.test(body));
+  ok('a manual pick retires the seed', /depth: d, depthSeeded: true/.test(body));
+  ok('the orientation seeds only when unseeded', /if \(!this\.state\.depthSeeded\)/.test(body));
+
+  // –––– step 4: the manifest applied to the producers ––––
+  grp('step 4 — producers ranked, and the manifest\u2019s acceptance tests');
+  // helper: read ONE method's source, so a match elsewhere in the file can't fake a pass
+  const fnBody = (name) => { const i = body.indexOf('\n  ' + name + '('); if (i < 0) return ''; const j = body.indexOf('\n  }', i); return body.slice(i, j); };
+
+  // ACCEPTANCE 6 — a pin frozen at scholarly, read at plain, then back, loses nothing
+  const frozen = Array.from({ length: 8 }, (_, i) => ({ r: i, str: 'c' + i }));
+  eq('ACCEPTANCE 6: scholarly shows all eight', seed('scholarly')._snapshotLines(frozen).length, 8);
+  eq('ACCEPTANCE 6: plain shows the headline only', seed('plain')._snapshotLines(frozen), ['c0']);
+  eq('ACCEPTANCE 6: studied shows three', seed('studied')._snapshotLines(frozen).length, 3);
+  eq('ACCEPTANCE 6: back at scholarly, ALL EIGHT RETURN', seed('scholarly')._snapshotLines(frozen).length, 8);
+  eq('ACCEPTANCE 6: the frozen array is never mutated', frozen.length, 8);
+  eq('pins saved as plain strings still read', seed('plain')._snapshotLines(['x','y','z']), ['x']);
+
+  const mr = fnBody('_motionRows');
+  ok('the derived-point note is L2; motion is otherwise ephemeris fact', /k: 'note'[\s\S]{0,120}d: 2/.test(mr));
+  ok('the motion memo caches the FULL row set and filters on the way out \u2014 a depth must never be baked into a cache',
+    mr.includes('return this._atDepth(rows);') &&
+    mr.indexOf('this._motionCache = { key, rows };') < mr.indexOf('return this._atDepth(rows);'));
+  const cb = fnBody('_sheetDataCompositeBody');
+  ok('composite house is L2', /k: 'house'[\s\S]{0,120}composite', d: 2/.test(cb));
+  ok('the composite sheet filters its signif', /signif: this\._atDepth\(signif\)/.test(cb));
+  eq('both body sheets filter their signif', (body.match(/signif: this\._atDepth\(signif\)/g) || []).length, 2);
+
+  // ACCEPTANCE 5 — the ledger's column count follows the dial
+  ok('ledger rows carry their own column flags', /showHse: this\._atLeast\(2\), showDisp: this\._atLeast\(3\)/.test(body));
+  ok('and the headers read the same ranks', /ledgerHse: this\._atLeast\(2\), ledgerDisp: this\._atLeast\(3\)/.test(body));
+  eq('ACCEPTANCE 5: hse gated in both ledger headers', (tpl.match(/\{\{ ledgerHse \}\}/g) || []).length, 2);
+  eq('ACCEPTANCE 5: dispositor gated in both ledger headers', (tpl.match(/\{\{ ledgerDisp \}\}/g) || []).length, 2);
+  eq('ACCEPTANCE 5: hse gated in both cell groups', (tpl.match(/\{\{ r\.showHse \}\}/g) || []).length, 2);
+  eq('ACCEPTANCE 5: dispositor gated in both cell groups', (tpl.match(/\{\{ r\.showDisp \}\}/g) || []).length, 2);
+
+  // ACCEPTANCE 4 — ♋ at L1 is phase, sign, next ingress. Nothing else.
+  ok('ACCEPTANCE 4: VoC + mansion sit behind an L3 gate',
+    /moonDeep: this\._atLeast\(3\)/.test(body) && /\{\{ moonDeep \}\}/.test(tpl));
+  ok('\u2026and their lineage renders inside that same gate',
+    /moonDeep[\s\S]{0,900}void-of-course per Lilly/.test(tpl));
+  ok('ABSENCE: phase / sign / next ingress are NOT behind it',
+    tpl.indexOf('{{ moonIngressRef }}') < tpl.indexOf('{{ moonDeep }}'));
+
+  ok('the rising CONDITION is L3 and names its scheme (the window stays L2)',
+    /hasBadge: !!badge && this\._atLeast\(3\)/.test(body) && /badgeLin: 'essential dignity/.test(body));
+  ok('the rising doctrine line names Lilly points', /condition badge: essential dignity, Lilly points/.test(tpl));
+  ok('election top factors AND the derivation trace are both L3 \u2014 top is added to, never replaced',
+    /showTop: this\._atLeast\(3\)/.test(body) && /drv: this\._atLeast\(3\) \?/.test(body));
+
+  // ACCEPTANCE 9 — depth gates concepts, never content the native switched on
+  const aspProducers = ['_aspectListFor', '_toYouList', '_transitsToNatal', '_natalAspectList', '_aspectSnapshot'];
+  eq('ACCEPTANCE 9: no aspect producer filters by rank',
+    aspProducers.filter((n) => /_atDepth\(/.test(fnBody(n))), []);
+  ok('ACCEPTANCE 9: no aspect row carries a rank at all',
+    !aspProducers.some((n) => /\bd: [23]\b/.test(fnBody(n))));
+  eq('exactly three producers filter by rank \u2014 signif, motion, snapshot',
+    (body.match(/return this\._atDepth\(/g) || []).length, 3);
+
+  done();
+
+  function done() {
+    const d = document.getElementById('sum');
+    d.className = fail ? 'fail' : 'pass';
+    d.textContent = fail ? (fail + ' FAILED · ' + pass + ' passed') : ('all green — ' + pass + ' assertions');
+    document.title = (fail ? 'FAIL ' : 'PASS ') + pass + '/' + (pass + fail);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>luna, the windowed generator (S2)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=2"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=3"></script>
+<script src="../luna.browser.js?v=2"></script>
+</head><body>
+<h1>Phase 5 · S2 — the Moon is a cardinality problem</h1>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, L = window.__ORBO_LOOM, U = window.__ORBO_LUNA;
+  if (!E || !F || !L || !U) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const pmemo = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pmemo.get(k); if (!v) pmemo.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const natal = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  const jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0);
+  const ANG = [0, 60, 90, 120, 180];
+  const win = (kind, days, o) => U.lunaWindow(Object.assign({ kind, jdStart: jd0, jdEnd: jd0 + days, natal, probe, bodyProbe, aspects: ANG }, o || {}));
+
+  sec('cardinality · why she is never materialised');
+  const per = {};
+  for (const [k, days] of [['ingress', 90], ['syzygy', 90], ['mutual', 30], ['contact', 30], ['synchronic', 30]]) {
+    const t0 = performance.now();
+    const r = win(k, days);
+    per[k] = { n: r.length, days, ms: performance.now() - t0, cent: Math.round(r.length / days * 36525) };
+    check(k + ' generated', r.length > 0, r.length + ' rows over ' + days + 'd in ' + per[k].ms.toFixed(0) + 'ms · ~' + per[k].cent.toLocaleString() + ' per century');
+  }
+  check('her dense kinds really are an order of magnitude (>50k/century each)',
+    per.mutual.cent > 50000 && per.contact.cent > 50000 && per.synchronic.cent > 50000,
+    'mutual ' + per.mutual.cent.toLocaleString() + ' · natal ' + per.contact.cent.toLocaleString() + ' · synchronic ' + per.synchronic.cent.toLocaleString());
+  check('her ingresses are sparse enough to materialise (~16k/century)', per.ingress.cent > 12000 && per.ingress.cent < 20000, per.ingress.cent.toLocaleString());
+  // the plan's ~1,240 figure is new and full alone; the target set takes the quarters too, which
+  // are cheap, so the honest number is four per month.
+  check('syzygies are sparse and structural (~4.9k/century with the quarters)', per.syzygy.cent > 3500 && per.syzygy.cent < 6000, per.syzygy.cent.toLocaleString() + ' incl. quarters');
+
+  sec('the generator contract');
+  const a1 = win('contact', 30), a2 = win('contact', 30);
+  check('memoised per window: the same window returns the same rows', a1 === a2, 'identical reference');
+  const t3 = performance.now(); win('mutual', 30); const cached = performance.now() - t3;
+  check('a memo hit costs nothing', cached < 5, cached.toFixed(2) + 'ms');
+  const big = win('mutual', 4000);
+  check('an over-wide window is capped, never silently truncated to nothing', big.length > 0 && big.every((r) => r.jd <= jd0 + U.MAX_SPAN.mutual + 1),
+    'asked 4000d, served ' + U.MAX_SPAN.mutual + 'd · ' + big.length + ' rows');
+  U.clearLuna();
+  check('clearLuna discards everything', win('contact', 30) !== a1);
+  check('rows are in the loom record shape (one ICS carries both)',
+    a1.every((r) => Number.isFinite(r.jd) && r.layer && r.kind && r.body && Number.isFinite(r.enter) && Number.isFinite(r.exit)));
+  check('layer is honest provenance per kind',
+    win('mutual', 30).every((r) => r.layer === 'floor') && win('contact', 30).every((r) => r.layer === 'contact') && win('synchronic', 30).every((r) => r.layer === 'synchronic'),
+    'mutual floor · natal contact · synchronic synchronic');
+  check('nothing lunar and dense is materialised by the loom itself',
+    L.buildFloor({ jdStart: jd0, jdEnd: jd0 + 60, probe, bodyProbe, aspects: ANG }).every((e) => e.kind !== 'aspect' || (e.body !== 'Moon' && e.other !== 'Moon')));
+
+  sec('the switch · she lights a parked group at once');
+  const uni = win('synchronic', 60);
+  const grp = U.switchGroups(uni, { within: 0.5 });
+  const multi = grp.filter((g) => g && g.kind === 'switch');
+  check('her contacts group into switch events', multi.length > 0,
+    grp.length + ' events from ' + uni.length + ' contacts · ' + multi.length + ' are switches');
+  check('a switch names every member it closes, not just one',
+    multi.every((g) => g.members.length > 1) && multi.some((g) => g.members.length >= 3),
+    'largest lights ' + multi.reduce((a, g) => Math.max(a, g.members.length), 0) + ' placements at once');
+  check('a switch is ONE PASS, not a chain: bounded span, no body twice',
+    multi.every((g) => g.last - g.jd <= 1.2 + 1e-9 && new Set(g.members.map((m) => m.body)).size === g.members.length),
+    'longest ' + (multi.reduce((a, g) => Math.max(a, g.last - g.jd), 0) * 24).toFixed(1) + 'h');
+  check('a group of one is handed back as an ordinary contact', grp.every((g) => g && (g.kind === 'switch' || g.kind === 'aspect')));
+  const ex = multi.sort((a, b) => b.members.length - a.members.length)[0];
+  if (ex) rows.push('<tr><td class="dim">e.g.</td><td class="dim">' + E.jdToDate(ex.jd).toISOString().slice(0, 16) + 'Z · the Moon closes ' +
+    ex.members.map((m) => (F.GLYPHS[m.body] || m.body) + ' ' + m.body + ' ' + m.angle + '°').join(', ') + ' inside ' + ((ex.last - ex.jd) * 24).toFixed(1) + 'h</td></tr>');
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>' +
+    '<p class="' + (fails.length ? 'bad">' + fails.length + ' FAILING: ' + fails.join(' · ') : 'ok">all ' + rows.filter((r) => r.indexOf('PASS') > -1).length + ' checks pass') + '</p>';
+  }, 40);
+})();
+</script>
+</body></html>

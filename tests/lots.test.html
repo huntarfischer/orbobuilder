@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>lots conformance</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:760px;margin:0 auto}h1{font-size:15px;color:#e8ab41}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js"></script>
+<script src="../ring.browser.js"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../astrodna.browser.js?v=6"></script>
+<script src="../zr.browser.js?v=2"></script>
+</head><body>
+<h1>the eight lots &mdash; one formula, one place</h1>
+<div id="out" class="dim">running…</div>
+<script>
+(function wait(){
+  const A = window.__ORBO_ASTRODNA, Z = window.__ORBO_ZR, E = window.__ORBO_EPH;
+  if (!A || !Z || !E) return void setTimeout(wait, 30);
+  const rows = [], fails = [];
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const near = (a, b, tol) => Math.abs(E.wrap180(a - b)) <= (tol == null ? 1e-9 : tol);
+
+  // ── the set itself ──────────────────────────────────────────────────────────────────────────
+  check('astrodna.LOTS is the eight at parity', A.LOTS.length === 8 && A.LOTS[0] === 'Fortune' && A.LOTS[7] === 'Death', A.LOTS.join(' '));
+  check('zr.LOT_ORDER IS astrodna.LOTS (one list, not two)', Z.LOT_ORDER === A.LOTS);
+  check('ephem does not own lots (a lot takes no jd and no place)', typeof E.lots !== 'function' && typeof A.lots === 'function');
+
+  // ── the fixture natal (the one every other suite uses) plus a second vector ─────────────────
+  for (const v of [{ jd: 2448442.2708333, lat: 43.33, lon: -90.39 }, { jd: 2451545.0, lat: 51.48, lon: 0 }]) {
+    const dna = A.buildAstroDNA(v.jd, v.lat, v.lon);
+    const L = dna.extras.lots, C = Z.computeLots(dna);
+    check('extras.lots holds all eight @ jd ' + v.jd, A.LOTS.every((k) => typeof L[k] === 'number' && isFinite(L[k])));
+    // THE POINT OF THIS FILE: the chronology's lots and the plate's lots are one computation.
+    const worst = A.LOTS.reduce((m, k) => Math.max(m, Math.abs(E.wrap180(L[k] - C.longitudes[k]))), 0);
+    check('zr.computeLots ≡ extras.lots @ jd ' + v.jd, worst === 0, 'max Δ ' + worst.toFixed(12) + '°');
+    check('sect agrees @ jd ' + v.jd, C.isDay === dna.extras.angles.isDay, C.isDay ? 'day' : 'night');
+    // Fortune's own leaf in ephem still agrees with the family it left behind.
+    const pf = E.partOfFortune(dna.nodes.Sun.longitude, dna.nodes.Moon.longitude, dna.extras.angles.asc, C.isDay);
+    check('ephem.partOfFortune ≡ lots.Fortune @ jd ' + v.jd, near(pf, L.Fortune), 'Δ ' + Math.abs(E.wrap180(pf - L.Fortune)).toFixed(12) + '°');
+    check('extras.angles.fortune is the lot set\u2019s Fortune @ jd ' + v.jd, dna.extras.angles.fortune === L.Fortune);
+  }
+
+  // ── the formula, on hand-computable numbers ─────────────────────────────────────────────────
+  // asc 0° Aries, Sun 10°, Moon 40°: night by the app's convention (norm(Sun-Asc) = 10 < 180).
+  const pos = { Sun: 10, Moon: 40, Mercury: 20, Venus: 30, Mars: 50, Jupiter: 60, Saturn: 70 };
+  const night = A.lots(0, false, pos);
+  check('night Fortune = asc+Sun-Moon', near(night.Fortune, 330), night.Fortune + '°');
+  check('night Spirit = asc+Moon-Sun', near(night.Spirit, 30), night.Spirit + '°');
+  const day = A.lots(0, true, pos);
+  check('day Fortune and Spirit are each other\u2019s mirror', near(day.Fortune, night.Spirit) && near(day.Spirit, night.Fortune));
+  // Fortune and Spirit are equidistant from the Ascendant in opposite directions, in EITHER sect.
+  check('Fortune and Spirit reflect across the Ascendant', near(E.norm360(day.Fortune + day.Spirit), 0, 1e-9), (day.Fortune + day.Spirit) + '°');
+  // Death takes the WHOLE-SIGN 8th cusp: asc 25° Aries still gives 0° Scorpio (210°), not 235°.
+  const d1 = A.lots(25, false, pos), d2 = A.lots(0, false, pos);
+  check('Death uses the whole-sign 8th cusp (asc 25° Aries)', near(E.wrap180(d1.Death - d2.Death), 25), 'Δ ' + E.wrap180(d1.Death - d2.Death).toFixed(6) + '°');
+  // Sect is the only thing that reverses: every lot flips to the mirror of its own operands.
+  check('every lot is sect-sensitive', A.LOTS.every((k) => !near(day[k], night[k])));
+  // A lot needs no place: same jd, two horizons, and the DIFFERENCE is the Ascendant's difference.
+  const dnaA = A.buildAstroDNA(2451545.0, 43.33, -90.39), dnaB = A.buildAstroDNA(2451545.0, 51.48, 0);
+  const dAsc = E.wrap180(dnaA.extras.angles.asc - dnaB.extras.angles.asc);
+  const sameSect = dnaA.extras.angles.isDay === dnaB.extras.angles.isDay;
+  check('one moment, two horizons: Spirit moves with the asc alone',
+    !sameSect || near(E.wrap180(dnaA.extras.lots.Spirit - dnaB.extras.lots.Spirit), dAsc, 1e-6), 'Δasc ' + dAsc.toFixed(4) + '°');
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<p class="' + (fails.length ? 'bad">✗ ' + fails.length + ' failure(s)' : 'ok">✓ all checks pass') + '</p>';
+})();
+</script>
+</body></html>

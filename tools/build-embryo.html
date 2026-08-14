@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>build the embryo</title>
+<style>
+body{font:13px/1.6 monospace;background:#14102a;color:#dcd7f0;padding:28px;max-width:820px;margin:0 auto}
+h1{font-size:15px;color:#e8ab41;margin:0 0 4px}p{color:#8f86c0;margin:0 0 14px}
+button{font:13px monospace;background:#241d47;color:#e8ab41;border:1px solid #3b3169;padding:7px 14px;cursor:pointer}
+button:disabled{color:#6a6390;cursor:default}
+#bar{height:3px;background:#241d47;margin:16px 0 10px}#fill{height:3px;width:0;background:#e8ab41;transition:width .2s linear}
+#log{white-space:pre-wrap;color:#b6aed2}.ok{color:#6fa06f}.bad{color:#d64541}
+label{color:#b6aed2;margin-right:14px}input{font:13px monospace;background:#1b1636;color:#dcd7f0;border:1px solid #3b3169;width:62px;padding:3px 5px}
+</style>
+<script src="../ephem.browser.js"></script>
+<script src="../ring.browser.js"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../framing.browser.js"></script>
+<script src="../loom.browser.js"></script>
+<script src="../mundane.browser.js"></script>
+</head><body>
+<h1>Build the embryo</h1>
+<p>The sky's own event table, native-independent and place-free. This page is the generator for
+<code>embryo.browser.js</code>: <code>mundane.js</code> is the geometry, <code>docs/eclipse-canon.json</code> has the last word on
+eclipse type, and the output is a plain script assigning one global. Chunked with a yield between
+slices, so the tab stays alive. Four centuries takes a few minutes; the download appears at the end,
+and the file belongs at the project root.</p>
+<div>
+  <label>from <input id="y0" value="1700"></label>
+  <label>to <input id="y1" value="2100"></label>
+  <button id="go">build</button>
+  <button id="stop" disabled>stop</button>
+</div>
+<div id="bar"><div id="fill"></div></div>
+<div id="log">idle.</div>
+<script>
+const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, L = window.__ORBO_LOOM, M = window.__ORBO_MUNDANE;
+const logEl = document.getElementById('log'), fill = document.getElementById('fill');
+let lines = [], halt = false;
+const say = (s, cls) => { lines.push(cls ? '<span class="' + cls + '">' + s + '</span>' : s); logEl.innerHTML = lines.slice(-16).join('\n'); };
+const yield_ = () => new Promise((r) => setTimeout(r, 0));
+const jdY = (y) => E.julianDay(y, 1, 1, 0, 0, 0, 0);
+
+document.getElementById('stop').onclick = () => { halt = true; };
+document.getElementById('go').onclick = async () => {
+  const y0 = +document.getElementById('y0').value, y1 = +document.getElementById('y1').value;
+  document.getElementById('go').disabled = true; document.getElementById('stop').disabled = false;
+  halt = false; lines = [];
+  const jd0 = jdY(y0), jd1 = jdY(y1 + 1);
+  const pm = new Map();
+  // The genome memo is only wanted inside a slice: held across four centuries it is the one thing in
+  // this build that can exhaust the tab.
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pm.get(k); if (!v) { if (pm.size > 60000) pm.clear(); pm.set(k, v = E.positions(jd)); } return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const t0 = performance.now();
+  let rows = [];
+
+  // 1 · the floor, slice by slice. Stations are scanned separately below, in one pass over the whole
+  // span, because a station's own residency window can be longer than a slice.
+  say('the floor, ' + y0 + ' to ' + y1 + '\u2026');
+  const it = M.mundaneChunks({ jdStart: jd0, jdEnd: jd1, probe, bodyProbe, moonState: E.moonState, sunState: E.sunState });
+  let r = it.next();
+  while (!r.done) {
+    if (halt) { say('stopped.', 'bad'); document.getElementById('go').disabled = false; return; }
+    rows = rows.concat(r.value.rows.filter((x) => x.kind !== 'station' && x.kind !== 'retrograde'));
+    fill.style.width = (85 * (r.value.i + 1) / r.value.n).toFixed(1) + '%';
+    say(r.value.i + 1 + '/' + r.value.n + '  ' + E.jdToDate(r.value.jdStart).toISOString().slice(0, 10)
+      + '  ' + rows.length.toLocaleString() + ' rows  ' + ((performance.now() - t0) / 1000).toFixed(0) + 's');
+    await yield_();
+    r = it.next();
+  }
+
+  // 2 · the stations, in one pass. The velocity sign change is confirmed a hair off zero
+  // (CONFIRM_SPEED), which is what puts Neptune and Pluto in the table at all.
+  say('the stations, one pass over the span\u2026');
+  await yield_();
+  const stations = [];
+  const bodies = F.BODIES.filter((b) => b !== 'SNode' && b !== 'Sun' && b !== 'Node');
+  for (const b of bodies) {
+    if (halt) { say('stopped.', 'bad'); document.getElementById('go').disabled = false; return; }
+    const targets = F.floorTargets({ bodies: [b] }).filter((t) => t.kind === 'station');
+    const roots = L.scanTargets({ targets, jdStart: jd0, jdEnd: jd1, probe, bodyProbe });
+    for (const root of roots) stations.push(L.decorate(root, { probe }));
+    say('  ' + b + ' ' + roots.length);
+    await yield_();
+  }
+  stations.sort((a, b) => a.jd - b.jd);
+  const retro = L.retroPeriods(stations);
+  say(stations.length.toLocaleString() + ' stations, ' + retro.length.toLocaleString() + ' retrograde periods');
+  fill.style.width = '92%';
+  await yield_();
+
+  // 3 · the canon. Our geometry dates every eclipse and separates total from annular from partial; it
+  // does not claim hybrid. Where the canon covers the span, the canon's word is what gets packed.
+  const all = rows.concat(stations, retro).sort((a, b) => a.jd - b.jd);
+  let canon = null;
+  try { canon = await (await fetch('../docs/eclipse-canon.json')).json(); } catch (e) {}
+  if (canon) {
+    const rep = M.applyCanon(all.filter((x) => x.kind === 'eclipse'), canon);
+    say('canon: ' + canon.length + ' entries, ' + rep.corrected.length + ' corrected'
+      + (rep.corrected.length ? ' (' + rep.corrected.join(', ') + ')' : '') + (rep.missed.length ? ', ' + rep.missed.length + ' NOT FOUND' : ''),
+      rep.missed.length ? 'bad' : 'ok');
+  } else say('docs/eclipse-canon.json not readable from here; shipping our own types', 'bad');
+
+  // 4 · pack and hand it over.
+  const packed = M.packEmbryo(all, { jdStart: jd0, jdEnd: jd1, y0, y1 });
+  const json = JSON.stringify(packed);
+  const counts = {};
+  all.forEach((x) => counts[x.kind] = (counts[x.kind] || 0) + 1);
+  const head = '// embryo.browser.js \u2014 auto-generated. THE EMBRYO: the sky\u2019s own event table, ' + y0 + ' to ' + y1 + '.\n'
+    + '// Source of truth is mundane.js (the geometry) plus docs/eclipse-canon.json (the published canon,\n'
+    + '// which has the last word on eclipse type). Regenerate with tools/build-embryo.html; never hand-edit.\n//\n'
+    + '// Native-independent, place-free, byte-identical for every reader. ' + packed.n.toLocaleString() + ' rows: '
+    + Object.entries(counts).map(([k, v]) => v.toLocaleString() + ' ' + k).join(', ') + '.\n'
+    + '// Read it through mundane.js\u2019s readEmbryo, which decodes only the window asked for. Times are\n'
+    + '// minutes from the span\u2019s start, longitudes hundredths of a degree, one varint byte stream in\n'
+    + '// base64: ' + (packed.data.length / packed.n).toFixed(1) + ' bytes a row.\n//\n'
+    + '// A plain script assigning ONE global, per the standalone-export law: nothing here is fetched, so\n'
+    + '// nothing here can ship missing.\n'
+    + 'window.__ORBO_EMBRYO = ' + json + ';\n';
+  fill.style.width = '100%';
+  say(packed.n.toLocaleString() + ' rows \u00b7 ' + (head.length / 1048576).toFixed(2) + ' MB \u00b7 '
+    + ((performance.now() - t0) / 1000).toFixed(0) + 's total', 'ok');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([head], { type: 'text/javascript' }));
+  a.download = 'embryo.browser.js'; a.textContent = 'download embryo.browser.js';
+  a.style.cssText = 'display:inline-block;margin-top:12px;color:#e8ab41';
+  logEl.after(a);
+  document.getElementById('go').disabled = false; document.getElementById('stop').disabled = true;
+};
+</script>
+</body></html>

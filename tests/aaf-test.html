@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>AAF parser check</title></head>
+<body>
+<pre id="out">running…</pre>
+<script type="module">
+import { parseAAF, attachAstroDNA } from '../aaf.js';
+
+const SAMPLE = `#A93:*,Naomi Watts,f,28.9.1968,11:00,Shoreham-by-Sea, United Kingdom
+#B93:*,51n20,0e11,0he00,1
+
+#A93:*,Morgan Wallen,m,13.5.1993,8:41,Morristown, USA, Tennessee
+#B93:*,36n13,83w18,5hw00,1
+
+#A93:*,September 11,e,11.9.2001,8:46,New York, USA, New York
+#B93:*,40n43,74w0,5hw00,1
+
+#A93:*,New Moon,e,14.7.2026,4:43,Richland Center, USA, Wisconsin
+#B93:*,43n20,90w23,6hw00,1
+
+#A93:*,OCT 6 ARIES FULL MOON,e,6.10.2025,23:47,Madison, USA, Wisconsin
+#B93:*,43n4,89w24,6hw00,1
+
+#A93:*,SOLAR RETURN 2026,m,10.4.2026,19:37,Richland Center, USA, Wisconsin
+#B93:*,43n20,90w23,6hw00,1
+
+#A93:*,North Nodal Return,e,2.7.2022,15:51,Richland Center, USA, Wisconsin
+#B93:*,43n20,90w23,6hw00,1
+
+#A93:*,OCTOBER FOURTH ELECTION,e,4.10.2025,17:00,Richland Center, USA, Wisconsin
+#B93:*,43n20,90w23,6hw00,1
+
+#A93:*,Respect email 10-22,e,22.10.2025,6:10,Madison, USA, Wisconsin
+#B93:*,43n4,89w24,6hw00,1
+
+#A93:*,text back,e,22.10.2025,6:08,Madison, USA, Wisconsin
+#B93:*,43n4,89w24,6hw00,1
+
+#A93:*,Oct 29 Merc - Sag,m,29.10.2025,9:16,Madison, USA, Wisconsin
+#B93:*,43n4,89w24,6hw00,1
+
+#A93:*,STRANGER THINGS- ELEVEN,f,7.6.1971,7:11,Indianapolis, USA, Indiana
+#B93:*,39n46,86w9,5hw00,0
+
+#A93:*,Toronto Blue Jays,e,7.4.1977,8:06,Toronto, CA, Ontario
+#B93:*,43n42,79w25,5hw00,0
+
+#A93:*,Toyota,e,1.9.1933,8:00,Tokyo, Japan
+#B93:*,35n41,139e42,9he00,0
+
+#A93:*,Vettius Valens,m,7.2.120g,18:35,Antakya, Turkey
+#B93:*,36n12,36e9,2he24,L
+
+#A93:*,Pluto in Aries 1577,e,5.5.1577g,7:26,Madison, USA, Wisconsin
+#B93:*,43n4,89w24,5hw57,L
+
+#A93:*,Washington Irving,m,3.4.1783,20:30,New York, USA, New York
+#B93:*,40n43,74w0,4hw56,L
+
+#A93:*,Nathan Harris,m,23.3.1758,12:00,Smithfield, USA, Rhode Island
+#B93:*,41n55,71w33,4hw46,L`;
+
+const recs = parseAAF(SAMPLE);
+await attachAstroDNA(recs);
+
+const cols = r => `${r.name}
+   kind=${r.kind} type=${r.type}${r.subtype ? '/' + r.subtype : ''} code=${r.code} gender=${r.gender} conflict=${r.codeConflict} rel=[${r.relatesTo}]
+   ${r.y}-${String(r.mo).padStart(2,'0')}-${String(r.d).padStart(2,'0')} ${String(r.h).padStart(2,'0')}:${String(r.mi).padStart(2,'0')} cal=${r.calendar} tz=${r.tz} dst=${r.dst} lmt=${r.lmt}${r.lmt ? ` (recomp=${r.lmtRecomputed}, Δ=${r.lmtDeltaMin}min)` : ''}
+   lat=${r.lat} lon=${r.lon} jd=${r.jd == null ? null : r.jd.toFixed(4)} place="${r.place}"
+   seq=${r.sequence || '—'}`;
+
+document.getElementById('out').textContent =
+  `${recs.length} records\n\n` + recs.map(cols).join('\n\n');
+console.log('AAF_TEST_OK', recs.length);
+</script>
+</body>
+</html>

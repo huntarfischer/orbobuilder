@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the lunar port · every station on the line (Phase 9 P6)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}p{max-width:860px}</style>
+</head><body>
+<h1>Phase 9 · P6 — close the doors</h1>
+<p class="dim">The port is only worth building if it can say no. This suite reads the DC's own logic
+class out of <b>Orbo Astrolabe.dc.html</b> — no copy of the pass lives here, because a second copy of a
+door is a door that will disagree — and then tries to get past every one of its refusals. A refusal
+nobody can demonstrate is documentation, so each one is asserted to FIRE and to say WHY, in the console,
+exactly once.</p>
+<p class="dim">Half the phase is not a behaviour at all: it is that going around a station has become
+greppable. Those checks read the source text — no authored caption strings, no content-length rest, every
+doctrine key a reader names actually registered.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const rows = [];
+  const sec = (t) => rows.push('<tr><td colspan="2"><h2>' + t + '</h2></td></tr>');
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + esc(name) + (detail ? ' <span class="dim">' + esc(detail) + '</span>' : '') + '</td></tr>'); return !!cond; };
+  const note = (name, detail) => rows.push('<tr><td class="dim">note</td><td>' + esc(name) + ' <span class="dim">' + esc(detail || '') + '</span></td></tr>');
+  let fails = 0, n = 0; const ck = (...a) => { n++; if (!check(...a)) fails++; };
+  const flush = () => { document.getElementById('out').innerHTML =
+    '<p class="' + (fails ? 'bad' : 'ok') + '">' + n + ' checks, ' + fails + ' failure' + (fails === 1 ? '' : 's') + '</p><table>' + rows.join('') + '</table>'; };
+
+  // ── the harness: the REAL class, out of the real file ────────────────────────────────────────
+  // The port's machinery lives on the DC's logic class, so the suite loads that class rather than
+  // a mirror of it (the framing/loom/prism hand-mirror exception is a cost this does not repeat).
+  // DCLogic stashes the instance, so a constructor that throws on some browser API still leaves a
+  // testable object behind.
+  const SRC = await (await fetch('../Orbo%20Astrolabe.dc.html')).text();
+  const i0 = SRC.indexOf('class Component extends DCLogic');
+  const i1 = SRC.indexOf('<\/script>', i0);
+  ck('the logic class is found in the DC', i0 > 0 && i1 > i0, (i1 - i0) + ' chars');
+  const LOGIC = SRC.slice(i0, i1);
+  let inst = null, ctorErr = null;
+  try {
+    const DCLogic = function (props) { this.props = props || {}; this.state = {}; window.__PORT_INST = this; };
+    DCLogic.prototype.setState = function (p) { Object.assign(this.state || (this.state = {}), typeof p === 'function' ? p(this.state) : p); };
+    DCLogic.prototype.forceUpdate = function () {};
+    const React = { createElement: () => null, Fragment: 'F', createRef: () => ({ current: null }) };
+    const C = new Function('DCLogic', 'React', LOGIC + '\n; return Component;')(DCLogic, React);
+    window.__PORT_CLASS = C;
+    try { new C({}); } catch (e) { ctorErr = e; }
+    inst = window.__PORT_INST;
+    if (inst && !inst.LABEL) {
+      // the constructor stopped before the vocabulary tables (a browser API the harness lacks).
+      // Re-run ONLY the table block — lifted from the real source, never retyped — so the caption
+      // checks read the app's own words: from the first `this.GLYPH =` up to (not incl.) `this.ASPECTS =`.
+      const t0 = LOGIC.indexOf('this.GLYPH ='), tEnd = LOGIC.indexOf('this.ASPECTS =');
+      const s0 = LOGIC.indexOf('this.SIGNS ='), a0 = LOGIC.indexOf('this.ASPECT_SPEC =');
+      try {
+        if (t0 > 0 && s0 > t0) new Function(LOGIC.slice(t0, LOGIC.indexOf('\n', LOGIC.indexOf('this.LABEL =')))).call(inst);
+        if (s0 > 0 && a0 > s0) new Function(LOGIC.slice(s0, a0)).call(inst);
+        if (a0 > 0 && tEnd > a0) new Function(LOGIC.slice(a0, tEnd)).call(inst);
+        if (tEnd > 0) new Function(LOGIC.slice(tEnd, LOGIC.indexOf('\n  }', tEnd))).call(inst);
+      } catch (e2) { ctorErr = ctorErr || e2; }
+    }
+    if (inst) {
+      inst.state = Object.assign({ doctrine: {}, depth: 'scholarly', pack: null }, inst.state);
+      inst.eph = null;            // the formatters fall back to plain Date math with no ephemeris
+      inst._mater = () => null;   // …and _signOf falls back to floor(lon/30)
+    }
+  } catch (e) { ctorErr = e; }
+  const C = window.__PORT_CLASS;
+  ck('the class parses and constructs', !!inst && !!inst.LABEL && !!inst.SIGN_NAMES, ctorErr ? 'ctor stopped at: ' + ctorErr.message : 'clean');
+  if (!inst) { flush(); return; }
+  const realErr0 = console.error;
+  try {
+
+  // every refusal is asserted to LOG, exactly once, with its reason on the line
+  let logged = [];
+  const realErr = console.error;
+  console.error = function (...a) { logged.push(a.map((x) => (typeof x === 'string' ? x : '')).join(' ')); };
+  const refused = (name, ticket, why) => {
+    logged = [];
+    let r = null;
+    try { r = inst._pass(ticket); } catch (e) { console.error = realErr; ck(name, false, 'THREW: ' + e.message); return; }
+    const said = logged.filter((l) => /refused|\[pass\]/.test(l));
+    ck(name, !!r && r.ok === false && (!why || (r.refused || '').indexOf(why) >= 0) && said.length >= 1,
+      (r && r.refused) || 'NOT REFUSED');
+  };
+  const D = ['whole-sign'];
+  const BODY = { kind: 'body', body: 'Moon', chart: 'natal', lon: 277.56, isAs: false };
+  const CHART = { kind: 'chart', chart: 'natal', who: 'me' };
+  const PAIR = { kind: 'pair', of: 'contacts', left: { chart: 'natal', who: 'me' }, right: { chart: 'natal', who: 'CB' }, order: 'sameFirst' };
+  const WIN = { kind: 'window', stream: 'transits', right: { chart: 'natal', who: 'me' }, from: 2460000, to: 2460010 };
+  const STR = { kind: 'stretches', stream: 'rising', from: 2460000, to: 2460001, place: 'Madison WI' };
+  const FROW = { k: 'sign', v: 'Capricorn' };
+  const RROW = { left: { glyph: '\u2609', name: 'my Sun' }, mark: { word: 'square' }, right: { glyph: '\u2642', name: 'CB\u2019s Mars' } };
+  const LROW = { mark: { word: 'trine' }, what: { text: 'Venus \u2192 my Moon' }, when: { jd: 2460001 } };
+  const SROW = (a, b, kids) => ({ glyph: '\u264d', level: 1, start: a, end: b, ...(kids ? { children: kids } : {}) });
+
+  sec('the ticket \u00b7 what a reader may not hand up');
+  refused('no ticket at all', null, 'no ticket');
+  refused('a ticket carrying a CAPTION', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: D, caption: 'my Moon' }, 'may never carry caption');
+  refused('a ticket carrying a HEIGHT', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: D, height: 420 }, 'may never carry height');
+  refused('a ticket carrying MARKUP', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: D, markup: '<div/>' }, 'may never carry markup');
+  refused('a ticket carrying RAILS', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: D, rails: [] }, 'may never carry rails');
+  refused('an unlisted ticket field', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: D, mood: 'warm' }, 'unlisted ticket field');
+  refused('no template declared', { subject: BODY, rows: [], doctrine: D }, 'no template');
+  refused('a template off the menu', { template: 'PLATTER', subject: BODY, rows: [], doctrine: D }, 'no template');
+  refused('no subject declared', { template: 'FACT', rows: [FROW], doctrine: D }, 'no subject');
+  refused('an EMPTY doctrine list', { template: 'FACT', subject: BODY, rows: [FROW], doctrine: [] }, 'no doctrine');
+  refused('a subject naming no dish the pass can caption', { template: 'FACT', subject: { kind: 'vibes' }, rows: [], doctrine: D }, 'no dish');
+  // P6's own door: the caption could still have ridden INSIDE the subject, which is the same
+  // defect one level down and the last place words could enter from a station.
+  refused('a SUBJECT carrying a name', { template: 'FACT', subject: { ...BODY, name: 'my Moon' }, rows: [FROW], doctrine: D }, 'a subject may never carry');
+  refused('a SUBJECT carrying a caption', { template: 'FACT', subject: { ...CHART, caption: 'my natal chart' }, rows: [FROW], doctrine: D }, 'a subject may never carry');
+  refused('a SUBJECT carrying a height', { template: 'FACT', subject: { ...CHART, height: 400 }, rows: [FROW], doctrine: D }, 'a subject may never carry');
+
+  sec('the rows \u00b7 six contracts, and a nested row is checked rather than trusted');
+  refused('a malformed FACT row', { template: 'FACT', subject: BODY, rows: [{ k: 'probe', value: 'FACT wants v' }], doctrine: D }, 'does not match its contract');
+  refused('a FACT row with an ad-hoc extra field', { template: 'FACT', subject: BODY, rows: [{ k: 'sign', v: 'Leo', mood: 'warm' }], doctrine: D }, 'does not match its contract');
+  refused('a malformed RELATION row', { template: 'RELATION', subject: PAIR, rows: [{ left: { name: 'a' }, right: { name: 'b' } }], doctrine: D }, 'does not match');
+  refused('a malformed LEDGER row', { template: 'LEDGER', subject: WIN, rows: [{ mark: { word: 'trine' }, what: { text: 'x' } }], doctrine: D }, 'does not match');
+  refused('a malformed SPAN row', { template: 'SPAN', subject: STR, rows: [{ glyph: '\u264d', level: 1, start: 2460000 }], doctrine: D }, 'does not match');
+  ck('a well-formed FACT ticket passes', inst._pass({ template: 'FACT', subject: BODY, rows: [FROW], doctrine: D }).ok);
+  ck('a well-formed RELATION ticket passes', inst._pass({ template: 'RELATION', subject: PAIR, rows: [RROW], doctrine: D }).ok);
+  ck('a well-formed LEDGER ticket passes', inst._pass({ template: 'LEDGER', subject: WIN, rows: [LROW], doctrine: D }).ok);
+  ck('a well-formed SPAN ticket passes', inst._pass({ template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460000.5)], doctrine: D }).ok);
+
+  sec('the housing law \u00b7 always qualified, never bare \u2014 and not a property of a plate');
+  refused('a bare house on a FACT row, no native named',
+    { template: 'FACT', subject: { kind: 'window', stream: 'almanac', from: 2460000, to: 2460010 }, rows: [{ k: 'house', v: '7th' }], doctrine: D }, 'a house with no native');
+  refused('a QUALIFIED house with no native (FACT q)',
+    { template: 'FACT', subject: CHART, rows: [{ k: 'Sun', v: '\u2014', q: { body: 'Sun', lon: 12, sign: 0, house: 7 } }], doctrine: D }, 'does not match its contract');
+  refused('a RELATION house with no native', { template: 'RELATION', subject: PAIR, rows: [{ ...RROW, houses: [{ num: 7 }] }], doctrine: D }, 'house with no native named');
+  refused('a LEDGER house with no native \u2014 the SAME gate, second plate', { template: 'LEDGER', subject: WIN, rows: [{ ...LROW, houses: [{ num: 7 }] }], doctrine: D }, 'house with no native named');
+  ck('a qualified house WITH its native passes',
+    inst._pass({ template: 'FACT', subject: CHART, rows: [{ k: 'Sun', v: '\u2014', q: { body: 'Sun', lon: 12, sign: 0, house: 7, native: 'me' } }], doctrine: D }).ok);
+  ck('a LEDGER house WITH its native passes, frame and all',
+    inst._pass({ template: 'LEDGER', subject: WIN, rows: [{ ...LROW, houses: [{ native: 'me', num: 3, frame: 'synchronic' }] }], doctrine: D }).ok);
+
+  sec('PROSE \u00b7 an expansion, never a dish of its own, and sauced at the pass');
+  refused('a PROSE band with no parent row', { template: 'PROSE', subject: { kind: 'prose' }, doctrine: D }, 'no parent row');
+  refused('a PROSE ticket that fetched its own words', { template: 'PROSE', subject: { kind: 'prose', of: BODY }, rows: [{ placement: 'Moon in Capricorn', text: 'x' }], doctrine: D }, 'carried its own words');
+  ck('PROSE inherits the address of the row it expands', (() => {
+    const c = inst._captionOf({ kind: 'prose', of: BODY }), b = inst._captionOf(BODY);
+    return !!c && !!b && c.name === b.name && c.pos === b.pos;
+  })(), 'the voice is given no address to disagree from');
+
+  sec('SPAN \u00b7 the one nestable plate, checked recursively, on the START and never the END');
+  refused('a stretch that ends before it starts', { template: 'SPAN', subject: STR, rows: [SROW(2460001, 2460000)], doctrine: D }, 'does not match');
+  refused('a CHILD that begins outside the parent holding it',
+    { template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460010, [SROW(2459000, 2459001)])], doctrine: D }, 'does not match');
+  ck('a child that OVERRUNS its parent\u2019s end is kept \u2014 Valens, not leniency',
+    inst._pass({ template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460010, [SROW(2460009, 2460400)])], doctrine: D }).ok,
+    'zr.js walks WHOLE periods past the parent\u2019s end');
+  ck('a malformed grandchild is refused too \u2014 a tree checked at its root is one node checked',
+    inst._pass({ template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460010, [SROW(2460001, 2460002, [{ glyph: 'x', level: 3, start: 2459000, end: 2459001 }])])], doctrine: D }).ok === false);
+  ck('the tally is the PASS\u2019s, over the whole tree', (() => {
+    const P = inst._pass({ template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460010, [SROW(2460001, 2460002), SROW(2460002, 2460003)])], doctrine: D });
+    return P.ok && /3 handoffs/.test(P.caption.pos);
+  })(), 'and the unit word is derived from the stream');
+
+  sec('TRACK \u00b7 a quantity is never handed over without the range it was measured against');
+  refused('a LEDGER row whose track is not a track', { template: 'LEDGER', subject: WIN, rows: [{ ...LROW, track: { value: 2 } }], doctrine: D }, 'track that does not match');
+  refused('a SPAN row whose track is not a track', { template: 'SPAN', subject: STR, rows: [SROW(2460000, 2460001)].map((r) => ({ ...r, track: { value: 2, min: 0 } })), doctrine: D }, 'does not match');
+  ck('a track NESTED inside a SPAN child is checked too', inst._pass({ template: 'SPAN', subject: STR,
+    rows: [SROW(2460000, 2460010, [{ ...SROW(2460001, 2460002), track: { value: 5, max: 9 } }])], doctrine: D }).ok === false);
+  ck('_trackOf CLAMPS and keeps the true value on raw', (() => { const t = inst._trackOf(4, -2.5, 2.5); return t.value === 2.5 && t.raw === 4; })());
+  ck('the range is a fact of the MEASUREMENT \u2014 one door per scale', (() => {
+    const a = inst._electionScoreTrack(1.2), b = inst._electionScoreTrack(-9);
+    return a.min === -2.5 && a.max === 2.5 && b.value === -2.5 && a.marks.length === 1 && a.marks[0].at === 0;
+  })(), 'election \u00b12.5, zero marked');
+  ck('a bar is measured from a zero MARK when the track names one', inst._trackFill(inst._driftTrack(0)) === '0%' && inst._trackFill(inst._driftTrack(-0.5)) === '50%');
+  ck('drift is one quantity read at two scales, from one door', inst._fmtDrift(inst._driftTrack(0.0708)) === '+7.1%');
+
+  sec('the caption \u00b7 derived from the subject, so the lie is unspeakable');
+  const capOf = (s) => { const c = inst._captionOf(s); return c ? (c.name + ' \u00b7 ' + c.pos).trim() : null; };
+  ck('a body names its chart and its degree', /my Moon/.test(capOf(BODY)) && /engraved/.test(capOf(BODY)), capOf(BODY));
+  ck('a chart is named by WHAT IT IS', capOf(CHART).indexOf('my natal chart \u00b7 engraved') === 0, capOf(CHART));
+  ck('the progressed chart derives its own age line', /one day after birth read as one year/.test(capOf({ kind: 'chart', chart: 'progressed', who: 'me', age: 41.3 })));
+  ck('a window names its stream and its reach', /every exact hit ahead/.test(capOf(WIN)) && /\u2013/.test(capOf(WIN)), capOf(WIN));
+  ck('a stretch series names its stream, and a window is not a stretch series', /the ascendant\u2019s lord, handed off/.test(capOf(STR)), capOf(STR));
+  ck('TWO NATAL CHARTS CANNOT BE CAPTIONED A COMPOSITE', capOf(PAIR) === 'my natal \u00d7 CB\u2019s natal \u00b7 same-body pairs first', capOf(PAIR));
+  ck('\u2026and the composite dishes still name themselves', /^the composite \u00d7 my natal/.test(capOf({ kind: 'pair', of: 'contacts', left: { chart: 'composite' }, right: { chart: 'natal', who: 'me' }, order: 'sameFirst' })));
+  ck('a side that names no chart is refused, not guessed', inst._captionOf({ kind: 'pair', left: { who: 'me' }, right: { chart: 'natal', who: 'CB' } }) === null);
+
+  sec('the credits \u00b7 provenance from the doctrine keys, never a hand-written string');
+  ck('a recipe key resolves to a credit phrase', /whole-sign houses/.test(inst._provenanceOf(['whole-sign'])));
+  ck('a CHOICE reads the same _doc door the cache key memoizes on', /sect: /.test(inst._provenanceOf(['sect'])), inst._provenanceOf(['sect']));
+  ck('the two prep benches are credited separately', (() => {
+    const p = inst._provenanceOf(['dispositor-chains', 'dignity-ladder']);
+    return /Connectome/.test(p) && /rulers\.js/.test(p);
+  })());
+  ck('an unregistered key credits nothing rather than inventing a phrase', inst._provenanceOf(['sauce-of-the-day']) === '' || !/sauce/.test(inst._provenanceOf(['sauce-of-the-day'])));
+  ck('the pass renders the provenance itself', (() => {
+    const P = inst._pass({ template: 'FACT', subject: BODY, rows: [FROW], doctrine: ['whole-sign', 'traditional-rulers'] });
+    return P.ok && /whole-sign houses/.test(P.provenance) && /moderns shown/.test(P.provenance);
+  })());
+
+  sec('rest follows the PLATE \u00b7 no pane chooses its own height');
+  ck('every plate on the menu declares a rest', ['FACT', 'RELATION', 'LEDGER', 'SPAN', 'TRACK', 'PROSE'].every((p) => !!C.PLATE_REST[p]),
+    Object.entries(C.PLATE_REST).map(([k, v]) => k + '\u2192' + v).join(' '));
+  ck('the pager rest belongs to PROSE and to nothing else',
+    Object.keys(C.PLATE_REST).filter((k) => C.PLATE_REST[k] === 'pager').join() === 'PROSE');
+  ck('the raised set is a declared ARRANGEMENT list, three of them',
+    C.RAISED_ARRANGEMENTS.length === 3 && C.RAISED_ARRANGEMENTS.includes('almanac-day') && !C.RAISED_ARRANGEMENTS.includes('zr'),
+    C.RAISED_ARRANGEMENTS.join(' \u00b7 '));
+  const needs = (courses, raised) => { inst._paneCourses = courses; inst._raisedLens = !!raised; return inst._paneNeeds(); };
+  ck('one flat course rests at facts', needs(['FACT']) === 'facts' && needs(['LEDGER']) === 'facts' && needs(['SPAN']) === 'facts' && needs(['RELATION']) === 'facts');
+  ck('a PROSE course earns the pager detent', needs(['FACT', 'PROSE']) === 'pager');
+  ck('a declared arrangement opens raised whatever it serves', needs(['LEDGER'], true) === 'raised');
+  ck('no courses at all still resolves', needs([]) === 'facts' && needs(null) === 'facts');
+  console.error = realErr;
+
+  // ── the greppable half: going around a station is now visible in the source ─────────────────
+  sec('closed doors \u00b7 the source text, re-measuring the Phase A counters');
+  const lines = SRC.split('\n');
+  const linesWith = (re) => lines.filter((l) => re.test(l));
+  ck('_eReadLen is GONE \u2014 no rest reads how much text happens to exist', !/_eReadLen/.test(SRC));
+  const needsSrc = SRC.slice(SRC.indexOf('_paneNeeds() {'), SRC.indexOf('_paneNeeds() {') + 400);
+  ck('_paneNeeds reads PLATE_REST and the declared courses', /PLATE_REST/.test(needsSrc) && /_paneCourses/.test(needsSrc));
+  ck('the raised set is not a sheet-name ternary in renderVals', !/sheet === 'election' \|\| s\.sheet === 'rising'/.test(SRC));
+  // the eleven authored caption strings of the Phase A survey
+  const PHASE_A = ['sySub', 'cxSub', 'almSub', 'zrSub', 'clockSub', 'querySub', 'risingSub', 'progSub', 'txSubtitle', 'elSub', 'zrProv'];
+  const derivedFrom = /_ledgerCap|_spanCap|_capLine|\.caption|_ledgerP|_spanP|_progP|refused|''|_almDay/;
+  const authored = [];
+  for (const k of PHASE_A) {
+    const asg = linesWith(new RegExp('(^|[\\s.{])' + k + '\\s*[:=][^=]'));
+    for (const l of asg) if (!derivedFrom.test(l)) authored.push(k + ': ' + l.trim().slice(0, 70));
+  }
+  ck('hand-written caption strings: 11 \u2192 0, every survivor derived at the pass', authored.length === 0, authored.join(' | ') || 'sySub and zrProv deleted outright');
+  ck('the almanac day\u2019s title is the pass\u2019s caption', /almDayLabel = _ledgerBad/.test(SRC) || linesWith(/almDayLabel\s*=/).every((l) => derivedFrom.test(l)));
+  ck('depthSrc is fully derived \u2014 no authored provenance survives', !/depthSrc:\s*'/.test(SRC));
+  // every plate is enforced, and enforcement is reached THROUGH the pass
+  const ticketed = [...new Set((SRC.match(/template:\s*'(FACT|PROSE|RELATION|LEDGER|SPAN|TRACK)'/g) || []).map((m) => m.match(/'(\w+)'/)[1]))];
+  ck('five plates are handed up as tickets', ['FACT', 'PROSE', 'RELATION', 'LEDGER', 'SPAN'].every((t) => ticketed.includes(t)), ticketed.join(' '));
+  ck('\u2026and TRACK is enforced where it RIDES, nested in the other two', /_checkTrack\(row\.track/.test(SRC) && /_checkTrack\(/.test(SRC.slice(SRC.indexOf('_checkSpanTree(row, parent)'), SRC.indexOf('_checkSpanTree(row, parent)') + 1200)));
+  const rowCalls = (SRC.match(/this\._checkRow\(/g) || []).length;
+  ck('_checkRow is reached only through the port\u2019s own doors', rowCalls === 4, rowCalls + ' call sites (_pass \u00b7 _checkSpanTree \u00b7 _checkTrack \u00b7 _atDepth, the pane\u2019s depth gate)');
+  // a credit that lives only in a template string is a credit nothing can check
+  const keys = new Set();
+  lines.forEach((l, i) => {
+    if (!/doctrine:/.test(l) && !/\.concat\(/.test(l)) return;
+    if (!/doctrine:/.test(l) && !/doctrine:/.test(lines[i - 1] || '')) return;
+    (l.match(/'[a-z][a-z0-9]*(?:-[a-z0-9]+)+'/g) || []).forEach((t) => keys.add(t.slice(1, -1)));
+  });
+  const unregistered = [...keys].filter((k) => !C.DOCTRINE_CREDITS[k]);
+  ck('every doctrine key a reader names is registered', unregistered.length === 0, [...keys].length + ' keys named' + (unregistered.length ? ' \u00b7 MISSING ' + unregistered.join(' ') : ''));
+  ck('the registry has no dead entries either', Object.keys(C.DOCTRINE_CREDITS).every((k) => SRC.indexOf("'" + k + "'") >= 0));
+  // ── Phase 7 pass 2 · THE ONE CAPTION BAND ───────────────────────────────────────────────────
+  sec('the one caption band \u00b7 eight copies of one expression, gone');
+  const capHoles = (SRC.match(/\{\{ portCap \}\}/g) || []).length;
+  ck('the caption band is rendered EXACTLY ONCE', capHoles === 1, capHoles + ' {{ portCap }} holes');
+  const CAP_VARS = ['txSubtitle', 'elSub', 'querySub', 'cxSub', 'zrSub', 'risingSub', 'clockSub', 'relCaption'];
+  const stillKeys = CAP_VARS.filter((v) => new RegExp('^\\s+' + v + ':', 'm').test(SRC));
+  ck('the eight per-sheet caption keys are DELETED, not merely derived', stillKeys.length === 0, stillKeys.join(' | ') || 'none survive as renderVals keys');
+  const capHolesDead = CAP_VARS.filter((v) => SRC.indexOf('{{ ' + v + ' }}') >= 0);
+  ck('\u2026and no template hole reads one', capHolesDead.length === 0, capHolesDead.join(' | ') || 'no dead holes');
+  const capLineCalls = (SRC.match(/this\._capLine\(/g) || []).length;
+  ck('_capLine has ONE caller \u2014 a second joiner is a second caption', capLineCalls === 1, capLineCalls + ' call site(s)');
+  // THE BAND IS THE PORT'S, SO IT SITS OUTSIDE EVERY PLATE BLOCK. A band nested inside one of the
+  // twelve is the defect this pass removed, wearing the new name.
+  const bandAt = SRC.indexOf('{{ portCap }}');
+  const firstBlockAt = SRC.search(/<sc-if value="\{\{ sheetLedger \}\}"/);
+  ck('the band is hoisted ABOVE the plate blocks, not nested in one', bandAt > 0 && firstBlockAt > bandAt, 'band at ' + bandAt + ', first block at ' + firstBlockAt);
+  ck('the plate a sheet reads is a LOOKUP, not a caption per sheet', /_portPass\s*=/.test(SRC) && /_cxTab === 'dyads' \? _relP/.test(SRC));
+  // ── Phase 7 pass 3 · ARRANGEMENTS ────────────────────────────────────────────────────────────\n  sec('arrangements \u00b7 a layout shared by surfaces, not a look repeated per surface');\n  ck('the arrangements are DECLARED, not inferred from a sheet name', !!C.ARRANGEMENT && ['stepped', 'railed', 'flat'].every((k) => Array.isArray(C.ARRANGEMENT[k])));\n  ck('every stepped surface is in the table', ['rising', 'clock', 'query'].every((x) => C.ARRANGEMENT.stepped.includes(x)), C.ARRANGEMENT.stepped.join(' '));\n  ck('an arrangement is a layout, never a plate \u2014 the words do not overlap',\n    Object.keys(C.ARRANGEMENT).every((k) => !C.PLATE_REST[k.toUpperCase()]));\n  const steppers = (SRC.match(/\\{\\{ portStep\\.prev \\}\\}/g) || []).length;\n  ck('the day stepper is written EXACTLY ONCE (was 3\u00d7)', steppers === 1, steppers + ' stepper band(s)');\n  const deadStep = ['risingPrev', 'risingNext', 'risingDayLabel', 'clockPrev', 'clockNext', 'clockDayLabel', 'queryPrev', 'queryNext', 'queryDayLabel'];\n  const stepLeft = deadStep.filter((k) => SRC.indexOf('{{ ' + k + ' }}') >= 0 || new RegExp('^\\s+' + k + ':', 'm').test(SRC));\n  ck('the nine per-sheet stepper keys are gone', stepLeft.length === 0, stepLeft.join(' | ') || 'none survive');\n  ck('no band reserves empty height \u2014 the band law', !/height:12px/.test(SRC));\n  const caps = [...new Set((SRC.match(/max-height:\\d+px/g) || []))];\n  note('scroll caps present in the pane', caps.join(' \u00b7 ') + ' \u2014 arrangement C unified at 340');\n  note('sheet blocks still standing (their ROW TABLES are per plate, by design)', linesWith(/^\s{6}sheet[A-Z]\w*:/).length + ' blocks');
+  // Phase 7 pass 3 - ARRANGEMENTS
+  sec('arrangements: a layout shared by surfaces, not a look repeated per surface');
+  ck('the arrangements are DECLARED, not inferred from a sheet name', !!C.ARRANGEMENT && ['stepped', 'railed', 'flat'].every((k) => Array.isArray(C.ARRANGEMENT[k])));
+  ck('every stepped surface is in the table', ['rising', 'clock', 'query'].every((x) => C.ARRANGEMENT.stepped.includes(x)), C.ARRANGEMENT.stepped.join(' '));
+  ck('an arrangement is a layout, never a plate - the words do not overlap', Object.keys(C.ARRANGEMENT).every((k) => !C.PLATE_REST[k.toUpperCase()]));
+  const steppers = (SRC.match(/portStep\.prev/g) || []).length;
+  ck('the day stepper is written EXACTLY ONCE (was 3 times)', steppers === 1, steppers + ' stepper band(s)');
+  const deadStep = ['risingPrev', 'risingNext', 'risingDayLabel', 'clockPrev', 'clockNext', 'clockDayLabel', 'queryPrev', 'queryNext', 'queryDayLabel'];
+  const stepLeft = deadStep.filter((k) => SRC.indexOf('{{ ' + k + ' }}') >= 0 || SRC.indexOf('      ' + k + ':') >= 0);
+  ck('the nine per-sheet stepper keys are gone', stepLeft.length === 0, stepLeft.join(' | ') || 'none survive');
+  ck('no band reserves empty height - the band law', SRC.indexOf('style="height:12px;"></div>') < 0);
+  // ── Phase 7 pass 4 · ARRANGEMENT A · FLAT ───────────────────────────────────────
+  sec('arrangement A · flat: seven surfaces, one set of bands');
+  ck('every flat surface is in the table',
+    ['sky', 'plate', 'rete', 'transits', 'prog', 'synastry', 'cross', 'election'].every((x) => C.ARRANGEMENT.flat.includes(x)),
+    C.ARRANGEMENT.flat.join(' '));
+  ck('the flat wrapper exists and is ONE piece of markup',
+    (SRC.match(/\{\{ arrFlat \}\}/g) || []).length === 1);
+  // THE PAYBACK IS THE POINT: the pair was written per surface, so it was written differently per
+  // surface. Three carried both lines, prog an authored legend instead, the Crossing nothing.
+  const pairs = (SRC.match(/\{\{ sheetHonesty \}\}/g) || []).length;
+  ck('the doctrine/honesty pair: 4 copies → 3, one per ARRANGEMENT (A · C · B), not one per surface', pairs === 3, pairs + ' honesty band(s)');
+  const provBands = (SRC.match(/\{\{ portFoot\.prov \}\}/g) || []).length;
+  ck('the provenance band is written EXACTLY ONCE', provBands === 1, provBands + ' band(s)');
+  const signage = (SRC.match(/\{\{ portFoot\.hints \}\}/g) || []).length;
+  ck('the signage line is written once per arrangement (was six spellings)', signage === 2, signage + ' band(s)');
+  // SIGNAGE IS THE SERVER'S: a table, not a renderVals key per surface.
+  const deadFoot = ['elHint', 'cxHint', 'ledgerFoot', 'ledgerFootPlain', 'ledgerProv', 'ledgerProvOn', 'progLegend', 'progProv', 'progProvOn'];
+  const footLeft = deadFoot.filter((k) => SRC.indexOf('{{ ' + k + ' }}') >= 0 || new RegExp('^\\s+' + k + ':', 'm').test(SRC));
+  ck('the nine per-sheet footer keys are DELETED, not re-homed', footLeft.length === 0, footLeft.join(' | ') || 'none survive');
+  ck('signage is declared, and the Crossing’s two courses each get their own',
+    !!C.SIGNAGE && !!C.SIGNAGE_CROSS && C.SIGNAGE.cross.length === 1 && C.SIGNAGE_CROSS.dyads.length === 1);
+  ck('every flat surface has signage declared (a band with none emits none, but silence must be a CHOICE)',
+    C.ARRANGEMENT.flat.every((x) => Array.isArray(C.SIGNAGE[x])),
+    C.ARRANGEMENT.flat.filter((x) => !C.SIGNAGE[x]).join(' ') || 'all seven declared');
+  // pass 5: the table is the SHEET's, not the arrangement's — a RAILED_SIGNAGE beside it would be
+  // the duplication the band exists to kill.
+  ck('the signage table is not named after one arrangement', !/static FLAT_SIGNAGE|Component\.FLAT_SIGNAGE/.test(SRC));
+  // the band reads ONE object, mutated never replaced - the C lesson, and prog depends on it
+  ck('the footer object is mutated, never replaced', /this\._portFoot \|\| \(this\._portFoot = \{/.test(SRC) && /Object\.assign\(this\._portFoot/.test(SRC));
+  ck('…and prog fills the provenance band from inside its own closure', /Object\.assign\(this\._portFoot, \{ prov: _progP/.test(SRC));
+  ck('no authored provenance sentence survives in the pane', !/progressed bodies house off the natal Ascendant sign/.test(SRC));
+  if (inst && inst._portFootFor) {
+    const f1 = inst._portFootFor({ sheet: 'transits' }, { ok: true, provenance: 'x' }, null, null);
+    ck('a pass with provenance fills the band', f1.prov === 'x' && f1.hints.length === 1);
+    const f2 = inst._portFootFor({ sheet: 'sky' }, null, null);
+    ck('a refused/absent pass empties it rather than keeping the last one', f2.prov === '' && f2.provOn === false);
+    ck('…and it is the SAME object each time (the template holds the reference)', f1 === f2);
+    // the object is mutated in place, so a course's signage must be READ at call time - comparing
+    // two handles after the second call compares the object to itself.
+    const cxDyads = inst._portFootFor({ sheet: 'cross' }, null, 'dyads').hints[0];
+    const cxAppr = inst._portFootFor({ sheet: 'cross' }, null, 'approaching').hints[0];
+    ck('the Crossing’s course picks its signage', cxDyads !== cxAppr, cxAppr);
+  }
+  // ── Phase 7 pass 5 · ARRANGEMENT B · RAILED ─────────────────────────────────────
+  sec('arrangement B · railed: two surfaces, one rail, a two-column body');
+  ck('every railed surface is in the table', ['zr', 'almanac'].every((x) => C.ARRANGEMENT.railed.includes(x)), C.ARRANGEMENT.railed.join(' '));
+  ck('the railed wrapper exists and is ONE piece of markup', (SRC.match(/\{\{ arrRailed \}\}/g) || []).length === 1);
+  const rails = (SRC.match(/\{\{ portRail\.items \}\}/g) || []).length;
+  ck('the side rail is written EXACTLY ONCE (was 2, and one of them was horizontal)', rails === 1, rails + ' rail band(s)');
+  // A RAIL CHANGES THE LAYOUT: the wrapper owns the two columns, so both surface blocks sit INSIDE it.
+  const railAt = SRC.indexOf('{{ arrRailed }}'), endB = SRC.indexOf('end ARRANGEMENT B');
+  const insideB = SRC.slice(railAt, endB);
+  ck('both railed surfaces sit inside the one wrapper', railAt > 0 && endB > railAt
+    && /sheetZr \}\}/.test(insideB) && /sheetAlmanac \}\}/.test(insideB));
+  ck('…and the rail column is a sibling of the rows column, not a band above them',
+    /portRail\.on/.test(insideB) && insideB.indexOf('{{ portRail.items }}') < insideB.indexOf('sheetZr }}'));
+  const deadRail = ['zrRail', 'zrHintOpacity', 'almTabs', 'almHintOn'];
+  const railLeft = deadRail.filter((k) => SRC.indexOf('{{ ' + k + ' }}') >= 0 || new RegExp('^\\s+' + k + ':', 'm').test(SRC));
+  ck('the four per-sheet rail/hint keys are DELETED, not re-homed', railLeft.length === 0, railLeft.join(' | ') || 'none survive');
+  ck('the rail object is mutated, never replaced', /this\._portRail \|\| \(this\._portRail = \{/.test(SRC)
+    && (SRC.match(/Object\.assign\(this\._portRail/g) || []).length === 2);
+  ck('both railed surfaces have signage declared', C.ARRANGEMENT.railed.every((x) => Array.isArray(C.SIGNAGE[x])));
+  ck('a dismissed or absent affordance is nothing to show — ONE greppable place', /_signageMuted\(s, sd\)/.test(SRC)
+    && (SRC.match(/_signageMuted\(/g) || []).length === 2);
+  ck('the almanac’s authored provenance sentence is GONE', !/streams \u00b7 symbolic tradition faithfully computed/.test(SRC));
+  if (inst && inst._portRailFor && inst._portFootFor) {
+    const r1 = inst._portRailFor({ sheet: 'zr' }, null), r2 = inst._portRailFor({ sheet: 'almanac' }, null);
+    ck('the rail resets empty and emits nothing until a surface fills it', r1.on === false && r1.items.length === 0);
+    ck('…and it is the SAME object each time (the template holds the reference)', r1 === r2);
+    const zrH = inst._portFootFor({ sheet: 'zr' }, null, null, null).hints[0];
+    const zrGone = inst._portFootFor({ sheet: 'zr', zrHintDismissed: true }, null, null, null).hints.length;
+    ck('the ZR hint is signage, and a dismissed hint emits nothing', /double-tap/.test(zrH || '') && zrGone === 0, zrH);
+    const almGone = inst._portFootFor({ sheet: 'almanac' }, null, null, null).hints.length;
+    ck('the almanac with nothing fused shows no row signage', almGone === 0);
+  }
+  // A RAIL ALWAYS CARRIES AN ALL, and the rail NAMES which tab that is rather than the band guessing.
+  const allTabs = (SRC.match(/all: t === 'all'/g) || []).length + (SRC.match(/all: L === 4/g) || []).length;
+  ck('each rail names its ALL tab (the almanac’s ALL · ZR’s deepest cap)', allTabs === 2, allTabs + ' declared');
+  const caps = [...new Set((SRC.match(/max-height:[0-9]+px/g) || []))];
+  note('scroll caps present in the pane', caps.join(' ') + ' - C unified at 340, A at 300, B at 320');
+  note('the probe stays in permanently', /__ORBO_PORT_PROBE/.test(SRC) ? (SRC.match(/__ORBO_PORT_PROBE/g).length) + ' probe sites' : 'MISSING');
+  } catch (e) { console.error = realErr0; ck('the suite ran to the end', false, 'STOPPED: ' + e.message); }
+  flush();
+})();
+</script>
+</body></html>

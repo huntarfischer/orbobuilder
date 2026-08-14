@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the prism · the synchronic timespine, fixed at engrave (P2, P3, P4)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}p{max-width:860px}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=2"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=7"></script>
+<script src="../loom.browser.js?v=1"></script>
+<script src="../prism.browser.js?v=4"></script>
+</head><body>
+<h1>Phase 6 · P2 + P3 + P4 — the prism's tables, its ascension template and its return dial</h1>
+<p class="dim">The synchronic layer is a whole other timespine, calculated once and then displayed.
+§1 is why that is literally true: <b>sASC = midpoint(nASC, rising degree) contains no time</b>, so a
+synchronic day is a fixed template plus one number. These checks pin the template. Nothing here stores
+a position (the refraction stays arithmetic, one wrap and one halving) and nothing here stores an
+event time — what is stored is the structure a live cursor is read through.</p>
+<p class="dim">P3 adds the day's other half. The itinerary is uniform in DEGREES and the day is not uniform in
+TIME: the seven stretches are the ascension times of their arcs at the native's latitude, so they run
+wildly unequal and stay that way for a life. These checks measure the template against a live horizon
+root-find, and the anchor's regression against sidereal arithmetic over two years. A DURATION HAS NO
+EPOCH, which is why storing one is not storing an event.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, R = window.__ORBO_RING,
+        T = window.__ORBO_TYMPAN, P = window.__ORBO_PRISM, L = window.__ORBO_LOOM;
+  if (!E || !F || !R || !T || !P || !L) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [];
+  const sec = (t) => rows.push('<tr><td colspan="2"><h2>' + t + '</h2></td></tr>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); return !!cond; };
+  const note = (name, detail) => rows.push('<tr><td class="dim">note</td><td>' + name + ' <span class="dim">' + detail + '</span></td></tr>');
+  const { norm360, wrap180, refract, signIndex, SIGNS, BODIES } = F;
+  // the same 14-chart fixture natal every other suite uses: 10 Apr 1985 20:16, 43°04'N 89°24'W
+  const natal = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  const ascSign = signIndex(natal.asc);
+  const built = P.build(natal);
+  let fails = 0; const ck = (...a) => { if (!check(...a)) fails++; };
+
+  // ── 1 · the arc cuts into stretches, exactly ───────────────────────────────────────────
+  sec('the arc · seven stretches, tiling 180° with no gap and no overlap');
+  ck('every occupant\u2019s arc tiles exactly 180\u00b0',
+    built.names.every((b) => Math.abs(built.occupants[b].arc.segments.reduce((s, g) => s + g.spanDeg, 0) - 180) < 1e-9),
+    built.names.length + ' occupants');
+  ck('every arc is centred on the natal degree (the arc law)',
+    built.names.every((b) => Math.abs(wrap180(built.occupants[b].arc.center - natal.pos[b])) < 1e-9));
+  ck('a generic degree cuts into seven stretches',
+    built.names.every((b) => built.occupants[b].arc.segments.length === 7),
+    built.names.map((b) => b.slice(0, 3) + ':' + built.occupants[b].arc.segments.length).join(' '));
+  ck('the stretches are contiguous — each ends where the next begins',
+    built.names.every((b) => {
+      const sg = built.occupants[b].arc.segments;
+      return sg.every((s, i) => i === 0 || Math.abs(wrap180(s.startLon - sg[i - 1].endLon)) < 1e-9);
+    }));
+  // A degree exactly on a cusp is the case a sampled implementation gets wrong: six signs, not seven,
+  // and no seventh stretch of zero width.
+  ck('a degree exactly on a cusp cuts into SIX, and that is the honest answer',
+    P.segmentsOf(0, 0).segments.length === 6 && P.segmentsOf(120, 3).segments.length === 6);
+
+  // ── 2 · the reachable set ──────────────────────────────────────────────────────────────
+  sec('the reachable set · seven signs and seven houses, forever');
+  ck('a synchronic placement can only ever occupy seven signs',
+    built.names.every((b) => built.occupants[b].reachable.signs.length === 7),
+    built.names.map((b) => b.slice(0, 3) + ':' + built.occupants[b].reachable.signs.length).join(' '));
+  ck('and can NEVER occupy the other five — the complement is a fact too',
+    built.names.every((b) => built.occupants[b].reachable.unreachableSigns.length === 5));
+  // Cross-check against the geometry rather than the table: sweep the sky and see where the placement
+  // actually goes. This is the assertion that would catch a wrong table.
+  ck('the table agrees with 36000 refracted samples of the real geometry',
+    built.names.every((b) => {
+      const seen = new Set();
+      for (let i = 0; i < 3600; i++) seen.add(signIndex(refract(natal.pos[b], i * 0.1)));
+      const want = new Set(built.occupants[b].reachable.signs);
+      return seen.size === want.size && [...seen].every((s) => want.has(s));
+    }), 'per occupant, every 0.1° of sky');
+  ck('the reachable HOUSES are the reachable signs under the native\u2019s own frame',
+    built.names.every((b) => {
+      const r = built.occupants[b].reachable;
+      return r.houses.every((h, i) => h === T.houseOfSign(r.signs[i], ascSign));
+    }));
+
+  // ── 3 · the boundaries carry their readings ────────────────────────────────────────────
+  sec('the boundaries · a change of arena is not always a change of government');
+  const allB = built.names.flatMap((b) => built.occupants[b].arc.boundaries);
+  ck('every arc has six boundaries', built.names.every((b) => built.occupants[b].arc.boundaries.length === 6));
+  ck('every boundary lands exactly on a sign cusp',
+    allB.every((bd) => Math.abs(norm360(bd.lon) % 30) < 1e-9 || Math.abs(norm360(bd.lon) % 30 - 30) < 1e-9),
+    allB.length + ' boundaries');
+  ck('a boundary always changes the sign AND the house (whole-sign: they are the same crossing)',
+    allB.every((bd) => bd.fromSign !== bd.toSign && bd.fromHouse !== bd.toHouse));
+  const same = allB.filter((bd) => !bd.lordChanges);
+  ck('but NOT always the lord — some crossings are a new arena under the same governor',
+    same.length > 0, same.length + ' of ' + allB.length + ' keep their lord' +
+    (same[0] ? ' \u00b7 e.g. ' + SIGNS[same[0].fromSign] + ' \u2192 ' + SIGNS[same[0].toSign] + ' \u00b7 ' + same[0].fromLord + ' \u2192 ' + same[0].toLord : ''));
+
+  // ── 4 · the same-body families · TWO NATIVES, never two bodies ────────────────────────
+  sec('the same-body families · fixed at engrave because the sky term cancels');
+  // A second fixture native, so the pair is a real pair.
+  const natalB = F.computeNatal({ y: 1979, mo: 11, d: 2, h: 6, mi: 40, tz: -8, lat: 37.77, lon: -122.42 });
+  const pair = P.buildPair(natal, natalB);
+  const fam = pair.families.Mars;
+  ck('the two modes sum to 180 (the family is {δ/2, 180−δ/2})',
+    Math.abs(fam.modes[0].separation + fam.modes[1].separation - 180) < 1e-9,
+    fam.modes[0].separation.toFixed(3) + '° / ' + fam.modes[1].separation.toFixed(3) + '°');
+  ck('a mode is exactly half the two natives’ natal separation',
+    Math.abs(fam.modes[0].separation - fam.natalSeparation / 2) < 1e-9);
+  ck('the square is self-complementary, so a flip changes the side and not the class',
+    P.familiesOf(0, 180).selfComplementary && !P.familiesOf(0, 60).selfComplementary);
+  // THE LOAD-BEARING CLAIM, measured rather than asserted: same-body separation is TIME-INVARIANT,
+  // because the sky term is the same term on both sides and cancels exactly.
+  ck('a same-body pair holds its family against the real sky, forever',
+    (() => {
+      const jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0);
+      let worst = 0;
+      for (const b of pair.names) {
+        const f = pair.families[b];
+        for (let d = 0; d < 400; d += 7) {
+          const sky = E.positions(jd0 + d);
+          const sep = R.arcOf(R.separation(refract(natalB.pos[b], sky[b]), refract(natal.pos[b], sky[b])));
+          worst = Math.max(worst, Math.min(...f.modes.map((m) => Math.abs(sep - m.separation))));
+        }
+      }
+      note('worst deviation from the stored family', worst.toFixed(9) + '° across ' + pair.names.length + ' bodies × 400 days');
+      return worst < 1e-6;
+    })(), 'every shared body, sampled weekly for 400 days');
+  // AND THE CONVERSE, which is why families live on the pair and not on one chart: two DIFFERENT
+  // bodies in ONE chart carry (skyA − skyB)/2, which does not cancel, so they have no family at all.
+  ck('two bodies in ONE chart have no family — the sky term does not cancel',
+    (() => {
+      const bogus = P.familiesOf(natal.pos.Sun, natal.pos.Moon);
+      const jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0);
+      let worst = 0;
+      for (let d = 0; d < 400; d += 7) {
+        const sky = E.positions(jd0 + d);
+        const sep = R.arcOf(R.separation(refract(natal.pos.Moon, sky.Moon), refract(natal.pos.Sun, sky.Sun)));
+        worst = Math.max(worst, Math.min(...bogus.modes.map((m) => Math.abs(sep - m.separation))));
+      }
+      note('an intra-chart Sun/Moon "family" drifts by', worst.toFixed(2) + '° — which is why build() has no family table');
+      return worst > 5;
+    })(), 'the error the pair build exists to prevent');
+  ck('so build() carries NO family table, and says where they live',
+    built.families === undefined && /buildPair/.test(built.deferred.families));
+  ck('cross-body pairs are NOT tabled, and the record says why',
+    /does not cancel/.test(built.deferred.crossBody));
+
+  // ── 5 · the itinerary · §1.1's template ────────────────────────────────────────────────
+  sec('the itinerary · the sASC walks its whole arc between waking and sleeping');
+  const it = built.itinerary;
+  ck('the sASC walks exactly 180\u00b0 a day',
+    Math.abs(it.stops.reduce((s, st) => s + st.spanDeg, 0) - 180) < 1e-9);
+  ck('and the stops sum to exactly 24 mean hours',
+    Math.abs(it.stops.reduce((s, st) => s + st.meanHours, 0) - 24) < 1e-9);
+  ck('the day passes through exactly seven frame offsets (\u00a713.2)',
+    it.offsets.length === 7, '[' + it.offsets.join(', ') + ']');
+  ck('at the ANCHOR the two frames coincide — offset 0, the moment\u2019s frame IS the native\u2019s',
+    it.anchor.frameOffset === 0 && it.anchor.house === 1,
+    it.anchor.signName + ' H' + it.anchor.house + ' \u00b7 lord ' + it.anchor.lord);
+  ck('the anchor sits at the natal Ascendant degree itself',
+    Math.abs(wrap180(it.sascLonAtAnchor - natal.asc)) < 1e-9, F.fmtLon(it.sascLonAtAnchor));
+  ck('the flip\u2019s step is the Tympan\u2019s own FLIP_HOUSES, not a second constant',
+    it.flip.houseStep === T.FLIP_HOUSES && T.FLIP_HOUSES === 6);
+  ck('the day makes ONE full revolution against the natal frame: six steps of 1 and one of 6',
+    (() => {
+      const hs = it.stops.map((s) => s.house);
+      const steps = hs.slice(1).map((h, i) => ((h - hs[i]) % 12 + 12) % 12).filter((d) => d !== 0);
+      const ones = steps.filter((d) => d === 1).length, sixes = steps.filter((d) => d === 6).length;
+      note('the walk', hs.join(' \u2192 ') + '  (steps: ' + steps.join(',') + ')');
+      return ones === 6 && sixes === 1 && steps.reduce((a, b) => a + b, 0) === 12;
+    })(), 'six ingresses of one house, one flip of six \u2014 twelve, a full turn');
+  ck('the sASC is confined to the half of the wheel spanning the 10th through the 4th (\u00a714.1)',
+    it.stops.every((s) => [10, 11, 12, 1, 2, 3, 4].includes(s.house)),
+    'houses touched: ' + [...new Set(it.stops.map((s) => s.house))].sort((a, b) => a - b).join(' '));
+  ck('the sASC\u2019s stretches agree with the arc law applied to the natal Ascendant',
+    it.stops.length >= 7 && Math.abs(P.segmentsOf(natal.asc, ascSign).segments.reduce((s, g) => s + g.spanDeg, 0) - 180) < 1e-9);
+
+  // THE ITINERARY AGAINST THE REAL SKY. Soundness and completeness are asserted separately, because
+  // of a real fact this fixture happens to expose: its Ascendant sits 0.029° from the Libra/Scorpio
+  // cusp, so TWO of the seven stretches are slivers 0.029° wide, which the sASC crosses in about
+  // fourteen seconds. A minute-resolution sample legitimately misses them. That is the structure
+  // being honest, not the template being wrong — so the completeness check is scoped to stretches
+  // wide enough to be sampled, and the slivers are asserted to exist instead.
+  const realSeq = (() => {
+    const jd0 = E.julianDay(2026, 3, 15, 0, 0, 0, 0), seq = [];
+    for (let i = 0; i <= 1440; i++) {
+      const a = E.angles(jd0 + i / 1440, natal.lat, natal.lon);
+      const h = T.houseOfSign(signIndex(refract(natal.asc, a.asc)), ascSign);
+      if (!seq.length || seq[seq.length - 1] !== h) seq.push(h);
+    }
+    return seq;
+  })();
+  const stored = new Set(it.stops.map((s) => s.house));
+  note('houses the real sASC visited on 15 Mar 2026', realSeq.join(' → '));
+  ck('SOUND: every house the real sky visits is in the stored template',
+    realSeq.every((h) => stored.has(h)), realSeq.length + ' transitions, none unexpected');
+  ck('COMPLETE: every stretch wide enough to sample is visited',
+    it.stops.filter((s) => s.spanDeg > 1).every((s) => realSeq.includes(s.house)));
+  ck('and the stretches too narrow to sample are genuine slivers, not gaps',
+    (() => {
+      const slivers = it.stops.filter((s) => s.spanDeg <= 1);
+      note('slivers', slivers.length ? slivers.map((s) => 'H' + s.house + ' ' + (s.spanDeg * 60).toFixed(1) + '\u2032 (' + (s.spanDeg / 180 * 24 * 3600).toFixed(0) + 's)').join(' · ') : 'none — this chart\u2019s Ascendant is not near a cusp');
+      return slivers.every((s) => s.spanDeg > 0);
+    })(), 'a sliver has width; a gap would not');
+
+  // ── 6 · the key discipline ─────────────────────────────────────────────────────────────
+  sec('the key · a named cut of the chart, and a doctrine change misses');
+  const k = P.prismKey(natal, {}, 'd1');
+  ck('the key is stable for the same chart', k === P.prismKey(natal, {}, 'd1'));
+  ck('a doctrine change misses', k !== P.prismKey(natal, {}, 'd2'));
+  ck('the codec is in the key, so a shape change misses', k.indexOf('p' + P.CODEC + '|') === 0);
+  ck('a different chart misses',
+    k !== P.prismKey({ ...natal, asc: norm360(natal.asc + 30) }, {}, 'd1'));
+  ck('the key carries no moment — the structure has none',
+    !/jd|\d{7}\./.test(k.split('|')[0]));
+
+  // ── 7 · what is deliberately NOT stored ────────────────────────────────────────────────
+  sec('the refusals · what an engrave-time table must never hold');
+  ck('no lot has an arc, and the record says why (§14.2 · sect)',
+    F.LOTS.every((L) => !built.occupants[L]) && /sect/.test(built.deferred.lots));
+  ck('and the record is UNCONDITIONAL — stated even when no lot was asked for',
+    /sect/.test(P.build(natal, { bodies: ['Sun', 'Moon'] }).deferred.lots));
+  ck('lots are still occupants — they are computed LIVE, not dropped',
+    /computed live/.test(built.deferred.lots || ''));
+  ck('no event times anywhere in the built structure',
+    !JSON.stringify(built, (kk, v) => (typeof v === 'function' ? undefined : v)).match(/"jd"|"enter"|"exit"|"hinge"/));
+  ck('the built structure is frozen',
+    Object.isFrozen(built) && Object.isFrozen(built.occupants) && Object.isFrozen(built.itinerary));
+  ck('no refraction table: nothing stores a per-degree position map',
+    built.names.every((b) => !built.occupants[b].table && !built.occupants[b].positions));
+
+  // ── 8 · P3 · THE ASCENSION TEMPLATE ────────────────────────────────────────────────────
+  sec('the template \u00b7 equal degrees, unequal times \u2014 permanently');
+  const tp = built.template;
+  const tpNow = P.templateOf(natal.asc, ascSign, natal.lat, { jd: E.julianDay(2026, 3, 15, 0, 0, 0, 0) });
+  const jdMar = E.julianDay(2026, 3, 15, 0, 0, 0, 0);
+  ck('the chart carries a template, cut at its own latitude',
+    !!tp && tp.circumpolar === false && Math.abs(tp.latitude - natal.lat) < 1e-9,
+    F.fmtLon(tp.ascLon) + ' at ' + tp.latitude.toFixed(3) + '\u00b0N \u00b7 \u03b5 ' + tp.epsilon.toFixed(5) + '\u00b0');
+  // risingRamc is derived as the exact inverse of ephem's own angles(), not from a textbook variant,
+  // so the instrument and the template cannot disagree about what rises when.
+  ck('risingRamc is the EXACT inverse of the engine\u2019s own angles()',
+    (() => {
+      let worst = 0;
+      for (let i = 0; i < 3600; i++) {
+        const jd = 2460000 + i * 0.01, eps = E.obliquity(jd);
+        const a = E.angles(jd, natal.lat, natal.lon);
+        const r = P.risingRamc(a.asc, natal.lat, eps);
+        worst = Math.max(worst, Math.abs(wrap180(r - norm360(E.gmst(jd) + natal.lon))));
+      }
+      note('worst deviation from the engine\u2019s own horizon', worst.toExponential(2) + '\u00b0 across 3600 samples');
+      return worst < 1e-9;
+    })(), 'one horizon, one answer');
+  ck('the stops tile ONE FULL ROTATION of RAMC \u2014 no gap, no overlap',
+    Math.abs(tp.day.ramc - 360) < 1e-9, tp.day.ramc.toFixed(9) + '\u00b0');
+  ck('so the real durations sum to exactly one sidereal day',
+    Math.abs(tp.stops.reduce((s, st) => s + st.hours, 0) - P.SIDEREAL_DAY * 24) < 1e-9,
+    (P.SIDEREAL_DAY * 24).toFixed(6) + 'h = 23h56m04s');
+  ck('EQUAL DEGREES, UNEQUAL TIMES \u2014 which is the reading, not a rendering defect',
+    tp.day.unevenness > 2,
+    tp.stops.map((s) => 'H' + s.house + ' ' + s.spanDeg.toFixed(2) + '\u00b0/' + (s.hours * 60).toFixed(1) + 'm').join(' \u00b7 '));
+  note('the day\u2019s shortest and longest stretches',
+    (tp.day.shortestStopHours * 60).toFixed(2) + 'm vs ' + tp.day.longestStopHours.toFixed(2) + 'h \u2014 ' +
+    tp.day.unevenness.toFixed(0) + '\u00d7, this chart\u2019s Ascendant being 0.029\u00b0 from a cusp');
+  // THE ONE IDENTITY: the horizon is at nASC + 2σ for the whole day, no branch and no flip case, so
+  // the sASC's 180° walk IS the horizon's single revolution.
+  ck('the horizon sits at nASC + 2\u03c3 at every stop \u2014 one identity, no flip case',
+    (() => {
+      let sigma = 0;
+      return tp.stops.every((s) => { const ok = Math.abs(wrap180(s.horizonLon - (natal.asc + 2 * sigma))) < 1e-9; sigma += s.spanDeg; return ok; });
+    })(), 'the sASC\u2019s 180\u00b0 walk is the horizon\u2019s one revolution');
+
+  sec('the template against a LIVE horizon');
+  // THE ACCEPTANCE. Every stretch's epoch comes from ramcJdNear — one linear guess and three Newton
+  // steps on gmst, no ephemeris and no scan — and is checked against a bisection root-find on the
+  // engine's real angles().
+  const liveGap = (s, t) => {
+    const jd = P.ramcJdNear(s.ramc, jdMar, natal.lon);
+    const f = (j) => wrap180(E.angles(j, natal.lat, natal.lon).asc - s.horizonLon);
+    let lo = jd - 0.01, hi = jd + 0.01;
+    for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (f(m) < 0) lo = m; else hi = m; }
+    return Math.abs((lo + hi) / 2 - jd) * 86400;
+  };
+  ck('a template cut at the READING\u2019s obliquity agrees with the live horizon to well under a second',
+    (() => { const w = Math.max(...tpNow.stops.map(liveGap)); note('worst stretch-boundary error', (w * 1000).toFixed(3) + ' ms'); return w < 0.01; })(),
+    'every stretch, by bisection on angles()');
+  // And the engrave-epoch template's error IS the obliquity drift, which is the price of a table that
+  // is fixed for a life. Measured rather than waved at: §1.1's "constant to within seconds".
+  ck('and the ENGRAVE-epoch template is off only by the obliquity drift \u2014 seconds over decades',
+    (() => { const w = Math.max(...tp.stops.map(liveGap)); note('engrave-cut template, read 41 years later', w.toFixed(3) + ' s'); return w < 5; })(),
+    '\u03b5 moves 0.013\u00b0/century, so a lifetime is seconds');
+  ck('a whole lifetime of drift is still seconds \u2014 the template does not need recutting',
+    (() => {
+      const t80 = P.templateOf(natal.asc, ascSign, natal.lat, { jd: natal.jd + 80 * 365.25 });
+      const w = Math.max(...tp.stops.map((s, i) => Math.abs(s.seconds - t80.stops[i].seconds)));
+      note('worst stretch-duration change over 80 years', w.toFixed(3) + ' s');
+      return w < 10;
+    })());
+  // The strongest check available: at the epoch the template computes for a stretch's MIDDLE, the real
+  // refracted sASC is where the template says it is. (The middle rather than a boundary, because at the
+  // flip instant the two poles are equidistant by construction and the branch is genuinely ambiguous.)
+  ck('at every stretch\u2019s own epoch, the REAL sASC is where the template puts it',
+    (() => {
+      let sigma = 0, worst = 0;
+      for (const s of tpNow.stops) {
+        const mid = sigma + s.spanDeg / 2; sigma += s.spanDeg;
+        const jd = P.ramcJdNear(P.risingRamc(norm360(natal.asc + 2 * mid), natal.lat, tpNow.epsilon), jdMar, natal.lon);
+        const live = refract(natal.asc, E.angles(jd, natal.lat, natal.lon).asc);
+        worst = Math.max(worst, Math.abs(wrap180(live - norm360(mid <= 90 ? natal.asc + mid : natal.asc + mid - 180))));
+      }
+      note('worst live sASC vs template', worst.toExponential(2) + '\u00b0');
+      return worst < 1e-5;
+    })(), 'the refraction door read against the template\u2019s own clock');
+
+  sec('the offset \u00b7 \u00a71.2, the sidereal and solar days beat at exactly one year');
+  // Two years of REAL anchors, found by the engine's own root-finder, with nothing from the template.
+  const anchors = (() => { const out = []; let jd = jdMar; for (let i = 0; i < 800; i++) { const a = E.findAscAnchor(jd, natal.asc, natal.lat, natal.lon); if (a == null) { jd += 1; continue; } out.push(a); jd = a + 0.9; } return out; })();
+  ck('consecutive live anchors are exactly one sidereal day apart',
+    (() => {
+      let w = 0; for (let i = 1; i < anchors.length; i++) w = Math.max(w, Math.abs((anchors[i] - anchors[i - 1]) - P.SIDEREAL_DAY));
+      note('worst interval error across ' + anchors.length + ' real anchors', (w * 86400).toFixed(4) + ' s');
+      return w * 86400 < 0.05;
+    })(), 'no ephemeris in the template\u2019s clock, and none needed');
+  ck('the anchor regresses 3m55.9s a day, which is pure sidereal arithmetic',
+    Math.abs(tp.offset.regressionMinutes - 3.9318) < 0.001, tp.offset.regressionMinutes.toFixed(4) + ' min/day');
+  // The annual return, measured against the live anchors: the anchor's local civil time walks backwards
+  // through the 24h clock and wraps exactly once a year.
+  const civ = anchors.map((a) => ((a + natal.lon / 360) % 1 + 1) % 1);
+  const wraps = []; for (let i = 1; i < civ.length; i++) if (civ[i] > civ[i - 1] + 0.5) wraps.push(i);
+  ck('the anchor\u2019s civil time wraps the 24h clock ONCE per year, at the predicted count',
+    wraps.length >= 2 && (wraps[1] - wraps[0]) === Math.round(tp.offset.annualReturnAnchors),
+    'measured ' + (wraps.length >= 2 ? (wraps[1] - wraps[0]) + ' anchors / ' + (anchors[wraps[1]] - anchors[wraps[0]]).toFixed(4) + ' days' : 'n/a') +
+    ' \u00b7 predicted ' + tp.offset.annualReturnAnchors.toFixed(4) + ' / ' + tp.offset.annualReturnDays.toFixed(4));
+  // And the return is not exact at an integer anchor — it misses by 0.2422 of one, which is the SAME
+  // quarter that makes a leap year. The residual is predicted exactly, so it is a fact and not slop.
+  ck('the return misses an integer anchor by the leap-year quarter, and by exactly the predicted amount',
+    (() => {
+      const k = wraps[0], n = Math.round(tp.offset.annualReturnAnchors);
+      const measured = wrap180((civ[k + n] - civ[k]) * 360) / 360;   // signed clock offset, in days
+      // NEGATIVE n, because the anchor's civil time regresses: it arrives earlier every day.
+      const predicted = wrap180(-n * (1 - P.SIDEREAL_DAY) * 360) / 360;
+      note('civil-time residual after ' + n + ' anchors', (measured * 1440).toFixed(4) + ' min measured \u00b7 ' + (predicted * 1440).toFixed(4) + ' min predicted');
+      return Math.abs(measured - predicted) * 86400 < 1;
+    })(), 'measured live, predicted from the offset alone');
+
+  sec('the template\u2019s own refusals');
+  ck('above the polar circle the template REFUSES rather than inventing an arrival time',
+    (() => { const t = P.templateOf(natal.asc, ascSign, 78, { jd: natal.jd }); return t.circumpolar === true && t.stops.length === 0 && /never rise/.test(t.reason); })(),
+    '|\u03c6| \u2265 90 \u2212 \u03b5 \u00b7 some degrees never rise, so parts of the day have no arrival at all');
+  ck('below it, every degree rises \u2014 the map is a bijection',
+    (() => { for (let d = 0; d < 360; d += 0.25) if (P.risingRamc(d, 66, 23.44) == null) return false; return true; })(),
+    '1440 degrees at 66\u00b0N');
+  ck('a chart with no place gets NO template, and the record says why (no invented horizon)',
+    (() => { const b = P.build({ ...natal, lat: null }); return b.template === null && /no latitude/.test(b.deferred.template); })());
+  ck('the template stores no epoch \u2014 durations and rotation angles only',
+    !JSON.stringify(tp).match(/"jd"|24[0-9]{5}\./), 'a duration has no epoch; ramcJdNear supplies one at read time');
+  ck('the latitude is in the key, so a table cut at another place misses',
+    P.prismKey(natal, {}, 'd1') !== P.prismKey({ ...natal, lat: natal.lat + 1 }, {}, 'd1') && P.CODEC === 3);
+
+
+  // ══ P4 · THE RETURN · the dial ═════════════════════════════════════════════════════════════
+  // The day is a return: the sASC leaves the natal Ascendant, walks, and comes home to it, because
+  // the horizon makes one revolution and sASC = midpoint(nASC, horizon). The flip is sigma = 90, the
+  // far point of the excursion, not the subject. Everything below is read from ONE sample.
+  const hz = (jd) => E.angles(jd, natal.lat, natal.lon).asc;
+  const anchor0 = E.findAscAnchor(natal.jd + 900, natal.asc, natal.lat, natal.lon);
+  const SD = P.SIDEREAL_DAY;
+
+  sec('P4 · the day is a RETURN \u2014 it leaves the natal Ascendant and comes home to it');
+  ck('at the anchor the sASC IS the natal Ascendant (the walk\u2019s start AND its end)',
+    Math.abs(wrap180(P.walkOf(natal.asc, hz(anchor0)).sascLon - natal.asc)) < 1e-6,
+    'off by ' + (Math.abs(wrap180(P.walkOf(natal.asc, hz(anchor0)).sascLon - natal.asc)) * 3600).toFixed(4) + '\u2033');
+  ck('one sidereal day later it is home again, to the same tolerance',
+    Math.abs(wrap180(P.walkOf(natal.asc, hz(anchor0 + SD)).sascLon - natal.asc)) * 3600 < 1,
+    (Math.abs(wrap180(P.walkOf(natal.asc, hz(anchor0 + SD)).sascLon - natal.asc)) * 3600).toFixed(4) + '\u2033');
+  // The value contains NO TIME, which is the whole reason a table exists. The user's own example.
+  ck('the value contains no time at all \u2014 nASC 0\u00b0 Aries with the horizon at 0\u00b0 Taurus is sASC 15\u00b0 Aries',
+    Math.abs(P.walkOf(0, 30).sascLon - 15) < 1e-12, 'at every epoch there has ever been');
+  ck('the same RISING DEGREE gives the same sASC a century apart, measured against the live sky',
+    (() => {
+      let worst = 0, n = 0;
+      for (let d = 5; d < 360; d += 23) {
+        const j1 = E.findAscAnchor(natal.jd, d, natal.lat, natal.lon);
+        const j2 = E.findAscAnchor(natal.jd + 36525, d, natal.lat, natal.lon);   // one Julian century
+        if (j1 == null || j2 == null) continue;
+        const s1 = P.walkOf(natal.asc, hz(j1)).sascLon, s2 = P.walkOf(natal.asc, hz(j2)).sascLon;
+        worst = Math.max(worst, Math.abs(wrap180(s1 - s2))); n++;
+      }
+      note('worst sASC disagreement across a century, at ' + n + ' rising degrees', (worst * 3600).toFixed(4) + '\u2033');
+      return n >= 14 && worst * 3600 < 1;
+    })(), 'the epoch enters through the SKY, since walkOf has no jd to vary \u2014 which is the claim');
+
+  sec('P4 · a full day of scrubbing, both directions, four step sizes');
+  // THE ACCEPTANCE. Walk the day forward, then backward, at step sizes spanning the real scrub range,
+  // and require the pole bit, the flip count and the hinge to be independent of all of it.
+  const STEPS = [[1 / 86400 * 16, 'a frame (~16s)'], [1 / 1440, 'a minute'], [1 / 24, 'an hour'], [0.25, 'six hours']];
+  // The window is offset off the anchor deliberately: the return sits AT the anchor, so a window that
+  // opens there puts a structural instant on its own boundary and one direction loses it to the edge.
+  // A day is still a day wherever it is cut.
+  const win0 = anchor0 + 0.13 * SD;
+  // ceil, never floor: the coarse walk must COVER the day, and a truncated span is a missing flip that
+  // looks exactly like a failing engine. (It did, on the first run: 3 six-hour steps cover 0.75 of it.)
+  const walkDay = (step, back) => {
+    const out = { poles: [], flips: [], returns: [], legacy: 0, maxArc: 0, sascs: [], sigmas: [] };
+    const n = Math.ceil(SD / step);
+    let prevPole = null, prevS = null;
+    for (let i = 0; i <= n; i++) {
+      const off = Math.min(i * step, SD);
+      const jd = back ? win0 + SD - off : win0 + off;
+      const w = P.walkOf(natal.asc, hz(jd));
+      out.poles.push(w.pole); out.sascs.push(w.sascLon); out.sigmas.push(w.sigma);
+      out.maxArc = Math.max(out.maxArc, Math.abs(wrap180(w.sascLon - natal.asc)));
+      const sig = Math.abs(wrap180(w.sascLon - natal.asc));
+      if (prevPole != null && prevPole !== w.pole) (sig > 45 ? out.flips : out.returns).push(jd);
+      // the detector P4 deleted, run alongside so the regression can never quietly return
+      if (prevS != null && Math.abs(wrap180(w.sascLon - prevS)) > 150) out.legacy++;
+      prevPole = w.pole; prevS = w.sascLon;
+    }
+    return out;
+  };
+  const runs = STEPS.map(([s, label]) => ({ label, step: s, fwd: walkDay(s, false), back: walkDay(s, true) }));
+  // THE HINGE IS PREDICTED, NOT DETECTED. rotation arithmetic, no ephemeris, no scan, and it is what
+  // every measured crossing below is held against: a detected crossing can only ever be the first
+  // sample PAST the hinge, so its error is the step size and nothing better.
+  const predFlip = P.dialOf(tp, natal.asc, hz(win0), { jd: win0, lonEast: natal.lon }).flipJd;
+  ck('EXACTLY ONE flip in the day, at every step size, in both directions',
+    runs.every((r) => r.fwd.flips.length === 1 && r.back.flips.length === 1),
+    runs.map((r) => r.label + ': ' + r.fwd.flips.length + '\u2192/' + r.back.flips.length + '\u2190').join(' \u00b7 '));
+  ck('EXACTLY ONE return in the day, at every step size, in both directions',
+    runs.every((r) => r.fwd.returns.length === 1 && r.back.returns.length === 1),
+    runs.map((r) => r.label + ': ' + r.fwd.returns.length + '\u2192/' + r.back.returns.length + '\u2190').join(' \u00b7 '));
+  ck('every crossing found, in both directions and at every step, is the SAME predicted hinge',
+    runs.every((r) => Math.abs(r.fwd.flips[0] - predFlip) <= r.step * 1.001 && Math.abs(r.back.flips[0] - predFlip) <= r.step * 1.001),
+    runs.map((r) => r.label + ': ' + (Math.abs(r.fwd.flips[0] - predFlip) * 86400).toFixed(0) + 's\u2192/' + (Math.abs(r.back.flips[0] - predFlip) * 86400).toFixed(0) + 's\u2190').join(' \u00b7 '));
+  ck('and refining the step REFINES the answer \u2014 the miss is the sampling\u2019s, never the dial\u2019s',
+    (() => {
+      const miss = runs.map((r) => Math.abs(r.fwd.flips[0] - predFlip) * 86400);   // seconds, finest first
+      // finest step first, so the miss must GROW with the step: coarser sampling, coarser answer.
+      const monotone = miss.every((m, i) => i === 0 || m >= miss[i - 1] - 1e-9);
+      note('miss against the predicted hinge, finest step to coarsest', miss.map((m, i) => STEPS[i][1] + ' ' + m.toFixed(0) + 's').join(' \u00b7 '));
+      return monotone && miss[0] < 60 && miss[miss.length - 1] > 600;
+    })(), 'strictly smaller at every refinement, and the finest lands inside a minute');
+  // THE DELETED DETECTOR, MEASURED. This is the number that makes the fix a fix rather than a taste.
+  ck('the leap detector P4 deleted FAILS this, and by how much is recorded here forever',
+    runs.some((r) => r.fwd.legacy !== 1),
+    'flips reported by |\u0394| > 150\u00b0 \u2014 ' + runs.map((r) => r.label + ': ' + r.fwd.legacy).join(' \u00b7 ') + ' (truth: 1)');
+  ck('a DISCONTINUOUS cursor reads identically \u2014 random order, no state to corrupt',
+    (() => {
+      const jds = []; for (let i = 0; i < 500; i++) jds.push(win0 + Math.random() * SD);
+      const direct = jds.map((jd) => P.walkOf(natal.asc, hz(jd)).pole);
+      const shuffled = jds.map((jd, i) => [jd, i]).sort(() => Math.random() - 0.5);
+      return shuffled.every(([jd, i]) => P.walkOf(natal.asc, hz(jd)).pole === direct[i]);
+    })(), '500 samples visited out of order');
+
+  sec('P4 · a pole change, not a glitch');
+  // The distinction the phase exists to draw. The WALK is continuous through the flip; only the
+  // DRAWING jumps, because a 180\u00b0 walk is being painted onto a 360\u00b0 wheel.
+  const fine = runs[0].fwd;
+  ck('the WALK is continuous through the flip \u2014 sigma never jumps',
+    (() => { let w = 0; for (let i = 1; i < fine.sigmas.length; i++) { const d = fine.sigmas[i] - fine.sigmas[i - 1]; if (d > -90) w = Math.max(w, Math.abs(d)); }
+      note('largest single-frame change in the walk', w.toFixed(5) + '\u00b0'); return w < 0.2; })(),
+    'the quantity the dial shows does not jump anywhere in the day');
+  ck('the walk is MONOTONE \u2014 it never turns back',
+    (() => { let bad = 0; for (let i = 1; i < fine.sigmas.length; i++) { const d = fine.sigmas[i] - fine.sigmas[i - 1]; if (d < -1e-9 && d > -90) bad++; } return bad === 0; })(),
+    'the horizon never stations, so the sASC has no retrograde and no stutter');
+  ck('at the flip the placement is at an END of its arc; at the return it is at the CENTRE',
+    (() => {
+      const atFlip = Math.abs(wrap180(P.walkOf(natal.asc, hz(predFlip)).sascLon - natal.asc));
+      const atHome = Math.abs(wrap180(P.walkOf(natal.asc, hz(fine.returns[0])).sascLon - natal.asc));
+      note('separation from the natal degree', 'flip ' + atFlip.toFixed(4) + '\u00b0 \u00b7 return ' + atHome.toFixed(4) + '\u00b0');
+      return Math.abs(atFlip - 90) < 0.05 && atHome < 0.05;
+    })(), 'THIS is what tells the two pole changes apart, and neither direction nor a threshold can');
+  ck('the flip is the horizon OPPOSING the natal Ascendant, at the PREDICTED hinge',
+    Math.abs(wrap180(hz(predFlip) - (natal.asc + 180))) < 0.001,
+    (Math.abs(wrap180(hz(predFlip) - (natal.asc + 180))) * 3600).toFixed(3) + '\u2033 \u00b7 sigma = 90 exactly, with no parity branch anywhere');
+  ck('the arc law holds all day \u2014 the sASC never leaves the half-wheel \u00a714.1 confines it to',
+    runs.every((r) => r.fwd.maxArc <= 90 + 1e-6 && r.back.maxArc <= 90 + 1e-6),
+    'measured maximum ' + Math.max(...runs.map((r) => r.fwd.maxArc)).toFixed(6) + '\u00b0 of a permitted 90\u00b0');
+  ck('the pole bit is exactly framing.phaseOf \u2014 one sample, no previous sample',
+    (() => { for (let i = 0; i < 720; i++) { const jd = anchor0 + i / 720 * SD, h = hz(jd);
+      if (P.walkOf(natal.asc, h).pole !== F.phaseOf(natal.asc, h)) return false; } return true; })(),
+    '720 samples \u00b7 the two are the same function, checked rather than assumed');
+
+  sec('P4 · the dial, and the disagreement it exists to show');
+  ck('the dial\u2019s degree is the instrument\u2019s degree \u2014 one refraction door, so they cannot disagree',
+    (() => { let w = 0; for (let i = 0; i < 400; i++) { const jd = anchor0 + i / 400 * SD;
+      w = Math.max(w, Math.abs(wrap180(P.dialOf(tp, natal.asc, hz(jd)).sascLon - refract(natal.asc, hz(jd))))); }
+      return w < 1e-12; })(), 'the walk resolves through framing.refract and nowhere else');
+  ck('the dial places the walk on the itinerary, with no hole anywhere in the day',
+    (() => { for (let i = 0; i <= 2000; i++) { const d = P.dialOf(tp, natal.asc, hz(anchor0 + i / 2000 * SD)); if (!d.at) return false; } return true; })(),
+    '2001 samples, seven stops');
+  ck('every stop CARRIES the walk it opens at, and they tile the whole 180\u00b0',
+    tp.stops.every((s) => Number.isFinite(s.sigma) && Number.isFinite(s.sigmaEnd)) &&
+    Math.abs(tp.stops[tp.stops.length - 1].sigmaEnd - 180) < 1e-9,
+    'CODEC ' + P.CODEC + ' \u00b7 a value computed and not recorded is invisible to every reader');
+  // \u00a71.1's promise, finally as a number: the walk is uniform in DEGREES and the day is not uniform
+  // in TIME, and the difference between the two is the reading.
+  ck('the walk and the clock DISAGREE, and the dial reports the disagreement rather than hiding it',
+    (() => { let mx = 0, at = 0;
+      for (let i = 0; i <= 1000; i++) { const d = P.dialOf(tp, natal.asc, hz(anchor0 + i / 1000 * SD));
+        if (Math.abs(d.drift) > Math.abs(mx)) { mx = d.drift; at = d.sigma; } }
+      note('largest disagreement between degrees walked and time elapsed', (mx * 100).toFixed(2) + '% of the day, at sigma ' + at.toFixed(1) + '\u00b0');
+      return Math.abs(mx) > 0.01; })(),
+    'equal degrees, wildly unequal times \u00b7 unevenness ' + tp.day.unevenness.toFixed(1) + '\u00d7');
+  ck('the dial predicts the flip and the return from ROTATION ALONE \u2014 no scan, no ephemeris',
+    (() => { const d = P.dialOf(tp, natal.asc, hz(anchor0), { jd: anchor0, lonEast: natal.lon });
+      const err = Math.abs(d.flipJd - fine.flips[0]) * 86400;   // measured at 16s resolution
+      note('predicted hinge against the measured one', err.toFixed(2) + ' s, inside the 16 s sampling grid');
+      // The bound is the SAMPLING's resolution, not the dial's: the measured hinge is the first frame
+      // past the true one, so it cannot be better than a step however exact the prediction is.
+      return err <= 16.001; })(), 'a duration has no epoch; ramcJdNear supplies one at read time');
+  ck('a chart with no place still gets a walk, and no invented clock',
+    (() => { const d = P.dialOf(null, natal.asc, 100); return Number.isFinite(d.sigma) && d.timeFraction === null; })(),
+    'the walk needs no latitude; only the durations do');
+  ck('above the polar circle the dial refuses the time half rather than inventing it',
+    (() => { const t2 = P.templateOf(natal.asc, ascSign, 78, { jd: natal.jd }); const d = P.dialOf(t2, natal.asc, 100);
+      return d.circumpolar === true && d.timeFraction === null && Number.isFinite(d.sigma); })());
+
+  sec('P5 \u00b7 the ledger \u2014 rows are a bare rotation lookup, marks are the one scanner');
+  // Real ephemeris this time (not the synthetic fixture prism.js's own self-test uses): the probe
+  // hands the scanner the horizon under the name 'Asc', exactly per the doc comment, and nothing in
+  // loom.js changed to make that legal.
+  const probeReal = (jd) => ({ ...E.positions(jd), Asc: E.angles(jd, natal.lat, natal.lon).asc });
+  const jdEndReal = P.ramcJdNear(tpNow.anchor.ramc, jdMar + 0.9, natal.lon);
+  const lgReal = P.ledgerOf(natal, tpNow, probeReal, jdMar, jdEndReal, { lonEast: natal.lon });
+  ck('the ledger builds one row per stop, tiling the day, on the real ephemeris',
+    !!lgReal && lgReal.rows.length === tpNow.stops.length, lgReal ? lgReal.rows.length + ' rows' : 'n/a');
+  ck('every mark lands in exactly one row',
+    lgReal.rows.reduce((s, r) => s + r.marks.length, 0) === lgReal.marks.length,
+    lgReal.marks.length + ' marks total');
+  // THE BAR: a mark's row, read off its bare RAMC, agrees with the SAME jd's row read off the walk
+  // (framing's own sigma/pole coordinate) \u2014 two independent doors, max delta zero.
+  ck('RAMC-row and walk-row agree on every mark the scanner actually found, at max delta zero',
+    lgReal.marks.every((m) => {
+      const H = probeReal(m.jd).Asc;
+      const viaWalk = P.stopAtWalk(tpNow, P.walkOf(natal.asc, H).sigma).index;
+      return viaWalk === m.rowIndex;
+    }), 'this IS the 7b bar, applied to row assignment rather than a root time');
+  ck('and agree at 1000 arbitrary instants across the day, not just at the marks',
+    (() => { for (let i = 0; i < 1000; i++) { const jd = jdMar + (i / 1000) * P.SIDEREAL_DAY;
+      const viaRamc = P.stopAtRamc(tpNow, P.localRamc(jd, natal.lon)).index;
+      const viaWalk = P.stopAtWalk(tpNow, P.walkOf(natal.asc, hz(jd)).sigma).index;
+      if (viaRamc !== viaWalk) return false; } return true; })());
+  ck('every mark carries the Ring\u2019s own word, never a bare angle',
+    lgReal.marks.every((m) => /[a-z]/.test(m.name)),
+    [...new Set(lgReal.marks.map((m) => m.name))].join(', ') || 'none this day');
+  ck('the Moon is excluded by default \u2014 she is luna.js\u2019s business, not a row occupant',
+    !lgReal.marks.some((m) => m.body === 'Moon'));
+  ck('orbs are halved on this layer (framing.synOrb), never the natal default',
+    lgReal.marks.every((m) => m.orb <= 3), 'widest mark orb ' + Math.max(0, ...lgReal.marks.map((m) => m.orb)).toFixed(2) + '\u00b0');
+  ck('a placeless/circumpolar template gets no ledger, and the caller is told rather than guessed at',
+    P.ledgerOf(null, null, probeReal, jdMar, jdEndReal, {}) === null &&
+    P.ledgerOf(natal, P.templateOf(natal.asc, ascSign, 78, { eps: 23.44 }), probeReal, jdMar, jdEndReal, {}) === null);
+  note('this day\u2019s rows', lgReal.rows.map((r) => 'H' + r.stop.house + ' \u00b7 ' + r.marks.length + 'm').join(' \u00b7 '));
+
+  sec('P6 \u00b7 the query \u2014 seven windows, not a grid, scored on the real ephemeris');
+  const profReal = { sigs: ['Mercury'], holders: ['Venus', 'Jupiter'], houses: [3, 11] };
+  const qReal = P.queryOf(natal, tpNow, probeReal, jdMar, jdEndReal, profReal, { lonEast: natal.lon });
+  ck('the query builds on the real ephemeris and returns ranked candidates',
+    !!qReal && qReal.candidates.length > 0, qReal ? qReal.candidates.length + ' candidates' : 'n/a');
+  ck('every candidate\u2019s window is the itinerary\u2019s own \u2014 stop, sign, house and ruler match template.stops[i]',
+    qReal.candidates.every((c) => c.stop === tpNow.stops[c.rowIndex]));
+  ck('a candidate\u2019s marks are exactly P5\u2019s ledger marks for that instant, at max delta zero (same array)',
+    qReal.candidates.every((c) => c.marks === qReal.rows[c.rowIndex].marks));
+  ck('ranking is stable: the same inputs return byte-identical, ordered results',
+    (() => { const q2 = P.queryOf(natal, tpNow, probeReal, jdMar, jdEndReal, profReal, { lonEast: natal.lon });
+      const d = (q) => JSON.stringify(q.candidates.map((c) => [c.jd, c.rowIndex, c.score]));
+      return d(qReal) === d(q2); })());
+  ck('every candidate carries the reasons it scored',
+    qReal.candidates.every((c) => Array.isArray(c.drivers)));
+  ck('no unqualified Synchronic Ascendant Ruler anywhere in the query\u2019s output',
+    qReal.candidates.every((c) => c.drivers.every((d) => !/\bruler\b/i.test(d.t) || /Synchronic Ascendant Ruler/.test(d.t))));
+  ck('a placeless chart gets no query, and the reason is structural (no lonEast) rather than guessed',
+    P.queryOf(natal, tpNow, probeReal, jdMar, jdEndReal, profReal, {}) === null);
+  ck('above the polar circle the query refuses along with the template',
+    P.queryOf(natal, P.templateOf(natal.asc, ascSign, 78, { eps: 23.44 }), probeReal, jdMar, jdEndReal, profReal, { lonEast: natal.lon }) === null);
+
+  sec('P7 \u00b7 synastry \u2014 two arcs, one sky, and the cancellation that fails');
+  // Reuses the suite's own pair fixture (natal × natalB, declared above for the family tests) —
+  // a real second native at a different city, so this is the same pair throughout the page.
+  ck('same-body separations for a real pair hold to 0.000000000\u00b0 across 14 bodies \u00d7 400 days',
+    (() => {
+      let worst = 0;
+      for (const b of BODIES) {
+        if (natal.pos[b] == null || natalB.pos[b] == null) continue;
+        const delta = Math.abs(wrap180(natal.pos[b] - natalB.pos[b]));
+        const modes = [delta / 2, 180 - delta / 2];
+        for (let d = 0; d < 400; d += 30) {
+          const mom = E.positions(natal.jd + d);
+          const sepA = F.midpoint(natal.pos[b], mom[b]), sepB = F.midpoint(natalB.pos[b], mom[b]);
+          const sep = Math.abs(wrap180(sepA - sepB));
+          worst = Math.max(worst, Math.min(Math.abs(sep - modes[0]), Math.abs(sep - modes[1])));
+        }
+      }
+      note('worst distance from the pair\u2019s {\u03b4/2,180\u2212\u03b4/2} family', worst.toExponential(2) + '\u00b0');
+      return worst < 1e-9;
+    })());
+  ck('sASC_A \u2212 sASC_B does NOT cancel for two natives in different cities: it strays from the same-place family',
+    (() => {
+      const hz2 = (jd, lat, lon) => E.angles(jd, lat, lon).asc;
+      const ascFam = F.beadFamily(natal.asc, natalB.asc);
+      let offFamily = 0, worst = 0;
+      for (let i = 0; i <= 40; i++) {
+        const jd = jdMar + i / 40 * P.SIDEREAL_DAY;
+        const hA = hz2(jd, natal.lat, natal.lon), hB = hz2(jd, natalB.lat, natalB.lon);
+        const sep = Math.abs(wrap180(P.walkOf(natal.asc, hA).sascLon - P.walkOf(natalB.asc, hB).sascLon));
+        const d = Math.min(Math.abs(sep - ascFam.modes[0]), Math.abs(sep - ascFam.modes[1]));
+        if (d > 0.5) offFamily++;
+        worst = Math.max(worst, d);
+      }
+      note('samples straying from the same-place family, across the day', offFamily + '/41 \u00b7 worst stray ' + worst.toFixed(1) + '\u00b0');
+      return offFamily > 5 && worst > 5;
+    })(), 'the synastry cancellation holds over BODIES (a shared sky term); the sASC is an ANGLE, its shared term is the HORIZON, and two places have two horizons');
+  ck('same place, same clock: identical lat/lon holds the sASC separation to the pair\u2019s own family, exactly like a shared body',
+    (() => {
+      const hz2 = (jd) => E.angles(jd, natal.lat, natal.lon).asc;
+      const ascFam = F.beadFamily ? F.beadFamily(natal.asc, natalB.asc) : null;
+      const modes = ascFam ? ascFam.modes : [Math.abs(wrap180(natal.asc - natalB.asc)) / 2, 180 - Math.abs(wrap180(natal.asc - natalB.asc)) / 2];
+      let worst = 0;
+      for (let i = 0; i <= 40; i++) {
+        const jd = jdMar + i / 40 * P.SIDEREAL_DAY, h = hz2(jd);
+        const sep = Math.abs(wrap180(P.walkOf(natal.asc, h).sascLon - P.walkOf(natalB.asc, h).sascLon));
+        worst = Math.max(worst, Math.min(Math.abs(sep - modes[0]), Math.abs(sep - modes[1])));
+      }
+      note('worst distance from the pair\u2019s own {\u03b4/2, 180\u2212\u03b4/2} family', worst.toExponential(2) + '\u00b0');
+      return worst < 1e-6;
+    })(), 'the Ascendants themselves form a family under the same law as any shared body \u2014 the shared horizon is the sky term that cancels');
+  ck('one instant, two horizons: body longitudes are place-independent; only the angles differ',
+    (() => {
+      const mom = E.positions(jdMar);
+      const a1 = E.angles(jdMar, natal.lat, natal.lon), a2 = E.angles(jdMar, natalB.lat, natalB.lon);
+      return JSON.stringify(mom) === JSON.stringify(E.positions(jdMar)) && Math.abs(wrap180(a1.asc - a2.asc)) > 1;
+    })());
+  ck('flips are place-invariant: two wrapper natals differing only in lat/lon give byte-identical flip calendars',
+    (() => {
+      const natX = { ...natal, lat: 10, lon: 10 }, natY = { ...natal, lat: 60, lon: -150 };
+      const evX = F.flipEvents(natX, natal.jd, natal.jd + 400, (jd) => E.positions(jd), { bodies: ['Mars', 'Saturn'] });
+      const evY = F.flipEvents(natY, natal.jd, natal.jd + 400, (jd) => E.positions(jd), { bodies: ['Mars', 'Saturn'] });
+      return JSON.stringify(evX) === JSON.stringify(evY);
+    })(), 'flipEvents reads natal.pos and posAt(jd) only \u2014 place never enters');
+  note('the prism refused as a partner (\u00a73)', '_reteIsOther()/_sheetDataCross enforce reason:\u2019pair\u2019 in the app layer \u2014 pinned there, not re-tested against a standalone ephemeris page');
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>' +
+    '<p class="' + (fails ? 'bad' : 'ok') + '">' + (fails ? fails + ' FAILING' : 'all ' + (rows.filter((r) => r.indexOf('">PASS') > 0 || r.indexOf('">FAIL') > 0).length) + ' checks pass') + '</p>';
+  }, 0);
+})();
+</script>
+</body></html>

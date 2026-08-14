@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>loom scanner (S1)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=2"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=3"></script>
+</head><body>
+<h1>Phase 5 · S1 — one scanner, three target sets</h1>
+<div id="out" class="dim">running… (a decade of floor scanning)</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, L = window.__ORBO_LOOM;
+  if (!E || !F || !L) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const { wrap180, norm360 } = E;
+  // the injected doors: a memoized full-genome probe and the light single-body one
+  const pmemo = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pmemo.get(k); if (!v) pmemo.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const natal = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  const YRS = 10, jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0), jd1 = jd0 + YRS * 365.25;
+  const ANG = [0, 60, 90, 120, 180];
+
+  sec('the floor · a decade, native-independent');
+  const t0 = performance.now();
+  const floor = L.loomBuild('floor', null, { jdStart: jd0, jdEnd: jd1, probe, bodyProbe, aspects: ANG });
+  const floorMs = performance.now() - t0;
+  const of = (k) => floor.filter((e) => e.kind === k);
+  check('floor built', floor.length > 0, floor.length + ' rows in ' + floorMs.toFixed(0) + 'ms · ' +
+    [...new Set(floor.map((e) => e.kind))].map((k) => k + ' ' + of(k).length).join(' · '));
+  check('every row carries layer, kind, body, jd, window', floor.every((e) => e.layer === 'floor' && e.kind && e.body && Number.isFinite(e.jd) && Number.isFinite(e.enter) && Number.isFinite(e.exit)));
+  check('sorted, no duplicate root', floor.every((e, i) => !i || e.jd >= floor[i-1].jd - 1e-9));
+  const sunIng = of('ingress').filter((e) => e.body === 'Sun');
+  check('Sun ingresses = 12/yr', sunIng.length === 12 * YRS, sunIng.length + ' in ' + YRS + 'yr');
+  const eq = sunIng.find((e) => e.to.sign === 0 && E.jdToDate(e.jd).getUTCFullYear() === 2030);
+  const eqd = eq ? E.jdToDate(eq.jd) : null;
+  check('Sun enters Aries at the equinox (20 Mar 2030)', eq && eqd.getUTCMonth() === 2 && Math.abs(eqd.getUTCDate() - 20) <= 1, eqd ? eqd.toISOString().slice(0, 16) + 'Z' : 'missing');
+  const moonIng = of('ingress').filter((e) => e.body === 'Moon');
+  check('Moon ingresses ≈ 13.4/mo·yr (~163/yr)', Math.abs(moonIng.length / YRS - 163) < 6, moonIng.length + ' in ' + YRS + 'yr');
+  const syz = of('syzygy');
+  const nm = syz.filter((e) => e.angle === 0), fm = syz.filter((e) => e.angle === 180);
+  check('lunations ≈ 12.37 new + 12.37 full per year', Math.abs(nm.length / YRS - 12.37) < 0.4 && Math.abs(fm.length / YRS - 12.37) < 0.4, nm.length + ' new, ' + fm.length + ' full');
+  const meSt = of('station').filter((e) => e.body === 'Mercury');
+  check('Mercury stations 6–8/yr, direction alternating', meSt.length >= YRS * 6 && meSt.length <= YRS * 8 && meSt.every((e, i) => !i || e.dir !== meSt[i-1].dir), meSt.length + ' in ' + YRS + 'yr');
+  const meRet = floor.filter((e) => e.kind === 'retrograde' && e.body === 'Mercury');
+  check('Mercury retrograde periods ~3/yr, 19–25 days, bounded by the station roots',
+    Math.abs(meRet.length / YRS - 3) < 0.5 && meRet.every((e) => e.days > 18 && e.days < 26),
+    meRet.length + ' periods · ' + (meRet.reduce((a, e) => a + e.days, 0) / Math.max(1, meRet.length)).toFixed(1) + 'd mean');
+  check('no Moon mutual aspects materialised (she is luna.js\'s cardinality problem)',
+    of('aspect').every((e) => e.body !== 'Moon' && e.other !== 'Moon'), of('aspect').length + ' aspect rows, none lunar');
+  const ju = of('aspect').filter((e) => (e.body === 'Jupiter' && e.other === 'Saturn') || (e.body === 'Saturn' && e.other === 'Jupiter'));
+  check('Jupiter–Saturn aspects arrive on the 20-year synodic cycle', ju.length >= 4 && ju.length <= 14, ju.length + ' in ' + YRS + 'yr · ' + [...new Set(ju.map((e) => e.name))].join(' '));
+
+  sec('the two weaves · the same scanner, a different target set');
+  const win = 400;
+  const t1 = performance.now();
+  const contact = L.loomBuild('contact', natal, { jdStart: jd0, jdEnd: jd0 + win, probe, bodyProbe, aspects: ANG });
+  const cMs = performance.now() - t1;
+  const t2 = performance.now();
+  const syn = L.loomBuild('synchronic', natal, { jdStart: jd0, jdEnd: jd0 + win, probe, bodyProbe, aspects: [0, 90, 180] });
+  const uMs = performance.now() - t2;
+  check('contact weave built', contact.length > 0 && contact.every((e) => e.layer === 'contact'), contact.length + ' rows in ' + cMs.toFixed(0) + 'ms over ' + win + 'd');
+  check('synchronic weave built', syn.length > 0 && syn.every((e) => e.layer === 'synchronic'), syn.length + ' rows in ' + uMs.toFixed(0) + 'ms over ' + win + 'd · ' +
+    [...new Set(syn.map((e) => e.kind))].map((k) => k + ' ' + syn.filter((e) => e.kind === k).length).join(' · '));
+  check('layer is provenance on every row (one ICS can carry all three honestly)',
+    [...floor, ...contact, ...syn].every((e) => ['floor','contact','synchronic'].includes(e.layer)));
+  // CONFORMANCE, and it is no longer a diff between two paths. framing.synEvents is the DC's fallback
+  // door and it DELEGATES to this scanner now (step 7b), so comparing them would be circular. The
+  // numbers below were measured on the shipped pullback before 7b was written, every root paired at
+  // max delta 0.00 minutes, and they are constants here for exactly that reason.
+  const sev = F.synEvents(natal, jd0, jd0 + win, probe, { kinds: ['flip', 'ingress'], aspects: [0, 90, 180], loom: L });
+  const sIng = sev.filter((e) => e.type === 'ingress'), sFlip = sev.filter((e) => e.type === 'flip');
+  const lIng = syn.filter((e) => e.kind === 'ingress'), lFlip = syn.filter((e) => e.kind === 'flip');
+  check('128 ingresses over the window, exactly as the pullback found', lIng.length === 128, lIng.length + ' of 128');
+  check('19 flips over the window, exactly as the pullback found', lFlip.length === 19, lFlip.length + ' of 19');
+  check('147 contacts over the window, exactly as the pullback found',
+    syn.filter((e) => e.kind === 'aspect').length === 147, syn.filter((e) => e.kind === 'aspect').length + ' of 147');
+  check('the fallback door returns the same roots in its own record shape, and its `kinds` cut works',
+    sIng.length === lIng.length && sFlip.length === lFlip.length && sev.every((e) => e.type !== 'aspect'),
+    sIng.length + ' ingress · ' + sFlip.length + ' flip · aspects excluded as asked');
+  check('the fallback returns nothing rather than throwing when the scanner is not in hand',
+    F.synEvents(natal, jd0, jd0 + 10, probe, {}).length === 0, 'the field goes dark, the plate never does');
+  let dMax = 0, paired = 0;
+  for (const a of lIng) {
+    const m = sIng.find((b) => b.body === a.body && Math.abs(b.jd - a.jd) < 0.5);
+    if (m) { paired++; dMax = Math.max(dMax, Math.abs(m.jd - a.jd)); }
+  }
+  // Not bit-identical, and it should not be: this page hands the scanner the LIGHT single-body door
+  // (bodyProbe) while the fallback door hands it the full-genome probe, so the two differ by the
+  // ephemeris's own two doors and by nothing to do with the scan. 0.0014 minutes is 84 milliseconds.
+  check('every scanned ingress reaches the fallback door unmoved, |Δ| under a tenth of a second',
+    paired === lIng.length && dMax * 86400 < 0.1, paired + '/' + lIng.length + ' paired · max Δ ' + (dMax * 86400).toFixed(3) + ' s');
+  // the ingress row must not assume sign, house and dispositor change together
+  const ung = lIng.filter((e) => !e.governed);
+  check('ingress rows carry `governed`: sign and house can change with no change of dispositor',
+    lIng.every((e) => e.from && e.to && typeof e.governed === 'boolean'),
+    ung.length + ' of ' + lIng.length + ' change sign and house but not dispositor');
+  // the class at a root is the RING's read now, never a label chosen out of a `serves` family
+  const ua = syn.filter((e) => e.kind === 'aspect');
+  const cls = [...new Set(ua.map((e) => e.angle))].sort((a, b) => a - b);
+  check('every contact names a Ring mark, with the Ring\u2019s own word and no `serves` list',
+    cls.length >= 2 && ua.every((e) => window.__ORBO_RING.MARKS.includes(Math.abs(e.angle)) && e.serves === undefined && e.name && !/^-?[\d.]+$/.test(e.name)),
+    'classes present: ' + cls.join(' \u00b7 ') + ' from targets on ' + [0, 90, 180].join('/'));
+  check('a flip is a window, an ingress is an instant', lFlip.every((e) => e.exit > e.enter) && lIng.every((e) => e.exit === e.jd));
+  check('stations are shared: the synchronic weave never scans one', syn.every((e) => e.kind !== 'station'));
+
+  sec('the fixture · synchronic Saturn, 9 Mar 2026');
+  const sat = syn.find((e) => e.kind === 'ingress' && e.body === 'Saturn' && e.to.sign === 10);
+  const sd = sat ? E.jdToDate(sat.jd) : null;
+  check('the scanner finds it: sign and house change, dispositor does not',
+    sat && sd.getUTCMonth() === 2 && Math.abs(sd.getUTCDate() - 9) <= 1 && sat.governed === false && sat.from.house !== sat.to.house,
+    sat ? sd.toISOString().slice(0, 16) + 'Z · ' + sat.from.signName + ' H' + sat.from.house + ' → ' + sat.to.signName + ' H' + sat.to.house + ' · ' + sat.from.dispositor + ' → ' + sat.to.dispositor : 'not found');
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>' +
+    '<p class="' + (fails.length ? 'bad">' + fails.length + ' FAILING: ' + fails.join(' · ') : 'ok">all ' + rows.filter((r) => r.indexOf('PASS') > -1).length + ' checks pass') + '</p>';
+  }, 40);
+})();
+</script>
+</body></html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>rulers.js conformance — Layer 1 only</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:760px;margin:0 auto}h1{font-size:15px;color:#e8ab41}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js"></script>
+<script src="../ring.browser.js"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../astrodna.browser.js?v=5"></script>
+<script src="../rulers.browser.js?v=4"></script>
+</head><body>
+<h1>rulers.js conformance — rulership law and the dignity ladder</h1>
+<p class="dim">Layer 2 (a chart's rulership graph — chains, cycles, receptions) moved to
+<code>dispositor.js</code>, verified in <code>tests/dispositor.test.html</code>. This file pins
+what stayed: the pointwise law (degree → lord, exaltation), the two genome-parity helpers, and
+<b>the dignity ladder below the sign</b> — Egyptian bounds, Chaldean faces, Dorothean triplicity
+rulership — which did not exist anywhere in this codebase until 2026-08-05.</p>
+<div id="out" class="dim">running…</div>
+<script>
+(async function wait(){
+  const R = window.__ORBO_RULERS, A = window.__ORBO_ASTRODNA;
+  if (!R || !A) return void setTimeout(wait, 30);
+  const rows = [], fails = [];
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const deg = (sign, d) => R.SIGNS.indexOf(sign) * 30 + d;
+  // — layer 1: pointwise law —
+  const l1 = R.lordOf(deg('Taurus', 15));
+  check('lordOf 15° Taurus → Venus, Moon exalted', l1.ruler === 'Venus' && l1.exalted === 'Moon' && l1.exaltDegree === 3);
+  check('lordOf 5° Scorpio → Mars (traditional)', R.lordOf(deg('Scorpio', 5)).ruler === 'Mars');
+  check('lordOf 5° Aquarius → Saturn (traditional)', R.lordOf(deg('Aquarius', 5)).ruler === 'Saturn');
+  check('lordOf wraps (375° == 15° Aries → Mars)', R.lordOf(375).ruler === 'Mars');
+  // sign handoff continuity: a cASC-style sweep never throws, 12 distinct handoffs per turn
+  let hand = 0, prev = null, sweepOk = true;
+  for (let x = 0; x < 360; x += 0.5) { const r = R.lordOf(x); if (!r.sign) sweepOk = false; if (r.sign !== prev) { hand++; prev = r.sign; } }
+  check('cASC sweep: 12 handoffs per revolution, no gaps', sweepOk && hand === 12, hand + ' handoffs');
+  check('dignityOf keeps its own vocabulary: exalt, peregrine', R.dignityOf('Moon', deg('Taurus', 15)) === 'exalt' && R.dignityOf('Mars', deg('Gemini', 10)) === 'peregrine');
+  // — genome parity: chartRulerOf(dna) === astrodna's own ruler, on two vectors —
+  for (const v of [{ jd: 2451545.0, lat: 51.48, lon: 0 }, { jd: 2448442.2708333, lat: 43.33, lon: -90.39 }]) {
+    const dna = A.buildAstroDNA(v.jd, v.lat, v.lon);
+    check('chartRulerOf parity @ jd ' + v.jd, R.chartRulerOf(dna) === dna.ruler.rulerPlanet, R.chartRulerOf(dna));
+  }
+  // — the split held: Layer 2 is gone from here, not merely unused —
+  check('disposition/lonsFromDna/dispositionFromDna are gone, not just unreferenced', typeof R.disposition === 'undefined' && typeof R.lonsFromDna === 'undefined' && typeof R.dispositionFromDna === 'undefined');
+
+  // ── THE DIGNITY LADDER · the three rungs that did not exist before 2026-08-05 ─────────────────
+  rows.push('</table><h2 style="font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px">the bounds · Egyptian, five a sign, sixty in the zodiac</h2><table>');
+  check('the table is twelve rows of five', R.EGYPTIAN_BOUNDS.length === 12 && R.EGYPTIAN_BOUNDS.every((r) => r.length === 5));
+  check('every sign’s bounds close at 30°', R.EGYPTIAN_BOUNDS.every((r) => r[4].end === 30));
+  check('0° Aries is Jupiter’s bound, and it ends at 6°', R.boundOf(deg('Aries', 0)).planet === 'Jupiter' && R.boundOf(deg('Aries', 0)).end === 6);
+  check('A BOUND IS HALF-OPEN: 6°00′ Aries is VENUS’S, not Jupiter’s', R.boundOf(deg('Aries', 6)).planet === 'Venus' && R.boundOf(deg('Aries', 5.99)).planet === 'Jupiter');
+  check('29° Pisces is Saturn’s (the last bound of the circle)', R.boundOf(deg('Pisces', 29)).planet === 'Saturn');
+  check('Sagittarius opens with Jupiter’s twelve degrees (the scheme’s widest)', R.boundOf(deg('Sagittarius', 11.9)).planet === 'Jupiter' && R.boundOf(deg('Sagittarius', 12)).planet === 'Venus');
+  check('the bounds wrap with the circle (375° == 15° Aries, Mercury)', R.boundOf(375).planet === 'Mercury');
+  // the arithmetic that catches a single mistyped cell
+  const bcount = {}, bdeg = {};
+  R.EGYPTIAN_BOUNDS.forEach((row) => { let prev = 0; row.forEach((b) => { bcount[b.planet] = (bcount[b.planet] || 0) + 1; bdeg[b.planet] = (bdeg[b.planet] || 0) + (b.end - prev); prev = b.end; }); });
+  check('each of the five planets holds exactly twelve bounds', ['Saturn', 'Jupiter', 'Mars', 'Venus', 'Mercury'].every((p) => bcount[p] === 12));
+  check('and its own known degree total: Saturn 57 · Jupiter 79 · Mars 66 · Venus 82 · Mercury 76',
+    bdeg.Saturn === 57 && bdeg.Jupiter === 79 && bdeg.Mars === 66 && bdeg.Venus === 82 && bdeg.Mercury === 76,
+    Object.keys(bdeg).map((p) => p + ' ' + bdeg[p]).join(' · '));
+  check('which sum to the whole circle', ['Saturn', 'Jupiter', 'Mars', 'Venus', 'Mercury'].reduce((a, p) => a + bdeg[p], 0) === 360);
+  check('THE LIGHTS HOLD NO BOUND in the Egyptian scheme (its own fact, not an omission)', !bcount.Sun && !bcount.Moon);
+
+  rows.push('</table><h2 style="font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px">the faces · the Chaldean order, thirty-six decans</h2><table>');
+  check('thirty-six faces, stamped from the cycle rather than typed', R.FACES.length === 36);
+  check('Aries runs Mars · Sun · Venus', R.FACES.slice(0, 3).join(',') === 'Mars,Sun,Venus');
+  check('Taurus runs Mercury · Moon · Saturn', R.FACES.slice(3, 6).join(',') === 'Mercury,Moon,Saturn');
+  check('Pisces closes Saturn · Jupiter · Mars', R.FACES.slice(33, 36).join(',') === 'Saturn,Jupiter,Mars');
+  check('the sequence repeats every seven, all the way round', R.FACES.every((p, i) => p === R.FACES[i % 7 === 0 ? i : i] && p === R.CHALDEAN[(R.CHALDEAN.indexOf('Mars') + i) % 7]));
+  check('faceOf names the decan within its sign', R.faceOf(deg('Leo', 25)).decanOfSign === 3 && R.faceOf(deg('Leo', 25)).planet === 'Mars');
+  check('a face is ten degrees, half-open at its end', R.faceOf(deg('Aries', 9.99)).index === 0 && R.faceOf(deg('Aries', 10)).index === 1);
+
+  rows.push('</table><h2 style="font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px">triplicity rulership · Dorothean, three lords a group</h2><table>');
+  check('TRIPLICITY IS THE ELEMENT GROUPING: four groups of three signs', Object.keys(R.TRIPLICITY).length === 4);
+  check('fire: Sun by day, Jupiter by night, Saturn participating', R.TRIPLICITY.fire.day === 'Sun' && R.TRIPLICITY.fire.night === 'Jupiter' && R.TRIPLICITY.fire.participating === 'Saturn');
+  check('water: Venus by day, Mars by night, Moon participating', R.TRIPLICITY.water.day === 'Venus' && R.TRIPLICITY.water.night === 'Mars' && R.TRIPLICITY.water.participating === 'Moon');
+  check('SECT IS AN ARGUMENT, never derived: the same sign answers differently by day and by night',
+    R.triplicityOf(R.SIGNS.indexOf('Leo'), true).lord === 'Sun' && R.triplicityOf(R.SIGNS.indexOf('Leo'), false).lord === 'Jupiter');
+  check('and null sect selects no lord (the honest answer for a placeless field)', R.triplicityOf(0, null).lord === null && R.triplicityOf(0, null).participating === 'Saturn');
+  check('every sign’s element has a group', R.SIGNS.every((_, i) => !!R.triplicityOf(i, true).lord));
+
+  rows.push('</table><h2 style="font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px">the ladder · five rungs, no score</h2><table>');
+  const sunLeo = R.ladderOf('Sun', deg('Leo', 3), true);
+  check('the Sun at 3° Leo by day holds domicile and triplicity(day), and NOT the face — 3° Leo is Saturn’s decan',
+    sunLeo.rungs.map((r) => r.rung).join(',') === 'domicile,triplicity' && sunLeo.rungs[1].role === 'day' && sunLeo.face.planet === 'Saturn', sunLeo.rungs.map((r) => r.rung).join(' · '));
+  check('and it is not peregrine, and carries no debility', sunLeo.peregrine === false && sunLeo.debility === null);
+  const marsGem = R.ladderOf('Mars', deg('Gemini', 20), true);
+  check('Mars at 20° Gemini holds its BOUND alone (17–24°), which is why peregrine is a five-rung question',
+    marsGem.rungs.length === 1 && marsGem.rungs[0].rung === 'bound' && marsGem.rungs[0].start === 17 && marsGem.rungs[0].end === 24);
+  const moonScorpio = R.ladderOf('Moon', deg('Scorpio', 20), true);
+  check('THE MOON AT 20° SCORPIO IS IN FALL AND STILL HOLDS A RUNG (participating lord of water): a debility and a dignity are separate facts, and the ladder refuses to net them off',
+    moonScorpio.debility === 'fall' && moonScorpio.rungs.length === 1 && moonScorpio.rungs[0].role === 'participating' && moonScorpio.peregrine === false);
+  const mercLeo = R.ladderOf('Mercury', deg('Leo', 5), true);
+  check('PEREGRINE IS A FIVE-RUNG QUESTION: Mercury at 5° Leo holds none of them, and carries no debility either',
+    mercLeo.peregrine === true && mercLeo.rungs.length === 0 && mercLeo.debility === null);
+  check('the bound and face of a degree are reported whoever is standing there', !!moonScorpio.bound.planet && !!moonScorpio.face.planet);
+  check('THE LADDER IS THE SEVEN’S OWN TABLE: a modern gets null, not an empty ladder', R.ladderOf('Pluto', deg('Scorpio', 20), true) === null);
+  check('a participating lord is named as such (Saturn in a fire sign, either sect)',
+    R.ladderOf('Saturn', deg('Aries', 29), true).rungs.some((r) => r.rung === 'triplicity' && r.role === 'participating'));
+  const src = await (await fetch('../rulers.js')).text().catch(() => '');
+  const code = (src || '').replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  check('NO SCORE ANYWHERE: no almuten, no dignity points, nothing ranked (which rung outweighs which is the packs’ judgment)',
+    !!src && !/almuten/i.test(code) && !/\bscores?\s*[(=:]/.test(code) && !/dignityPoints|rankOf|weightOf/i.test(code));
+  const FORBIDDEN = ['good', 'bad', 'strong', 'weak', 'fortunate', 'difficult'];
+  check('and no interpretation word', !FORBIDDEN.some((w) => new RegExp('\\b' + w + '\\b', 'i').test(code)));
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<p class="' + (fails.length ? 'bad">✗ ' + fails.length + ' failure(s)' : 'ok">✓ all checks pass') + '</p>';
+})();
+</script>
+</body></html>

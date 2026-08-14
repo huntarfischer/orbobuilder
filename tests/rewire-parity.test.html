@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>rewire parity · old angle paths vs the Ring</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:980px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}.note{color:#c99a4a}td{padding:1px 10px 1px 0;vertical-align:top}pre{color:#b6aed2;white-space:pre-wrap;margin:4px 0 0}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=2"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=7"></script>
+<script src="../loom.browser.js?v=4"></script>
+<script src="../mundane.browser.js?v=7"></script>
+<script src="../fertilize.browser.js?v=3"></script>
+<script src="../astrodna.browser.js?v=5"></script>
+<script src="../loom.browser.js?v=3"></script>
+</head><body>
+<h1>The rewire harness · every angle table, against the Ring</h1>
+<p class="dim">THE POINT OF THIS FILE: the rewire moves four angle tables onto the Ring, and the failure
+mode of the last four rounds was an invariant asserted in a comment instead of enforced by code. So no
+angle literal is copied into this harness. Every table is read out of its OWN SOURCE FILE at run time
+and compared with the Ring, which means a table cannot drift away from what is checked here without the
+check itself moving. Extend this file at each step; never rewrite it.</p>
+<p class="dim">Step 0 (this file) · step 1 loom.ASPECT_NAME · step A framing.ASPECTS · step B
+astrodna.ASPECT_DEFS · step C the two decoders, mundane.ASPECT_WORD and fertilize.ASPECT_WORD ·
+step D the DC tables and D2 the SIGN tables (the Mater) · step E the DC loops · steps F-G the gene and
+the two cache keys. Sections marked REPORT are not pass/fail: they print the rows a step would move, so
+the decision is made on real numbers before anything is written.</p>
+<div id="out" class="dim">running… (reading the source files)</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const R = window.__ORBO_RING, F = window.__ORBO_FRAMING, A = window.__ORBO_ASTRODNA, E = window.__ORBO_EPH;
+  const out = document.getElementById('out');
+  if (!R || !F || !A || !E) { out.innerHTML = '<span class="bad">a browser build did not register its global</span>'; return; }
+
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const report = (label, body) => rows.push('<tr><td class="note">REPORT</td><td>' + label + '<pre>' + body + '</pre></td></tr>');
+  const eq = (a, b) => Math.abs(a - b) < 1e-12;
+
+  // The three septiles: the ONLY angles the app carries that are not Ring marks, and deliberately so
+  // (7 does not divide 360, so a septile is not a whole degree and would put marks between states).
+  // Derived, not typed: whatever the DC's table holds that the Ring does not is what this set must be.
+  const SEPTILES = [360 / 7, 720 / 7, 1080 / 7];
+  const isSeptile = (a) => SEPTILES.some((s) => Math.abs(s - a) < 0.001);
+
+  // ---------- read every table out of its own source ----------
+  const src = {};
+  const grab = async (key, path) => { const r = await fetch(path); src[key] = r.ok ? await r.text() : null; return src[key]; };
+  await Promise.all([
+    grab('ring', '../ring.js'),
+    grab('ringBrowser', '../ring.browser.js'),
+    grab('framing', '../framing.js'),
+    grab('tympan', '../tympan.js'),
+    grab('astrodna', '../astrodna.js'),
+    grab('loom', '../loom.js'),
+    grab('loomBrowser', '../loom.browser.js'),
+    grab('framingBrowser', '../framing.browser.js'),
+    grab('astrodnaBrowser', '../astrodna.browser.js'),
+    grab('mundane', '../mundane.js'),
+    grab('mundaneBrowser', '../mundane.browser.js'),
+    grab('fertilize', '../fertilize.js'),
+    grab('fertilizeBrowser', '../fertilize.browser.js'),
+    grab('luna', '../luna.js'),
+    grab('mater', '../mater.js'),
+    grab('materBrowser', '../mater.browser.js'),
+    grab('dcPre', '../archive/' + encodeURIComponent('Orbo Astrolabe 2026-08-04.dc.html')),
+    grab('rulers', '../rulers.js'),
+    grab('timespine', '../timespine.js'),
+    grab('rulersBrowser', '../rulers.browser.js'),
+    grab('dc', '../' + encodeURIComponent('Orbo Astrolabe.dc.html')),
+  ]);
+  const block = (key, re) => { const t = src[key]; if (!t) return null; const m = t.match(re); return m ? m[1] : null; };
+  const nums = (s, re) => { if (s == null) return null; const o = []; let m; const g = new RegExp(re.source, 'g'); while ((m = g.exec(s))) o.push(parseFloat(m[1])); return o; };
+  const uniqSort = (a) => Array.from(new Set(a)).sort((x, y) => x - y);
+
+  const T = {};
+  // ── STEP 0 · THE FILE HAS TO RUN, and until 2026-08-06 nothing here checked that ──────────────
+  // The hole this closes, in the words of the session that found it: 822 green checks and the app did
+  // not start. Every DC assertion in this harness fetches the file as TEXT and greps it, and a
+  // SyntaxError passes straight through a grep. A bulk edit left a stray `0)]` and a duplicated
+  // `} catch (e) {}` in the logic class, the whole class failed to evaluate, the instrument never drew,
+  // and the suite reported ALL GREEN. So the first thing this file asks is whether the class PARSES,
+  // before it asks anything about what the class says. A grep is a claim about source; this is a claim
+  // about the program.
+  let dcParseErr = '';
+  check('STEP 0 · THE DC\u2019S LOGIC CLASS COMPILES (a grep cannot see a SyntaxError)', (() => {
+    const m = (src.dc || '').match(/<script type="text\/x-dc" data-dc-script=""[^>]*>([\s\S]*?)<\/script>/);
+    if (!m) { dcParseErr = 'no logic class found in the DC'; return false; }
+    try { new Function('React', 'DCLogic', m[1]); return true; }
+    catch (e) { dcParseErr = e.name + ': ' + e.message; return false; }
+  })(), dcParseErr);
+  check('STEP 0 · and its template closes every control-flow tag it opens',
+    (() => {
+      const t = ((src.dc || '').match(/<x-dc>([\s\S]*?)<\/x-dc>/) || [])[1] || '';
+      return !!t && (t.match(/<sc-(for|if)\b/g) || []).length === (t.match(/<\/sc-(for|if)>/g) || []).length;
+    })());
+  // STEP A DONE: framing no longer types out its angles, so the extractor reads the ADMITS list it is
+  // now built from. The old pattern (`export const ASPECTS = [ {angle: 0, ...} ]`) is deliberately gone;
+  // if this regex ever misses, the table went back to being typed out and the check below will say so.
+  T.framing  = nums(block('framing',  /const ASPECT_ADMITS = \[([^\]]*)\]/),          /([\d.]+)/);
+  T.framingWord = nums(block('framing', /const ASPECT_WORD = \{([\s\S]*?)\};/),        /([\d.]+):\s*'/);
+  T.framingGlyph = nums(block('framing', /const ASPECT_GLYPH = \{([\s\S]*?)\};/),      /([\d.]+):\s*'/);
+  // STEP B DONE: astrodna no longer types out its angles either, so the extractor reads the ADMITS
+  // list it is now built from. If this regex ever misses, the table went back to being typed out.
+  T.astrodna = nums(block('astrodna', /const ASPECT_ADMITS = \[([^\]]*)\]/),           /([\d.]+)/);
+  T.astrodnaWord = nums(block('astrodna', /const ASPECT_WORD = \{([\s\S]*?)\};/),      /([\d.]+):\s*'/);
+  T.astrodnaOrb  = nums(block('astrodna', /const ASPECT_ORB = \{([\s\S]*?)\};/),       /([\d.]+):\s*[\d.]+/);
+  T.loomName = nums(block('loom',     /const ASPECT_WORD = \{([\s\S]*?)\};/),         /(\d+):\s*'/);
+  // STEP C DONE: mundane's decoder dictionary is built by walking MARKS, so the extractor reads the
+  // TERM list it is built from (ASPECT_WORD is now the derived table, not the typed one).
+  T.mundane  = nums(block('mundane',  /const ASPECT_TERM = \{([\s\S]*?)\};/),         /(\d+):\s*'/);
+  // The SECOND decoder, missed by the spec's own inventory until step C's verification (§1 line 57
+  // claimed fertilize carried no angle table; it carried the same eleven literals as mundane, in the
+  // same position, four lines after its codec's index()). It is in the harness now, so the header's
+  // claim — every angle table, against the Ring — is true rather than aspirational.
+  T.fertilize = nums(block('fertilize', /const ASPECT_TERM = \{([\s\S]*?)\};/),       /(\d+):\s*'/);
+  // STEP D DONE (2026-08-04): the DC's five angle-keyed tables are gone, collapsed into ONE ordered
+  // spec whose rows are [angle, color, glyph, name, onByDefault, orbScale]. So the extractor reads
+  // the SPEC ROWS out of the DC's own source, and the five old tables are checked as derivations of
+  // it rather than as five lists that happen to agree. If this regex ever misses, the tables went
+  // back to being typed out separately and the checks below will say so.
+  const dcSpecBlock = block('dc', /this\.ASPECT_SPEC = Object\.freeze\(\[([\s\S]*?)\n    \]\.map/);
+  const dcRows = [];
+  if (dcSpecBlock) {
+    const g = /\[\s*([\d.]+),\s*'(#[0-9a-f]{6})',\s*'([^']*)',\s*'([a-z]+)',\s*(true|false),\s*([\d.]+)\s*\]/g;
+    let m; while ((m = g.exec(dcSpecBlock))) dcRows.push({ angle: parseFloat(m[1]), color: m[2], glyph: m[3], name: m[4], on: m[5] === 'true', scale: parseFloat(m[6]) });
+  }
+  T.dcAsp = dcRows.map((r) => r.angle);
+  T.dcSept = nums(block('dc', /this\.SEPTILES = \[([^\]]*)\]/), /([\d.]+)/);
+  T.dcLore = nums(block('dc', /const FAM = \{([\s\S]*?)\n    \};/), /([\d.]+):\s*'/);
+
+  sec('the sources parsed · a table that cannot be read cannot be checked');
+  for (const k of ['ring', 'framing', 'astrodna', 'loom', 'dc']) check('read ' + k + ' source', !!src[k], src[k] ? (src[k].length / 1024).toFixed(0) + ' KB' : 'fetch failed');
+  for (const k of Object.keys(T)) check('extracted ' + k, Array.isArray(T[k]) && T[k].length > 0, T[k] ? T[k].length + ' angles' : 'REGEX MISS — the literal moved, fix the pattern');
+
+  sec('every angle in the app is a Ring mark, or one of the three septiles');
+  const marks = new Set(R.MARKS);
+  for (const k of Object.keys(T)) {
+    const t = T[k] || [];
+    const stray = t.filter((a) => !marks.has(a) && !isSeptile(a));
+    check(k + ': no angle outside marks ∪ septiles', stray.length === 0, stray.length ? 'STRAY ' + stray.join(' · ') : uniqSort(t).length + ' distinct');
+  }
+  const dcSet = uniqSort(T.dcAsp || []);
+  const dcSept = dcSet.filter(isSeptile), dcMarks = dcSet.filter((a) => marks.has(a));
+  check('the DC carries exactly the eleven marks plus the three septiles', dcMarks.length === 11 && dcSept.length === 3 && dcSet.length === 14, dcSet.length + ' = 11 + 3');
+  check('the three septiles are 360·k/7 and none is a whole degree', dcSept.length === 3 && dcSept.every((s) => !Number.isInteger(s)), dcSept.map((s) => s.toFixed(4)).join(' · '));
+  check('the DC’s decoration all rides ONE spec row per angle (color · glyph · name · default · orb scale)',
+    dcRows.length === 14 && dcRows.every((r) => r.color && r.glyph && r.name && typeof r.on === 'boolean' && r.scale > 0),
+    dcRows.length + ' complete rows');
+  // Step 1's whole claim, stated as an equality rather than a promise.
+  const ln = uniqSort(T.loomName || []);
+  check('STEP 1 \u00b7 loom\u2019s words cover the eleven marks, so the swap moves no number',
+    ln.length === 11 && ln.every((a, i) => a === R.MARKS[i]), ln.join(' · '));
+  // STEP 1 DONE: the key set is no longer typed out, it is built by walking MARKS. So the check is no
+  // longer "do two lists happen to agree" but "is the table incapable of disagreeing".
+  check('STEP 1 · loom builds its name table BY WALKING MARKS (no second copy of the die left)',
+    /Object\.fromEntries\(MARKS\.map/.test(src.loom || ''));
+  check('STEP 1 · a mark with no word throws at LOAD, not at read time',
+    /throw new Error\('loom: the Ring carries mark/.test(src.loom || ''));
+  check('STEP 1 · the built table is frozen', /ASPECT_NAME = Object\.freeze/.test(src.loom || ''));
+  // The import LIST is not the claim; the DEPENDENCY is. Step J widened astrodna's list and 7b widened
+  // loom's, and an over-specific regex quietly turns "imports the Ring" into "imports exactly these".
+  const ringImport = (s) => /import \{([^}]*)\} from '\.\/ring\.js'/.exec(s || '');
+  const ringList = (s) => { const m = ringImport(s); return m ? m[1].trim() : 'none'; };
+  const importsRing = (s, ...want) => { const m = ringImport(s); return !!m && want.every((w) => m[1].split(',').map((x) => x.trim()).includes(w)); };
+  check('STEP 1 · loom imports the Ring (the floor imports nothing, so no cycle)',
+    importsRing(src.loom, 'MARKS'), ringList(src.loom));
+  // The browser build is generated and hand-editing it is banned, so the ONLY thing worth checking here
+  // is that its dependency guard learned the new dep — a missing guard spins boot() forever in silence.
+  check('STEP 1 · loom.browser.js waits for __ORBO_RING', /__ORBO_FRAMING\|\|!window\.__ORBO_RING/.test(src.loomBrowser || ''));
+  // PAID OFF IN STEP 7b. loom used to pick a nearest angle out of a `serves` list by hand, which was
+  // the last piece of nearest-mark arithmetic living outside the Ring. The list died with the pullback
+  // and the read goes through ring.nearest now. This became a pass/fail TRIPWIRE rather than staying a
+  // report, because the whole point of the Ring is that this arithmetic cannot come back quietly, and
+  // a source regex is how step 1 pinned its own claim too.
+  const noCmt = (s) => (s || '').replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  check('STEP 7b · loom’s hand-rolled nearest is GONE (the last nearest-mark arithmetic outside the Ring)',
+    !/reduce\(\(a, b\) => Math\.abs\(b - sep\)/.test(src.loom || '') && !/serves/.test(noCmt(src.loom)),
+    'no serves list, no reduce');
+  check('STEP 7b · and loom takes its nearest FROM the Ring, by import',
+    /import \{ MARKS, nearest, separation \} from '\.\/ring\.js'/.test(src.loom || '') && /nearest\(separation\(/.test(src.loom || ''));
+  // The rename, asserted against the SOURCES rather than against prose: `union` may survive only in a
+  // comment that explains why it was struck.
+  for (const nm of ['framing', 'loom', 'fertilize', 'luna']) {
+    const bare = noCmt(src[nm]);
+    check('STEP 7b · the word `union` appears nowhere in ' + nm + '.js outside prose', !!src[nm] && !/union/i.test(bare),
+      (bare.match(/union/gi) || []).length + ' in code · ' + ((src[nm] || '').match(/union/gi) || []).length + ' incl. comments');
+  }
+  check('STEP 7b · the layer word is synchronic and every pullback function is deleted',
+    F.LOOM_LAYERS.join(' ') === 'floor contact synchronic' && typeof F.synchronicTargets === 'function' &&
+    ['unionToSky', 'skyToUnion', 'unionIngressTargets', 'unionFlipTarget', 'unionSepToSky', 'unionSep',
+     'unionAxisSep', 'unionSepFamily', 'unionSepClass', 'unionTargets'].every((k) => F[k] === undefined),
+    F.LOOM_LAYERS.join(' · '));
+  check('STEP 7b · a target’s degree is its own occupant’s, so no target carries a sky-space field',
+    /deg: /.test(src.framing || '') && !/sky: /.test(src.framing || ''));
+  check('STEP 7b · framing.synEvents kept its door and lost its scanning body (one scanner, injected)',
+    typeof F.synEvents === 'function' && typeof F.synShape === 'function' &&
+    /const L = opts\.loom/.test(src.framing || '') && !/const bisect = /.test(src.framing || ''));
+  // Step 2: framing's five are a subset, and the omissions are the point, not a defect.
+  const fr = uniqSort(T.framing || []);
+  check('STEP 2 · framing.ASPECTS is a subset of the marks', fr.every((a) => marks.has(a)), fr.join(' · '));
+  report('STEP 2 · marks framing does NOT carry (a narrowing the rewire must preserve, not silently widen)',
+    R.MARKS.filter((a) => !fr.includes(a)).join(' · '));
+  // STEP A DONE (2026-08-03). Same shape as step 1: the question is no longer "do two lists agree" but
+  // "is the table incapable of disagreeing". framing carries FIVE of eleven on purpose, so the
+  // narrowing itself is what has to be pinned — a silent widening here would change every synastry and
+  // electional score in the app.
+  check('STEP A · framing builds ASPECTS from a CHECKED admits list, not a typed-out array',
+    /ASPECT_ADMITS\.map\(/.test(src.framing || '') && /export const ASPECTS = Object\.freeze/.test(src.framing || ''));
+  check('STEP A · an admitted angle that is not a Ring mark throws at LOAD',
+    /throw new Error\('framing: ' \+ angle \+ ' is not a Ring mark'\)/.test(src.framing || ''));
+  check('STEP A · an admitted mark with no word or glyph throws at LOAD',
+    /throw new Error\('framing: no decoration for admitted mark/.test(src.framing || ''));
+  check('STEP A · framing imports the Ring (the floor imports nothing, so no cycle)',
+    /import \{ MARKS, separation, arcOf \} from '\.\/ring\.js'/.test(src.framing || ''));
+  check('STEP A · aspectBetween measures with the Ring, not a local wrap180',
+    /const d = arcOf\(separation\(a, b\)\)/.test(src.framing || '') );
+  check('STEP A · the five admitted are exactly conjunction · sextile · square · trine · opposition',
+    fr.length === 5 && [0, 60, 90, 120, 180].every((a, i) => fr[i] === a), fr.join(' · '));
+  check('STEP A · words and glyphs cover the admitted set exactly (no orphan decoration)',
+    uniqSort(T.framingWord || []).join() === fr.join() && uniqSort(T.framingGlyph || []).join() === fr.join());
+  check('STEP A · the built table is frozen, entries and all',
+    /export const ASPECTS = Object\.freeze/.test(src.framing || '') && /return Object\.freeze\(\{ angle, name, glyph \}\)/.test(src.framing || ''));
+  check('STEP A · the live ASPECTS object agrees with the source, five entries, words intact',
+    Array.isArray(F.ASPECTS) && F.ASPECTS.length === 5 &&
+    F.ASPECTS.map((a) => a.angle).join() === '0,60,90,120,180' &&
+    F.ASPECTS.map((a) => a.name).join() === 'conjunction,sextile,square,trine,opposition',
+    (F.ASPECTS || []).map((a) => a.glyph).join(' '));
+  check('STEP A · framing.browser.js waits for __ORBO_RING (a missing guard spins boot() forever in silence)',
+    /__ORBO_EPH \|\| !window\.__ORBO_RING/.test(src.framingBrowser || ''));
+  // STEP B DONE (2026-08-03). Same shape as steps 1 and A: not "do two lists agree" but "is the
+  // table incapable of disagreeing". astrodna carries five of eleven on purpose and keeps its OWN
+  // orbs, because an orb is the caller's and the Ring holds none.
+  const ad = uniqSort(T.astrodna || []);
+  check('STEP B · astrodna builds ASPECT_DEFS from a CHECKED admits list, not a typed-out object',
+    /ASPECT_ADMITS\.map\(/.test(src.astrodna || '') && /const ASPECT_DEFS = Object\.freeze/.test(src.astrodna || ''));
+  check('STEP B · an admitted angle that is not a Ring mark throws at LOAD',
+    /throw new Error\('astrodna: ' \+ angle \+ ' is not a Ring mark'\)/.test(src.astrodna || ''));
+  check('STEP B · an admitted mark with no word, or no orb, throws at LOAD',
+    /throw new Error\('astrodna: no word for admitted mark/.test(src.astrodna || '') &&
+    /throw new Error\('astrodna: no orb for admitted mark/.test(src.astrodna || ''));
+  check('STEP B · astrodna imports the Ring (the floor imports nothing, so no cycle)',
+    importsRing(src.astrodna, 'MARKS', 'separation', 'arcOf'), ringList(src.astrodna));
+  check('STEP B · calcAspects measures with the Ring, not a local min() of two norm360s',
+    /const dist = arcOf\(separation\(longitudes\[a\], longitudes\[b\]\)\)/.test(src.astrodna || '') &&
+    !/Math\.min\(norm360\(longitudes/.test(src.astrodna || ''));
+  check('STEP B · calcAspects is SINGLE-VALUED: min residual, one row per pair, no emit-every-match',
+    /if \(best\) out\.push\(best\)/.test(src.astrodna || '') && /orb < best\.orb/.test(src.astrodna || ''));
+  check('STEP B · the five admitted are exactly conjunction · sextile · square · trine · opposition',
+    ad.length === 5 && [0, 60, 90, 120, 180].every((a, i) => ad[i] === a), ad.join(' · '));
+  check('STEP B · words and orbs cover the admitted set exactly (no orphan decoration, no missing orb)',
+    uniqSort(T.astrodnaWord || []).join() === ad.join() && uniqSort(T.astrodnaOrb || []).join() === ad.join());
+  check('STEP B · the ORBS are unchanged, 7 · 4 · 5 · 5 · 7 (an orb is the caller\u2019s, by law)',
+    /\{ 0: 7, 60: 4, 90: 5, 120: 5, 180: 7 \}/.test(src.astrodna || ''));
+  check('STEP B · the built table is frozen, entries and all',
+    /const ASPECT_DEFS = Object\.freeze/.test(src.astrodna || '') && /return Object\.freeze\(\{ angle, name, orb \}\)/.test(src.astrodna || ''));
+  check('STEP B · astrodna.browser.js waits for __ORBO_RING (a missing guard spins boot() forever in silence)',
+    /__ORBO_EPH \|\| !window\.__ORBO_RING/.test(src.astrodnaBrowser || ''));
+  report('STEP B · marks astrodna.calcAspects does NOT carry (a narrowing the rewire must preserve, not silently widen)',
+    R.MARKS.filter((a) => !ad.includes(a)).join(' · '));
+
+  // STEP C DONE (2026-08-03). Verbatim of step 1, with one difference that raises the stakes:
+  // mundane's table is a DECODER. loom's missing word would be a missing word; mundane's would be
+  // packed into a four-century artifact and shipped, decoding as the bare number.
+  const mu = uniqSort(T.mundane || []);
+  check('STEP C · mundane builds its word table BY WALKING MARKS (no second copy of the die left)',
+    /Object\.fromEntries\(MARKS\.map/.test(src.mundane || '') && /const ASPECT_WORD = Object\.freeze/.test(src.mundane || ''));
+  check('STEP C · a mark with no word throws at LOAD, not at decode time',
+    /throw new Error\('mundane: the Ring carries mark/.test(src.mundane || ''));
+  check('STEP C · mundane imports the Ring (the floor imports nothing, so no cycle)',
+    /import \{ MARKS \} from '\.\/ring\.js'/.test(src.mundane || ''));
+  check('STEP C · mundane carries the FULL eleven (unlike framing and astrodna, a decoder may narrow nothing)',
+    mu.length === 11 && mu.every((a, i) => a === R.MARKS[i]), mu.join(' · '));
+  check('STEP C · mundane.browser.js waits for __ORBO_RING (a missing guard spins boot() forever in silence)',
+    /__ORBO_LOOM \|\| !window\.__ORBO_RING/.test(src.mundaneBrowser || ''));
+  // The live proof, and the one that would have caught a missing word: round-trip an aspect row on
+  // EVERY mark through the real codec and read the word back out. No embryo needed — 2.7 MB to assert
+  // eleven strings would be the artifact testing itself.
+  if (window.__ORBO_MUNDANE) {
+    const M = window.__ORBO_MUNDANE;
+    const rows = R.MARKS.map((a, i) => ({ kind: 'aspect', body: 'Mars', other: 'Venus', angle: a,
+      lon: 10 + i, jd: 2451545 + i }));
+    const back = M.readEmbryo(M.packEmbryo(rows, { jdStart: 2451545, jdEnd: 2451545 + 20 }));
+    const words = back.map((r) => r.name);
+    const bare = words.filter((w) => /^-?[\d.]+$/.test(w));
+    check('STEP C · every mark round-trips through the codec with a WORD, not a bare number',
+      back.length === 11 && bare.length === 0, words.join(' · '));
+    check('STEP C · and the words are unchanged, mark for mark',
+      words.join(',') === 'conjunction,semisextile,semisquare,sextile,quintile,square,trine,sesquiquadrate,biquintile,quincunx,opposition');
+    check('STEP C · the angles survive the round trip too (the codec is untouched by this step)',
+      back.map((r) => Math.abs(r.angle)).join() === R.MARKS.join());
+  } else {
+    check('STEP C · mundane.browser.js loaded for the live codec round-trip', false, 'global missing');
+  }
+
+  // STEP C, second decoder. Identical treatment, and the same live proof through fertilize's OWN
+  // codec, which is a different byte layout (its aspect row carries a half-window, and `targets` is
+  // the pair dictionary rather than `bodies`), so mundane's round-trip proves nothing about it.
+  const fe = uniqSort(T.fertilize || []);
+  check('STEP C \u00b7 fertilize builds its word table BY WALKING MARKS (the table \u00a71 said did not exist)',
+    /Object\.fromEntries\(MARKS\.map/.test(src.fertilize || '') && /const ASPECT_WORD = Object\.freeze/.test(src.fertilize || ''));
+  check('STEP C \u00b7 a mark with no word throws at LOAD, before anything reaches IndexedDB',
+    /throw new Error\('fertilize: the Ring carries mark/.test(src.fertilize || ''));
+  check('STEP C \u00b7 fertilize imports the Ring (the floor imports nothing, so no cycle)',
+    /import \{ MARKS \} from '\.\/ring\.js'/.test(src.fertilize || ''));
+  check('STEP C \u00b7 fertilize carries the FULL eleven (a decoder may narrow nothing)',
+    fe.length === 11 && fe.every((a, i) => a === R.MARKS[i]), fe.join(' \u00b7 '));
+  check('STEP C \u00b7 fertilize.browser.js waits for __ORBO_RING',
+    /__ORBO_LOOM \|\| !window\.__ORBO_RING/.test(src.fertilizeBrowser || ''));
+  if (window.__ORBO_FERT) {
+    const FZ = window.__ORBO_FERT;
+    const rows = R.MARKS.map((a, i) => ({ layer: 'contact', kind: 'aspect', body: 'Mars', other: 'Venus',
+      angle: a, lon: 10 + i, jd: 2451545 + i, enter: 2451545 + i - 0.5, exit: 2451545 + i + 0.5 }));
+    let words = null, angles = null, err = null;
+    try {
+      const back = FZ.readWeave(FZ.packWeave(rows, { jdStart: 2451545, jdEnd: 2451545 + 20 }), {});
+      words = back.map((r) => r.name); angles = back.map((r) => Math.abs(r.angle));
+    } catch (e) { err = e.message; }
+    check('STEP C \u00b7 every mark round-trips through FERTILIZE\u2019s codec with a WORD, not a bare number',
+      !!words && words.length === 11 && !words.some((w) => /^-?[\d.]+$/.test(w)), err || (words || []).join(' \u00b7 '));
+    check('STEP C \u00b7 and its words match mundane\u2019s, mark for mark (two decoders, one vocabulary)',
+      !!words && words.join(',') === 'conjunction,semisextile,semisquare,sextile,quintile,square,trine,sesquiquadrate,biquintile,quincunx,opposition');
+    check('STEP C \u00b7 the angles survive fertilize\u2019s round trip too',
+      !!angles && angles.join() === R.MARKS.join());
+  } else {
+    check('STEP C \u00b7 fertilize.browser.js loaded for the live codec round-trip', false, 'global missing');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────────────────────
+  // STEP D DONE (2026-08-04). The DC's five angle-keyed tables (ASPECTS · ASYM · ASP_NAME ·
+  // ASP_DEFAULTS · ORB_SCALE) plus MAJOR_ANGLES collapsed into one ordered spec. Same shape of proof
+  // as every step before it: not "do six lists agree" but "is a disagreement possible".
+  sec('STEP D · the DC’s five keyed tables became ONE ordered spec');
+  check('STEP D · the spec is extracted, fourteen complete rows', dcRows.length === 14, dcRows.length + ' rows');
+  check('STEP D · the five keyed tables are no longer TYPED anywhere in the DC',
+    !/this\.ASYM = \{\n/.test(src.dc || '') && !/this\.ASP_NAME = \{\n/.test(src.dc || '') &&
+    !/this\.ASP_DEFAULTS = \{\n/.test(src.dc || '') && !/this\.ORB_SCALE = \{\n/.test(src.dc || '') &&
+    !/this\.MAJOR_ANGLES = new Set/.test(src.dc || ''));
+  check('STEP D · they are DERIVED by one walk over the spec, and the walk throws on an incomplete row',
+    /for \(let i = 0; i < this\.ASPECT_SPEC\.length; i\+\+\)/.test(src.dc || '') &&
+    /the aspect spec row at/.test(src.dc || '') && /the aspect spec is not ascending at/.test(src.dc || ''));
+  check('STEP D · the spec and its rows are frozen', /this\.ASPECT_SPEC = Object\.freeze\(\[/.test(src.dc || '') && /\]\.map\(\(r\) => Object\.freeze\(r\)\)/.test(src.dc || ''));
+  {
+    const want = R.MARKS.concat(T.dcSept || []).sort((a, b) => a - b);
+    const got = dcRows.map((r) => r.angle);
+    check('STEP D · the spec IS MARKS concat SEPTILES, ascending', got.length === want.length && got.every((a, i) => eq(a, want[i])), got.join(' · '));
+    check('STEP D · and it is strictly ascending, so the ring-chip order is the spec order', got.every((a, i) => i === 0 || a > got[i - 1]));
+  }
+  check('STEP D · the septile literals are still typed VERBATIM, never as 360*k/7 (they are object keys)',
+    /this\.SEPTILES = \[51\.4286, 102\.8571, 154\.2857\]/.test(src.dc || '') &&
+    (T.dcSept || []).every((s, k) => Math.abs(s - (360 * (k + 1)) / 7) < 1e-3 && !marks.has(s)));
+  check('STEP D · MAJOR_ANGLES derives from framing’s admitted five, read through _majorAngles()',
+    /_majorAngles\(\) \{/.test(src.dc || '') && /window\.__ORBO_FRAMING/.test(src.dc || '') &&
+    !/\[0, 60, 90, 120, 180\]\.includes/.test(src.dc || ''));
+  check('STEP D · the spec’s onByDefault column IS framing’s admitted five (the audit’s own assertion)',
+    dcRows.filter((r) => r.on).map((r) => r.angle).join() === (F.ASPECTS || []).map((a) => a.angle).join(),
+    dcRows.filter((r) => r.on).map((r) => r.angle).join(' · '));
+  check('STEP D · the lore table is BUILT BY WALKING the spec, and throws on a missing family or gloss',
+    /for \(const \[ang, , , name\] of this\.ASPECT_SPEC\)/.test(src.dc || '') &&
+    /the transit lore carries no family or gloss/.test(src.dc || ''));
+  check('STEP D · the lore’s families cover all fourteen angles (and it no longer re-types the names)',
+    (T.dcLore || []).length === 14 && uniqSort(T.dcLore).every((a, i) => eq(a, dcSet[i])));
+  check('STEP D · the audit exists and runs from componentDidMount, after the engines land',
+    /_aspAudit\(\) \{/.test(src.dc || '') && /try \{ this\._aspAudit\(\); \}/.test(src.dc || ''));
+  check('STEP D · the eleven marks keep the words the two decoders pack (one vocabulary, app-wide)',
+    dcRows.filter((r) => marks.has(r.angle)).map((r) => r.name).join(',') === 'conjunction,semisextile,semisquare,sextile,quintile,square,trine,sesquiquadrate,biquintile,quincunx,opposition');
+  // THE ZERO-DELTA PROOF. The five old tables still exist verbatim in the snapshot taken before the
+  // DC was touched (CLAUDE.md's versioning law, which is what makes this checkable at all), so the
+  // claim "only the key set moved" is measured against them rather than asserted.
+  if (src.dcPre) {
+    const pairs = (re, val) => { const b = block('dcPre', re); const o = {}; if (b) { const g = new RegExp('([\\d.]+):\\s*' + val, 'g'); let m; while ((m = g.exec(b))) o[parseFloat(m[1])] = m[2]; } return o; };
+    const oldCol = {}; { const b = block('dcPre', /this\.ASPECTS = \[([\s\S]*?)\n    \];/); const g = /\[\s*([\d.]+),\s*'(#[0-9a-f]{6})'\]/g; let m; while ((m = g.exec(b || ''))) oldCol[parseFloat(m[1])] = m[2]; }
+    const oldSym = pairs(/this\.ASYM = \{([\s\S]*?)\n    \};/, "'([^']*)'");
+    const oldName = pairs(/this\.ASP_NAME = \{([\s\S]*?)\n    \};/, "'([^']*)'");
+    const oldDflt = pairs(/this\.ASP_DEFAULTS = \{([\s\S]*?)\n    \};/, '(true|false)');
+    const oldOrb = pairs(/this\.ORB_SCALE = \{([\s\S]*?)\n    \};/, '([\\d.]+)');
+    const n = Object.keys(oldSym).length;
+    check('STEP D · the pre-D snapshot’s five tables were read (14 angles each)',
+      n === 14 && Object.keys(oldCol).length === 14 && Object.keys(oldName).length === 14 && Object.keys(oldDflt).length === 14 && Object.keys(oldOrb).length === 14,
+      'snapshot: archive/Orbo Astrolabe 2026-08-04.dc.html');
+    const delta = [];
+    for (const r of dcRows) {
+      if (oldCol[r.angle] !== r.color) delta.push(r.angle + ' color ' + oldCol[r.angle] + ' → ' + r.color);
+      if (oldSym[r.angle] !== r.glyph) delta.push(r.angle + ' glyph ' + oldSym[r.angle] + ' → ' + r.glyph);
+      if (oldName[r.angle] !== r.name) delta.push(r.angle + ' name ' + oldName[r.angle] + ' → ' + r.name);
+      if ((oldDflt[r.angle] === 'true') !== r.on) delta.push(r.angle + ' default ' + oldDflt[r.angle] + ' → ' + r.on);
+      if (parseFloat(oldOrb[r.angle]) !== r.scale) delta.push(r.angle + ' orb scale ' + oldOrb[r.angle] + ' → ' + r.scale);
+    }
+    check('STEP D · ZERO DELTA: every color, glyph, word, default and orb scale is unchanged, angle for angle',
+      delta.length === 0, delta.length ? delta.join(' · ') : '14 angles × 5 fields, all identical');
+    const oldMaj = (block('dcPre', /this\.MAJOR_ANGLES = new Set\(\[([^\]]*)\]/) || '').match(/[\d.]+/g) || [];
+    check('STEP D · and the majors are the same five the snapshot typed out',
+      oldMaj.join() === dcRows.filter((r) => r.on).map((r) => r.angle).join(), oldMaj.join(' · '));
+  } else {
+    check('STEP D · the pre-D snapshot is readable for the zero-delta proof', false, 'archive fetch failed');
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────────────────────
+  // STEP D2 DONE (2026-08-04). The same de-duplication one tier up: rulership lived four times,
+  // houseOf five, the sign names four, the elements twice, exaltation three times. One new INHERENT
+  // module, a SIBLING of the Ring: the Ring is the inherent RELATION, the Mater the inherent MEANING.
+  // Full table-level verification is tests/mater.test.html; this is the INVENTORY check, so what it
+  // asserts is that no copy was left behind.
+  sec('STEP D2 · the SIGN tables became the Mater');
+  const MT = window.__ORBO_MATER;
+  check('STEP D2 · mater.browser.js registered its global', !!MT);
+  check('STEP D2 · the Mater imports NOTHING (a floor, like the Ring)', !!src.mater && !/^import /m.test(src.mater));
+  check('STEP D2 · and it holds no angle, no mark and no orb (that is the Ring’s, and the split is the point)',
+    !!MT && typeof MT.MARKS === 'undefined' && typeof MT.ASPECTS === 'undefined');
+  check('STEP D2 · the four tables are stamped and frozen: signs · rulership · exaltation · detriment/fall',
+    !!MT && Object.isFrozen(MT.SIGNS) && Object.isFrozen(MT.RULERS) &&
+    Object.isFrozen(MT.EXALT) && Object.isFrozen(MT.DETRIMENT_BY_SIGN) && Object.isFrozen(MT.FALL_BY_SIGN));
+  // STEP L · the frames were D2's table 3, as the FORWARD stamping only. The Connectome pass moved
+  // them to the Tympan, which added the reverse index and the modern index D2 deferred. ONE DIE.
+  const TY = window.__ORBO_TYMPAN;
+  check('STEP L · tympan.browser.js registered its global, and it holds the twelve frames',
+    !!TY && TY.HOUSE_FRAMES.length === 12 && TY.HOUSE_FRAMES.every((f, asc) => f[asc] === 1));
+  check('STEP L · the frames LEFT the Mater and left no copy behind (one die, whichever file holds it)',
+    !!MT && MT.HOUSE_FRAMES === undefined && MT.houseOfSign === undefined && !/HOUSE_FRAMES|houseOfSign/.test(src.mater || ''));
+  check('STEP L · the Tympan imports the Mater and nothing else',
+    !!src.tympan && (src.tympan.match(/^import /gm) || []).length === 1 && /from '\.\/mater\.js'/.test(src.tympan));
+  check('STEP L · the REVERSE index agrees with the forward table it inverts, all 84 frame/planet reads',
+    !!TY && !!MT && [...Array(12).keys()].every((asc) => MT.DISPOSITORS.every((p) => {
+      const want = []; for (let sg = 0; sg < 12; sg++) if (MT.RULERS[sg] === p) want.push(TY.houseOfSign(sg, asc));
+      return TY.housesRuledBy(p, asc).join() === want.sort((a, b) => a - b).join();
+    })));
+  check('STEP L · the two hand-walked rules-houses loops are GONE from the DC (a walk is not a lookup)',
+    !/_rulerOfSign\(i\) === name/.test(src.dc || '') && /_rulesHouses\(planet, ascSignIdx\)/.test(src.dc || ''),
+    ((src.dc || '').match(/_rulerOfSign\(i\) === name/g) || []).length + ' walk(s) left');
+  // Identity, not equality: `===` is what proves nobody kept a private copy that agrees today.
+  check('STEP D2 · framing, astrodna and rulers READ the Mater’s tables (same objects, not copies)',
+    !!MT && F.RULERS === MT.RULERS && F.SIGNS === MT.SIGNS && A.SIGN_RULERS === MT.DOMICILE &&
+    A.SIGN_ELEMENTS === MT.SIGN_ELEMENTS && (!window.__ORBO_RULERS || (window.__ORBO_RULERS.DOMICILE === MT.DOMICILE && window.__ORBO_RULERS.EXALTATION === MT.EXALTATION)));
+  const noRulerLiteral = (k) => !/Aries: 'Mars'/.test(src[k] || '') && !/'Mars','Venus','Mercury','Moon'/.test(src[k] || '');
+  check('STEP D2 · rulership is TYPED ONCE: not in framing.js, astrodna.js, rulers.js or the DC',
+    noRulerLiteral('framing') && noRulerLiteral('astrodna') && noRulerLiteral('rulers') && noRulerLiteral('dc') && /Aries: 'Mars'/.test(src.mater || '') === false && /'Mars', 'Venus', 'Mercury', 'Moon'/.test(src.mater || ''));
+  check('STEP D2 · exaltation is typed once (the degrees live only on the Mater)',
+    !/degree: 19/.test(src.rulers || '') && !/Sun: 0, Moon: 1/.test(src.framing || '') && !/Sun: 0, Moon: 1/.test(src.dc || '') && /Sun: 19/.test(src.mater || ''));
+  check('STEP D2 · the whole-sign rotation is gone from framing and astrodna (they look it up)',
+    /houseOfSign\(signIndex\(lon\), signIndex\(ascLon\)\)/.test(src.framing || '') &&
+    /return houseOfSign\(signIdx, ascSignIdx\)/.test(src.astrodna || ''));
+  check('STEP D2 · the DC keeps exactly ONE copy of the rotation, inside _houseOf, as a degradation path',
+    ((src.dc || '').match(/\+ 12\) % 12\) \+ 1/g) || []).length === 1 && /_houseOf\(signIdx, ascSignIdx\) \{/.test(src.dc || ''),
+    ((src.dc || '').match(/\+ 12\) % 12\) \+ 1/g) || []).length + ' occurrence(s)');
+  // THE SAME LAW ONE STEP DOWN (v0.887). The DC carried twenty-five hand-rolled floor(lon / 30)
+  // projections, two of them three lines from the Connectome path in _specRows, so one function
+  // computed a sign two ways. Every one that feeds a TABLE now goes through `_signOf`, the declared
+  // projection (§3.11). NINE READS are left across eight lines, each one of three named exceptions,
+  // so the COUNT is pinned: a tenth has to justify itself.
+  //   2 doors      · `_signOf` itself and the spine's own `sg`, both Mater-first with a fallback
+  //   4 predicates · three `signAt` scans and the crossing test (which compares TWO, so it counts
+  //                  twice), thousands of calls per scan, arithmetic rather than a table read,
+  //                  exactly as _houseOf's rotation is
+  //   2 formatters · _fmtShort / _fmtLong need the sign AND the remainder off ONE normalization,
+  //                  and `_signOf` returns only the first half
+  check('STEP L · the DC routes every TABLE-feeding sign read through _signOf, and the exceptions are counted',
+    (() => {
+      const n = ((src.dc || '').match(/Math\.floor\([^\n]*?\/ ?30\)/g) || []).length;
+      return n === 10 && /_signOf\(lon\) \{ const M = this\._mater\(\)/.test(src.dc || '');
+    })(),
+    ((src.dc || '').match(/Math\.floor\([^\n]*?\/ ?30\)/g) || []).length + ' left (2 doors + 6 predicate reads + 2 formatters)');
+  // THE CONNECTOME STORE'S LIFECYCLE (v0.887). §3.8 named LRU pruning and v0.885 shipped none, and the
+  // growth vector was never the cap: it was rows under a key this build can no longer FORM (a doctrine
+  // change, a codec bump), which no cap and no LRU can reach because nothing ever loads them again.
+  // Hydrate deletes those; un-favoriting deletes its own row; the cap is the backstop.
+  check('STEP L · the store prunes, deletes on a stale key, and drops an un-favorited chart',
+    [/_connPrune\(\) \{/, /const CAP = 32;/, /async _connDel\(key\)/, /_connForget\(nc\)/,
+     /if \(k\.indexOf\(head\) !== 0 \|\| k\.slice\(-tail\.length\) !== tail\) \{ this\._connDel\(k\); return; \}/]
+      .every((re) => re.test(src.dc || '')));
+  check('STEP L · the natal Expression is the only KEEP, so favoriting cannot age out the row every sheet reads',
+    /this\._connPersist\(e, true\)/.test(src.dc || '') && ((src.dc || '').match(/_connPersist\([a-z]+, true\)/g) || []).length === 1);
+  check('STEP L · the read path compiles FIRST and consults the store after, off the published key',
+    /const fresh = C\.express\(occ, occ\.Ascendant, sect,[\s\S]{0,120}?C\.connKey\(fresh, this\._doctrineKey\(\)\)/.test(src.dc || ''));
+  check('STEP D2 · the instrument’s own sign engraving is checked against the Mater at mount, not re-typed as law',
+    /the wheel says/.test(src.dc || '') && !!MT && MT.SIGNS.length === 12);
+  // THE LANDMINE. The DC's modern table is DISPLAY ONLY and must survive verbatim: merging Pluto into
+  // the traditional table silently rewrites dignity, the disposition chains, the rules-houses loops,
+  // ZR period lengths and the election engine.
+  check('STEP L · the CO-RULERSHIP BOUNDARY: the modern table is the Tympan’s SEPARATE index now, and the DC stamps no lord',
+    !!TY && TY.coRulerOfSign(7) === 'Pluto' && TY.coRulerOfSign(10) === 'Uranus' && TY.coRulerOfSign(11) === 'Neptune'
+    && !/this\.CO_RULER = \{/.test(src.dc || '') && /T\.coRulerOfSign/.test(src.dc || ''));
+  check('STEP L · and the walker can never branch into a modern, because it is never handed that table',
+    !!TY && [...Array(12).keys()].every((asc) => TY.MODERNS.every((p) => TY.RULES_HOUSES[asc][p] === undefined && TY.CO_RULES_HOUSES[asc][p].length === 1)));
+  check('STEP D2 · and NO modern attribution reached the Mater’s traditional table',
+    !!MT && !['Pluto', 'Uranus', 'Neptune'].some((p) => MT.RULERS.includes(p) || MT.DISPOSITORS.includes(p) || Object.values(MT.DOMICILE).includes(p)));
+  check('STEP D2 · a non-classical ruler in that table throws AT LOAD, so the merge cannot happen quietly',
+    /is not one of the classical seven/.test(src.mater || ''));
+  check('STEP D2 · the DC still counts one lord: the dignity ladder reads the Mater, never a co-ruler',
+    /this\._dignityOf\(name, s\) \|\| 'peregrine'/.test(src.dc || '') && !/CO_RULER\[[^\]]*\] === name/.test(src.dc || ''));
+  check('STEP D2 · the three browser builds wait for __ORBO_MATER (a missing guard spins boot() forever)',
+    /!window\.__ORBO_MATER/.test(src.framingBrowser || '') && /!window\.__ORBO_MATER/.test(src.astrodnaBrowser || '') && /!window\.__ORBO_MATER/.test(src.rulersBrowser || ''));
+
+  sec('the Ring reproduces the old distance arithmetic exactly');
+  // framing/astrodna/DC all measure with wrap180 or a min() of two norm360s. If ring.separation +
+  // ring.arcOf are not bit-identical to those, every orb in the app moves the moment it is rewired.
+  let arcBad = 0, arcN = 0, worst = 0;
+  for (let a = 0; a < 360; a += 0.37) for (let b = 0; b < 360; b += 7.13) {
+    const oldWrap = Math.abs(F.wrap180(b - a));
+    const oldMin = Math.min(F.norm360(b - a), F.norm360(a - b));
+    const ringArc = R.arcOf(R.separation(a, b));
+    arcN++;
+    const d = Math.max(Math.abs(oldWrap - ringArc), Math.abs(oldMin - ringArc));
+    if (d > worst) worst = d;
+    if (d > 1e-9) arcBad++;
+  }
+  check('arcOf(separation) === |wrap180(Δ)| === min(norm360 pair), over ' + arcN + ' pairs', arcBad === 0, 'max delta ' + worst.toExponential(1));
+  check('separation is directed and arcOf folds it', eq(R.separation(350, 10), 20) && eq(R.separation(10, 350), 340) && eq(R.arcOf(340), 20));
+
+  sec('framing.aspectBetween · parity through the public door');
+  let abBad = 0, abN = 0, abMiss = [];
+  for (let d = 0; d <= 180; d += 0.05) {
+    const got = F.aspectBetween(0, d, 6);
+    abN++;
+    if (got) {
+      if (!marks.has(got.angle)) { abBad++; continue; }
+      // the old orb is |arc − angle|, and the Ring must agree to the last bit
+      if (!eq(got.orb, Math.abs(R.arcOf(R.separation(0, d)) - got.angle))) abBad++;
+    } else {
+      // no framing aspect: the Ring may still name a nearest mark, and that is EXPECTED — the
+      // narrowing is framing's five-angle set, not a disagreement about geometry.
+      const n = R.nearest(R.separation(0, d));
+      if (n.residual <= 6 && fr.includes(n.angle)) abMiss.push(d.toFixed(2) + '→' + n.angle);
+    }
+  }
+  check('aspectBetween: every hit is a mark and its orb is the Ring residual, ' + abN + ' separations', abBad === 0);
+  check('aspectBetween misses nothing the Ring finds inside its own five angles', abMiss.length === 0, abMiss.slice(0, 6).join(' · '));
+
+  sec('astrodna.calcAspects · parity through buildAstroDNA, on the fixture natal');
+  // the fixture natal, same as loom.test.html / fertilize.test.html
+  const NAT = { y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4 / 60, lon: -(89 + 24 / 60) };
+  const njd = E.julianDay(NAT.y, NAT.mo, NAT.d, NAT.h, NAT.mi, 0, NAT.tz);
+  let dna = null; try { dna = A.buildAstroDNA(njd, NAT.lat, NAT.lon); } catch (e) { dna = null; }
+  check('genome built', !!dna && Array.isArray(dna.aspects), dna ? dna.aspects.length + ' aspect rows' : 'failed');
+  if (dna && dna.aspects) {
+    const lon = {}; for (const n of Object.keys(dna.nodes || {})) lon[n] = dna.nodes[n].longitude;
+    let orbBad = 0, angBad = 0, conj = 0;
+    for (const r of dna.aspects) {
+      if (!marks.has(r.angle)) angBad++;
+      if (r.angle === 0) conj++;
+      const [x, y] = r.nodes;
+      if (lon[x] != null && lon[y] != null && !eq(r.orb, Math.abs(R.arcOf(R.separation(lon[x], lon[y])) - r.angle))) orbBad++;
+    }
+    check('every emitted angle is a Ring mark', angBad === 0);
+    check('every emitted orb IS the Ring residual to the mark', orbBad === 0);
+    // THE FALSY-ZERO TRIPWIRE. Conjunctions are the most common row in the app and 0 is falsy, so a
+    // truthiness test at the new call site would drop them all with nothing thrown. Pin the count.
+    check('conjunctions are present and counted, so a truthiness bug at the new call site fails here', conj > 0, conj + ' rows at angle 0');
+    // STEP B SHIPPED: calcAspects is single-valued now, so what was a REPORT of the rows a change
+    // would move is a pass/fail check that they did not move.
+    const byPair = new Map();
+    for (const r of dna.aspects) { const k = r.nodes.slice().sort().join('×'); (byPair.get(k) || byPair.set(k, []).get(k)).push(r); }
+    const multi = [...byPair.entries()].filter(([, v]) => v.length > 1);
+    check('STEP B · one row per pair, ' + byPair.size + ' pairs',
+      multi.length === 0, multi.length ? multi.map(([k, v]) => k + ': ' + v.map((r) => r.aspect).join(', ')).join(' · ') : 'single-valued');
+    // And each surviving row IS the min residual over astrodna's own admitted five, inside its orb.
+    const ORBS = {}; { const b = block('astrodna', /const ASPECT_ORB = \{([\s\S]*?)\};/); const g = /([\d.]+):\s*([\d.]+)/g; let m; while ((m = g.exec(b))) ORBS[parseFloat(m[1])] = parseFloat(m[2]); }
+    let pickBad = 0;
+    for (const r of dna.aspects) {
+      const [x, y] = r.nodes; if (lon[x] == null || lon[y] == null) continue;
+      const arc = R.arcOf(R.separation(lon[x], lon[y]));
+      let want = null, wr = Infinity;
+      for (const a of ad) { const res = Math.abs(arc - a); if (res <= (ORBS[a] ?? 0) && res < wr - 1e-12) { wr = res; want = a; } }
+      if (want !== r.angle) pickBad++;
+    }
+    check('STEP B · every emitted row is the MIN-RESIDUAL admitted mark inside its own orb', pickBad === 0, pickBad + ' rows disagree');
+    const wide = dna.aspects.filter((r) => { const [x, y] = r.nodes; if (lon[x] == null || lon[y] == null) return false; const n = R.nearest(R.separation(lon[x], lon[y])); return n.angle !== r.angle; });
+    report('STEP B · rows whose nearest MARK differs from the angle astrodna assigned (' + wide.length + '). '
+      + 'These would move only if the narrowing were widened: the Ring sees all eleven marks and ASPECT_DEFS sees five.',
+      wide.length ? wide.map((r) => r.nodes.join('×') + ': ' + r.aspect + ' ' + r.angle + '° → nearest ' + R.nearest(R.separation(lon[r.nodes[0]], lon[r.nodes[1]])).angle + '°').join('\n') : 'none');
+  }
+
+  sec('the DC · first match in table order vs nearest mark  (REPORT · step 4 decision)');
+  let step4 = null; // hoisted so STEP E below can assert the bands it shipped, off the same numbers
+  // _aspectSnapshot walks this.ASPECTS in ascending order and BREAKS on the first angle inside its
+  // scaled orb; the Ring is nearest-mark, ties to the lower angle. Where those disagree is exactly
+  // the set of readouts the rewire would change. Enumerated here rather than argued about.
+  if (T.dcAsp && dcRows.length) {
+    const scale = {}, dflt = {};
+    for (const r of dcRows) { scale[r.angle] = r.scale; dflt[r.angle] = r.on; }
+    const ORB = 6; // the natal orb default; the shape of the disagreement does not depend on it
+    const orbFor = (ang) => ORB * (scale[ang] != null ? scale[ang] : 1);
+    const runs = { all: [], major: [] };
+    for (const [setName, on] of [['all', () => true], ['major', (a) => dflt[a] === true]]) {
+      const table = dcSet.filter(on);
+      let cur = null;
+      for (let arc = 0; arc <= 180; arc = +(arc + 0.01).toFixed(2)) {
+        let first = null;
+        for (const ang of table) { if (Math.abs(arc - ang) <= orbFor(ang)) { first = ang; break; } }
+        let near = null, bestR = Infinity;
+        for (const ang of table) { const r = Math.abs(arc - ang); if (r <= orbFor(ang) && r < bestR - 1e-12) { bestR = r; near = ang; } }
+        const differ = first !== near;
+        if (differ && !cur) cur = { from: arc, first, near };
+        if (!differ && cur) { cur.to = arc - 0.01; runs[setName].push(cur); cur = null; }
+      }
+      if (cur) { cur.to = 180; runs[setName].push(cur); }
+    }
+    step4 = runs;
+    check('with only the five majors enabled (the resting state) first-match and nearest AGREE everywhere',
+      runs.major.length === 0, runs.major.length ? runs.major.length + ' disagreeing arcs' : 'no reader at rest sees a change');
+    report('STEP 4 · with EVERY aspect chip enabled, the arcs where first-match ≠ nearest (' + runs.all.length + ' bands, orb ' + ORB + '°)',
+      runs.all.length ? runs.all.map((r) => r.from.toFixed(2) + '°–' + r.to.toFixed(2) + '°: shows ' + r.first + '°, nearest is ' + r.near + '°').join('\n') : 'none');
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // STEP E DONE (2026-08-04). The DC no longer decides what an arc IS in twenty-two places. Two
+  // methods own it: _arc measures (the Ring's separation and arc) and _aspHit decides (the nearest
+  // ENABLED angle inside its own orb). Not ring.nearest, deliberately: nearest answers for all eleven
+  // marks, a reader answers for the angles the native enabled, and that set includes the three
+  // septiles, which are not marks. Same shape of proof as every step before it: not "do the loops
+  // agree" but "is there still more than one loop".
+  sec('STEP E · the DC’s loops (the one measurement, the one decision)');
+  const dc = src.dc || '';
+  const count = (re) => (dc.match(new RegExp(re.source, 'g')) || []).length;
+  check('STEP E · _arc measures through the Ring (arcOf of separation), never by hand',
+    /_arc\(a, b\) \{[\s\S]{0,320}?R\.arcOf\(R\.separation\(a, b\)\)/.test(dc));
+  check('STEP E · _arc returns NULL for a non-finite end (absence is null, the Ring’s own contract)',
+    /_arc\(a, b\) \{\s*\n\s*if \(!Number\.isFinite\(a\) \|\| !Number\.isFinite\(b\)\) return null;/.test(dc));
+  check('STEP E · _arc keeps ONE arithmetic degradation for frame one, and it is arithmetic, not a table',
+    /R \? R\.arcOf\(R\.separation\(a, b\)\) : Math\.abs\(this\.wrap\(a - b\)\)/.test(dc)
+    && count(/: Math\.abs\(this\.wrap\(a - b\)\)/) === 1);
+  check('STEP E · the audit holds the degradation path to the Ring at mount (a silent drift means frame one disagrees with every frame after it)',
+    /degradation path disagrees with the Ring by up to/.test(dc));
+  check('STEP E · _aspHit is MIN-RESIDUAL over the enabled set, inside each angle’s own orb',
+    /_aspHit\(arc, cap\)[\s\S]{0,700}?residual > orb \|\| \(best && residual >= best\.residual - 1e-12\)/.test(dc));
+  check('STEP E · the tie still resolves to the LOWER angle (a strict test over an ascending spec, as ring.TIE says)',
+    R.TIE === 'lower' && /residual >= best\.residual - 1e-12/.test(dc));
+  check('STEP E · the enabled set is read from the ONE spec, and memoized on the aspOn object and the orb value',
+    /_aspEnabled\(\)[\s\S]{0,420}?this\.ASPECT_SPEC\.filter/.test(dc)
+    && /this\._aspEnC\.on === on && this\._aspEnC\.orb === orb/.test(dc));
+  // The prize, stated as an absence. Every one of these was a place that made the decision itself.
+  check('STEP E · not one “walk the table, take the first angle inside its orb” loop is left',
+    count(/for \(const \[ang\] of /) === 0 && count(/for \(const \[ang, color\] of /) === 0,
+    count(/for \(const \[ang\] of /) + count(/for \(const \[ang, color\] of /) + ' left');
+  check('STEP E · the old enabled-pairs door (_aspects) is gone, so there is one enabled set and not two',
+    !/_aspects\(\)/.test(dc));
+  check('STEP E · no reader resolves an orb by hand any more: _orbFor appears once, as its own definition',
+    count(/_orbFor\(/) === 1, count(/_orbFor\(/) + ' occurrence(s)');
+  const hits = count(/this\._aspHit\(/);
+  check('STEP E · every aspect decision in the file goes through the one door', hits >= 15, hits + ' _aspHit call sites');
+  // The Ring's falsy-zero contract, inherited: a conjunction is angle 0 and an exact hit is residual
+  // 0, both falsy. `if (hit.angle)` would silently drop every conjunction, the commonest aspect here.
+  check('STEP E · falsy-zero tripwire: the HIT is tested, never hit.angle and never hit.residual',
+    !/if \(!?hit\.(angle|residual)\)/.test(dc) && /if \(!hit\) /.test(dc));
+  // The ninth angle table. §1 counted eight; _compPairs' inter-chart MAJ list was missed the same way
+  // fertilize's decoder was, and for the reason §1 records: the tables cluster by CONSTRUCT.
+  check('STEP E · the ninth table (_compPairs’ inter-chart majors) is DERIVED from _majorAngles(), not typed',
+    /const MAJ = \[\.\.\.this\._majorAngles\(\)\]/.test(dc) && !/\[\[0, 'conjunct'\]/.test(dc));
+  check('STEP E · and it throws on a gap rather than reading as undefined in a sheet',
+    /the inter-chart grid has no word or family for/.test(dc));
+  report('STEP E · STILL OWED, flagged not fixed: _compPairs’ hardcoded 3° inter-chart orb',
+    /if \(orb <= 3\)/.test(dc) ? 'present. An orb is the reader’s by law, so this is not a rewire bug; but CLAUDE.md says a hardcoded orb on a derived layer should move onto synOrb, and that is a doctrine call, not a refactor.' : 'gone');
+  // What shipped, measured against the pre-E behaviour rather than argued: the ONE band, and the fact
+  // that a reader at rest sees nothing move (checked above, on the same numbers).
+  if (step4) {
+    const all = step4.all;
+    const one = all.length === 1 ? all[0] : null;
+    check('STEP E · with every chip enabled, min-residual moves exactly ONE band and it is the documented one',
+      !!one && Math.abs(one.from - 152.19) < 0.011 && Math.abs(one.to - 153.00) < 0.011 && one.first === 150 && isSeptile(one.near),
+      one ? one.from.toFixed(2) + '°–' + one.to.toFixed(2) + '°: was ' + one.first + '° (quincunx), now ' + one.near + '° (triseptile)' : all.length + ' bands');
+    check('STEP E · the band’s new reading is the NEARER mark, which is the point of the swap',
+      !!one && Math.abs(one.from - one.near) < Math.abs(one.from - one.first));
+  }
+  // The pre-D snapshot is also the pre-E snapshot, so the loops it holds are the ones this step
+  // replaced. Reading them out of it is what makes "twenty-two copies" a count and not a claim.
+  const pre = src.dcPre || '';
+  report('STEP E · first-match loops in the pre-E snapshot, for the record',
+    ((pre.match(/for \(const \[ang\] of /g) || []).length + (pre.match(/for \(const \[ang, color\] of /g) || []).length)
+      + ' in archive/Orbo Astrolabe 2026-08-04.dc.html, 0 in the working file');
+
+  // ─────────────────────────────────────────────────────────────────
+  // STEPS F AND G DONE (2026-08-04), in one block, because they are the only changes in this rewire
+  // that invalidate a stored artifact and doing them separately would cost two rebuilds of each.
+  sec('STEP F · the gene is a Ring state, and the node order');
+  const seqA = A.buildAstroDNA(2448442.2708333, 43.33, -90.39); // the fixture natal
+  check('STEP F · the gene is the Ring’s own encoder: astrodna owns none of its own any more',
+    /fineStateOf\(norm360\(lonDeg\), isRetro\)/.test(src.astrodna || '') && !/function encodeValue/.test(src.astrodna || ''));
+  check('STEP F/J · every gene is a state in the Ring’s FINE address space',
+    seqA.sequence.length === 12 && seqA.sequence.every((g) => Number.isInteger(g) && g >= 0 && g < R.FINE_STATES),
+    seqA.sequence.join('-'));
+  // The whole claim of the swap, measured: the old encoder was the same arithmetic one-based. Step J
+  // widened the unit, so the comparison runs on the PROJECTION, which is what codec 2 stored.
+  const oldGene = (lon, retro) => Math.floor(((lon % 360) + 360) % 360) + 1 + (retro ? 360 : 0);
+  const offBy = A.NODE_ORDER.map((n, i) => seqA.degreeSequence[i] - (oldGene(seqA.nodes[n].longitude, seqA.nodes[n].isRetrograde) - 1));
+  check('STEP F · new equals OLD MINUS ONE, uniformly, in both halves', offBy.every((d) => d === 0),
+    'max deviation ' + Math.max(...offBy.map(Math.abs)));
+  check('STEP F · the node order leads with the Ascendant, then Moon, then Sun',
+    A.NODE_ORDER.slice(0, 3).join(' · ') === 'Ascendant · Moon · Sun', A.NODE_ORDER.join(' · '));
+  check('STEP F · PRIMARY_NODES moved with it, so “the first three” is still true POSITIONALLY',
+    A.PRIMARY_NODES.join() === A.NODE_ORDER.slice(0, 3).join(), A.PRIMARY_NODES.join(' · '));
+  check('STEP F · still twelve genes, same set', A.NODE_ORDER.length === 12 && new Set(A.NODE_ORDER).size === 12);
+  // The ruling: the gene is the MEAN node (steady, a smooth secular function of time, uniformly
+  // retrograde), and the osculating TRUE node stays available on the decode surface. Not a sun/moon
+  // question: the genome is neither the instrument nor the pane.
+  const posF = E.positions(2448442.2708333);
+  check('STEP F · the 12th GENE reads the MEAN node, and names its source',
+    seqA.nodes.Node.longitude === E.norm360(posF.NodeMean) && seqA.nodes.Node.isRetrograde === true && seqA.nodes.Node.source === 'NodeMean',
+    seqA.nodes.Node.longitude.toFixed(4) + '°, retrograde');
+  // THE BOUNDARY THE FIRST CUT OF STEP F GOT WRONG, now pinned. Three readers flatten a genome into one
+  // longitude map (the DC twice, timespine.natalFromDna) and all three write the
+  // genes first and extras.bodies second. `rulers.lonsFromDna` was a fourth until the Connectome pass
+  // deleted it (specs/The Connectome Pass.md 5.3), so what this file guards there is its ABSENCE. So `Node` on the decode surface is the OSCULATING node the
+  // instrument has always drawn, it overwrites gene 12 in every flattened map, and the natal glyph on
+  // the plate does not move 1.3 degrees because the genome changed which node is its identity value.
+  const flatF = {};
+  for (const n in seqA.nodes) if (n !== 'Ascendant') flatF[n] = seqA.nodes[n].longitude;
+  for (const b in seqA.extras.bodies) flatF[b] = seqA.extras.bodies[b].longitude;
+  check('STEP F · the FLATTENED decode surface’s Node is the TRUE node, so THE INSTRUMENT DOES NOT MOVE',
+    flatF.Node === E.norm360(posF.Node),
+    'plate ' + E.norm360(posF.Node).toFixed(3) + '° (true) vs gene ' + E.norm360(posF.NodeMean).toFixed(3) + '° (mean)');
+  check('STEP F · and it gained NO new body key, so no scorer receives a body it was never scoped for',
+    !('NodeTrue' in flatF) && !('NodeMean' in flatF), Object.keys(flatF).length + ' keys');
+  check('STEP F · every reader that flattens a genome writes extras LAST (which is what makes that true)',
+    [/for \(const n in dna\.nodes\) if \(n !== 'Ascendant'\) pos\[n\][\s\S]{0,200}?extras[\s\S]{0,80}?bodies/.test(src.timespine || ''),
+     // a deleted reader cannot flatten in the wrong order, and a regex still hunting for a function
+     // that no longer exists is a green that means nothing. Assert the deletion instead — of the
+     // DEFINITION, not the word: rulers.js's own header names all three in the note recording that
+     // they went (specs/The Connectome Pass.md 5.3), and a record of a deletion is not the deletion
+     // undone.
+     !/(export\s+)?function\s+(lonsFromDna|dispositionFromDna|disposition)\b/.test(src.rulers || '') &&
+       (!window.__ORBO_RULERS || (!window.__ORBO_RULERS.disposition && !window.__ORBO_RULERS.lonsFromDna && !window.__ORBO_RULERS.dispositionFromDna)),
+     // FOUR in the DC since the rectification and sky-eclipse passes (was two). The claim is the
+     // ORDER, not the count, but the count is pinned so a fifth flattener has to justify itself.
+     (dc.match(/for \(const n in dna\.nodes\) if \(n !== 'Ascendant'\) pos\[n\]/g) || []).length === 4].every(Boolean));
+  check('STEP F · both values are therefore available to the instrument: the gene is mean, the surface is true',
+    seqA.nodes.Node.longitude !== flatF.Node && Math.abs(E.wrap180(seqA.nodes.Node.longitude - flatF.Node)) < 2);
+  // THE GENERAL GUARD (v0.886). The instance: astrodna.js's own header went on saying "four readers
+  // flatten a genome (the DC twice, timespine.natalFromDna, rulers.lonsFromDna)" for a day after 5.3
+  // deleted the fourth, while THIS file's copy of the same sentence had been corrected. A deleted
+  // reader that keeps its name in a header is still being cited as live by the next person who reads
+  // it. So: a deleted name may appear ONLY in a sentence that records the deletion.
+  const DELETED_READERS = ['lonsFromDna', 'dispositionFromDna'];
+  const RECORDED = /delet|absence|no longer|until|gone|retired|removed|not parked/i;
+  const offenders = [];
+  for (const key of ['astrodna', 'astrodnaBrowser', 'rulers', 'framing', 'timespine', 'luna', 'mundane', 'fertilize', 'loom', 'mater', 'tympan']) {
+    const lines = (src[key] || '').split('\n');
+    lines.forEach((line, i) => {
+      if (!DELETED_READERS.some((n) => line.includes(n))) return;
+      // a sentence wraps, so the record may sit on the line above or below the name
+      const around = [lines[i - 1] || '', line, lines[i + 1] || ''].join(' ');
+      if (!RECORDED.test(around)) offenders.push(key + ':' + (i + 1));
+    });
+  }
+  check('STEP F · no source still NAMES a deleted reader as a live one (a header is where a deletion goes on living)',
+    offenders.length === 0, offenders.join(' \u00b7 ') || 'clean across 11 sources');
+  check('STEP F · the gene’s absence would THROW rather than sequence a missing node',
+    /the 12th gene is the MEAN node and the ephemeris gave none/.test(src.astrodna || ''));
+  // A sequence is versioned, NEVER sniffed: one containing 720 is old and one containing 0 is new,
+  // but every other sequence is ambiguous, and after the reorder position identifies nothing either.
+  check('STEP F/J · SEQ_CODEC is stamped and exported', A.SEQ_CODEC === 3);
+  check('STEP F · the DC stamps it on every row and re-derives a stale one (never transforms it)',
+    /entry\.seqCodec = A\.SEQ_CODEC/.test(dc) && /r\.seqCodec !== A\.SEQ_CODEC/.test(dc));
+
+  sec('STEP G · the two cache keys · chart identity is the genome, sample identity is the instant');
+  const W = window.__ORBO_FERT;
+  if (W && W.fertKey) {
+    const seqStr = A.degreeSequenceString(seqA);
+    const natG = { jd: seqA.jd, asc: seqA.extras.angles.asc, mc: seqA.extras.angles.mc, pos: {}, seq: seqStr };
+    for (const n of A.NODE_ORDER) natG.pos[n === 'Ascendant' ? 'Asc' : n] = seqA.nodes[n].longitude;
+    const k1 = W.fertKey(natG, 'doc');
+    check('STEP G · fertKey files the weave under the GENOME when one is present', /\|g/.test(k1), k1.slice(0, 64) + '…');
+    // A float wiggle below a degree is the same chart, and used to be a different key and a wasted
+    // century of scanning.
+    const wiggled = JSON.parse(JSON.stringify(natG)); wiggled.jd += 1e-7; wiggled.pos.Mars += 0.004;
+    check('STEP G · and does NOT move when a float wiggles below the whole degree', W.fertKey(wiggled, 'doc') === k1);
+    const moved = Object.assign({}, natG, { seq: seqStr.replace(/^\d+/, (m) => String((+m + 1) % 360)) });
+    check('STEP G · but DOES move when the genome moves', W.fertKey(moved, 'doc') !== k1);
+    const noSeq = Object.assign({}, natG, { seq: null });
+    check('STEP G · the float fingerprint survives as the documented fallback for a caller with no genome',
+      new RegExp('^w' + W.CODEC + '\\|f').test(W.fertKey(noSeq, 'doc')) && W.fertKey(noSeq, 'doc') !== k1);
+    check('STEP G · the DC attaches seq to the natal it hands fertilize', /seq: dnaSeq,/.test(dc));
+  } else check('STEP G · fertilize registered its global', false, 'no __ORBO_FERT');
+  check('STEP G/J · the IDB spine store keys on the genome PROJECTION, as timespine.js always claimed',
+    /const seed = A && A\.degreeSequenceString \? A\.degreeSequenceString\(dna\)/.test(dc) && /'v' \+ S\.SPINE_VERSION \+ '\|' \+ seed/.test(dc));
+  // The trap this section exists for: two things are called spine.
+  check('STEP G · the in-RAM sample memo still keys on jd|lat|lon, and must forever',
+    /at\(jd, lat, lon\)/.test(dc) || /jd \+ '\|' \+ lat \+ ',' \+ lon/.test(dc));
+
+  sec('STEP J · the arcsecond gene, and the key projection that made it free');
+  // WHY: a resonator can prevent drift, detect loss and re-align a derived state, but it cannot
+  // recover arcminutes that were never encoded. The precision was never lost (nodes always carried
+  // the float) — what was missing was precision IN THE IDENTITY, and doctrine says two moments that
+  // engrave the same genome ARE the same chart. A whole-degree Ascendant pins a moment only to about
+  // four minutes of clock, so that claim was not quite true. At arcseconds it is.
+  check('STEP J · the unit is the Ring’s, and it is INHERENT: 3600 · 1,296,000 · two halves',
+    R.ARCSEC === 3600 && R.ARCSECONDS === 1296000 && R.FINE_STATES === 2592000);
+  check('STEP J · THE DIE DID NOT GROW: the plate is still 360 rows of eleven marks',
+    R.PLATE.degrees === 360 && R.PLATE.size === 360 * R.MARKS.length * 2);
+  check('STEP J · the modulus is a NAMED CONSTANT in the state encoding, never a literal again',
+    !/const deg = \(s\) => s % 360/.test(src.ring || '') && /const deg = \(s\) => s % DEGREES/.test(src.ring || '') &&
+    />= DEGREES;/.test(src.ring || ''));
+  check('STEP J · astrodna imports the fine door and the projection, and no coarse encoder',
+    /import \{ MARKS, separation, arcOf, ARCSEC, arcsecOf, fineStateOf, stateOfFine \} from '\.\/ring\.js'/.test(src.astrodna || ''));
+  // THE PROJECTION IS THE CODEC-2 GENOME, BYTE FOR BYTE. This is the check that says the widening
+  // rebuilt nothing: it is measured against a re-implementation of what codec 2 stored, not argued.
+  const coarseJ = A.NODE_ORDER.map((n) => R.stateOf(seqA.nodes[n].longitude, seqA.nodes[n].isRetrograde));
+  check('STEP J · degreeSequenceString IS the codec-2 sequence string, so no artifact rebuilt',
+    A.degreeSequenceString(seqA) === coarseJ.join('-'), A.degreeSequenceString(seqA));
+  check('STEP J · and it is exactly the projection of the fine genome, so the two cannot disagree',
+    A.degreeSequenceString(seqA) === seqA.sequence.map((g) => R.stateOfFine(g)).join('-'));
+  // The two ends of the retrograde half that carry no information, by design. A migration that flips
+  // either is otherwise entirely invisible: an angle cannot station, the luminaries never appear
+  // retrograde, and the MEAN node is uniformly retrograde.
+  check('STEP J · gene 12 (the mean node) is ALWAYS in the retrograde half', seqA.sequence[11] >= R.ARCSECONDS);
+  check('STEP J · genes 1-3 (Ascendant, Moon, Sun) are NEVER in the retrograde half',
+    seqA.sequence.slice(0, 3).every((g) => g < R.ARCSECONDS));
+  check('STEP J · RETROGRADE_CAPABLE still excludes exactly those three',
+    !A.RETROGRADE_CAPABLE.includes('Ascendant') && !A.RETROGRADE_CAPABLE.includes('Moon') && !A.RETROGRADE_CAPABLE.includes('Sun'));
+  // THE KEY DOES NOT MOVE WHEN THE ARCSECONDS DO, which is the whole engineering claim of the step.
+  const jA = A.buildAstroDNA(2448442.2708333, 43.33, -90.39);
+  const jB = A.buildAstroDNA(2448442.2708333 + 1e-4, 43.33, -90.39);   // 8.6s: ~5" of Moon
+  const jC = A.buildAstroDNA(2448442.2708333 + 1e-3, 43.33, -90.39);   // 86s: the whole degree moves
+  check('STEP J · 8.6s of clock moves the GENOME', A.sequenceString(jA) !== A.sequenceString(jB));
+  check('STEP J · 8.6s of clock does NOT move the KEY, so no century of scanning is discarded',
+    A.degreeSequenceString(jA) === A.degreeSequenceString(jB));
+  check('STEP J · 86s DOES move the key, because the whole degree moved', A.degreeSequenceString(jA) !== A.degreeSequenceString(jC));
+  // 7b spent it, once, on purpose: the layer tag rides inside the stored bytes, so the rename is the
+  // one change to this file's bytes that could not be avoided. Held at 1 through J for exactly this.
+  check('STEP 7b · fertilize’s CODEC moved to 2 for the rename, and for nothing else',
+    !W || W.CODEC === 2 || /export const CODEC = 2/.test(src.fertilize || ''));
+  check('STEP J · fertilize records that natal.seq must be the PROJECTION, never the raw genome',
+    /MUST BE THE DEGREE PROJECTION/.test(src.fertilize || ''));
+  check('STEP J · the DC keys BOTH stores on the projection, and the fine genome stays the LABEL',
+    /A\.degreeSequenceString\(d\)/.test(dc) && /A\.degreeSequenceString\(dna\)/.test(dc) &&
+    /entry\.sequence = A\.sequenceString\(dna\)/.test(dc));
+  check('STEP J · the regenerated browser build carries the fine doors and the projection',
+    /fineStateOf/.test(src.ringBrowser || '') && /stateOfFine/.test(src.ringBrowser || '') &&
+    /degreeSequenceString/.test(src.astrodnaBrowser || '') && /const SEQ_CODEC = 3/.test(src.astrodnaBrowser || ''));
+  // The digits the levels ladder needs, cut from the gene rather than from a second flooring.
+  check('STEP J · every node carries dms, and it is the gene’s own arcseconds within the sign',
+    A.NODE_ORDER.every((n) => { const r = seqA.nodes[n];
+      return r.dms && r.dms.degree * 3600 + r.dms.minute * 60 + r.dms.second === Math.floor(r.degreeInSign * 3600); }),
+    'asc ' + seqA.nodes.Ascendant.dms.degree + '° ' + String(seqA.nodes.Ascendant.dms.minute).padStart(2, '0') + '′ ' + String(seqA.nodes.Ascendant.dms.second).padStart(2, '0') + '″');
+  check('STEP J · nodes[].state is the projection of its own gene', A.NODE_ORDER.every((n) => seqA.nodes[n].state === R.stateOfFine(seqA.nodes[n].numericalValue)));
+
+  sec('STEP K · the provenance gate · L2 and L3 may not promise what the chart does not own');
+  // Encoding precision the source never had is the one loss nothing downstream can detect. A birth
+  // time is stored to the MINUTE, and a minute of clock is ~15 arcminutes of Ascendant, so the gate is
+  // a CEILING on the digits and never a floor.
+  check('STEP K · the gate exists, with both ceilings: the clock and the ephemeris',
+    /_precision\(name, src\)/.test(dc) && /const DRIFT = \{ Ascendant: 15/.test(dc) && /const CEIL = \{ Node: 'arcmin'/.test(dc));
+  check('STEP K · _fmtLong is gated, and an unnamed caller keeps today’s arcminute reading',
+    /_fmtLong\(lon, name, src\)/.test(dc) && /const lvl = name \? this\._precision\(name, src\) : 'arcmin'/.test(dc));
+  check('STEP K · the LMT case widens the clock, because a zone from longitude is not a clock',
+    /tzSrc === 'lmt'\) \? 240 : 60/.test(dc));
+  check('STEP K · the osculating and derived points cap at L2 whatever the clock allows',
+    /Lilith: 'arcmin'/.test(dc) && /Fortune: 'arcmin'/.test(dc) && /Vertex: 'arcmin'/.test(dc));
+
+  sec('the standing guards · what every later step must not break');
+  check('no orb entered the Ring', typeof R.orb === 'undefined' && typeof R.ORB === 'undefined' && typeof R.ORB_SCALE === 'undefined');
+  check('nothing is quantized: nearest() measures to the exact mark, not to a state',
+    eq(R.nearest(116.37).residual, 3.63) && eq(R.nearest(R.separation(0, 116.37)).arc, 116.37));
+  check('absence is null, conjunction is 0', R.relation(0, 91) === null && R.relation(0, 0) === 0 && R.exact(0) === 0 && R.supplementOf(180) === 0 && R.supplementOf(72) === null);
+  check('the live buffers still never leave the module', R.PLATE.targets === undefined && typeof R.PLATE.snapshot === 'function');
+  const thr = (fn) => { try { fn(); return false; } catch (e) { return e instanceof RangeError; } };
+  check('a programmer error still throws at every entry point',
+    thr(() => R.relation(720, 0)) && thr(() => R.targetDegree(0, 51.4286, 1)) && thr(() => R.targetDegree(0, 90, 0)) && thr(() => R.stateOf(10, 1)) && thr(() => R.nearest(NaN)) &&
+    thr(() => R.arcsecOf(R.FINE_STATES)) && thr(() => R.stateOfFine(1.5)) && thr(() => R.fineStateOf(10, 1)) && thr(() => R.dmsOf(-1)));
+
+  out.innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span> · ' + fails.join(' · ') : '<span class="ok">all checks pass</span>')
+    + '<span class="dim"> · REPORT sections are decisions, not failures</span></h2>';
+})();
+</script>
+</body></html>

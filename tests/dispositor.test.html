@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the Dispositor · the walker, over an occupant-to-sign map</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:940px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}.note{color:#c99a4a}td{padding:1px 10px 1px 0;vertical-align:top}pre{color:#b6aed2;white-space:pre-wrap;margin:4px 0 0}</style>
+<script src="../ephem.browser.js?v=3"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=2"></script>
+<script src="../dispositor.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../astrodna.browser.js?v=6"></script>
+</head><body>
+<h1>The Dispositor · bearer, path, keeper and terminal kind, for every occupant</h1>
+<p class="dim">Input is an OCCUPANT-TO-SIGN MAP, never longitudes and never a genome — the same shape a
+synchronic or composite placement set arrives in, with no adapter. What this file guards: the two node
+classes hold (only the seven dispose), one termination rule (length names the result: 1 domicile, 2
+mutual reception, 3+ dispositor loop), cycle ids are derived from sorted members and not insertion order,
+reception is scoped to the classical seven and reads domicile/exaltation/mixed, and an incomplete occupant
+set reads null rather than guessing.</p>
+<p class="note">v0.886 · ONE TERMINATION RULE MEANS ONE TERMINAL SHAPE. A fixed point IS a cycle of
+length 1, which this file's own header has said from its first line, and the walker then declined to
+register it: a domicile terminal had no cycle record and `keeper` was a planet name where every other
+terminal was a cycle id. `keeper` is a `{kind, id}` record now, on every chain, and a 1-cycle is
+registered like any other. Section 11 pins it.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(async function () {
+  const D = window.__ORBO_DISPOSITOR, M = window.__ORBO_MATER, A = window.__ORBO_ASTRODNA;
+  const out = document.getElementById('out');
+  if (!D) { out.innerHTML = '<span class="bad">dispositor.browser.js did not register __ORBO_DISPOSITOR</span>'; return; }
+
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const threw = (fn) => { try { fn(); return false; } catch (e) { return true; } };
+  const sg = (name) => M.SIGN_INDEX[name];
+  const src = await (await fetch('../dispositor.js')).text().catch(() => '');
+  const code = (src || '').replace(/^\s*\/\/.*$/gm, '');
+
+  sec('1 · bearer · the immediate domicile lord, a direct table read');
+  check('bearerOf reads the Mater\u2019s domicile table', D.bearerOf(sg('Taurus')) === 'Venus' && D.bearerOf(sg('Scorpio')) === 'Mars' && D.bearerOf(sg('Aquarius')) === 'Saturn');
+  check('bearerOf throws on a malformed sign address', threw(() => D.bearerOf(12)) && threw(() => D.bearerOf(-1)) && threw(() => D.bearerOf(1.5)));
+  check('isDispositorCapable: the seven, and only the seven', M.DISPOSITORS.every((p) => D.isDispositorCapable(p)) && !D.isDispositorCapable('Ascendant') && !D.isDispositorCapable('Uranus') && !D.isDispositorCapable('Node'));
+
+  sec('2 · all-at-home · seven fixed points, no cycles, no receptions');
+  const home = { Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Gemini'), Venus: sg('Taurus'), Mars: sg('Aries'), Jupiter: sg('Sagittarius'), Saturn: sg('Capricorn') };
+  const wHome = D.walk(home);
+  check('all seven terminate as domicile (length-1 fixed points)', M.DISPOSITORS.every((p) => wHome.chains[p].terminalKind === 'domicile' && wHome.chains[p].keeper.kind === 'domicile' && wHome.chains[p].keeper.id === p));
+  check('every chain is a unit path', M.DISPOSITORS.every((p) => wHome.chains[p].path.length === 1));
+  check('seven 1-CYCLES recorded: a fixed point is a cycle of length 1, not an absence', wHome.cycles.length === 7 && wHome.cycles.every((c) => c.length === 1 && c.kind === 'domicile' && c.members.length === 1 && c.id === c.members[0]));
+  check('no receptions at home (a planet at home receives no one that way)', D.receptions(home).length === 0);
+
+  sec('3 · the 2-cycle · Sun in Cancer / Moon in Leo');
+  const pair = { Sun: sg('Cancer'), Moon: sg('Leo'), Mercury: sg('Virgo'), Venus: sg('Libra'), Mars: sg('Scorpio'), Jupiter: sg('Pisces'), Saturn: sg('Aquarius') };
+  const wPair = D.walk(pair);
+  check('Sun and Moon both terminate in the SAME 2-cycle', wPair.chains.Sun.terminalKind === 'mutual-reception' && wPair.chains.Sun.keeper.id === wPair.chains.Moon.keeper.id);
+  check('the cycle id is derived from SORTED members, never insertion order', wPair.chains.Sun.keeper.id === ['Moon', 'Sun'].sort().join('+'));
+  check('one 2-cycle recorded, plus the five still at home as 1-cycles', wPair.cycles.filter((c) => c.length === 2).length === 1 && wPair.cycles.find((c) => c.length === 2).kind === 'mutual-reception' && wPair.cycles.filter((c) => c.length === 1).length === 5);
+  const recPair = D.receptions(pair);
+  check('Sun\u21c4Moon: domicile mutual reception', recPair.some((r) => r.kind === 'domicile' && ((r.a === 'Sun' && r.b === 'Moon') || (r.a === 'Moon' && r.b === 'Sun'))), JSON.stringify(recPair));
+  // starting the walk from the OTHER member of the pair must yield the identical cycle id
+  check('cycle id agrees regardless of which member the walk started from', wPair.chains.Sun.keeper.id === wPair.chains.Moon.keeper.id);
+
+  sec('4 · a chain · Mercury \u2192 Mars \u2192 Saturn (final)');
+  const chain = { Mercury: sg('Aries'), Mars: sg('Capricorn'), Saturn: sg('Aquarius'), Sun: sg('Leo'), Moon: sg('Cancer'), Venus: sg('Taurus'), Jupiter: sg('Sagittarius') };
+  const wChain = D.walk(chain);
+  check('Mercury\u2019s path is Mercury>Mars>Saturn, Saturn the keeper', wChain.chains.Mercury.path.join('>') === 'Mercury>Mars>Saturn' && wChain.chains.Mercury.keeper.id === 'Saturn' && wChain.chains.Mercury.keeper.kind === 'domicile' && wChain.chains.Mercury.terminalKind === 'domicile');
+
+  sec('5 · mixed reception · Venus in Cancer (Jupiter exalt, Moon dom) / Moon in Pisces (Venus exalt, Jupiter dom)');
+  const mixed = { Venus: sg('Cancer'), Moon: sg('Pisces'), Sun: sg('Leo'), Mercury: sg('Gemini'), Mars: sg('Aries'), Jupiter: sg('Sagittarius'), Saturn: sg('Capricorn') };
+  const recMixed = D.receptions(mixed);
+  check('mixed reception Moon/Venus (dom\u00d7exalt)', recMixed.some((r) => r.kind === 'mixed' && ((r.a === 'Moon' && r.b === 'Venus') || (r.a === 'Venus' && r.b === 'Moon'))), JSON.stringify(recMixed));
+
+  sec('6 · leaves · disposed, never dispositors');
+  const withLeaves = { ...pair, Ascendant: sg('Aries'), Node: sg('Gemini'), Uranus: sg('Leo') };
+  const wLeaves = D.walk(withLeaves);
+  check('Ascendant\u2019s bearer is Mars, and its path steps INTO the planet graph', wLeaves.chains.Ascendant.bearer === 'Mars' && wLeaves.chains.Ascendant.path[1] === 'Mars');
+  check('no leaf ever appears as a later link in ANY chain (leaf-only, never a bearer)', Object.values(wLeaves.chains).every((c) => c.path.slice(1).every((n) => M.DISPOSITORS.includes(n))));
+  check('a leaf can terminate in the same cycle a planet does', wLeaves.chains.Ascendant.terminalKind === wLeaves.chains.Sun.terminalKind || wLeaves.chains.Ascendant.terminalKind === 'domicile' || wLeaves.chains.Ascendant.terminalKind === null);
+
+  sec('7 · an incomplete occupant set leaves the frame honestly');
+  const partial = { Mercury: sg('Aries') }; // Mars\u2019s own sign was never supplied
+  const wPartial = D.walk(partial);
+  check('Mercury steps toward Mars, but the walk cannot continue: keeper and terminalKind read null', wPartial.chains.Mercury.bearer === 'Mars' && wPartial.chains.Mercury.path.join('>') === 'Mercury' && wPartial.chains.Mercury.keeper === null && wPartial.chains.Mercury.terminalKind === null);
+
+  sec('8 · genome parity · a real chart, projected through mater.signIndexOf');
+  if (A) {
+    const NAT = { y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4 / 60, lon: -(89 + 24 / 60) };
+    const E = window.__ORBO_EPH;
+    let dna = null; try { dna = A.buildAstroDNA(E.julianDay(NAT.y, NAT.mo, NAT.d, NAT.h, NAT.mi, 0, NAT.tz), NAT.lat, NAT.lon); } catch (e) {}
+    check('the fixture genome still builds', !!dna);
+    if (dna) {
+      const signs = {};
+      for (const n in dna.nodes) signs[n] = M.signIndexOf(dna.nodes[n].longitude);
+      const wNat = D.walk(signs);
+      check('the chart ruler is the Ascendant\u2019s bearer', wNat.chains.Ascendant.bearer === dna.ruler.rulerPlanet, wNat.chains.Ascendant.bearer);
+      check('every one of the seven walks to SOME terminal kind (domicile, mutual reception or a loop)', M.DISPOSITORS.every((p) => ['domicile', 'mutual-reception', 'dispositor-loop'].includes(wNat.chains[p].terminalKind)));
+      check('cycle ids are stable and sorted', wNat.cycles.every((c) => c.members.join('+') === c.id && [...c.members].sort().join('+') === c.id));
+      check('EVERY terminating chain resolves to a REGISTERED cycle, domicile included', Object.values(wNat.chains).filter((c) => c.keeper).every((c) => wNat.cycles.some((cy) => cy.id === c.keeper.id && cy.kind === c.keeper.kind)));
+    }
+  } else { check('astrodna.browser.js present for the genome check', false); }
+
+  sec('9 · dispose() · the one-call convenience');
+  const dp = D.dispose(pair);
+  check('dispose() bundles walk() and receptions() identically', JSON.stringify(dp.chains) === JSON.stringify(wPair.chains) && JSON.stringify(dp.cycles) === JSON.stringify(wPair.cycles) && JSON.stringify(dp.receptions) === JSON.stringify(recPair));
+
+  sec('11 · the keeper contract (v0.886) · one termination rule, one terminal SHAPE');
+  // The defect this replaces: `keeper` was a planet NAME for a domicile terminal and a cycle ID for
+  // everything else, and a fixed point was never registered in `cycles`, so `cycleByPlanet` had no
+  // entry for a planet at home and any reader matching on cycle shape had to special-case length 1.
+  // A 1-cycle is a cycle. The record names its own kind, so no reader infers a kind from a string's
+  // shape.
+  const loop3 = { Mars: sg('Gemini'), Mercury: sg('Capricorn'), Saturn: sg('Aries'), Sun: sg('Leo'), Moon: sg('Cancer'), Venus: sg('Taurus'), Jupiter: sg('Sagittarius') };
+  const wLoop = D.walk(loop3);
+  check('keeper is a {kind, id} record on EVERY terminating chain, never a bare string', Object.values(wLoop.chains).every((c) => c.keeper === null || (typeof c.keeper === 'object' && typeof c.keeper.kind === 'string' && typeof c.keeper.id === 'string')));
+  check('keeper.kind and terminalKind never disagree', Object.values(wLoop.chains).every((c) => (c.keeper ? c.keeper.kind : null) === c.terminalKind));
+  check('the three kinds, and only the three', wLoop.cycles.every((c) => (c.length === 1 && c.kind === 'domicile') || (c.length === 2 && c.kind === 'mutual-reception') || (c.length >= 3 && c.kind === 'dispositor-loop')));
+  check('a 3-cycle registers as a dispositor-loop and its members share one keeper id', (() => {
+    const cy = wLoop.cycles.find((c) => c.length === 3);
+    return !!cy && cy.kind === 'dispositor-loop' && cy.members.every((m) => wLoop.chains[m].keeper.id === cy.id);
+  })(), JSON.stringify(wLoop.cycles.map((c) => c.id)));
+  check('a chain that leaves the frame still reads keeper null (absence is null, never a shape)', wPartial.chains.Mercury.keeper === null);
+  check('cycle ids stay unique across all three kinds', new Set(wLoop.cycles.map((c) => c.id)).size === wLoop.cycles.length);
+
+  sec('12 · cross-set · the relations BETWEEN two occupant sets (Phase 9 P4 prerequisite)');
+  // A: Venus in Aries (Mars' domicile, and the Sun's exaltation). B: Mars in Taurus (Venus' domicile).
+  const XA = { Venus: sg('Aries'), Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Gemini'), Mars: sg('Scorpio'), Jupiter: sg('Sagittarius'), Saturn: sg('Capricorn') };
+  const XB = { Mars: sg('Taurus'), Venus: sg('Libra'), Sun: sg('Leo'), Moon: sg('Cancer'), Mercury: sg('Gemini'), Jupiter: sg('Sagittarius'), Saturn: sg('Capricorn') };
+  const xr = D.crossReceptions(XA, XB);
+  check('A\u2019s Venus and B\u2019s Mars receive each other across the two sets, by domicile', xr.some((r) => r.a === 'Venus' && r.b === 'Mars' && r.dir === 'mutual' && r.kind === 'domicile'), JSON.stringify(xr));
+  check('A SAME-NAME PAIR IS NEVER RECORDED (Venus rules Taurus in every set there is)', xr.every((r) => r.a !== r.b));
+  check('the relation is DIRECTED: swapping the sets swaps the sides, and reads the same relation', (() => {
+    const back = D.crossReceptions(XB, XA);
+    return back.some((r) => r.a === 'Mars' && r.b === 'Venus' && r.dir === 'mutual' && r.kind === 'domicile') && back.length === xr.length;
+  })());
+  check('a one-sided reception reads a-in-b, not mutual', (() => {
+    const one = D.crossReceptions({ Venus: sg('Aries') }, { Mars: sg('Gemini') });
+    return one.length === 1 && one[0].dir === 'a-in-b' && one[0].kind === 'domicile';
+  })());
+  check('nothing across two all-at-home sets \u2014 an absence, not a gap', D.crossReceptions(home, home).length === 0);
+  check('a malformed sign address throws here too', threw(() => D.crossReceptions({ Venus: 12 }, XB)) && threw(() => D.crossHandoffs(XA, { Mars: -1 })));
+  const xh = D.crossHandoffs(XA, XB);
+  check('a handoff is ONE STEP ACROSS: A\u2019s Venus hands to Mars, and lands where B\u2019s Mars sits', (() => {
+    const h = xh.find((x) => x.of === 'a' && x.name === 'Venus');
+    return !!h && h.bearer === 'Mars' && h.lands === sg('Taurus');
+  })(), JSON.stringify(xh.filter((x) => x.name === 'Venus')));
+  check('both directions are recorded, every occupant of both sets, once each', xh.filter((x) => x.of === 'a').length === Object.keys(XA).length && xh.filter((x) => x.of === 'b').length === Object.keys(XB).length);
+  check('leaving the frame reads lands: null, never a guess', (() => {
+    const h = D.crossHandoffs({ Mercury: sg('Aries') }, { Venus: sg('Libra') });
+    return h.find((x) => x.of === 'a' && x.name === 'Mercury').lands === null;
+  })());
+  check('crossDispose() bundles the two identically', (() => {
+    const cd = D.crossDispose(XA, XB);
+    return JSON.stringify(cd.receptions) === JSON.stringify(xr) && JSON.stringify(cd.handoffs) === JSON.stringify(xh);
+  })());
+  check('NO ALTERNATING WALK is exported \u2014 a pair has handoffs and receptions, and no path', !!src && !/export function crossWalk|crossChains|crossPath/.test(src) && xh.every((x) => x.path === undefined));
+
+  sec('10 · the refusals · what the walker is not');
+  check('it imports the Mater and NOTHING else', !!src && (src.match(/^import /gm) || []).length === 1 && /from '\.\/mater\.js'/.test(src));
+  check('no Tympan, no place, no time: no lat, no lon, no jd, no house anywhere', !/\b(lat|lon|jd|julian|house)\b/i.test(code));
+  check('no aspect, no mark, no orb (that is the Ring\u2019s)', !/\bMARKS\b|\bASPECT\b|\borb\b/i.test(code));
+  check('no sect, no lot, no modern-ruler table', !/\bsect\b|\blots?\b|coRuler|MODERN/i.test(code));
+  const FORBIDDEN = ['good', 'bad', 'strong', 'weak', 'fortunate', 'difficult'];
+  check('no interpretation word: it records structure, packs speak meaning', !FORBIDDEN.some((w) => new RegExp('\\b' + w + '\\b', 'i').test(code)));
+  check('rulers.disposition/lonsFromDna/dispositionFromDna are gone from rulers.js', await (async () => {
+    const rsrc = await (await fetch('../rulers.js')).text().catch(() => '');
+    const rcode = (rsrc || '').replace(/^\s*\/\/.*$/gm, '');
+    return !!rsrc && !/export function disposition\(|export function lonsFromDna\(|export function dispositionFromDna\(/.test(rcode);
+  })());
+
+  out.innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<h2>' + (fails.length ? '<span class="bad">' + fails.length + ' FAILED</span> \u00b7 ' + fails.join(' \u00b7 ') : '<span class="ok">all checks pass</span>') + '</h2>';
+})();
+</script>
+</body></html>

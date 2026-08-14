@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>suite</title>
+<style>body{font:12px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:16px}iframe{display:none}.ok{color:#6fa06f}.bad{color:#d64541}</style>
+</head><body>
+<pre id="o">running… (fertilize, luna and loom are the slow ones)</pre>
+<div id="frames"></div>
+<script>
+// THE AGGREGATOR RE-RENDERS UNTIL EVERY SUITE HAS SPOKEN (fixed 2026-08-05, the Connectome review).
+// It used to print ONCE at 22 seconds and count a suite with zero <tr> rows as `ok`, so the nine slow
+// suites — timespine, loom, loom-algebra, mundane, embryo, fertilize, luna, lots, astrodna — read
+// green while they were still running. An unfinished suite is not a passing suite, and an empty one is
+// the one result that must never look like a pass. A suite with no rows now reads WAIT, the verdict
+// line refuses to say ALL GREEN until every one of them has rows, and the poll runs to 120s.
+const FILES = ['ring.test.html','mater.test.html','tympan.test.html','dispositor.test.html','connectome.test.html','rulers.test.html','timespine.test.html','loom.test.html','loom-algebra.test.html','prism.test.html','mundane.test.html','embryo.test.html','fertilize.test.html','luna.test.html','lots.test.html','astrodna.test.html','rewire-parity.test.html'];
+const out = document.getElementById('o'), host = document.getElementById('frames');
+const res = {};
+FILES.forEach((f) => { const fr = document.createElement('iframe'); fr.src = f; fr.width = 900; fr.height = 400; host.appendChild(fr); res[f] = fr; });
+const T0 = Date.now(), LIMIT = 120000;
+function render() {
+  let pending = 0, fails = 0, rowTotal = 0;
+  const lines = FILES.map((f) => {
+    try {
+      const d = res[f].contentDocument;
+      const rows = [...d.querySelectorAll('tr')];
+      const bad = rows.filter((r) => r.querySelector('.bad'));
+      const err = d.querySelector('#out .bad');
+      rowTotal += rows.length; fails += bad.length;
+      if (!rows.length && !err) { pending++; return 'WAIT ' + f + '  no rows yet'; }
+      if (!rows.length && err) return 'FAIL ' + f + '  ' + err.textContent.replace(/\s+/g, ' ').slice(0, 150);
+      return (bad.length ? 'FAIL ' : 'ok   ') + f + '  ' + rows.length + ' rows, ' + bad.length + ' fails'
+        + (bad.length ? '\n     ' + bad.map((r) => r.innerText.replace(/\s+/g, ' ').slice(0, 150)).join('\n     ') : '');
+    } catch (e) { pending++; return '???  ' + f + '  ' + e.message; }
+  });
+  const secs = Math.round((Date.now() - T0) / 1000);
+  const verdict = pending ? ('… ' + pending + ' suite(s) still running · ' + secs + 's')
+    : (fails ? (fails + ' FAILURES across ' + rowTotal + ' checks') : ('ALL GREEN · ' + rowTotal + ' checks, 0 failures · ' + secs + 's'));
+  out.textContent = lines.join('\n') + '\n\n' + verdict;
+  if (pending && Date.now() - T0 < LIMIT) setTimeout(render, 2000);
+  else if (pending) out.textContent = lines.join('\n') + '\n\nTIMED OUT with ' + pending + ' suite(s) never reporting · treat as FAIL';
+}
+setTimeout(render, 4000);
+</script>
+</body></html>

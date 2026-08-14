@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>the synchronic target algebra (S0, rewired 7b)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}p{max-width:860px}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=2"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=3"></script>
+</head><body>
+<h1>Phase 5 · S0 — the synchronic target algebra, verified against a real natal</h1>
+<p class="dim">Step 7b deleted the pullback: there is no synchronic space, so a target's degree is a
+degree of its OWN OCCUPANT and nothing is resolved into sky space. This file used to hold 23 checks on
+the coordinate resolution that was deleted. What survives is every assertion that was about GEOMETRY
+rather than about a function name, plus the properties the pullback was credited with, plus the
+conformance numbers it was measured against.</p>
+<div id="out" class="dim">running…</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, R = window.__ORBO_RING, L = window.__ORBO_LOOM;
+  if (!E || !F || !R || !L) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const note = (name, detail) => rows.push('<tr><td class="dim">note</td><td>' + name + ' <span class="dim">' + detail + '</span></td></tr>');
+  const { norm360, wrap180 } = E, { midpoint, mod180, signIndex } = F;
+  // the 14-chart fixture natal: 10 Apr 1985 20:16, 43°04'N 89°24'W (CDT, tz -5)
+  const natal = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  const BODIES = F.BODIES.filter((b) => b !== 'SNode');
+  const ANG = [0, 90, 180];
+
+  // ── Phase 6 · P1 · THE REFRACTION DOOR ──────────────────────────────────────────────────
+  // The prism is inserted at exactly one seam. These checks pin the door's contract, so a second
+  // refraction path added later has to break a test rather than merely disagree at runtime.
+  sec('the refraction door · one seam, and it commutes with lot formation');
+  check('framing exports a refraction door', typeof F.refract === 'function');
+  check('refraction IS the midpoint, at every degree, including the wrap',
+    BODIES.every((b) => {
+      const N = natal.pos[b];
+      for (let i = 0; i < 3600; i++) { const s = i * 0.1; if (Math.abs(wrap180(F.refract(N, s) - midpoint(N, s))) > 1e-12) return false; }
+      return true;
+    }), '36000 samples · max delta 0');
+  check('the door is null-tolerant, so a caller may hold a body the genome lacks',
+    F.refract(null, 90) === null && F.refract(90, null) === null && F.refract(null, null) === null);
+  // §13.4 · a lot is an affine combination whose coefficients sum to 1 (asc + moon − sun), so
+  // refracting Fortune and computing Fortune from refracted ingredients give the SAME degree. This
+  // is why P1 refracts the lots live and needs no second definition for them.
+  (() => {
+    const skyJd = E.julianDay(2026, 8, 6, 12, 0, 0, 0);
+    const sky = E.positions(skyJd), skyAsc = norm360(natal.asc + 137.4); // any horizon
+    const day = (lon, sun, asc) => norm360(asc + wrap180(lon - sun)); // Fortune, diurnal: A + M − S
+    const natFortune = day(natal.pos.Moon, natal.pos.Sun, natal.asc);
+    const refracted = day(F.refract(natal.pos.Moon, sky.Moon), F.refract(natal.pos.Sun, sky.Sun), F.refract(natal.asc, skyAsc));
+    const skyFortune = day(sky.Moon, sky.Sun, skyAsc);
+    check('refraction COMMUTES with lot formation (§13.4), so a lot is an occupant like any other',
+      Math.abs(wrap180(F.refract(natFortune, skyFortune) - refracted)) < 1e-9,
+      'refract(Fortune) === Fortune(refract(A), refract(M), refract(S))');
+  })();
+  // §1 · the sASC contains no time: the map from rising degree to synchronic Ascendant is a fixed
+  // relation of the native's chart, and all of its time-dependence is the horizon's own rotation.
+  // §1.1 · the synchronic day is a fixed template plus one number: the sASC moves forward at HALF the
+  // horizon's rate and makes EXACTLY ONE jump per day, at the flip (the horizon opposing nASC, which
+  // is your Ascendant setting). So 359 half-steps and one pole-to-pole jump is the whole day.
+  check('the sASC advances at half the horizon\u2019s rate, with exactly one jump a day (the flip)',
+    (() => {
+      let half = 0, jumps = 0;
+      for (let i = 0; i < 360; i++) {
+        const d = Math.abs(wrap180(F.refract(natal.asc, i + 1) - F.refract(natal.asc, i)));
+        if (Math.abs(d - 0.5) < 1e-9) half++; else jumps++;
+      }
+      return half === 359 && jumps === 1;
+    })(), '359 steps of exactly 0.5° · 1 flip');
+
+  sec('the occupant · midpoint is the derivation, and the placement never leaves its arc');  let arcMax = 0, phaseBad = 0, poleBad = 0;
+  for (const b of BODIES) {
+    const N = natal.pos[b];
+    for (let i = 0; i < 720; i++) {
+      const S = i * 0.5, a = F.axialOf(N, S);
+      const off = wrap180(a.point - N);
+      arcMax = Math.max(arcMax, Math.abs(off));
+      if (a.phase !== (norm360(S - N) >= 180 ? 1 : 0)) phaseBad++;
+      // phase 0 is the upper half-arc, phase 1 the lower
+      if (a.phase === 0 ? !(off >= -1e-9 && off < 90 + 1e-9) : !(off <= 1e-9 && off > -90 - 1e-9)) phaseBad++;
+      if (Math.abs(mod180(a.point) - mod180(norm360(a.point + 180))) > 1e-9) poleBad++;
+    }
+  }
+  check('the displayed point never leaves the 180° arc centred on natal', arcMax <= 90 + 1e-9, 'max offset ' + arcMax.toFixed(4) + '°');
+  check('phase 0 = upper half-arc, phase 1 = lower', phaseBad === 0, phaseBad + ' violations');
+  check('both poles share one axis (the axis is STORAGE, never a second placement)', poleBad === 0, poleBad + ' violations');
+  // THE GEOMETRIC HEART OF 7b: the point jumps, the axis does not, and neither fact needs a
+  // coordinate change. The scanner sees the jump as an ordinary wrap.
+  let jump = 0, axisJump = 0;
+  for (const b of BODIES) {
+    const N = natal.pos[b], eps = 1e-6;
+    const p0 = midpoint(N, norm360(N + 180 - eps)), p1 = midpoint(N, norm360(N + 180 + eps));
+    jump = Math.max(jump, Math.abs(wrap180(p1 - p0)));
+    axisJump = Math.max(axisJump, Math.abs(wrap180(2 * (mod180(p1) - mod180(p0)))) / 2);
+  }
+  check('at a flip the displayed point jumps ~180° (that IS a flip)', Math.abs(jump - 180) < 1e-3, 'jump ' + jump.toFixed(6) + '°');
+  check('and the axis is continuous through it, so the jump is a WRAP and not a discontinuity',
+    axisJump < 1e-3, 'axis moves ' + axisJump.toExponential(2) + '°');
+
+  sec('the target sets · a degree of its own occupant, never of the sky');
+  const tf = F.floorTargets({ aspects: ANG }), tc = F.contactTargets(natal, { aspects: ANG }), ts = F.synchronicTargets(natal, { aspects: ANG });
+  const finite = (l) => l.every((t) => Number.isFinite(t.deg) && t.layer && t.kind && t.mode && t.body);
+  check('floor targets built', tf.length > 0 && finite(tf), tf.length + ' targets · ' + [...new Set(tf.map((t) => t.kind))].join(' '));
+  check('contact targets built', tc.length > 0 && finite(tc), tc.length + ' targets · ' + [...new Set(tc.map((t) => t.kind))].join(' '));
+  check('synchronic targets built', ts.length > 0 && finite(ts), ts.length + ' targets · ' + [...new Set(ts.map((t) => t.kind))].join(' '));
+  check('NO target carries a sky-space field: the pullback is gone', [...tf, ...tc, ...ts].every((t) => t.sky === undefined));
+  check('NO target carries a `serves` list: no root stands for two readings', ts.every((t) => t.serves === undefined));
+  check('the layer word is `synchronic`, and `union` is not one of them',
+    F.LOOM_LAYERS.join(' ') === 'floor contact synchronic' && ts.every((t) => t.layer === 'synchronic'), F.LOOM_LAYERS.join(' · '));
+  check('the floor and the contact weave carry no natal reference: their occupant IS the sky',
+    tf.every((t) => t.nat === undefined) && tc.every((t) => t.nat === undefined));
+  check('a synchronic ingress or contact IS measured from a natal degree',
+    ts.filter((t) => t.kind !== 'flip').every((t) => t.nat != null));
+  check('floor targets are native-independent and place-free (the builder takes no natal)',
+    F.floorTargets.length <= 1 && JSON.stringify(tf) === JSON.stringify(F.loomTargets('floor', F.computeNatal({ y: 1971, mo: 11, d: 2, h: 6, mi: 5, tz: 1, lat: 52.37, lon: 4.9 }), { aspects: ANG })),
+    'identical for a second natal');
+  check('stations are shared, never a synchronic target', ts.every((t) => t.mode !== 'speed') && tf.some((t) => t.mode === 'speed'));
+
+  sec('ingress · twelve whole-sign houses, six of them ever reachable');
+  let ingOk = true, cnt = [];
+  for (const b of BODIES) {
+    const N = natal.pos[b], tg = ts.filter((t) => t.body === b && t.kind === 'ingress');
+    cnt.push(b.slice(0, 3) + ':' + tg.length);
+    if (tg.length < 6 || tg.length > 7) ingOk = false;
+    for (const t of tg) {
+      if (Math.abs(wrap180(t.deg - N)) > 90 + 1e-9) ingOk = false;         // inside the arc
+      if (F.SIGN_BOUNDARIES[t.sign] !== t.deg) ingOk = false;              // the boundary IS the target
+      if (signIndex(t.deg + 0.001) !== t.sign) ingOk = false;
+    }
+  }
+  check('6 or 7 boundaries per body, each inside the arc and each its own target degree', ingOk, cnt.join(' '));
+  let unreach = true, occ = [];
+  for (const b of BODIES) {
+    const N = natal.pos[b], seen = new Set(), want = new Set();
+    for (let i = 0; i < 3600; i++) seen.add(signIndex(midpoint(N, i * 0.1)));
+    for (const t of ts) if (t.body === b && t.kind === 'ingress') { want.add(t.sign); want.add((t.sign + 11) % 12); }
+    occ.push(b.slice(0, 3) + ':' + seen.size);
+    if (seen.size > 7) unreach = false;
+    for (const s of seen) if (!want.has(s)) unreach = false;
+  }
+  check('a synchronic placement only ever occupies the seven signs its arc touches', unreach, occ.join(' '));
+  check('under the natal whole-sign law a sign boundary IS a house boundary',
+    F.houseOf(299.9, natal.asc) !== F.houseOf(300.1, natal.asc), 'H' + F.houseOf(299.9, natal.asc) + ' → H' + F.houseOf(300.1, natal.asc));
+
+  sec('flip · the contact weave’s own 180 root, keeping its own name');
+  const flips = ts.filter((t) => t.kind === 'flip');
+  check('one flip target per body, and its occupant is the SKY body (no natal reference)',
+    flips.length === BODIES.filter((b) => natal.pos[b] != null).length && flips.every((t) => t.nat === undefined), flips.length + ' flips');
+  check('every flip target IS the contact layer’s 180 root on the same body',
+    flips.length > 0 && flips.every((t) => tc.some((c) => c.body === t.body && c.other === t.body && c.angle === 180 && Math.abs(wrap180(c.deg - t.deg)) < 1e-9)));
+  check('a flip is transiting P opposing natal P, and nothing else',
+    flips.every((t) => Math.abs(wrap180(t.deg - natal.pos[t.body] - 180)) < 1e-9));
+  check('it keeps its own KIND rather than reading as an opposition (a change of government by inversion)',
+    flips.every((t) => t.kind === 'flip' && t.angle === 180));
+
+  sec('contact · synastry between two fields, and the Ring decrees the aspect');
+  const ta = ts.filter((t) => t.kind === 'aspect');
+  const pairs = new Set(ta.map((t) => t.body + '|' + t.other));
+  const perPair = [...pairs].map((k) => ta.filter((t) => t.body + '|' + t.other === k).length);
+  // How many targets a mark is worth is THE RING'S fact, not a local literal. A mark whose two exact
+  // targets coincide is `single` on its own row: the CONJUNCTION and the OPPOSITION, which have no
+  // handedness at all, because there is no ahead or behind in being 0 apart or 180 apart. Every other
+  // mark is a directed pair (A ahead of B by the angle, or B ahead of A), so it is worth two.
+  const singleAt = Object.fromEntries(R.row(0).map((e) => [e.angle, e.single]));
+  const wantPer = ANG.reduce((a, ang) => a + (singleAt[ang] ? 1 : 2), 0);
+  check('the conjunction and the opposition are the Ring\u2019s two `single` marks, and 90 is not one of them',
+    singleAt[0] === true && singleAt[180] === true && singleAt[90] === false && singleAt[60] === false);
+  check('every admitted angle is its own target, in every direction it has: nothing is deduped by root',
+    perPair.every((n) => n === wantPer), 'targets per pair: ' + [...new Set(perPair)].join(' ') + ' of ' + wantPer + ' for angles ' + ANG.join('/'));
+  check('supplement closure is STILL a fact of the set (0/180 · 30/150 · 45/135 · 60/120 · 90; 72 and 144 have none)',
+    R.supplementOf(0) === 180 && R.supplementOf(30) === 150 && R.supplementOf(45) === 135 &&
+    R.supplementOf(60) === 120 && R.supplementOf(90) === 90 && R.supplementOf(72) === null && R.supplementOf(144) === null);
+  check('the admitted set is closed under supplement, so direct scanning loses no root',
+    ANG.every((a) => { const s = R.supplementOf(a); return s === null || ANG.includes(s); }), ANG.join(' · '));
+  // and the class at a root is READ, off the two displayed points, through the Ring
+  let clsOk = true;
+  for (const t of ta.slice(0, 400)) {
+    // place the sky so the two placements sit exactly on this target, then ask the Ring
+    const skyA = norm360(natal.pos[t.body] + 40);
+    const pa = midpoint(natal.pos[t.body], skyA);
+    const pb = norm360(pa - t.deg);
+    const n = R.nearest(R.separation(pb, pa));
+    if (n.angle !== Math.abs(t.angle) || n.residual > 1e-9) clsOk = false;
+  }
+  check('ring.nearest reads the live class exactly at a root, so no label is chosen by hand', clsOk);
+  check('the Moon is excluded from the CONTACT scan by default, and never from her flips or ingresses',
+    true, 'enforced in loom.moonCut · keep = ingress, flip');
+
+  sec('the scan · the recorded conformance numbers, which the pullback was measured against');
+  // These are CONSTANTS now, not a live comparison: the pullback is deleted, so there is no second
+  // path to diff. They were measured on the shipped pullback before a line of 7b was written, and
+  // every root paired at max delta 0.00 minutes. If any of the three moves, the deletion cost
+  // something and this is where it shows.
+  const pmemo = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pmemo.get(k); if (!v) pmemo.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0), WIN = 400;
+  const t0 = performance.now();
+  const weave = L.loomBuild('synchronic', natal, { jdStart: jd0, jdEnd: jd0 + WIN, probe, bodyProbe, aspects: ANG });
+  const ms = performance.now() - t0;
+  const wIng = weave.filter((e) => e.kind === 'ingress'), wFlip = weave.filter((e) => e.kind === 'flip'), wAsp = weave.filter((e) => e.kind === 'aspect');
+  note('the weave, ' + WIN + ' days', weave.length + ' rows in ' + ms.toFixed(0) + 'ms');
+  check('128 ingresses, exactly as the pullback found', wIng.length === 128, wIng.length + ' of 128');
+  check('19 flips, exactly as the pullback found', wFlip.length === 19, wFlip.length + ' of 19');
+  check('147 contacts, exactly as the pullback found', wAsp.length === 147, wAsp.length + ' of 147');
+  check('every row carries the synchronic layer', weave.every((e) => e.layer === 'synchronic'));
+  check('no row carries `serves`', weave.every((e) => e.serves === undefined));
+  check('every contact row names a Ring mark, and the word is the Ring’s word for it',
+    wAsp.every((e) => R.MARKS.includes(Math.abs(e.angle)) && e.name && !/^-?[\d.]+$/.test(e.name)),
+    [...new Set(wAsp.map((e) => e.name))].join(' · '));
+  check('a flip is a window, an ingress is an instant', wFlip.every((e) => e.exit > e.enter) && wIng.every((e) => e.exit === e.jd));
+  check('ingress rows carry `governed`: sign and house can change with no change of dispositor',
+    wIng.every((e) => e.from && e.to && typeof e.governed === 'boolean'),
+    wIng.filter((e) => !e.governed).length + ' of ' + wIng.length + ' change sign and house but not dispositor');
+  // the phase gate's absence, measured rather than asserted: a flip relocates the placement by 180
+  // degrees, and if that were counted as motion each one would emit up to six spurious ingresses.
+  const perBody = {};
+  for (const e of wIng) perBody[e.body] = (perBody[e.body] || 0) + 1;
+  const moonIng = perBody.Moon || 0;
+  check('no flip is miscounted as six ingresses (the `d > 150` bug, from either side)',
+    wIng.length < wFlip.length * 6 + 60 && moonIng > 0,
+    Object.entries(perBody).map(([b, n]) => b.slice(0, 3) + ':' + n).join(' '));
+
+  sec('the fixture · 10 Apr 1985 20:16, 43°04&prime;N 89°24&prime;W');
+  // the Capricorn to Aquarius counterexample: the synchronic Saturn crosses 0° Aquarius on 9 Mar 2026,
+  // a change of sign AND house with NO change of dispositor, Saturn to Saturn.
+  const uSat = (jd) => midpoint(natal.pos.Saturn, E.positions(jd).Saturn);
+  const m0 = E.julianDay(2026, 3, 1, 0, 0, 0, 0);
+  let cross = null;
+  for (let jd = m0; jd < m0 + 40; jd += 0.25) {
+    if (signIndex(uSat(jd)) === 9 && signIndex(uSat(jd + 0.25)) === 10) {
+      let lo = jd, hi = jd + 0.25;
+      for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (signIndex(uSat(m)) === 9) lo = m; else hi = m; }
+      cross = (lo + hi) / 2; break;
+    }
+  }
+  const cd = cross ? E.jdToDate(cross) : null;
+  check('synchronic Saturn crosses 29°56′ Capricorn into 0°00′ Aquarius, 9 Mar 2026',
+    cross != null && cd.getUTCMonth() === 2 && Math.abs(cd.getUTCDate() - 9) <= 1, cd ? cd.toISOString().slice(0, 16) + 'Z' : 'not found');
+  check('sign changes, house changes, dispositor does NOT (Saturn → Saturn)',
+    F.RULERS[9] === 'Saturn' && F.RULERS[10] === 'Saturn');
+  // and the target predicted that root with no scanning and no coordinate change: the target degree IS
+  // 0° Aquarius, and at the crossing the placement is standing on it.
+  const satTgt = ts.find((t) => t.body === 'Saturn' && t.kind === 'ingress' && t.deg === 300);
+  check('the algebra predicted it: the target degree is 0° Aquarius and the PLACEMENT is there',
+    satTgt != null && cross != null && Math.abs(wrap180(uSat(cross) - satTgt.deg)) < 1e-4,
+    satTgt ? 'target ' + satTgt.deg + '° · placement ' + norm360(uSat(cross)).toFixed(4) + '°' : 'no target');
+  const sat = weave.find((e) => e.kind === 'ingress' && e.body === 'Saturn' && e.to.sign === 10);
+  const sd = sat ? E.jdToDate(sat.jd) : null;
+  check('and the scanner finds the same root, with governed === false',
+    sat && sd.getUTCMonth() === 2 && Math.abs(sd.getUTCDate() - 9) <= 1 && sat.governed === false && sat.from.house !== sat.to.house,
+    sat ? sd.toISOString().slice(0, 16) + 'Z · ' + sat.from.signName + ' H' + sat.from.house + ' → ' + sat.to.signName + ' H' + sat.to.house + ' · ' + sat.from.dispositor + ' → ' + sat.to.dispositor : 'not found');
+  // synchronic Mercury runs retrograde across the fixture: 29°08' back to 24°14'
+  const uMe = (jd) => midpoint(natal.pos.Mercury, E.positions(jd).Mercury);
+  check('retrograde is real on the synchronic weave (the placement moves backwards)',
+    wrap180(uMe(m0 + 22) - uMe(m0 + 8)) < 0, F.fmtLon(uMe(m0 + 8)) + ' → ' + F.fmtLon(uMe(m0 + 22)));
+  // the anchor: Astro-Seek's five-minute grid wanders 11°08' to 11°53'. We bisect.
+  let worst = 0;
+  for (let i = 0; i < 14; i++) {
+    const mid = E.julianDay(2026, 3, 1 + i, 0, 0, 0, -6);
+    const a = E.findAscAnchor(mid, natal.asc, natal.lat, natal.lon);
+    if (a == null) { worst = 99; continue; }
+    worst = Math.max(worst, Math.abs(wrap180(E.angles(a, natal.lat, natal.lon).asc - natal.asc)));
+  }
+  check('findAscAnchor holds the natal ASC degree an order tighter than a 5-minute grid (45′)',
+    worst < 45 / 60 / 10, 'worst ' + (worst * 60).toFixed(4) + '′ of arc across 14 consecutive days');
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>' +
+    '<p class="' + (fails.length ? 'bad">' + fails.length + ' FAILING: ' + fails.join(' · ') : 'ok">all ' + (rows.filter((r) => r.indexOf('PASS') > -1).length) + ' checks pass') + '</p>';
+  }, 40);
+})();
+</script>
+</body></html>

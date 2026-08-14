@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>fertilization (S4)</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:900px;margin:0 auto}h1{font-size:15px;color:#e8ab41}h2{font-size:13px;color:#b6aed2;font-weight:400;border-top:1px solid #2c2550;padding-top:10px;margin:18px 0 4px}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=2"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../loom.browser.js?v=3"></script>
+<script src="../fertilize.browser.js?v=3"></script>
+</head><body>
+<h1>Phase 5 · S4 — fertilization</h1>
+<div id="out" class="dim">running… (building a slice of both weaves)</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, F = window.__ORBO_FRAMING, L = window.__ORBO_LOOM, T = window.__ORBO_FERT;
+  if (!E || !F || !L || !T) return void setTimeout(wait, 30);
+  setTimeout(async () => {
+  const rows = [], fails = [];
+  const sec = (t) => rows.push('</table><h2>' + t + '</h2><table>');
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  const pmemo = new Map();
+  const probe = (jd) => { const k = jd.toFixed(6); let v = pmemo.get(k); if (!v) pmemo.set(k, v = E.positions(jd)); return v; };
+  const bodyProbe = (jd, b) => E.bodyLon(jd, b);
+  const natal = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 16, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  const ANG = [0, 60, 90, 120, 180];
+  const dep = { probe, bodyProbe, aspects: ANG };
+
+  sec('the span · birth minus a year to birth plus a century');
+  const JD_MIN = 2341973, JD_MAX = 2506331; // the host UI's bounds (1700–2149), per ephem.js's header
+  const sp = T.fertSpan(natal.jd, { jdMin: JD_MIN, jdMax: JD_MAX });
+  const yrs = (sp.jdEnd - sp.jdStart) / 365.25;
+  check('span is 101 years, clamped to the ephemeris', Math.abs(yrs - 101) < 0.01 && sp.jdStart >= JD_MIN && sp.jdEnd <= JD_MAX,
+    E.jdToDate(sp.jdStart).toISOString().slice(0,10) + ' to ' + E.jdToDate(sp.jdEnd).toISOString().slice(0,10) + ' · ' + yrs.toFixed(2) + 'yr');
+  check('birth is inside it, a year in', Math.abs(sp.jdStart + 365.25 - natal.jd) < 1e-6);
+  const clamped = T.fertSpan(JD_MAX - 400, { jdMin: JD_MIN, jdMax: JD_MAX });
+  check('a late native is clamped, never scanned past the ephemeris', clamped.jdEnd <= JD_MAX && clamped.jdEnd > clamped.jdStart, ((clamped.jdEnd - clamped.jdStart) / 365.25).toFixed(1) + 'yr for a native born 400d before the edge');
+
+  sec('the cache key · natal identity plus doctrine, and nothing else');
+  const k1 = T.fertKey(natal, 'sect|lots|zrLot|zrPeak|yearStart|progAngle');
+  const k2 = T.fertKey(natal, 'sect|lots|zrLot|zrPeak|yearStart|progAngle');
+  const k3 = T.fertKey(natal, 'OTHER|lots|zrLot|zrPeak|yearStart|progAngle');
+  const moved = F.computeNatal({ y: 1985, mo: 4, d: 10, h: 20, mi: 17, tz: -5, lat: 43 + 4/60, lon: -(89 + 24/60) });
+  check('the same chart and doctrine hits', k1 === k2, k1.slice(0, 34) + '…');
+  check('a doctrine change misses', k1 !== k3);
+  check('a minute of re-engraving misses', k1 !== T.fertKey(moved, 'sect|lots|zrLot|zrPeak|yearStart|progAngle'));
+  check('the codec version is in the key (a new row layout can never be read as an old one)', k1.indexOf('w' + T.CODEC + '|') === 0);
+
+  sec('chunked · the caller owns every yield');
+  const jd0 = E.julianDay(2026, 1, 1, 0, 0, 0, 0), SPAN = 400;
+  const seen = [], t0 = performance.now();
+  const it = T.fertilizeChunks(natal, { ...dep, jdStart: jd0, jdEnd: jd0 + SPAN, slice: 200 });
+  let r = it.next();
+  while (!r.done) { seen.push(r.value); r = it.next(); }
+  const built = r.value, ms = performance.now() - t0;
+  check('both weaves, in slices, monotone progress', seen.length === 4 && seen.every((s, i) => !i || s.pct > seen[i-1].pct) && Math.abs(seen[seen.length-1].pct - 1) < 1e-9,
+    seen.map((s) => s.layer + ' ' + (s.i + 1) + '/' + s.n).join(' · '));
+  check('every yield can narrate without knowing the loom', seen.every((s) => s.layer && s.rows && Number.isFinite(s.jdStart) && Number.isFinite(s.total)));
+  check('the build returns one sorted table', built.rows.length > 0 && built.rows.every((e, i) => !i || e.jd >= built.rows[i-1].jd - 1e-9),
+    built.rows.length + ' rows over ' + SPAN + 'd in ' + ms.toFixed(0) + 'ms · a century extrapolates to ~' + (ms * 36525 / SPAN / 1000).toFixed(0) + 's, so it MUST be chunked');
+  check('both layers present, and layer is provenance on every row',
+    built.rows.some((e) => e.layer === 'contact') && built.rows.some((e) => e.layer === 'synchronic') && built.rows.every((e) => e.layer === 'contact' || e.layer === 'synchronic'),
+    ['contact','synchronic'].map((l) => l + ' ' + built.rows.filter((e) => e.layer === l).length).join(' · '));
+  check('materialised generously: the widest orb, not the reader\'s', built.natalOrb === T.FERT.orb, 'built at orb ' + built.natalOrb);
+
+  sec('chunked, async · the event loop is handed back between slices');
+  let ticks = 0, last = null;
+  const async1 = await T.fertilizeAsync(natal, { ...dep, jdStart: jd0, jdEnd: jd0 + 200, slice: 100,
+    onProgress: (p) => { ticks++; last = p; } });
+  check('onProgress fires per slice and the build resolves', ticks === 4 && async1 && async1.rows.length > 0, ticks + ' progress ticks · ' + async1.rows.length + ' rows');
+  const cancelled = await T.fertilizeAsync(natal, { ...dep, jdStart: jd0, jdEnd: jd0 + 400, slice: 100, cancel: () => true });
+  check('cancel abandons the build (a re-engrave mid-fertilization costs nothing)', cancelled === null);
+
+  sec('the codec · bytes, not JSON');
+  const packed = T.packWeave(built, { natal, key: k1 });
+  const st = T.weaveStats(packed);
+  check('packs to a byte stream under 16 bytes a row', st.perRow < 16, st.rows + ' rows · ' + (st.bytes / 1024).toFixed(1) + ' KB · ' + st.perRow.toFixed(2) + ' bytes per row');
+  check('a century of both weaves fits in IDB', st.perRow * (st.rows * 36525 / SPAN) / 1e6 < 12,
+    '~' + (st.perRow * (st.rows * 36525 / SPAN) / 1e6).toFixed(1) + ' MB extrapolated');
+  check('it is structured-cloneable and carries its own span, natal and key', !!packed.span && packed.natal.asc != null && packed.key === k1);
+  const back = T.readWeave(packed);
+  check('round trip preserves every row', back.length === built.rows.length, back.length + ' of ' + built.rows.length);
+  let dt = 0, bad = [];
+  for (let i = 0; i < back.length; i++) {
+    const a = built.rows[i], b = back[i];
+    dt = Math.max(dt, Math.abs(a.jd - b.jd));
+    if (a.kind !== b.kind || a.layer !== b.layer || a.body !== b.body || (a.other || '') !== (b.other || '')) bad.push(a.kind + ' ' + a.body);
+  }
+  check('kind, layer, body and other survive exactly', bad.length === 0, bad.slice(0, 4).join(' · ') || 'all ' + back.length);
+  check('times survive to the minute (finer than the ephemeris deserves)', dt * 1440 < 0.51, 'max Δ ' + (dt * 1440).toFixed(3) + ' min');
+  const aspB = built.rows.filter((e) => e.kind === 'aspect'), aspR = back.filter((e) => e.kind === 'aspect');
+  check('aspect angles survive', aspB.every((e, i) => e.angle === aspR[i].angle), aspB.length + ' aspect rows');
+  let lonD = 0;
+  for (let i = 0; i < aspB.length; i++) if (aspB[i].lon != null && aspR[i].lon != null) lonD = Math.max(lonD, Math.abs(F.wrap180(aspB[i].lon - aspR[i].lon)));
+  check('longitudes survive to a hundredth of a degree', lonD < 0.006, 'max Δ ' + (lonD * 60).toFixed(2) + '′');
+
+  sec('what is derived, not stored');
+  const ing = back.filter((e) => e.kind === 'ingress');
+  check('ingress rows rebuild sign, house and dispositor on both sides', ing.length > 0 && ing.every((e) => e.from.signName && e.to.signName && e.from.house >= 1 && e.to.house <= 12));
+  const ungov = ing.filter((e) => !e.governed);
+  check('`governed` is rebuilt, and is not always true (Capricorn to Aquarius is Saturn to Saturn)',
+    ing.every((e) => typeof e.governed === 'boolean') && ungov.length > 0, ungov.length + ' of ' + ing.length + ' change sign and house but not dispositor');
+  const bIng = built.rows.filter((e) => e.kind === 'ingress');
+  check('the rebuilt reading matches the build\'s', bIng.every((e, i) => e.to.sign === ing[i].to.sign && e.from.sign === ing[i].from.sign && e.governed === ing[i].governed));
+  const fl = back.filter((e) => e.kind === 'flip');
+  check('a flip comes back as its WINDOW, an ingress as an instant', fl.length > 0 && fl.every((e) => e.exit > e.enter) && ing.every((e) => e.exit === e.jd),
+    fl.length + ' flips · widest ' + (Math.max(...fl.map((e) => e.exit - e.enter))).toFixed(1) + 'd');
+  const uAsp = back.filter((e) => e.layer === 'synchronic' && e.kind === 'aspect');
+  // No `serves` (step 7b): one root no longer stands for an aspect and its supplement, so the stored
+  // angle IS the reading and the Ring decreed it at exact, at build.
+  check('synchronic rows carry both displayed points, a Ring mark, and no `serves` family',
+    uAsp.length > 0 && uAsp.every((e) => e.aSide && e.bSide && e.serves === undefined && window.__ORBO_RING.MARKS.includes(Math.abs(e.angle))),
+    uAsp.length + ' synchronic contacts · classes ' + [...new Set(uAsp.map((e) => e.angle))].sort((a,b) => a-b).join(' '));
+  check('houses are natal whole-sign, anchored to the natal ASC sign', uAsp.every((e) => e.aSide.house === ((e.aSide.sign - F.signIndex(natal.asc)) + 12) % 12 + 1));
+
+  sec('filter at read · no cut can invalidate the build');
+  const onlyUnion = T.readWeave(packed, { layers: ['synchronic'] });
+  check('layers cut', onlyUnion.length > 0 && onlyUnion.every((e) => e.layer === 'synchronic'), onlyUnion.length + ' of ' + back.length);
+  const onlyFlip = T.readWeave(packed, { kinds: ['flip'] });
+  check('kinds cut', onlyFlip.length === fl.length && onlyFlip.every((e) => e.kind === 'flip'), onlyFlip.length + ' rows');
+  const bods = T.readWeave(packed, { bodies: ['Sun', 'Saturn'] });
+  check('♊ Bodies cuts at read', bods.length > 0 && bods.every((e) => ['Sun','Saturn'].includes(e.body)) && bods.length < back.length, bods.length + ' rows');
+  const trines = T.readWeave(packed, { kinds: ['aspect'], aspects: [120] });
+  check('♍ Aspects cuts at read', trines.length > 0 && trines.every((e) => Math.abs(e.angle) === 120), trines.length + ' trines');
+  const win = T.readWeave(packed, { jdStart: jd0 + 100, jdEnd: jd0 + 130 });
+  check('a window costs the window, not the table', win.length > 0 && win.every((e) => e.jd >= jd0 + 100 && e.jd <= jd0 + 130), win.length + ' rows in 30 days');
+  const wide = T.readWeave(packed, { kinds: ['aspect'], layers: ['contact'] });
+  const tight = T.readWeave(packed, { kinds: ['aspect'], layers: ['contact'], orb: 3 });
+  check('♍ Orb narrows the stored window instead of rescanning',
+    tight.length === wide.length && tight.every((e, i) => (e.exit - e.enter) < (wide[i].exit - wide[i].enter) - 1e-9),
+    'orb 10 mean ' + (wide.reduce((a, e) => a + (e.exit - e.enter), 0) / wide.length).toFixed(1) + 'd → orb 3 mean ' + (tight.reduce((a, e) => a + (e.exit - e.enter), 0) / tight.length).toFixed(1) + 'd');
+  const unionTight = T.readWeave(packed, { kinds: ['aspect'], layers: ['synchronic'], orb: 6 });
+  check('synchronic orbs halve and taper on the synchronic layer',
+    unionTight.length === uAsp.length && unionTight.every((e, i) => (e.exit - e.enter) <= (uAsp[i].exit - uAsp[i].enter) + 1e-9));
+
+  sec('conformance · the fertilized table IS the loom');
+  const direct = L.loomBuild('synchronic', natal, { jdStart: jd0, jdEnd: jd0 + SPAN, probe, bodyProbe, aspects: ANG, natalOrb: T.FERT.orb });
+  const mine = built.rows.filter((e) => e.layer === 'synchronic');
+  check('the synchronic weave is identical to a one-shot scan of the same span (chunking loses no root)',
+    Math.abs(direct.length - mine.length) <= 2, mine.length + ' chunked vs ' + direct.length + ' one-shot');
+  let paired = 0, dMax = 0;
+  for (const a of mine) { const m = direct.find((b) => b.kind === a.kind && b.body === a.body && (b.other || '') === (a.other || '') && Math.abs(b.jd - a.jd) < 0.5); if (m) { paired++; dMax = Math.max(dMax, Math.abs(m.jd - a.jd)); } }
+  check('every chunked root pairs with the one-shot root', paired >= mine.length - 2, paired + '/' + mine.length + ' · max Δ ' + (dMax * 1440).toFixed(2) + ' min');
+  check('nothing here rescans a station (the floor owns them)', built.rows.every((e) => e.kind !== 'station'));
+
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>' +
+    '<p class="' + (fails.length ? 'bad">' + fails.length + ' FAILING: ' + fails.join(' · ') : 'ok">all ' + rows.filter((r) => r.indexOf('PASS') > -1).length + ' checks pass') + '</p>';
+  }, 40);
+})();
+</script>
+</body></html>

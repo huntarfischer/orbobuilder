@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>progressions.js tests</title>
+<style>body{font:13px monospace;background:#120f24;color:#dcd7f0;padding:20px}.pass{color:#7ee787}.fail{color:#ff7b72}</style>
+</head><body>
+<h3>progressions.js</h3><div id="out"></div>
+<script src="../progressions.browser.js"></script>
+<script>
+const P = window.__ORBO_PROGRESSIONS;
+const out = document.getElementById('out');
+let pass = 0, fail = 0;
+function check(label, cond) {
+  const div = document.createElement('div');
+  div.className = cond ? 'pass' : 'fail';
+  div.textContent = (cond ? 'PASS ' : 'FAIL ') + label;
+  out.appendChild(div);
+  cond ? pass++ : fail++;
+}
+
+// ageYears / progressedJd / realJdFromAge round-trip
+check('ageYears(natal, natal+365.2422) == 1', Math.abs(P.ageYears(2440000, 2440000 + P.TROPICAL_YEAR_DAYS) - 1) < 1e-9);
+check('realJdFromAge inverts ageYears', Math.abs(P.realJdFromAge(2440000, P.ageYears(2440000, 2451000)) - 2451000) < 1e-6);
+check('progressedJd(natal, natal) == natal', P.progressedJd(2440000, 2440000) === 2440000);
+
+// anglesFromRamc / ramcFromMc: MC round-trips through its own inverse
+(() => {
+  const eps = 23.44;
+  for (const mc of [10, 95, 190, 300]) {
+    const ramc = P.ramcFromMc(mc, eps);
+    const back = P.anglesFromRamc(ramc, 40, eps).mc;
+    check('ramcFromMc/anglesFromRamc round-trip at MC=' + mc, Math.abs(((back - mc + 540) % 360) - 180) < 1e-6);
+  }
+})();
+
+// progressedAngles: quotidian is a pass-through of the real progressed angles
+(() => {
+  const ctx = { natalArmc: 100, natalMc: 280, natalSunLon: 300, progSunLon: 305, progEps: 23.44, progAsc: 58, progMc: 305, progAge: 5, lat: 40 };
+  const q = P.progressedAngles('quotidian', ctx);
+  check('quotidian passes through real progressed angles', q.asc === 58 && q.mc === 305);
+})();
+
+// progressedAngles: solar arc advances MC by exactly the Sun's own progressed arc
+(() => {
+  const ctx = { natalArmc: 100, natalMc: 280, natalSunLon: 300, progSunLon: 305, progEps: 23.44, progAsc: 58, progMc: 305, progAge: 5, lat: 40 };
+  const s = P.progressedAngles('solarArc', ctx);
+  check('solar arc MC == natalMc + (progSun - natalSun)', Math.abs(s.mc - 285) < 1e-9);
+})();
+
+// progressedAngles: naibod advances ARMC by age * NAIBOD_RATE (checked via its own ramc identity)
+(() => {
+  const ctx = { natalArmc: 100, natalMc: 280, natalSunLon: 300, progSunLon: 305, progEps: 23.44, progAsc: 58, progMc: 305, progAge: 10, lat: 40 };
+  const n = P.progressedAngles('naibod', ctx);
+  const expected = P.anglesFromRamc(100 + 10 * P.NAIBOD_RATE, 40, 23.44);
+  check('naibod == anglesFromRamc(natalArmc + age*rate)', Math.abs(n.asc - expected.asc) < 1e-9 && Math.abs(n.mc - expected.mc) < 1e-9);
+})();
+
+// build()/at(): a synthetic Sun moving exactly 1 deg/progressed-year should cross a sign every
+// 30 progressed-years, and at() should report that sign from the TABLE alone (no exactSample).
+(() => {
+  const natal = { jd: 2440000, lat: 40, armc: 100, mc: 280, pos: { Sun: 0 }, ascSign: 0 };
+  const sample = (age) => ({ Sun: (age * 1) % 360, Moon: (age * 12) % 360, asc: 58, mc: 305, eps: 23.44 });
+  const table = P.build(natal, { progAngle: 'quotidian' }, sample, { spanYears: 90, stepYears: 0.5 });
+  check('Sun track has ~3 segments over 90 synthetic years at 1deg/yr', table.tracks.Sun.length >= 3 && table.tracks.Sun.length <= 4);
+  const atAge31 = P.at(table, natal, P.realJdFromAge(natal.jd, 31), null);
+  check('at age 31 (32 progressed deg), Sun sign index == 1 (deg>=30)', atAge31.bodies.Sun.sign === 1);
+  check('house is read off the NATAL ascendant sign, not a derived one', atAge31.bodies.Sun.house === 2);
+})();
+
+// tableKey changes with doctrine, not with jd alone read twice
+(() => {
+  const natal = { jd: 2440000 };
+  const k1 = P.tableKey(natal, { progAngle: 'naibod' });
+  const k2 = P.tableKey(natal, { progAngle: 'solarArc' });
+  check('tableKey differs by doctrine', k1 !== k2);
+})();
+
+document.title = 'progressions.js tests — ' + pass + ' pass, ' + fail + ' fail';
+</script>
+</body></html>

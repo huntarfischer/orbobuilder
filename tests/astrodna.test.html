@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>AstroDNA conformance</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:760px;margin:0 auto}h1{font-size:15px;color:#e8ab41}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js"></script>
+<script src="../ring.browser.js"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../astrodna.browser.js?v=5"></script>
+</head><body>
+<h1>AstroDNA conformance — the genome must express the ephemeris exactly</h1>
+<div id="out" class="dim">running…</div>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, A = window.__ORBO_ASTRODNA, R = window.__ORBO_RING;
+  if (!E || !A || !R) return void setTimeout(wait, 30);
+  const rows = [], fails = [];
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  // three fixed vectors: J2000 Greenwich · a 1991 Richland Center birth · a 2026 Tokyo moment
+  const V = [
+    { label: 'J2000 · Greenwich', jd: 2451545.0, lat: 51.48, lon: 0 },
+    { label: '1991-07-04 18:30 UT · Richland Center', jd: 2448442.2708333, lat: 43.33, lon: -90.39 },
+    { label: '2026-07-18 03:00 UT · Tokyo', jd: 2461239.625, lat: 35.68, lon: 139.69 },
+  ];
+  const seqs = [];
+  for (const v of V) {
+    const dna = A.buildAstroDNA(v.jd, v.lat, v.lon);
+    const pos = E.positions(v.jd), ang = E.angles(v.jd, v.lat, v.lon);
+    // 1 — node longitudes are the ephemeris, bit-exact. The 12th gene is the MEAN node (rewire step
+    // F): the genome holds the steady value, the osculating one rides the decode surface.
+    let maxd = 0;
+    for (const n of A.NODE_ORDER) {
+      const truth = n === 'Ascendant' ? ang.asc : n === 'Node' ? pos.NodeMean : pos[n];
+      maxd = Math.max(maxd, Math.abs(E.wrap180(dna.nodes[n].longitude - truth)));
+    }
+    check(v.label + ' · node lons == ephemeris', maxd === 0, 'max Δ ' + maxd);
+    // 2 — the gene IS a Ring FINE state (arcseconds of the circle, retrograde in the upper half), so
+    // it re-encodes through the Ring's own door and not through a local formula. Codec 2's whole-degree
+    // gene is recoverable from it by projection, which is the whole reason the widening rebuilt nothing.
+    const reenc = A.NODE_ORDER.map((n) => { const r = dna.nodes[n]; return R.fineStateOf(r.longitude, !!r.isRetrograde); });
+    check(v.label + ' · sequence re-encodes from nodes through ring.fineStateOf', dna.sequence.join('-') === reenc.join('-'));
+    check(v.label + ' · every gene is inside the Ring\u2019s fine address space', dna.sequence.every((g) => Number.isInteger(g) && g >= 0 && g < R.FINE_STATES));
+    // THE PROJECTION IS THE CODEC-2 GENOME, EXACTLY. If this ever fails, every reader's spine and
+    // weave silently rebuilt, which is a far more expensive failure than a wrong digit.
+    const coarse = A.NODE_ORDER.map((n) => { const r = dna.nodes[n]; return R.stateOf(r.longitude, !!r.isRetrograde); });
+    check(v.label + ' · degreeSequenceString == the codec-2 whole-degree genome',
+      A.degreeSequenceString(dna) === coarse.join('-'), A.degreeSequenceString(dna));
+    check(v.label + ' · nodes[].state is the projection of its own gene, so the two can never disagree',
+      A.NODE_ORDER.every((n) => dna.nodes[n].state === R.stateOfFine(dna.nodes[n].numericalValue)));
+    // The retrograde half carries no information for four of the twelve genes, and that is by design:
+    // an angle cannot station, the luminaries never appear retrograde, and the MEAN node is uniformly
+    // retrograde. A migration that flips either end of this is otherwise completely invisible.
+    check(v.label + ' · gene 12 (the mean node) is ALWAYS in the retrograde half',
+      dna.sequence[11] >= R.ARCSECONDS);
+    check(v.label + ' · genes 1-3 (Ascendant, Moon, Sun) are NEVER in the retrograde half',
+      dna.sequence.slice(0, 3).every((g) => g < R.ARCSECONDS));
+    // The L1/L2/L3 digits come off the gene, not off a second flooring of the float.
+    check(v.label + ' · dms == the gene\u2019s own arcseconds within the sign',
+      A.NODE_ORDER.every((n) => { const r = dna.nodes[n];
+        return r.dms.degree * 3600 + r.dms.minute * 60 + r.dms.second === Math.floor(r.degreeInSign * 3600); }),
+      dna.nodes.Ascendant.dms.degree + '\u00b0 ' + String(dna.nodes.Ascendant.dms.minute).padStart(2, '0') + '\u2032 ' + String(dna.nodes.Ascendant.dms.second).padStart(2, '0') + '\u2033 ' + dna.nodes.Ascendant.sign + ' asc');
+    // 3 — retro flag == sign of speed for every retro-capable node; never on Sun/Moon/Asc
+    let retroOk = true;
+    for (const n of A.NODE_ORDER) { const r = dna.nodes[n];
+      if (A.RETROGRADE_CAPABLE.includes(n)) { if (r.isRetrograde !== (r.speed < 0)) retroOk = false; }
+      else if (r.isRetrograde) retroOk = false; }
+    check(v.label + ' · retro flags == speed sign', retroOk);
+    // 4 — speed sanity: every non-angle node within 0–2× plausible bounds; Moon 10–16°/d; ratios finite
+    let spOk = true, moon = dna.nodes.Moon.speed;
+    for (const n of A.NODE_ORDER) { const r = dna.nodes[n];
+      if (n === 'Ascendant') { if (r.speed !== null) spOk = false; continue; }
+      if (r.speed == null || !isFinite(r.speed) || Math.abs(r.speed) > 20) spOk = false;
+      if (r.speedRatio == null || !isFinite(r.speedRatio)) spOk = false; }
+    check(v.label + ' · speeds present & sane', spOk && moon > 10 && moon < 16, 'Moon ' + moon.toFixed(2) + '°/d');
+    // 5 — extras: angle family matches the instrument's own recipe
+    const X = dna.extras, isDay = E.norm360(pos.Sun - ang.asc) >= 180;
+    const angOk = X && X.angles.asc === E.norm360(ang.asc) && X.angles.mc === E.norm360(ang.mc)
+      && X.angles.ic === E.norm360(ang.mc + 180) && X.angles.dsc === E.norm360(ang.asc + 180)
+      && X.angles.vertex === E.norm360(E.vertex(v.jd, v.lat, v.lon))
+      && X.angles.fortune === E.norm360(E.partOfFortune(pos.Sun, pos.Moon, ang.asc, isDay))
+      && X.angles.isDay === isDay;
+    check(v.label + ' · extras.angles == instrument formulas', !!angOk);
+    // 6 — extras: every surface body expressed, lons bit-exact. `Node` here is the OSCULATING node the
+    // instrument draws, deliberately under the same key the mean-node gene uses, because every reader
+    // that flattens a genome writes the genes first and extras second.
+    const EB = ['Node','SNode','Chiron','Lilith','Ceres','Pallas','Juno','Vesta'];
+    let ebOk = true, ebMax = 0;
+    for (const n of EB) { const b = X && X.bodies[n];
+      if (!b) { ebOk = false; continue; }
+      ebMax = Math.max(ebMax, Math.abs(E.wrap180(b.longitude - pos[n]))); }
+    check(v.label + ' · extras.bodies complete & exact', ebOk && ebMax === 0, 'max Δ ' + ebMax);
+    // 7 — THE NODE BOUNDARY (rewire step F). The gene is the mean node and says so; the flattened
+    // decode surface every reader builds still holds the TRUE node, so the instrument does not move.
+    const flat = {};
+    for (const n in dna.nodes) if (n !== 'Ascendant') flat[n] = dna.nodes[n].longitude;
+    for (const b in X.bodies) flat[b] = X.bodies[b].longitude;
+    check(v.label + ' · the GENE is the mean node and names its source',
+      dna.nodes.Node.source === 'NodeMean' && dna.nodes.Node.longitude === E.norm360(pos.NodeMean));
+    check(v.label + ' · the FLATTENED surface’s Node is the TRUE node, so the plate does not move',
+      flat.Node === E.norm360(pos.Node),
+      'true ' + E.norm360(pos.Node).toFixed(3) + '° vs mean ' + E.norm360(pos.NodeMean).toFixed(3) + '°');
+    check(v.label + ' · and the flattened surface gained NO new body key',
+      !('NodeTrue' in flat) && !('NodeMean' in flat), Object.keys(flat).length + ' keys');
+    seqs.push(v.label + '<br>&nbsp;&nbsp;genome (codec 3, arcsec) &rarr; ' + A.sequenceString(dna)
+      + '<br>&nbsp;&nbsp;projection (the key)&nbsp; &rarr; ' + A.degreeSequenceString(dna));
+  }
+  // THE KEY DOES NOT MOVE WHEN THE ARCSECONDS DO. 8.6 seconds of clock moves the Moon by about 5
+  // arcseconds, so the genome moves and the projection does not: a chart's century-long weave is not
+  // thrown away because a float wiggled. At 86 seconds the whole degree moves too and it should miss.
+  const wA = A.buildAstroDNA(2448442.2708333, 43.33, -90.39);
+  const wB = A.buildAstroDNA(2448442.2708333 + 1e-4, 43.33, -90.39);
+  const wC = A.buildAstroDNA(2448442.2708333 + 1e-3, 43.33, -90.39);
+  check('8.6s of clock moves the GENOME', A.sequenceString(wA) !== A.sequenceString(wB));
+  check('8.6s of clock does NOT move the KEY (so no weave rebuilds)', A.degreeSequenceString(wA) === A.degreeSequenceString(wB));
+  check('86s of clock DOES move the key, because the whole degree moved', A.degreeSequenceString(wA) !== A.degreeSequenceString(wC));
+  check('the codec is stamped and is 3', A.SEQ_CODEC === 3);
+  // J2000 sanity anchor: Sun in Capricorn ~280°
+  const d0 = A.buildAstroDNA(2451545.0, 51.48, 0);
+  check('J2000 · Sun ≈ 280° Capricorn', d0.nodes.Sun.longitude > 278 && d0.nodes.Sun.longitude < 282, d0.nodes.Sun.longitude.toFixed(3) + '°');
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<p class="dim">golden sequences (pin these — any future change to them is a broken genome):<br>' + seqs.join('<br>') + '</p>'
+    + '<p class="' + (fails.length ? 'bad">✗ ' + fails.length + ' failure(s)' : 'ok">✓ all checks pass') + '</p>';
+})();
+</script>
+</body></html>

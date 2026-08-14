@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>three.global.min smoke test</title></head>
+<body style="background:#0b081c;color:#dcd7f0;font:13px ui-monospace,monospace;padding:16px;">
+<div id="out">running…</div>
+<canvas id="cv" width="160" height="160" style="border:1px solid #333;margin-top:12px;"></canvas>
+<script src="../vendor/three/three.global.js"></script>
+<script>
+const need = ['WebGLRenderer','Scene','PerspectiveCamera','SphereGeometry','MeshStandardMaterial',
+  'Mesh','TextureLoader','SRGBColorSpace','Color','DirectionalLight','AmbientLight','REVISION'];
+const missing = need.filter(k => window.THREE == null || window.THREE[k] === undefined);
+let render = 'not attempted';
+try {
+  const T = window.THREE;
+  const r = new T.WebGLRenderer({ canvas: document.getElementById('cv'), alpha: true, antialias: true });
+  r.setSize(160, 160, false);
+  const sc = new T.Scene();
+  const cam = new T.PerspectiveCamera(28, 1, 0.1, 100); cam.position.set(0, 0, 4.2); cam.lookAt(0, 0, 0);
+  const mat = new T.MeshStandardMaterial(); mat.roughness = 0.92;
+  const mesh = new T.Mesh(new T.SphereGeometry(1, 64, 64), mat); sc.add(mesh);
+  const k = new T.DirectionalLight(0xfff1dc, 3.4); k.position.set(0.6, 0.4, 1); sc.add(k);
+  sc.add(new T.AmbientLight(0x8ea2ff, 0.6));
+  mat.emissive = new T.Color(0xffffff); mat.emissiveIntensity = 0.22;
+  r.render(sc, cam);
+  const px = r.getContext().getParameter(r.getContext().VERSION);
+  render = 'ok — ' + px;
+} catch (e) { render = 'FAILED: ' + e.message; }
+document.getElementById('out').innerHTML =
+  'THREE: ' + typeof window.THREE + '<br>REVISION: ' + (window.THREE && window.THREE.REVISION) +
+  '<br>exported keys: ' + (window.THREE ? Object.keys(window.THREE).length : 0) +
+  '<br>missing required: ' + (missing.length ? missing.join(', ') : 'none') +
+  '<br>live render: ' + render;
+window.__SMOKE = { missing, render, keys: window.THREE ? Object.keys(window.THREE).length : 0 };
+</script>
+</body></html>

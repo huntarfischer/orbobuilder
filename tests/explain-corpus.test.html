@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>explain corpus — test</title>
+<style>
+  body{background:#0b081c;color:#dcd7f0;font:13px/1.6 ui-monospace,Menlo,monospace;padding:24px;margin:0}
+  h1{font:600 15px/1.4 ui-monospace,monospace;color:#e8ab41;letter-spacing:.14em;text-transform:uppercase;margin:0 0 16px}
+  .r{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid rgba(190,184,226,.09)}
+  .p{color:#5fab95}.f{color:#d64541}.n{color:#8478b8;flex:1}
+  #sum{margin-top:16px;padding:10px 12px;border:1px solid rgba(232,171,65,.4);border-radius:8px;color:#f0e6cf}
+</style></head>
+<body>
+<h1>Explain corpus · pack + resolver</h1>
+<div id="out"></div><div id="sum">running…</div>
+<script src="../packs/dark-pixie.browser.js"></script>
+<script>
+var pass=0,fail=0,O=document.getElementById('out');
+function t(name,fn){var ok=true,detail='';try{var r=fn();if(r&&r!==true)detail=String(r);}catch(e){ok=false;detail=e.message;}
+  ok?pass++:fail++;O.insertAdjacentHTML('beforeend','<div class="r"><span class="'+(ok?'p':'f')+'">'+(ok?'PASS':'FAIL')+'</span><span class="n">'+name+'</span><span class="n">'+detail+'</span></div>');}
+var I=window.__ORBO_INTERP,P=I&&I.PACKS['dark-pixie'];
+
+t('global registered',function(){if(!I)throw new Error('no __ORBO_INTERP');});
+t('pack has 1396 entries',function(){var n=Object.keys(P.entries).length;if(n!==1396)throw new Error('got '+n);return n+' entries';});
+t('876 original readings intact',function(){var n=0;for(var k in P.entries)if(k.indexOf('explain.')!==0)n++;if(n!==876)throw new Error('got '+n);return n;});
+t('520 explain entries',function(){var n=0;for(var k in P.entries)if(k.indexOf('explain.')===0)n++;if(n!==520)throw new Error('got '+n);return n;});
+
+t('attributionOf → name + url',function(){var a=I.attributionOf(P);
+  if(a.name!=='The Dark Pixie Astrology')throw new Error('name: '+a.name);
+  if(a.url!=='https://www.thedarkpixieastrology.com/')throw new Error('url: '+a.url);return a.url;});
+
+t('readingsFor regression (natal Jupiter h1)',function(){var r=I.readingsFor(P,'natal','Jupiter','Sagittarius',1);
+  if(!r.length)throw new Error('no readings');return r.length+' layer(s)';});
+
+t('explainFor sign/scorpio/natal',function(){var e=I.explainFor(P,'sign','scorpio','natal');
+  if(!e)throw new Error('missing');if(!/Pluto/.test(e.text))throw new Error('no Pluto in text');return e.title;});
+t('…and it is doctrine-tagged modern',function(){var e=I.explainFor(P,'sign','scorpio','natal');
+  if(!e.doctrine||e.doctrine.rulers!=='modern')throw new Error('untagged');return 'rulers=modern';});
+
+t('explainAll house 1',function(){var a=I.explainAll(P,'house',1);if(a.length<10)throw new Error('got '+a.length);return a.length+' sections';});
+t('explainAll body/mars',function(){var a=I.explainAll(P,'body','mars');if(a.length<8)throw new Error('got '+a.length);return a.length+' sections';});
+t('explainByAngle(120) → sextiles & trines',function(){var a=I.explainByAngle(P,120);
+  if(!a.length)throw new Error('none');if(!/sextiles-and-trines/.test(a[0].key))throw new Error(a[0].key);return a.length+' docs';});
+t('explainByAngle(0) → conjunctions',function(){var a=I.explainByAngle(P,0);
+  if(!a.length||!/conjunctions/.test(a[0].key))throw new Error('miss');return a.length+' docs';});
+t('no doc for an uncovered minor (72°)',function(){var a=I.explainByAngle(P,72);
+  if(a.length)throw new Error('unexpected content');return 'honest gap';});
+
+t('explainSearch("scorpio") ranks the article first',function(){var h=I.explainSearch(P,'scorpio');
+  if(!h.length)throw new Error('no hits');if(!/^explain\.sign\.scorpio\.(overview|natal)/.test(h[0].key))throw new Error(h[0].key);return h[0].key;});
+t('explainSearch("quincunx") finds the aspect doc',function(){var h=I.explainSearch(P,'quincunx');
+  if(!h.length)throw new Error('no hits');return h[0].key;});
+
+t('depth filter hides L3 (progressed chart)',function(){
+  var a=I.explainFor(P,'intro','astrology-charts','q.what-is-a-progressed-chart',2);
+  if(a)throw new Error('L3 leaked at maxDepth 2');
+  var b=I.explainFor(P,'intro','astrology-charts','q.what-is-a-progressed-chart',3);
+  if(!b)throw new Error('missing at maxDepth 3');return 'hidden at 2, shown at 3';});
+t('depth filter keeps L1 (natal chart)',function(){
+  if(!I.explainFor(P,'intro','astrology-charts','q.what-is-a-natal-chart',1))throw new Error('L1 wrongly hidden');});
+
+// Manifest §6 acceptance test 3 — the lineage law
+t('EVERY depth-3 entry carries a lineage label',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];if(k.indexOf('explain.')===0&&e.depth===3&&!e.lineage)bad.push(k);}
+  if(bad.length)throw new Error(bad.length+' missing: '+bad.slice(0,3).join(', '));return 'all labelled';});
+// Regression guard: the lineage law above passes VACUOUSLY if a technique is mis-ranked out of L3.
+// /progressed/i once failed to match "Progressions" and silently demoted four sections to L1/L2.
+t('no L3 technique is mis-ranked below L3',function(){var bad=[];
+  var TECH=/progress|horary|relocation|house system/i;
+  for(var k in P.entries){var e=P.entries[k];
+    if(k.indexOf('explain.')===0&&TECH.test(e.title||'')&&e.depth!==3)bad.push(k+' (d'+e.depth+')');}
+  if(bad.length)throw new Error(bad.length+': '+bad.slice(0,3).join(', '));return 'all L3';});
+t('return + composite chart are L2 per manifest §4',function(){
+  var r=P.entries['explain.intro.astrology-charts.q.what-is-a-return-chart'];
+  var c=P.entries['explain.intro.astrology-charts.q.what-is-a-composite-chart'];
+  if(!r||r.depth!==2)throw new Error('return chart d'+(r&&r.depth));
+  if(!c||c.depth!==2)throw new Error('composite chart d'+(c&&c.depth));return 'both L2';});
+// A WRONG lineage is worse than a missing one — it asserts a false provenance. The modern
+// rulership table once carried the Ceres label because a passing Ceres note won by fallthrough.
+t('modern-rulership text never carries the Ceres label',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];if(k.indexOf('explain.')!==0)continue;
+    if(/these are the modern rulerships|before they were known/i.test(e.text||'')
+      && !/modern rulership/.test(e.lineage||''))bad.push(k+' → '+e.lineage);}
+  if(bad.length)throw new Error(bad.join(' ; '));return 'correctly labelled';});
+t('the Ceres label is used only for the Ceres claim',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];
+    if(/Ceres rulership/.test(e.lineage||'')&&!/Ceres is argued/i.test(e.text||''))bad.push(k);}
+  if(bad.length)throw new Error(bad.join(', '));return 'ok';});
+t('every explain entry has a depth 1–3',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];if(k.indexOf('explain.')!==0)continue;
+    if(!(e.depth>=1&&e.depth<=3))bad.push(k);}
+  if(bad.length)throw new Error(bad.length+' bad');return 'ok';});
+t('no empty texts',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];if(k.indexOf('explain.')===0&&(!e.text||e.text.length<20))bad.push(k);}
+  if(bad.length)throw new Error(bad.length+': '+bad.slice(0,3).join(', '));return 'ok';});
+t('no PDF artifacts (ligatures / glued page numbers)',function(){var bad=[];
+  for(var k in P.entries){var e=P.entries[k];if(k.indexOf('explain.')!==0)continue;
+    if(/[\uFB00-\uFB05]/.test(e.text)||/(^|\s)\d{1,3}[a-z]{4,}/.test(e.text))bad.push(k);}
+  if(bad.length)throw new Error(bad.length+': '+bad.slice(0,3).join(', '));return 'clean';});
+t('12 signs × 12 houses × 6 axes present',function(){
+  var s=0,h=0,a=0;for(var k in P.entries){if(/^explain\.sign\.[a-z]+\.overview$/.test(k))s++;
+    if(/^explain\.house\.\d+\.overview$/.test(k))h++;if(/^explain\.axis\.\d+-\d+$/.test(k))a++;}
+  if(s!==12||h!==12||a!==6)throw new Error('signs '+s+' houses '+h+' axes '+a);return '12/12/6';});
+
+document.getElementById('sum').textContent=fail?(fail+' FAILED · '+pass+' passed'):('ALL '+pass+' TESTS PASSED');
+document.getElementById('sum').style.borderColor=fail?'#d64541':'rgba(95,171,149,.6)';
+</script>
+</body></html>

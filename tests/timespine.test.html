@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>timespine conformance</title>
+<style>body{font:13px/1.5 monospace;background:#14102a;color:#dcd7f0;padding:24px;max-width:780px;margin:0 auto}h1{font-size:15px;color:#e8ab41}.ok{color:#6fa06f}.bad{color:#d64541}.dim{color:#8f86c0}td{padding:1px 10px 1px 0;vertical-align:top}</style>
+<script src="../ephem.browser.js?v=2"></script>
+<script src="../ring.browser.js?v=1"></script>
+<script src="../mater.browser.js?v=1"></script>
+<script src="../tympan.browser.js?v=1"></script>
+<script src="../framing.browser.js?v=6"></script>
+<script src="../astrodna.browser.js?v=5"></script>
+<script src="../transits.browser.js?v=2"></script>
+<script src="../timespine.browser.js?v=5"></script>
+</head><body>
+<h1>timespine conformance — the materialized expression must equal the live one</h1>
+<div id="out" class="dim">running… (a few seconds of ephemeris scanning)</div>
+<script>window.onerror = function(m, s, l){ document.getElementById("out").innerHTML = '<span class="bad">ERROR: ' + m + " @ " + l + "</span>"; };</script>
+<script>
+(function wait(){
+  const E = window.__ORBO_EPH, A = window.__ORBO_ASTRODNA, T = window.__ORBO_TRANSITS, S = window.__ORBO_TIMESPINE;
+  if (!E || !A || !T || !S) return void setTimeout(wait, 30);
+  setTimeout(() => {
+  const rows = [], fails = [];
+  const check = (name, cond, detail) => { rows.push('<tr><td class="' + (cond ? 'ok">PASS' : 'bad">FAIL') + '</td><td>' + name + (detail ? ' <span class="dim">' + detail + '</span>' : '') + '</td></tr>'); if (!cond) fails.push(name); };
+  // bodyLon parity: the per-body evaluator must equal positions(), body for body
+  let blMax = 0;
+  for (const jd of [2448442.27, 2455000.5, 2461239.6]) {
+    const full = E.positions(jd);
+    for (const b of ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Node','SNode','Chiron','Lilith','Ceres','Vesta']) {
+      blMax = Math.max(blMax, Math.abs(E.wrap180(E.bodyLon(jd, b) - full[b])));
+    }
+  }
+  check('bodyLon == positions(), all bodies, 3 jds', blMax === 0, 'max \u0394 ' + blMax);
+  const t0 = performance.now();
+  const dna = A.buildAstroDNA(2448442.2708333, 43.33, -90.39); // 1991-07-04 18:30 UT · Richland Center
+  // — 2 years unspooled in chunks vs one-shot scan of the same window —
+  const YRS = 2, endJd = dna.jd + YRS * 365.25;
+  const spine = S.buildSpine(dna, { years: YRS, chunkDays: 47 }); // deliberately awkward chunk size to stress seams
+  const buildMs = performance.now() - t0;
+  const hits = spine.events.filter((e) => e.kind === 'hit');
+  const live = T.scanTransitHits({ target: T.natalTarget(S.natalFromDna(dna)), jdStart: dna.jd, jdEnd: endJd, transitBodies: S.SPINE_BODIES, stepDays: S.SPINE_STEP });
+  check('chunked hits count == live one-shot scan', hits.length === live.length, hits.length + ' vs ' + live.length);
+  let maxd = 0, pairOk = hits.length === live.length;
+  if (pairOk) for (let i = 0; i < hits.length; i++) {
+    const a = hits[i], b = live[i];
+    if (a.t !== b.transitBody || a.g !== b.targetBody || a.a !== b.angle) { pairOk = false; break; }
+    maxd = Math.max(maxd, Math.abs(a.jd - b.jd));
+  }
+  check('every hit identical (body/target/angle), jd Δ < 0.01d', pairOk && maxd < 0.01, 'max Δ ' + maxd.toFixed(6) + 'd');
+  check('events sorted, no seam duplicates', spine.events.every((e, i) => !i || (e.jd >= spine.events[i-1].jd - 1e-9 && !(Math.abs(e.jd - spine.events[i-1].jd) < 1e-6 && e.kind === spine.events[i-1].kind && e.t === spine.events[i-1].t && e.g === spine.events[i-1].g && e.a === spine.events[i-1].a))));
+  // — stream sanity over 2 years —
+  const ing = spine.events.filter((e) => e.kind === 'ingress');
+  const sunIng = ing.filter((e) => e.t === 'Sun');
+  check('Sun ingresses ≈ 12/yr', sunIng.length >= 2 * 12 - 1 && sunIng.length <= 2 * 12 + 1, sunIng.length + ' in ' + YRS + 'yr');
+  const st = spine.events.filter((e) => e.kind === 'station');
+  const meSt = st.filter((e) => e.t === 'Mercury');
+  check('Mercury stations ≈ 6-8/yr', meSt.length >= YRS * 6 && meSt.length <= YRS * 8, meSt.length + ' in ' + YRS + 'yr');
+  check('station dirs alternate per body', ['Mercury','Venus','Mars'].every((b) => { const s = st.filter((e) => e.t === b); return s.every((e, i) => !i || e.dir !== s[i-1].dir); }));
+  // — derived views —
+  const rets = spine.events.filter(S.isReturn).filter((e) => e.t === 'Sun');
+  check('solar returns: yearly cadence', rets.length >= 1 && rets.every((r, i) => Math.abs((r.jd - dna.jd) - (i + 1) * 365.25) < 1.5), rets.map((r) => (r.jd - dna.jd).toFixed(1)).join('d, ') + 'd');
+  const chits = spine.events.filter((e) => e.kind === 'chit');
+  check('synchronic-composite stream present', chits.length > 0, chits.length + ' chits');
+  // composite math: at any chit jd, bead == midpoint(natal, sky) — spot-check 5
+  const F = (x) => ((x % 360) + 360) % 360;
+  let compOk = true;
+  for (const c of chits.slice(0, 5)) {
+    const nat = S.natalFromDna(dna).pos[c.g === 'ASC' ? 'Sun' : c.g]; if (nat == null) continue;
+    const sky = E.positions(c.jd)[c.g === 'ASC' ? 'Sun' : c.g]; if (sky == null) continue;
+    const mid = F(nat + E.wrap180(sky - nat) / 2);
+    // the scanned target agreed with this midpoint at the hit — recompute separation to transiting body
+    const sep = Math.abs(E.wrap180(E.positions(c.jd)[c.t] - mid));
+    const want = Math.min(sep, 360 - sep);
+    if (c.g !== 'ASC' && Math.abs(want - c.a) > 0.05 && Math.abs(Math.abs(E.wrap180(E.positions(c.jd)[c.t] - mid)) - c.a) > 0.05) compOk = false;
+  }
+  check('chit geometry: transiting body exactly aspects the bead midpoint', compOk);
+  // — unspooler contract —
+  const u = S.makeUnspooler(dna, { years: 0.5, chunkDays: 30 });
+  let n = 0, steps = 0;
+  while (!u.done && steps < 50) { n += u.step().length; steps++; }
+  check('unspooler terminates, reports progress 1', u.done && u.progress === 1 && steps <= 8, steps + ' steps, ' + n + ' events');
+  const slice = S.spineSlice(spine.events, dna.jd + 100, dna.jd + 130);
+  check('spineSlice windows correctly', slice.length > 0 && slice.every((e) => e.jd > dna.jd + 100 && e.jd <= dna.jd + 130), slice.length + ' events in 30d');
+  const perYear = Math.round(spine.events.length / YRS);
+  document.getElementById('out').innerHTML = '<table>' + rows.join('') + '</table>'
+    + '<p class="dim">scale: ' + spine.events.length + ' events / ' + YRS + 'yr (≈' + perYear + '/yr → ≈' + (perYear * 100 / 1000).toFixed(0) + 'k per century · built in ' + (buildMs / 1000).toFixed(1) + 's → est. ' + (buildMs / 1000 * 50).toFixed(0) + 's per century, chunked on idle)</p>'
+    + '<p class="' + (fails.length ? 'bad">✗ ' + fails.length + ' failure(s)' : 'ok">✓ all checks pass') + '</p>';
+  }, 50);
+})();
+</script>
+</body></html>

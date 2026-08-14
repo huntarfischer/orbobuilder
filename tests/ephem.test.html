@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ephem.js / framing.js — regression suite</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", sans-serif; background: #0b081c; color: #e8e4f8; padding: 24px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 18px; margin-bottom: 4px; }
+  .sub { color: #9a92c2; font-size: 13px; margin-bottom: 20px; }
+  .group { margin: 18px 0; }
+  .group h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #b8a9e8; border-bottom: 1px solid #2a2450; padding-bottom: 6px; }
+  .row { display: flex; gap: 10px; align-items: baseline; padding: 3px 0; font-size: 13px; font-family: ui-monospace, monospace; }
+  .pass { color: #7ee0a8; }
+  .fail { color: #ff8a8a; background: #3a1428; padding: 2px 6px; border-radius: 4px; }
+  .name { flex: 1; color: #cfc8ee; font-family: -apple-system, sans-serif; }
+  .detail { color: #8078a8; }
+  #summary { font-size: 15px; margin-top: 20px; padding: 12px; border-radius: 8px; }
+  #summary.ok { background: #123522; color: #7ee0a8; }
+  #summary.bad { background: #3a1428; color: #ff8a8a; }
+</style>
+</head>
+<body>
+<h1>ephem.js / framing.js regression suite</h1>
+<div class="sub">Astronomical reference checks + frozen engine snapshots + composite/aspect math. Run after any change to ephem.js, framing.js, or JD_MIN/JD_MAX.</div>
+<div id="out"></div>
+<div id="summary"></div>
+
+<script type="module">
+import * as E from '../ephem.js';
+import * as F from '../framing.js';
+
+const results = [];
+let pass = 0, fail = 0;
+function check(group, name, actual, expected, tol, fmt = (x) => x.toFixed(4)) {
+  const d = typeof expected === 'number' ? Math.abs(actual - expected) : (actual === expected ? 0 : Infinity);
+  const ok = d <= (tol ?? 0);
+  ok ? pass++ : fail++;
+  results.push({ group, name, ok, detail: `actual=${typeof actual === 'number' ? fmt(actual) : JSON.stringify(actual)}  expected=${typeof expected === 'number' ? fmt(expected) : JSON.stringify(expected)}${tol ? `  ±${tol}` : ''}` });
+}
+function jd(y, mo, d, h = 0) { return E.julianDay(y, mo, d, h); }
+
+// ---------- A: astronomical reference points (external ground truth) ----------
+{
+  const g = 'Astronomical references';
+  // vernal equinoxes — Sun crosses 0° Aries. Tolerance generous (timing-of-equinox
+  // uncertainty in the test date itself), not a precision claim.
+  check(g, 'equinox 2000-03-20 07:35 UT → Sun ≈ 0°', E.norm360(E.positions(jd(2000, 3, 20, 7.583)).Sun + 180) - 180, 0, 0.1);
+  check(g, 'equinox 2020-03-20 03:50 UT → Sun ≈ 0°', E.wrap180(E.positions(jd(2020, 3, 20, 3.5)).Sun), 0, 0.1);
+  check(g, 'equinox 2100-03-20 10:00 UT → Sun ≈ 0° (widened range)', E.wrap180(E.positions(jd(2100, 3, 20, 10)).Sun), 0, 0.3);
+  check(g, 'solstice 2020-06-20 21:43 UT → Sun ≈ 90°', E.positions(jd(2020, 6, 20, 21.43)).Sun, 90, 0.1);
+  {
+    const p = E.positions(jd(2020, 12, 21, 18.4));
+    check(g, 'great conjunction 2020-12-21 → Jup≈Sat (0°29′ Aquarius)', E.wrap180(p.Jupiter - p.Saturn), 0, 0.1);
+    check(g, 'great conjunction 2020-12-21 → sign = Aquarius (idx 10)', F.signIndex(p.Jupiter), 10, 0);
+  }
+  check(g, 'obliquity at J2000 = IAU constant 23.43929111°', E.obliquity(2451545.0), 23.43929111, 1e-6);
+}
+
+// ---------- B: frozen engine snapshots (catch silent drift from future edits) ----------
+{
+  const g = 'Frozen snapshots — 1990-06-15 14:30 UT, natal-style (lat 40.7 lon -74.0)';
+  const REF = jd(1990, 6, 15, 14.5);
+  const p = E.positions(REF);
+  const a = E.angles(REF, 40.7, -74.0);
+  const expected = {
+    Sun: 84.23205, Moon: 346.74926, Mercury: 65.87908, Venus: 48.90643, Mars: 11.11048,
+    Jupiter: 105.94975, Saturn: 293.95253, Uranus: 278.15906, Neptune: 283.70624, Pluto: 225.39355,
+    Chiron: 106.26155, Ceres: 119.98800, Pallas: 77.05757, Juno: 219.40511, Vesta: 34.68264,
+    Node: 308.13401, Lilith: 259.16744,
+  };
+  for (const k in expected) check(g, k, p[k], expected[k], 0.001);
+  check(g, 'Asc', a.asc, 146.14070, 0.001);
+  check(g, 'MC', a.mc, 49.56094, 0.001);
+  check(g, 'Vertex', E.vertex(REF, 40.7, -74.0), 149.04488, 0.001);
+  const fortune = E.partOfFortune(p.Sun, p.Moon, a.asc, true);
+  check(g, 'Part of Fortune (day)', fortune, 48.65791, 0.001);
+}
+{
+  const g = 'Frozen snapshots — widened-range boundaries';
+  const p1 = E.positions(jd(1700, 6, 1, 0));
+  check(g, '1700-06-01 Sun', p1.Sun, 70.35803, 0.001);
+  check(g, '1700-06-01 Pluto', p1.Pluto, 129.33281, 0.001);
+  const p2 = E.positions(jd(2149, 6, 1, 0));
+  check(g, '2149-06-01 Sun', p2.Sun, 70.80450, 0.001);
+  check(g, '2149-06-01 Pluto', p2.Pluto, 80.44684, 0.001);
+}
+
+// ---------- C: composite / aspect math (framing.js) ----------
+{
+  const g = 'midpoint / arc geometry';
+  check(g, 'midpoint(10, 20) = 15 (simple)', F.midpoint(10, 20), 15, 1e-9);
+  check(g, 'midpoint(350, 10) = 0 (wraps 0°)', F.midpoint(350, 10), 0, 1e-9);
+  check(g, 'midpoint(0, 180) = 90 (antipodal, short-arc convention)', F.midpoint(0, 180), 90, 1e-9);
+  const arc = F.arcFor(0);
+  check(g, 'arcFor(0).start = 270', arc.start, 270, 1e-9);
+  check(g, 'arcFor(0).end = 90', arc.end, 90, 1e-9);
+  check(g, 'inArc(45, arcFor(0)) = true', F.inArc(45, arc), true, 0);
+  check(g, 'inArc(180, arcFor(0)) = false', F.inArc(180, arc), false, 0);
+}
+{
+  const g = 'aspects / dignity / houses';
+  check(g, 'aspectBetween(0,90,orb 6) → exact square, orb 0', F.aspectBetween(0, 90, 6)?.name, 'square', 0);
+  check(g, 'aspectBetween(0,45,orb 6) → none (out of any orb)', F.aspectBetween(0, 45, 6), null, 0);
+  check(g, 'dignityOf(Sun, Leo) = domicile', F.dignityOf('Sun', F.signIndex(130)), 'domicile', 0);
+  check(g, 'dignityOf(Sun, Aquarius) = detriment', F.dignityOf('Sun', F.signIndex(310)), 'detriment', 0);
+  check(g, 'dignityOf(Saturn, Aries) = fall', F.dignityOf('Saturn', F.signIndex(10)), 'fall', 0);
+  check(g, 'houseOf(200, asc=100) = 4', F.houseOf(200, 100), 4, 0);
+}
+{
+  const g = 'natal + frame smoke test (no NaN, internally consistent)';
+  const natal = F.computeNatal({ y: 1990, mo: 6, d: 15, h: 10, mi: 30, tz: -4, lat: 40.7, lon: -74.0 });
+  check(g, 'natal.asc is finite', Number.isFinite(natal.asc), true, 0);
+  check(g, 'natal.pos.Sun is finite', Number.isFinite(natal.pos.Sun), true, 0);
+  const frame = F.frameFor(natal, jd(2024, 3, 1));
+  check(g, 'frameFor() resolves an anchor same-day', frame !== null, true, 0);
+  if (frame) {
+    check(g, 'frame.comp.Sun is finite', Number.isFinite(frame.comp.Sun), true, 0);
+    check(g, 'frame angles == natal angles (anchor property)', frame.asc, natal.asc, 1e-6);
+  }
+}
+
+// ---------- render ----------
+const out = document.getElementById('out');
+const groups = [...new Set(results.map(r => r.group))];
+for (const g of groups) {
+  const div = document.createElement('div');
+  div.className = 'group';
+  div.innerHTML = `<h2>${g}</h2>`;
+  for (const r of results.filter(r => r.group === g)) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `<span class="${r.ok ? 'pass' : 'fail'}">${r.ok ? '✓' : '✗ FAIL'}</span><span class="name">${r.name}</span><span class="detail">${r.detail}</span>`;
+    div.appendChild(row);
+  }
+  out.appendChild(div);
+}
+const summary = document.getElementById('summary');
+summary.className = fail === 0 ? 'ok' : 'bad';
+summary.textContent = `${pass}/${pass + fail} passed` + (fail ? ` — ${fail} FAILING` : ' — all clear');
+</script>
+</body>
+</html>
