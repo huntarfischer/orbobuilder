@@ -1,0 +1,85 @@
+﻿ORBO ONBOARDING
+
+
+WELCOME, TRAVELER.
+THE ASTROSPHERE AWAITS.
+
+
+MY NAME IS ORBO.
+_______ WHAT WOULD I CALL YOUR NAME? MINE IS OP.
+
+
+> [Player enters name]
+
+
+HEYA, ___. MY NAME IS ORBO,
+AND I AM YOUR GUIDE TO THE ASTROSPHERE.
+THE COSMIC DIMENSION ON TOP OF YOUR OWN.
+
+
+HOW INTERESTED ARE YOU ABOUT ASTROLOGY?
+- VERY INTERESTED (MERCURY CONJUNCT Your Natal Saturn)
+                   : COMMUNICATIONS)
+- INTERESTED (Mercury is affecting your house of self)
+- NOT VERY (it's gonna be a rough week)
+
+
+> [Player selects interest level]
+
+
+THE ANSWER FORKS TO HOW TECHNICAL ORBO approaches their conversation.
+ONE PHRASE 3 WAYS:                  : DON'T BUY TECH FOR
+                     THE NEXT WEEK.
+
+
+NO WRONG CHOICE. NO NEED TO HURRY.
+
+
+WHAT DAY WERE YOU BORN?
+
+
+> [Player enters birthday]
+
+
+WHERE WERE YOU BORN?
+
+
+> [Player enters birthplace]
+
+
+AT WHAT TIME WERE YOU BORN?
+KNOW          DON'T KNOW
+
+
+> [Player selects KNOW or DON'T KNOW]
+
+
+[If KNOW is selected:]
+> [Player enters birth time]
+
+
+[If DON'T KNOW is selected:]
+RECTIFICATION
+ORBO ASKS QUESTIONS: Down to Sabian Symbols.
+
+
+For those with their
+Your birth chart is as unique to you as your DNA. A personal treasure map created the moment you were born. Beginning with the Horizon.
+
+
+THEIR ASCENDANT.
+Orbo Reveals their Ascendant Sign.
+They have option to read on or move on to…
+
+
+THEIR SUN SIGN.
+And finally.
+
+
+THEIR MOON SIGN.
+
+
+THE BIG THREE focus on how you show up in the world. And they also serve as your coordinates in the astrosphere.
+
+
+EVERYONE HAS THEIR PLACE IN THE ASTROSPHERE. LET'S FIND YOURS.
