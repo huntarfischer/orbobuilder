@@ -2,7 +2,7 @@
 
 **Status:** design/recovery document. Preserve this direction while specs archaeology continues. This is not yet an executable contract and does not assert that the living app implements every object below.
 
-**Evidence base:** the August 15, 2026 Astro-Seek databank export supplied by Ean, containing 544 saved charts, read alongside the existing Field Journal, Horary, Connectome, Ledger, and Phase 7 Synchronic Time plans.
+**Evidence base:** the August 15, 2026 Astro-Seek databank export supplied by Ean, containing 544 saved charts, read alongside the existing Field Journal, Horary, Connectome, Ledger, Phase 7 Synchronic Time plans, the recovered Shared Crystal Synchronic Synastry operation, and `specs/Synchronic Time - Field Spine Crystal and Temporal Extent.md`.
 
 ---
 
@@ -10,7 +10,7 @@
 
 Orbo needs to make it easier to preserve significance **before the native understands it**.
 
-The practical behavior already exists outside Orbo: when a strong thought, feeling, question, message, event, or coincidence happens, Ean screenshots the lock screen so the exact time survives and can be cast later.
+The practical behavior already exists outside Orbo: when a strong thought, feeling, question, message, event, or coincidence happens, the native may preserve the exact time first and cast/analyze it later.
 
 Orbo should absorb that gesture.
 
@@ -55,7 +55,7 @@ Moment Lock
     |
     +--> journal annotation later
     |
-    +--> link to a person / field later
+    +--> link to another Field later
 ```
 
 A question is not required at capture.
@@ -102,6 +102,7 @@ The chart names reveal a much richer practice. Saved objects include:
 - personal communications and replies
 - strong feelings and uncertain questions
 - appointments and bodily events
+- births and deaths
 - creative work, launches, recordings, readings, shows, submissions
 - rituals and ceremonies
 - archive and research discoveries
@@ -119,71 +120,58 @@ Orbo should model this richness directly rather than reproducing Astro-Seek's co
 
 ## 3. Field
 
-A **Field** is a persistent subject whose celestial identity is worth returning to.
+A **Field** is an astrological configuration of light/energy represented by a chart or chart-like state.
 
-A field may begin from a crystallized origin moment, but it persists beyond that moment.
-
-Examples supported by the corpus:
+The word is intentionally broad. A natal chart is already a Field. A moment chart is already a Field. A relationship composite is a derived Field. A synchronic composite is a derived synchronic Field.
 
 ```text
-PERSON
-family member
-ancestor
-historical person
-public figure
+PHYSICAL FIELD
+  physical celestial state resolved at a declared address
 
-RELATIONSHIP
-person x person
-other derived pair field
+DERIVED FIELD
+  state produced from one or more Fields by a declared transformation
 
-COLLECTIVE
-nation
-company
-sports team
-institution
-
-PROJECT / WORK
-book
-film
-show
-recording
-creative project
-
-PLACE / VENUE
-property
-building
-venue
-
-FICTIONAL / DIEGETIC SUBJECT
-character
-story-world entity
+SYNCHRONIC FIELD
+  derived Field produced by relating a Field to a Moment Field
 ```
 
-A natal person is therefore one kind of Field, not the definition of Field.
+Examples:
 
-A company founding, team debut, project launch, or other origin event can likewise anchor a Field.
+```text
+person's natal chart           physical natal Field
+email moment                   physical Moment Field
+company founding chart         physical origin Field
+relationship composite         derived relationship Field
+person + email moment          derived synchronic Field
+relationship + moment          derived synchronic relationship Field
+```
+
+A Field may be temporally persistent, origin-anchored, or finite. **Field does not automatically mean "deserves its own timeline."**
+
+That distinction belongs to the Field's temporal character and to Favorite build policy.
 
 ---
 
-## 4. Crystallized Moment
+## 4. Crystal / Crystallized Moment
 
-A **Crystallized Moment** is any deliberately retained temporal address.
+A **Crystal** is a Field-state fixed to a particular temporal address so it can be retained, named, compared, returned to, linked, or selected.
 
-It is broader than a live Moment Lock.
+`Crystallized Moment` remains the fuller user-retention phrase for a Crystal whose defining fact is one temporal coordinate.
 
 ```text
-CRYSTALLIZED MOMENT
+CRYSTAL
   physical AstroDNA where applicable
   time
   place / horizon where applicable
   provenance
   source confidence
   trigger metadata
-  subject links
+  subject / Field links
   annotations
+  temporal role
 ```
 
-A Crystallized Moment can be:
+A Crystal can be:
 
 - captured live
 - entered retrospectively
@@ -195,16 +183,18 @@ A Crystallized Moment can be:
 
 This separates **what the heavens were doing** from **why the time matters**.
 
-The physical celestial state remains AstroDNA. Meaning, provenance, and use live in metadata and downstream readers.
+The physical celestial state remains AstroDNA. Meaning, provenance, temporal role, and use live in metadata and downstream readers.
+
+A Crystal does not automatically gain a personal timeline. A finite event may remain exactly what it is: one important Field-state.
 
 ---
 
 ## 5. Moment Lock
 
-A **Moment Lock** is the live-capture route into a Crystallized Moment.
+A **Moment Lock** is the live-capture route into a Crystal.
 
 ```text
-Moment Lock = Crystallized Moment minted from NOW
+Moment Lock = Crystal retained from NOW
 ```
 
 The timestamp is taken immediately.
@@ -213,36 +203,31 @@ Everything after capture is optional enrichment.
 
 The lock should survive an immediate app close.
 
+The lock does not create the synchronic state. It identifies and retains the temporal coordinate at which the state already exists on the relevant Synchronic Spine(s).
+
 ---
 
 ## 6. Favorite
 
 A **Favorite** is not merely a star or sorting preference.
 
-> **Favoriting tells Orbo that this Field matters enough to remember computationally through time.**
+> **Favoriting tells Orbo that this Field or Crystal matters enough to keep computationally warm.**
 
-This is already partly anticipated in living architecture:
+But the build must depend on what was favorited.
 
-- favorited charts' Connectome Expressions are persisted
-- the Phase 7 Synchronic Time plan specifies a pair spine minted on favorite
+Favoriting a natal Field should not do the same work as favoriting one email Crystal.
 
-The restored meaning should be stronger:
+The Favorite system therefore needs two separate questions:
 
 ```text
-favorite(field)
-    |
-    +--> persist / warm Connectome expression
-    |
-    +--> establish temporal coverage
-    |
-    +--> lazily grow relevant partial spine(s)
-    |
-    +--> make relational timeline queries cheap
+WHAT IS THIS OBJECT?
+
+WHAT COMPUTATIONAL COMMITMENT DOES THAT TYPE DESERVE?
 ```
 
-Favorites should apply to Fields generally, not only people.
+Some Favorites deserve synchronic temporal coverage. Some deserve only persistent state, cached relations, and fast recall.
 
-A favorite may therefore be a person, relationship, project, company, team, place, or other persistent Field that Orbo can legitimately compare through time.
+This is developed in Part III.
 
 ---
 
@@ -255,7 +240,7 @@ LOCK
 "I need this instant."
 
 FAVORITE
-"I care about this field through time."
+"Keep this Field/Crystal computationally available."
 
 JOURNAL
 "This is what happened."
@@ -273,7 +258,7 @@ A locked moment may acquire journal evidence later:
 - attachments
 - predicted vs. experienced comparison where appropriate
 
-The same Crystallized Moment should not be copied into separate Horary, Event, and Journal objects merely because three readers use it.
+The same Crystal should not be copied into separate Horary, Event, and Journal celestial objects merely because several readers use it.
 
 ---
 
@@ -296,11 +281,19 @@ The corpus argues for a **multi-axis taxonomy**.
 - ritual
 - personally lived
 - intentionally aligned with a celestial field
-- the start of a span
+- the start of a Span
+
+A death Crystal can simultaneously be:
+
+- death
+- historically reconstructed
+- a life-span endpoint
+- a family/relationship event
+- the beginning of posthumous aftermath research
 
 A single enum would throw information away.
 
-Each Crystallized Moment should therefore be classifiable along independent axes.
+Each Crystal should therefore be classifiable along independent axes.
 
 ---
 
@@ -324,18 +317,18 @@ observed
 reported
 research_reconstructed
 diegetic
-symbolic / authored
+symbolic_or_authored
 ```
 
 Do not silently claim historical certainty or physical observation when the time is approximate, fictional, reconstructed, or source-dependent.
 
 ---
 
-## 10. Axis B: trigger
+## 10. Axis B: trigger / event family
 
-What caused the native to preserve this time?
+What caused the native to preserve this time, or what kind of hinge is it?
 
-Initial trigger vocabulary suggested by the corpus:
+Initial vocabulary suggested by the corpus and current architecture:
 
 ```text
 intuition_or_feeling
@@ -346,6 +339,8 @@ first_hearing_or_discovery
 decision_or_action
 encounter_or_contact
 body_or_health
+birth
+death
 ritual_or_ceremony
 creative_or_professional
 external_event
@@ -355,9 +350,11 @@ research_or_archive
 unknown
 ```
 
-This is deliberately closer to lived behavior than to astrological technique names.
+**Death is first-class.** It should not be hidden inside `external_event` or `body_or_health` when the Crystal is specifically a death.
 
-Representative corpus evidence includes labels such as:
+The taxonomy should allow more than one trigger/family when reality genuinely contains more than one.
+
+Representative corpus-style evidence includes labels such as:
 
 ```text
 feels
@@ -367,26 +364,26 @@ Investigation?
 reachout?
 texto?
 emailreply
-CB Missed Call
-CB Text Reply
+Missed Call
+Text Reply
 Ancestry Message Receive
-FILM OFFICE DIRECTOR SUBMISSION
-FIRST BOOK READING
-Franks Hill Ceremony
+Director Submission
+First Book Reading
+Ceremony
 MRI Appointment
-Predictive mythology Discovery
-Water trine commence
+Discovery
+exact celestial perfection
+birth
+death
 ```
-
-The taxonomy should allow more than one trigger when reality genuinely contains more than one.
 
 ---
 
-## 11. Axis C: subject links
+## 11. Axis C: Field links / subjects
 
-What Field or Fields does this moment concern?
+What Field or Fields does this Crystal concern?
 
-A moment should link to zero, one, or many saved Fields rather than hiding subject identity inside its title.
+A Crystal should link to zero, one, or many saved Fields rather than hiding subject identity inside its title.
 
 Potential subject roles:
 
@@ -403,21 +400,22 @@ fictional_or_diegetic
 celestial_phenomenon
 ```
 
-The actual stored relationship should preferably be a Field reference plus a role, not only a string tag.
+The stored relationship should preferably be a Field reference plus a role, not only a string tag.
 
-This is what lets one locked feeling later be attached to a specific person and appear automatically on that person's relational timeline.
+This is what lets one locked feeling later be attached to a specific Field and appear automatically on that Field's relevant timelines/readings.
 
 ---
 
 ## 12. Axis D: analysis modes
 
-A Crystallized Moment may be read through several techniques without becoming several stored moments.
+A Crystal may be read through several techniques without becoming several stored moments.
 
 ```text
 open_field
 horary_question
 synchronic_self
 synchronic_pair
+synchronic_relationship_field
 event_chart
 journal_evidence
 electional
@@ -428,7 +426,9 @@ retrospective_research
 
 These are readers / lenses, not ontological species.
 
-Horary is therefore an analysis route over a locked moment.
+Horary is therefore an analysis route over a locked Crystal.
+
+A death Crystal may be read as historical event, natal/synchronic comparison, relationship hinge, Thread member, Span endpoint, or other legitimate mode without being copied.
 
 ---
 
@@ -461,11 +461,89 @@ source:
 
 This belongs to provenance, not interpretation.
 
+This is especially important for birth and death times, historical events, conception hypotheses, and other moments whose exact minute may be uncertain.
+
 ---
 
-## 14. Point versus span
+## 14. Axis F: temporal role relative to a Field
 
-The corpus contains explicit start / end pairs such as `Grand Trine Bath (begin)` and `Grand Trine Bath (end)`.
+A Crystal's relationship to a Field's biography/history is separate from the Crystal's astronomical validity.
+
+Potential roles:
+
+```text
+pre_origin
+conception_candidate
+prenatal
+birth_or_origin
+embodied_or_active_period
+death_or_closure
+posthumous_or_afterlife_of_field
+future_relative_to_observer
+external_historical_relation
+unknown
+```
+
+These names remain provisional. The law is not.
+
+> **Temporal relevance and physical participation are separate facts.**
+
+Examples:
+
+```text
+conception candidate before a person's birth
+  valid synchronic relation
+  not embodied experience
+
+death
+  end of embodied biography
+  major Crystal
+  not end of synchronic addressability
+
+posthumous event
+  later Crystal related to natal Field
+  must not be described as personally experienced
+```
+
+For companies/projects/institutions the analogous lifecycle language may be `pre_origin`, `origin`, `active`, `closure`, and `post_closure` rather than human biological terms.
+
+---
+
+## 15. Death as a first-class Crystal
+
+Death deserves explicit structure because it can simultaneously be a moment, a boundary, and a hinge for later research.
+
+```text
+DEATH CRYSTAL
+  eventFamily: death
+  physical Moment AstroDNA
+  subject Field link
+  timeQuality
+  source provenance
+  temporalRole: death_or_closure
+  optional Thread membership
+  optional Span endpoint
+```
+
+A death Crystal can:
+
+- close a biographical Span;
+- anchor a final-year synchronic chronology;
+- begin a posthumous aftermath Span;
+- become a major Crystal on another person's or relationship's timeline;
+- participate in historical, horary, mundane, or other readings where appropriate.
+
+Classifying death does not itself interpret death or claim causation.
+
+Most importantly:
+
+> **Death closes the biography, not the Synchronic Spine.**
+
+---
+
+## 16. Point versus Span
+
+The corpus contains explicit start/end pairs such as ritual beginnings and endings.
 
 Not every meaningful temporal object is a point.
 
@@ -481,22 +559,27 @@ end Crystal
 optional internal milestones
 ```
 
-This aligns naturally with the existing SPAN plate vocabulary and prevents a ritual, trip, performance, meeting, or episode from being flattened into one arbitrary timestamp.
+A life can be represented as a Span from birth to death while both endpoint natal/synchronic Fields remain addressable outside that Span for research.
+
+A pregnancy hypothesis can be a Span from conception candidate to birth.
+
+A project can have an active Span from launch/origin to closure while still being related to earlier preparation and later legacy moments.
 
 ---
 
-## 15. Threads and event chains
+## 17. Threads and event chains
 
 The corpus also contains repeated series:
 
-- chains of CB emails, calls, replies, and texts
+- chains of emails, calls, replies, and texts
 - apology creation / sending
-- repeated Gold Plates anniversaries
-- repeated exact Mercury-Venus conjunction records
+- recurring anniversaries
+- repeated exact celestial contacts
 - recurring elections
 - repeated returns
+- historical sequences leading to death or another major event
 
-A set of moments can therefore belong to a **Thread** without becoming one Field.
+A set of moments can therefore belong to a **Thread** without becoming one new Field.
 
 ```text
 THREAD
@@ -510,27 +593,179 @@ THREAD
       same_series
 ```
 
-This gives Orbo a way to understand communication chains and research series without stuffing chronology into titles.
+This gives Orbo a way to understand communication chains, pregnancies, trials, final-year sequences, rituals, and research series without stuffing chronology into titles.
 
 ---
 
-# PART III. FAVORITES AND PARTIAL SPINES
+# PART III. FAVORITES AND FIELD-TYPE BUILDS
 
-## 16. Favorites mint partial spines, not necessarily centuries at once
+## 18. Favorite is a policy decision, not one build recipe
 
-Phase 7 proposed century pair spines minted when a chart is favorited. The recovered direction keeps the important law and loosens the materialization strategy.
+The old formulation "Favorite -> partial spine" is too broad.
 
-A favorite should establish a **coverage map**.
+The corrected rule is:
+
+> **Favoriting chooses a computational retention policy appropriate to the object's temporal nature.**
+
+All Favorites may deserve:
+
+- persistent identity/provenance
+- persistent or warm Connectome state where applicable
+- fast recall
+- saved user annotations
+- links to Crystals/Threads/Spans
+
+Only some Favorite types deserve independent synchronic temporal coverage.
+
+---
+
+## 19. Favorite build matrix
+
+### 19.1 Natal Field
+
+Examples:
+
+- person
+- ancestor
+- historical person
+- fictional character with a declared natal/origin chart
+
+Default Favorite build:
 
 ```text
-FAVORITE FIELD
-Ean x Field B
+persist/warm natal Connectome
+establish Synchronic Spine coverage
+materialize useful return/crossing indexes
+allow pre-birth and posthumous extension on demand
+allow pair-spine builds with other favored natal Fields
+allow iCal / visual timeline windows
+```
+
+A human lifetime may be the default viewing window. It must not be an architectural hard stop.
+
+### 19.2 Relationship Field
+
+A saved person-person composite or other persistent relationship Field.
+
+Default Favorite build:
+
+```text
+persist relationship Field identity / Connectome
+establish relationship-field Synchronic Spine coverage
+retain parent references
+optionally maintain Synchronic Synastry pair coverage for the parents
+support Crystals/Threads/Spans linked to the relationship
+```
+
+Do not collapse the relationship-field spine into the parents' Synchronic Synastry spine. They answer different questions.
+
+### 19.3 Origin-anchored persistent Field
+
+Examples:
+
+- company
+- team
+- nation
+- institution
+- project
+- production
+- publication
+- venue or other object with a meaningful origin chart
+
+Default Favorite build:
+
+```text
+persist origin Field / Connectome
+establish synchronic coverage around relevant active history
+extend backward/forward on demand
+support event Threads and Spans
+support comparison with natal/relationship Fields
+```
+
+The default coverage window may differ by subtype. A project may need its development/launch/aftermath range rather than 100 years.
+
+### 19.4 Finite event Crystal
+
+Examples:
+
+- email
+- text
+- phone call
+- first hearing
+- ceremony
+- appointment
+- accident
+- execution
+- death
+- exact celestial perfection
+- one historical event
+
+Default Favorite build:
+
+```text
+persist Crystal AstroDNA / provenance
+persist or warm its Connectome expression
+cache important derived Lots / relations as appropriate
+retain linked Fields
+retain Thread/Span membership
+make Horary/event/synchronic readers fast
+```
+
+**Do not build an independent century timeline merely because the event was favorited.**
+
+An event is defined by its finite coordinate unless the user explicitly promotes it into a persistent Field through a legitimate origin/continuity model.
+
+The event can still be used as:
+
+- shared Crystal parent in Synchronic Synastry;
+- Span endpoint;
+- Thread member;
+- comparison target;
+- historical hinge;
+- Journal evidence anchor.
+
+### 19.5 Span
+
+A Span is an interval, not automatically a Field.
+
+Favorite build:
+
+```text
+persist start/end Crystal refs
+persist metadata / notes
+cache requested Loom results over the bounded interval
+no independent spine by default
+```
+
+### 19.6 Thread
+
+A Thread is an ordered set of Crystals, not automatically a Field.
+
+Favorite build:
+
+```text
+persist membership/order/edges
+warm linked Crystal/Field reads
+optionally cache aggregate comparison results
+no independent spine by default
+```
+
+If a Thread later becomes a recognized persistent Field, that is a separate explicit promotion rather than an automatic consequence of having many events.
+
+---
+
+## 20. Partial spine coverage remains the right strategy where a spine is warranted
+
+For Field types that genuinely deserve a temporal spine, Favoriting should establish a **coverage map**, not necessarily compute an arbitrary century immediately.
+
+```text
+FAVORITE NATAL FIELD
 
 coverage:
 2025 ---------------- 2027
 ```
 
-When the native asks farther into the past or future, Orbo grows that spine by range.
+When the native asks farther into the past or future, Orbo grows that coverage by range.
 
 ```text
 favorite created
@@ -548,79 +783,58 @@ Reasons:
 - first use stays cheap
 - iCal export needs only the requested window
 - historical research can request a past range without paying for irrelevant future years
-- a favorite can grow naturally with use
+- prenatal/posthumous work can extend only where needed
+- a project/company can use an appropriate active-history range
 - the Embryo already supplies the universal temporal backbone
 
 Persistence identity still needs codec / doctrine / parent identity discipline.
 
 ---
 
-## 17. A favorite relationship wants three temporal lanes
+## 21. A favorite pair can expose multiple temporal lanes
 
-For a favorite person or relationship, the richest read is not one undifferentiated "synastry timeline."
+For two favored natal Fields A and B, the richest read is not one undifferentiated synastry timeline.
+
+At minimum Orbo may eventually expose:
 
 ```text
-ME
-----------------o------------o----------
+A SYNCHRONIC SPINE
 
-THEM
----------o----------------o-------------
+B SYNCHRONIC SPINE
 
-BETWEEN US
------o--------o-------------------o------
+A-B SYNCHRONIC SYNASTRY SPINE
+
+A-B RELATIONSHIP-FIELD SYNCHRONIC SPINE
 ```
 
-These represent distinct temporal facts:
+The first two are personal temporal Fields.
 
-1. my relevant spine
-2. their relevant spine
-3. the pair / relational spine
+The third is the continuous crossing of the two personal synchronic timelines, historically called **Intersections** in early Orbo thinking.
 
-The interesting moments are often clusters across lanes. Orbo does not need to invent a relationship score to show that several independent systems are changing together.
+The fourth is the relationship composite itself moved through time.
 
-The same underlying structure can drive:
+These are distinct temporal objects.
+
+The same underlying structures can drive:
 
 - visual timeline
 - calendar view
 - iCal export
 - notification windows
 - Almanac overlays
-
----
-
-## 18. Favorites should not be person-only
-
-The Astro-Seek corpus contains repeated astrology around:
-
-- companies
-- teams
-- nations
-- venues
-- creative projects
-- historical figures
-- fictional characters and story events
-
-This suggests a broader rule:
-
-> **Any persistent Field with a legitimate anchored state can be favorited and followed through time.**
-
-A person's natal is one instance.
-
-A team's founding chart, a company's origin chart, a project launch field, or a saved relationship field may also become a persistent subject if the user actually works astrologically with it.
-
-The architecture should not hard-code `favoritePerson` where `favoriteField` is the real concept.
+- electional searches
 
 ---
 
 # PART IV. MOMENT LOCK x FAVORITE FIELD
 
-## 19. The strongest extension is linking spontaneous locks to Fields
+## 22. The strongest extension is linking spontaneous locks to Fields
 
 Example:
 
 ```text
 2:17 PM
-strong feeling about Person B
+strong feeling about Field B
        |
        v
 HORARY / MOMENT LOCK
@@ -631,7 +845,7 @@ physical AstroDNA preserved
 
 Nothing more is required.
 
-Later the native links the moment to Person B.
+Later the native links the Crystal to Field B.
 
 The same Crystal can then be read as:
 
@@ -639,14 +853,14 @@ The same Crystal can then be read as:
 THE MOMENT
 physical celestial state
 
-ME x MOMENT
-my synchronic field
+ME + MOMENT
+my synchronic Field state
 
-PERSON B x MOMENT
-their synchronic field
+FIELD B + MOMENT
+its synchronic Field state
 
-ME x PERSON B x MOMENT
-pair field at that time
+(ME + MOMENT) x (FIELD B + MOMENT)
+Synchronic Synastry where applicable
 
 HORARY
 open-field or question judgment
@@ -655,29 +869,29 @@ JOURNAL
 what actually happened
 ```
 
-This is not six saved charts. It is one preserved moment participating in six legitimate readings.
+This is not several separately saved copies of the sky. It is one retained temporal coordinate participating in several legitimate readings.
 
 ---
 
-## 20. Subjective moments become data on the spine
+## 23. Subjective moments become data on the spine
 
-If fifteen Moment Locks are eventually attached to the same favorite person, those fifteen moments can be placed directly on the pair timeline.
+If many Moment Locks are eventually attached to the same favored natal/relationship Field, those Crystals can be placed directly on its relevant computed timelines.
 
 That creates a new kind of question:
 
-> What was structurally happening in this field at the moments when I independently felt compelled to preserve it?
+> What was structurally happening in this Field at the moments when I independently felt compelled to preserve it?
 
-This is closer to Orbo's Field Theory purpose than a generic diary feature.
+The user supplied the observation times first.
 
-The user did not begin by selecting an astrological condition. They supplied the observation times first.
+Orbo can compare the structures afterward.
 
-Orbo can then compare the structures afterward.
+For a finite event Favorite, the inverse is also useful: one event Crystal can be compared across several persistent Fields without pretending the event itself owns a life-long spine.
 
 ---
 
-## 21. "Show me every time I felt this"
+## 24. "Show me every time I felt this"
 
-A locked moment can later receive lightweight user-authored tags such as:
+A locked Crystal can later receive lightweight user-authored tags such as:
 
 ```text
 uneasy
@@ -692,10 +906,10 @@ good feeling
 Then a favorite timeline can answer:
 
 ```text
-show every moment tagged "sudden certainty" about this Field
+show every Crystal tagged "sudden certainty" about this Field
 ```
 
-The Connectome can compare structural commonalities across the corresponding AstroDNAs without requiring an interpretation engine to invent a similarity first.
+The Connectome can compare structural commonalities across the corresponding states without requiring an interpretation engine to invent a similarity first.
 
 This is a natural bridge between:
 
@@ -709,9 +923,9 @@ This is a natural bridge between:
 
 # PART V. EXISTING ORBO SURFACES
 
-## 22. This does not require a new Tabula by default
+## 25. This does not require a new Tabula by default
 
-Existing surface grammar already has places for these objects:
+Existing surface grammar already has places for these objects.
 
 ### Ledger
 
@@ -729,44 +943,57 @@ Horary
 
 A locked Horary moment can therefore become a Ledger record and appear under Horary without inventing a Horary Tabula.
 
+Death can remain an Event family/filter while also carrying its explicit `death` taxonomy role.
+
 ### Archive / Field Journal
 
 Journal evidence, notes, outcomes, and recalled moments belong on the memory / Archive side.
 
 ### Almanac
 
-A favorite field's temporal spine or a thread of crystals can be exposed as an Almanac stream / timeline when appropriate.
+A favorite Field's temporal coverage, a Thread of Crystals, or a bounded Span can be exposed as Almanac/timeline material when appropriate.
 
 ### Lunar Port
 
-Horary judgment and every other interpretation remain moonlight. The Moment Lock itself is acquisition, not interpretation.
+Horary judgment and every other interpretation remain moonlight. Moment acquisition, Crystal retention, Field identity, and Favorite build policy are structural/data acts.
 
 ---
 
 # PART VI. ARCHITECTURAL LAWS TO CARRY FORWARD
 
-## 23. Provisional laws
+## 26. Provisional laws
 
 These are design conclusions to preserve through archaeology. They are not yet code contracts.
 
 1. **Capture first. Meaning can arrive later.**
-2. **A Moment Lock is a live-minted Crystallized Moment.**
-3. **Horary is a reader of a locked moment, not a separate celestial storage species.**
-4. **One moment is stored once even when many readers analyze it.**
-5. **A Crystallized Moment's physical celestial state is AstroDNA; why it matters is metadata and linkage.**
-6. **Crystallized Moments need multi-axis classification, not one event-type enum.**
-7. **Favorite means computational commitment to a Field through time.**
-8. **Favorites should apply to Fields, not only people.**
-9. **Favoriting may lazily mint / extend partial spines by requested temporal range.**
-10. **Journal evidence describes lived experience; it does not own the celestial moment.**
-11. **Subjective locks can be placed onto favorite-field spines and compared structurally afterward.**
-12. **Point, span, and thread are distinct temporal organizations.**
-13. **Time/source confidence is provenance and must survive.**
-14. **Fictional / diegetic association is valid provenance metadata, not a reason to corrupt physical AstroDNA.**
+2. **A chart is already a Field.**
+3. **A Crystal is a Field-state fixed to a temporal address for retention, return, comparison, or selection.**
+4. **A Moment Lock is the live-capture route into a Crystal.**
+5. **Horary is a reader of a locked Crystal, not a separate celestial storage species.**
+6. **One moment is stored once even when many readers analyze it.**
+7. **A Crystal's physical celestial state is AstroDNA; why it matters is metadata and linkage.**
+8. **Crystals need multi-axis classification, not one event-type enum.**
+9. **Death is a first-class Crystal/event family and lifecycle hinge.**
+10. **Death closes biography, not synchronic addressability.**
+11. **Temporal relevance and embodied participation are separate facts.**
+12. **Favorite means computational commitment appropriate to the object's temporal character.**
+13. **Favorite build policy must be Field-type dependent.**
+14. **Natal and other persistent Fields may merit synchronic spine coverage.**
+15. **A finite event Crystal does not receive an independent timeline by default.**
+16. **A favorite event can still persist its AstroDNA, Connectome, derived points, relations, links, and readers.**
+17. **Partial spine coverage is preferred over arbitrary full-century materialization where a spine is warranted.**
+18. **Journal evidence describes lived experience; it does not own the celestial moment.**
+19. **Subjective locks can be placed onto relevant favorite-field spines and compared structurally afterward.**
+20. **Point, Span, Thread, and Spine are distinct temporal organizations.**
+21. **A Thread is not automatically a Field.**
+22. **A Span is not automatically a Field.**
+23. **Time/source confidence is provenance and must survive.**
+24. **Fictional/diegetic association is valid provenance metadata, not a reason to corrupt physical AstroDNA.**
+25. **Synchronic Spine and Favorite policy are related but not synonymous: not every Favorite owns a Spine.**
 
 ---
 
-## 24. Relationship to the ideal data flow
+## 27. Relationship to the ideal data flow
 
 This document adds user-retained temporal objects around the settled celestial organism without changing its astronomical authority:
 
@@ -787,41 +1014,52 @@ This document adds user-retained temporal objects around the settled celestial o
                             v
                          SPINES
 
-USER RETENTION LAYER
+USER RETENTION / ORGANIZATION
 
-Moment Lock  ---> Crystallized Moment ---> Journal
-                         |
-                         +--> Horary reader
-                         +--> other readers
-                         +--> Field links
+Moment Lock ---> Crystal ---> Journal
+                  |
+                  +--> Horary reader
+                  +--> other readers
+                  +--> Field links
+                  +--> Thread / Span
 
-Field ------> Favorite ------> partial spine coverage
+Field/Crystal ---> Favorite Policy
+                      |
+                      +--> warm/persist state
+                      +--> optional partial spine coverage
+                          ONLY when temporally warranted
 ```
 
-The Embryo remains the celestial mint. AstroDNA remains the canonical celestial language. The Connectome remains the expression network. The Loom remains temporal weaving machinery. Spines remain temporal indexes.
+The Embryo remains the celestial mint. AstroDNA remains the canonical celestial language. The Connectome remains the expression network. Loom remains temporal weaving machinery. Spines remain temporal indexes/materializations.
 
-Moment Lock, Crystallized Moment, Favorite, Thread, and Journal answer a different question:
+Moment Lock, Crystal, Favorite, Thread, Span, and Journal answer a different question:
 
-> **Which parts of celestial time did the native decide were worth keeping, linking, and returning to?**
+> **Which parts of celestial time and which Fields did the native decide were worth keeping, linking, computing, and returning to?**
 
 That user-retention layer should build on the celestial architecture rather than bypass it.
 
 ---
 
-## 25. Next archaeology questions
+## 28. Next archaeology questions
 
 While continuing the specs scrub, look specifically for prior intent around:
 
 - event / moment capture gestures
 - Horary creation and Ledger Horary records
+- death/event record shapes
 - favorites and favorite persistence
-- Field Journal outcome / evidence schema
+- whether favorites currently distinguish natal/person/event/pair kinds
+- Field Journal outcome/evidence schema
 - pins and moment snapshots
 - event chains / related records
 - photo recall / EXIF capture
 - favorite pair timelines and iCal export
-- historical-source confidence / uncertain birth times
-- project / company / team charts as persistent subjects
-- any existing `event`, `horary`, `favorite`, `pin`, `thread`, or `field` record shapes that can be reconciled instead of replaced
+- historical-source confidence / uncertain birth and death times
+- project/company/team charts as persistent subjects
+- any existing `event`, `horary`, `favorite`, `pin`, `thread`, `span`, `death`, or `field` record shapes that can be reconciled instead of replaced
+
+Specific Favorite question:
+
+> **What did Orbo already decide should be persisted or materialized for each object kind, and where did later code flatten those distinctions into one favorite behavior?**
 
 Do not code from this document until those living and historical shapes have been traced.
