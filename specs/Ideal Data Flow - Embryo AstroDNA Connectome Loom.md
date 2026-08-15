@@ -423,6 +423,206 @@ CONNECTOME
 
 The exact implementation partition is to be designed after the specs archaeology. The ownership law is settled here.
 
+### 7.1 Every AstroDNA gene has its own Connectome table
+
+The Connectome does not merely compile a chart-wide `planetTable` in which every celestial body is interchangeable as one more row. **Each gene in the AstroDNA unfolds into its own addressable expression table inside the Connectome.**
+
+For the primary twelve-gene AstroDNA, the nervous system therefore has twelve first-class gene tables:
+
+```text
+CONNECTOME
+│
+├── Ascendant
+│   └── expression table
+├── Moon
+│   └── expression table
+├── Sun
+│   └── expression table
+├── Mercury
+│   └── expression table
+├── Venus
+│   └── expression table
+├── Mars
+│   └── expression table
+├── Jupiter
+│   └── expression table
+├── Saturn
+│   └── expression table
+├── Uranus
+│   └── expression table
+├── Neptune
+│   └── expression table
+├── Pluto
+│   └── expression table
+└── North Node
+    └── expression table
+```
+
+These tables share a common **grammar**, but they need not be twelve dumb copies of one schema. Each table expresses what is structurally true of that particular gene. The Ascendant is not a planet, for example, but it is still a full AstroDNA gene and must have its own table because it is the local horizon hand that establishes the chart's frame.
+
+A planetary gene table may expose families such as:
+
+```text
+VENUS TABLE
+
+IDENTITY
+  AstroDNA value
+  exact longitude
+  direct / retrograde
+  sign
+  degree
+  house
+
+MOTION
+  velocity
+  speed ratio
+  station state
+  previous / next station
+  crossing family
+  applying / separating
+
+GOVERNANCE
+  sign ruler
+  dispositor
+  dispositor chain
+  keeper / agency
+  houses ruled
+  receptions
+
+CONDITION
+  domicile / detriment
+  exaltation / fall
+  triplicity
+  bound
+  face
+  sect-related condition where applicable
+
+RELATIONS
+  references to relation records with other AstroDNA genes
+  exact separations
+  applying / separating relation state
+  reception relationships
+
+FORGED RING
+  exact conjunction targets
+  exact sextile targets
+  exact square targets
+  exact trine targets
+  exact opposition targets
+  other admitted Ring marks
+
+TEMPORAL HOOKS
+  references into relevant contact, synchronic, progression or other temporal indexes
+```
+
+An Ascendant table shares the grammar where it applies but expresses its own nature:
+
+```text
+ASCENDANT TABLE
+
+IDENTITY
+  AstroDNA value
+  exact longitude
+  sign
+  degree
+
+LOCAL FRAME
+  Tympan reference
+  complete whole-sign frame
+  chart ruler
+  MC / IC / Descendant relationships where present
+
+MOTION
+  local rotational rate
+  next degree / sign crossing
+  return crossings
+
+GOVERNANCE
+  ruler
+  ruler-table reference
+
+RELATIONS
+  relation records to the other AstroDNA genes
+
+FORGED RING
+  exact Ring targets to the Ascendant degree
+```
+
+The point is not to freeze these example columns before archaeology. The settled ownership rule is that **each AstroDNA gene is a first-class node with its own Connectome table**.
+
+> **AstroDNA is compressed celestial identity. The Connectome is AstroDNA unfolded.**
+
+### 7.2 Cross-gene facts are edges, not duplicated node data
+
+The gene tables do not eliminate the graph. A fact that only exists **between** two genes belongs to a cross-gene relation record and is referenced from the relevant gene tables rather than independently recomputed or copied into both.
+
+Conceptually:
+
+```text
+CONNECTOME
+│
+├── GENE TABLES
+│   ├── Ascendant
+│   ├── Moon
+│   ├── Sun
+│   ├── Mercury
+│   └── ...
+│
+├── RELATION TABLES / EDGES
+│   ├── Sun ↔ Moon
+│   ├── Sun ↔ Mercury
+│   ├── Venus ↔ Mars
+│   └── ...
+│
+├── HOUSE / GOVERNANCE NETWORK
+├── DISPOSITOR CHAINS
+├── RECEPTION NETWORK
+├── LOT / STATE-DERIVATION NETWORK
+└── TEMPORAL INDEX REFERENCES
+```
+
+A Venus table may therefore expose something like `relations.Mars`, but that is a pointer into the canonical Venus–Mars edge, not a second independently owned Venus–Mars calculation.
+
+This gives the Connectome its literal neural character:
+
+> **The AstroDNA genes are nodes. Their relations are edges. The Connectome is the traversable graph of both.**
+
+### 7.3 Motion is expressed per gene
+
+The earlier law that detailed motion belongs to the Connectome becomes concrete here. Every movable AstroDNA gene has a motion expression in its own table. That table can reference neighboring Embryo readings, station roots, crossing families and other temporal structures as needed without altering the AstroDNA identity codec.
+
+Retrograde direction remains encoded in AstroDNA's directional band. The Connectome expands that encoded state into richer motion facts such as velocity, station proximity, applying/separating condition and one-or-three crossing families.
+
+### 7.4 The Forged Ring is both per-gene and circle-indexed
+
+The Forged Ring is one Connectome tissue with two traversal directions.
+
+**Gene-facing index:**
+
+```text
+Connectome.Venus.forgedRing.trine
+Connectome.Mars.forgedRing.square
+Connectome.Ascendant.forgedRing.opposition
+```
+
+asks:
+
+> What exact celestial degrees resonate with this AstroDNA gene?
+
+**Circle-facing index:**
+
+```text
+Connectome.ForgedRing.byDegree[targetDegree]
+```
+
+asks:
+
+> What structures in this AstroDNA does this celestial degree strike?
+
+These are two indexes over the same exact lattice, not two copies of the geometry.
+
+This bidirectional indexing is what allows the Loom to receive already-forged target coordinates rather than repeatedly reconstructing natal geometry inside temporal scanners.
+
 ## 8 · Ring and Tympan stay outside; the Forged Ring lives inside
 
 The universal Ring and Tympan ship with Orbo and precede every native.
@@ -682,7 +882,9 @@ ENGRAVE
     ├── persist canonical genome
     ├── preserve relevant motion expression
     ├── express natal Connectome
-    ├── forge the Forged Ring lattice
+    ├── instantiate one Connectome gene table per AstroDNA gene
+    ├── build canonical cross-gene edge records
+    ├── forge the bidirectional Forged Ring lattice
     ├── prepare other true natal invariants
     └── establish cache identities for lazy temporal structures
 ```
@@ -707,6 +909,8 @@ Candidate resonant pairs include:
 Ephemeris        ↔ shipped Embryo
 Embryo           ↔ AstroDNA
 AstroDNA         ↔ Connectome expressions
+AstroDNA gene    ↔ corresponding Connectome gene table
+Relation geometry ↔ canonical Connectome edge
 Universal Ring   ↔ Forged Ring lattice
 live derivation  ↔ cached/materialized spine
 source module    ↔ browser/standalone mirror
@@ -719,6 +923,8 @@ Examples:
 - a shipped Embryo row agrees with a live celestial reconstruction
 - an AstroDNA gene projects to the sign the Connectome claims
 - a retrograde gene agrees with the motion expression
+- each gene table identifies the AstroDNA gene from which it was expressed
+- a cross-gene relation edge agrees from both endpoint traversals
 - a Forged Ring trine target is exactly 120 degrees from its source gene
 - a cached synchronic row agrees with a live refraction at a sampled hinge
 - a generated browser mirror agrees with its source contract
@@ -740,6 +946,8 @@ The existing test philosophy already contains proto-Resonator behavior. The rest
 | Embryo | yes | no until fertilized | shipped artifact/code | **yes, privately** | universal proto-spine + AstroDNA mint |
 | AstroDNA | produced | yes to a state | role-dependent | **no** | canonical celestial clock reading |
 | Connectome | produced/cache | yes to a state | cache/persist by tier | no | expression network of AstroDNA |
+| Connectome gene table | produced inside Connectome | yes to one AstroDNA gene | cache/persist by tier | no | first-class local expression of one gene |
+| Connectome relation edge | produced inside Connectome | yes to gene pair/network | cache/persist by tier | no | canonical cross-gene relationship |
 | Forged Ring | produced inside Connectome | yes | likely persist with native/state cache | no | exact state-specific resonance lattice |
 | Loom | yes | no | code | no | solve crossings/windows from targets + AstroDNA through time |
 | Specialized spine | produced | often | eager/lazy by domain | no | temporal index |
@@ -784,6 +992,8 @@ During specs archaeology, each living or planned engine should be compared again
 6. Is it producing a state, a relation, an event, a span, an assessment, or presentation?
 7. Is a materialized table authoritative, or merely an index of truths derivable from a more authoritative parent?
 8. Can the Resonator independently verify the seam?
+9. Does every AstroDNA gene have a single canonical Connectome table rather than being reconstructed piecemeal by downstream consumers?
+10. Are cross-gene facts owned once as edges and traversed from both endpoints rather than duplicated?
 
 ## 18 · Known current archaeological divergences to investigate, not patch yet
 
@@ -796,6 +1006,7 @@ Examples already observed:
 - current Loom correctly avoids a direct ephemeris import, but its injected probes expose naked positions rather than a formal AstroDNA/gene contract
 - current `fertilize.js` describes fertilizing the Embryo but actually builds personal weaves through Loom from injected probes rather than literally consuming the packed Embryo artifact
 - the current Connectome implementation is a valid sign-resolution expression tissue, not yet the comprehensive expression network intended by the word Connectome
+- the current `planetTable`-style structure must be compared against the target in which each AstroDNA gene has its own first-class expression table and pairwise facts have canonical edge ownership
 - some older engines contain indirect or direct alternate sky paths and local copies of facts now owned elsewhere
 
 These are archaeology findings. The Bay Bridge migration rule still applies. Existing traffic remains on the existing span until replacement pathways prove parity.
@@ -815,19 +1026,22 @@ These are archaeology findings. The Bay Bridge migration rule still applies. Exi
 7. **Detailed motion is Connectome expression, not a competing celestial identity system.**
 8. **Ring, Tympan and Mater/Rulers are universal shipped law outside the Connectome.**
 9. **The Connectome is the cached expression of AstroDNA at every useful resolution.**
-10. **The Forged Ring is inside the Connectome because it is derived from a particular AstroDNA referenced against the universal Ring.**
-11. **The Ring owns geometry. Doctrine owns what it admits around that geometry.**
-12. **The Connectome knows the target. The Loom finds the crossing.**
-13. **The Loom consumes AstroDNA through time; it does not manufacture its own sky.**
-14. **Specialized spines are temporal indexes seated on the Embryo's common backbone.**
-15. **A spine may be eager or lazy according to cardinality and use; caching never becomes a second source of truth.**
-16. **Derived AstroDNA uses the same celestial grammar with explicit provenance.**
-17. **Sect belongs to the state being examined when that state possesses a meaningful Sun and horizon.**
-18. **Lots derive from the relevant state's facts and sect rather than borrowing another state's state by accident.**
-19. **Orbo supports both directions: celestial address → AstroDNA and celestial condition → candidate addresses → AstroDNA.**
-20. **Solve in celestial coordinates first. Convert to civil time second.**
-21. **The Resonator verifies seams; it does not create duplicate authorities.**
-22. **No architectural rewrite replaces a working path until it can carry the existing traffic.**
+10. **Every AstroDNA gene has its own first-class Connectome expression table.**
+11. **Cross-gene relationships are canonical Connectome edges, referenced from gene tables rather than independently duplicated.**
+12. **The Forged Ring is inside the Connectome because it is derived from a particular AstroDNA referenced against the universal Ring.**
+13. **The Forged Ring is bidirectionally indexed: from each gene to its exact target degrees and from each degree back to the structures it strikes.**
+14. **The Ring owns geometry. Doctrine owns what it admits around that geometry.**
+15. **The Connectome knows the target. The Loom finds the crossing.**
+16. **The Loom consumes AstroDNA through time; it does not manufacture its own sky.**
+17. **Specialized spines are temporal indexes seated on the Embryo's common backbone.**
+18. **A spine may be eager or lazy according to cardinality and use; caching never becomes a second source of truth.**
+19. **Derived AstroDNA uses the same celestial grammar with explicit provenance.**
+20. **Sect belongs to the state being examined when that state possesses a meaningful Sun and horizon.**
+21. **Lots derive from the relevant state's facts and sect rather than borrowing another state's state by accident.**
+22. **Orbo supports both directions: celestial address → AstroDNA and celestial condition → candidate addresses → AstroDNA.**
+23. **Solve in celestial coordinates first. Convert to civil time second.**
+24. **The Resonator verifies seams; it does not create duplicate authorities.**
+25. **No architectural rewrite replaces a working path until it can carry the existing traffic.**
 
 ---
 
@@ -837,8 +1051,9 @@ These are archaeology findings. The Bay Bridge migration rule still applies. Exi
 THE EPHEMERIS MOVES THE CLOCK.
 THE EMBRYO OWNS THE CLOCK.
 ASTRODNA IS A READING OF THE CLOCK.
-THE CONNECTOME EXPRESSES THE READING.
-THE FORGED RING IS THE READING'S PERSONAL GEOMETRIC LATTICE.
+THE CONNECTOME UNFOLDS THE READING, ONE GENE TABLE AT A TIME.
+THE EDGES RECORD HOW THOSE GENES CONNECT.
+THE FORGED RING IS THEIR STATE-SPECIFIC GEOMETRIC LATTICE.
 THE LOOM FINDS WHEN MOVEMENT STRIKES THE LATTICE.
 THE SPINES INDEX THOSE STRIKES THROUGH TIME.
 THE RESONATOR KEEPS THE MOVEMENT TRUE.
