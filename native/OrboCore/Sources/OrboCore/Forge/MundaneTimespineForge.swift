@@ -128,7 +128,12 @@ public enum MundaneTimespineForge {
                 let region = regions[regionIndex]
                 let count = Self.sampleCount(start: region.start, end: region.end, step: region.sampleDays)
                 if sampleIndex >= count { regionIndex += 1; sampleIndex = 0; continue }
-                let jdValue = min(region.start + Double(sampleIndex) * region.sampleDays, region.end)
+
+                // Keep every stored knot on the declared cadence. When a region boundary
+                // is not cadence-aligned the final knot intentionally lies just beyond
+                // that boundary as a read-only interpolation guard. Runtime support
+                // remains half-open and never exposes the guard interval itself.
+                let jdValue = region.start + Double(sampleIndex) * region.sampleDays
                 guard let jd = JulianDay(jdValue) else { throw MundaneTimespineError.malformedMetadata }
                 let state = try reference.state(of: profile.body, at: jd)
                 guard let sample = MundaneTimespineSample(longitude: state.longitude) else { throw MundaneTimespineError.sampleOverflow }
