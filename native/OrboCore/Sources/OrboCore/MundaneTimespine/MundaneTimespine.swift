@@ -82,6 +82,29 @@ public struct MundaneCelestialState: Hashable, Sendable {
     }
 }
 
+public struct MundaneStation: Hashable, Codable, Sendable {
+    public let julianDay: JulianDay
+    public let motionAfter: Motion
+
+    public init(julianDay: JulianDay, motionAfter: Motion) {
+        self.julianDay = julianDay
+        self.motionAfter = motionAfter
+    }
+}
+
+public struct MundaneMotionChronology: Hashable, Codable, Sendable {
+    public let initialMotion: Motion
+    public let stations: [MundaneStation]
+
+    public init?(initialMotion: Motion, stations: [MundaneStation]) {
+        guard zip(stations, stations.dropFirst()).allSatisfy({ $0.julianDay.value < $1.julianDay.value }) else {
+            return nil
+        }
+        self.initialMotion = initialMotion
+        self.stations = stations
+    }
+}
+
 public struct MundaneTimespineProfile: Hashable, Codable, Sendable {
     public let body: MundaneBody
     public let edgeSampleDays: Double
@@ -112,7 +135,6 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
     public let denseEnd: JulianDay
     public let supportedEnd: JulianDay
     public let positionUnitsPerDegree: Int
-    public let speedUnitsPerDegreePerDay: Int
     public let profiles: [MundaneTimespineProfile]
 
     internal init(
@@ -126,7 +148,6 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
         denseEnd: JulianDay,
         supportedEnd: JulianDay,
         positionUnitsPerDegree: Int,
-        speedUnitsPerDegreePerDay: Int,
         profiles: [MundaneTimespineProfile]
     ) {
         self.version = version
@@ -139,7 +160,6 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
         self.denseEnd = denseEnd
         self.supportedEnd = supportedEnd
         self.positionUnitsPerDegree = positionUnitsPerDegree
-        self.speedUnitsPerDegreePerDay = speedUnitsPerDegreePerDay
         self.profiles = profiles
     }
 }
@@ -160,41 +180,22 @@ public enum MundaneTimespineError: Error, Equatable, Sendable {
 
 internal struct MundaneTimespineSample: Hashable, Sendable {
     let positionUnits: UInt32
-    let speedUnitsPerDay: Int32
 
-    init(positionUnits: UInt32, speedUnitsPerDay: Int32) {
+    init(positionUnits: UInt32) {
         self.positionUnits = positionUnits
-        self.speedUnitsPerDay = speedUnitsPerDay
     }
 
-    init?(state: MundaneCelestialState) {
-        let positionScale = Double(MundaneTimespine.positionUnitsPerDegree)
-        let speedScale = Double(MundaneTimespine.speedUnitsPerDegreePerDay)
+    init?(longitude: CelestialLongitude) {
+        let scale = Double(MundaneTimespine.positionUnitsPerDegree)
         let circleUnits = Int64(360 * MundaneTimespine.positionUnitsPerDegree)
-
-        var position = Int64((state.longitude.degrees * positionScale).rounded()) % circleUnits
+        var position = Int64((longitude.degrees * scale).rounded()) % circleUnits
         if position < 0 { position += circleUnits }
-        let speed = (state.longitudinalSpeedDegreesPerDay * speedScale).rounded()
-
-        guard position >= 0,
-              position <= Int64(UInt32.max),
-              speed >= Double(Int32.min),
-              speed <= Double(Int32.max) else {
-            return nil
-        }
+        guard position >= 0, position <= Int64(UInt32.max) else { return nil }
         self.positionUnits = UInt32(position)
-        self.speedUnitsPerDay = Int32(speed)
     }
 
-    func state() -> MundaneCelestialState {
-        let longitude = CelestialLongitude(
-            Double(positionUnits) / Double(MundaneTimespine.positionUnitsPerDegree)
-        )!
-        let speed = Double(speedUnitsPerDay) / Double(MundaneTimespine.speedUnitsPerDegreePerDay)
-        return MundaneCelestialState(
-            longitude: longitude,
-            longitudinalSpeedDegreesPerDay: speed
-        )!
+    var longitudeDegrees: Double {
+        Double(positionUnits) / Double(MundaneTimespine.positionUnitsPerDegree)
     }
 }
 
@@ -204,56 +205,65 @@ internal struct MundaneTimespineRegion: Sendable {
     let sampleDays: Double
     let samples: [MundaneTimespineSample]
 
-    var intervalCount: Int { samples.count - 1 }
-
-    func state(at julianDay: Double) throws -> MundaneCelestialState {
+    func interpolated(at julianDay: Double) throws -> (longitude: Double, speed: Double) {
         guard startJulianDay <= julianDay,
               julianDay <= endJulianDay,
               sampleDays > 0,
-              samples.count >= 2 else {
+              samples.count >= 4 else {
             throw MundaneTimespineError.malformedMetadata
         }
 
-        let rawIndex = Int(floor((julianDay - startJulianDay) / sampleDays))
-        let index = min(max(0, rawIndex), intervalCount - 1)
-        let t0 = startJulianDay + Double(index) * sampleDays
-        let t1 = min(t0 + sampleDays, endJulianDay)
-        let h = t1 - t0
-        guard h > 0 else { throw MundaneTimespineError.malformedMetadata }
+        let x = (julianDay - startJulianDay) / sampleDays
+        let interval = Int(floor(x))
+        let firstIndex = min(max(0, interval - 1), samples.count - 4)
+        let indices = Array(firstIndex..<(firstIndex + 4))
+        let positions = Self.unwrap(indices.map { samples[$0].longitudeDegrees })
 
-        let left = samples[index].state()
-        let right = samples[index + 1].state()
-        let u = max(0, min(1, (julianDay - t0) / h))
+        var value = 0.0
+        var derivativeInSampleUnits = 0.0
 
-        let p0 = left.longitude.degrees
-        let delta = Self.wrap180(right.longitude.degrees - p0)
-        let p1 = p0 + delta
-        let v0 = left.longitudinalSpeedDegreesPerDay
-        let v1 = right.longitudinalSpeedDegreesPerDay
+        for i in 0..<4 {
+            let xi = Double(indices[i])
+            var basis = 1.0
+            for j in 0..<4 where j != i {
+                let xj = Double(indices[j])
+                basis *= (x - xj) / (xi - xj)
+            }
 
-        let u2 = u * u
-        let u3 = u2 * u
-        let h00 = 2 * u3 - 3 * u2 + 1
-        let h10 = u3 - 2 * u2 + u
-        let h01 = -2 * u3 + 3 * u2
-        let h11 = u3 - u2
-        let unwrappedLongitude = h00 * p0 + h10 * h * v0 + h01 * p1 + h11 * h * v1
+            var derivativeBasis = 0.0
+            for m in 0..<4 where m != i {
+                let xm = Double(indices[m])
+                var term = 1.0 / (xi - xm)
+                for j in 0..<4 where j != i && j != m {
+                    let xj = Double(indices[j])
+                    term *= (x - xj) / (xi - xj)
+                }
+                derivativeBasis += term
+            }
 
-        let dh00 = 6 * u2 - 6 * u
-        let dh10 = 3 * u2 - 4 * u + 1
-        let dh01 = -6 * u2 + 6 * u
-        let dh11 = 3 * u2 - 2 * u
-        let derivativeU = dh00 * p0 + dh10 * h * v0 + dh01 * p1 + dh11 * h * v1
-        let speed = derivativeU / h
-
-        guard let longitude = CelestialLongitude(unwrappedLongitude),
-              let state = MundaneCelestialState(
-                longitude: longitude,
-                longitudinalSpeedDegreesPerDay: speed
-              ) else {
-            throw MundaneTimespineError.malformedMetadata
+            value += positions[i] * basis
+            derivativeInSampleUnits += positions[i] * derivativeBasis
         }
-        return state
+
+        return (value, derivativeInSampleUnits / sampleDays)
+    }
+
+    private static func unwrap(_ values: [Double]) -> [Double] {
+        guard let first = values.first else { return [] }
+        var result = [first]
+        result.reserveCapacity(values.count)
+        for value in values.dropFirst() {
+            let previous = result[result.count - 1]
+            let previousCanonical = normalize360(previous)
+            result.append(previous + wrap180(value - previousCanonical))
+        }
+        return result
+    }
+
+    private static func normalize360(_ value: Double) -> Double {
+        var result = value.truncatingRemainder(dividingBy: 360)
+        if result < 0 { result += 360 }
+        return result == 0 ? 0 : result
     }
 
     private static func wrap180(_ value: Double) -> Double {
@@ -265,6 +275,7 @@ internal struct MundaneTimespineRegion: Sendable {
 
 internal struct MundaneTimespineSeries: Sendable {
     let profile: MundaneTimespineProfile
+    let motionChronology: MundaneMotionChronology
     let regions: [MundaneTimespineRegion]
 
     func state(at julianDay: Double) throws -> MundaneCelestialState {
@@ -273,7 +284,32 @@ internal struct MundaneTimespineSeries: Sendable {
         }) else {
             throw MundaneTimespineError.malformedSeries(profile.body)
         }
-        return try region.state(at: julianDay)
+        let interpolation = try region.interpolated(at: julianDay)
+        guard let longitude = CelestialLongitude(interpolation.longitude) else {
+            throw MundaneTimespineError.malformedSeries(profile.body)
+        }
+
+        let expectedMotion = motion(at: julianDay)
+        let magnitude = abs(interpolation.speed)
+        let signedSpeed = expectedMotion == .retrograde ? -magnitude : magnitude
+        return MundaneCelestialState(
+            longitude: longitude,
+            longitudinalSpeedDegreesPerDay: signedSpeed
+        )!
+    }
+
+    private func motion(at julianDay: Double) -> Motion {
+        var low = 0
+        var high = motionChronology.stations.count
+        while low < high {
+            let mid = (low + high) / 2
+            if motionChronology.stations[mid].julianDay.value <= julianDay {
+                low = mid + 1
+            } else {
+                high = mid
+            }
+        }
+        return low == 0 ? motionChronology.initialMotion : motionChronology.stations[low - 1].motionAfter
     }
 }
 
@@ -292,10 +328,9 @@ public struct MundaneTimespineArtifactSet: Sendable {
 }
 
 public struct MundaneTimespine: Sendable {
-    public static let codec = 2
+    public static let codec = 3
     public static let positionUnitsPerDegree = 3_600_000
-    public static let speedUnitsPerDegreePerDay = 3_600_000
-    public static let representation = "separate stamped body knots + cubic Hermite reads"
+    public static let representation = "separate stamped positions + station chronologies + local cubic reads"
 
     public let metadata: MundaneTimespineMetadata
     internal let seriesByBody: [MundaneBody: MundaneTimespineSeries]
@@ -307,7 +342,6 @@ public struct MundaneTimespine: Sendable {
         guard metadata.codec == Self.codec,
               metadata.astroDNACodec == AstroDNA.codec,
               metadata.positionUnitsPerDegree == Self.positionUnitsPerDegree,
-              metadata.speedUnitsPerDegreePerDay == Self.speedUnitsPerDegreePerDay,
               metadata.supportedStart.value < metadata.denseStart.value,
               metadata.denseStart.value < metadata.denseEnd.value,
               metadata.denseEnd.value < metadata.supportedEnd.value,
@@ -319,7 +353,11 @@ public struct MundaneTimespine: Sendable {
         for body in MundaneBody.canonicalOrder {
             guard let series = seriesByBody[body],
                   series.profile.body == body,
-                  series.regions.count == 3 else {
+                  series.regions.count == 3,
+                  series.motionChronology.stations.allSatisfy({
+                      $0.julianDay.value >= metadata.supportedStart.value &&
+                      $0.julianDay.value < metadata.supportedEnd.value
+                  }) else {
                 throw MundaneTimespineError.malformedSeries(body)
             }
         }
