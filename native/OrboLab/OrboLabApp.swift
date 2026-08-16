@@ -16,6 +16,20 @@ private struct FoundationLabView: View {
     private let ascendantLongitude = CelestialLongitude(220)!
     private let civilDate = CivilDate(year: 1985, month: 4, day: 10)!
     private let civilClock = CivilClockTime(hour: 20, minute: 16)!
+    private let labAstroDNA = AstroDNA(rawSequence: [
+        40_123,
+        997_654,
+        1_008_000,
+        1_584_123,
+        244_444,
+        1_987_200,
+        432_000,
+        1_407_111,
+        1_200_000,
+        1_297_000,
+        3_599,
+        2_096_000,
+    ])!
 
     private var condition: EssentialCondition {
         Mater.essentialCondition(
@@ -151,6 +165,23 @@ private struct FoundationLabView: View {
                 } else {
                     readout("resolution", "place unresolved")
                 }
+
+                Divider()
+
+                sectionTitle("ASTRODNA CONTRACT")
+                readout("codec", "\(AstroDNA.codec)")
+                readout("genes", "\(AstroDNA.geneCount)")
+                readout("identity", "12 x RingFineState")
+                readout(
+                    "gene order",
+                    AstroDNAGene.canonicalOrder.map(\.displayName).joined(separator: " · ")
+                )
+                readout("Asc fine state", "\(labAstroDNA[.ascendant].rawValue)")
+                readout("Asc longitude", String(format: "%.6f", labAstroDNA.longitude(of: .ascendant).degrees))
+                readout("Node source", "mean north node")
+                readout("Node motion", labAstroDNA.motion(of: .northNode).rawValue)
+                readout("South Node", String(format: "%.6f", labAstroDNA.meanSouthNodeLongitude.degrees))
+                readout("degree projection", labAstroDNA.degreeSequenceString)
 
                 Divider()
 
