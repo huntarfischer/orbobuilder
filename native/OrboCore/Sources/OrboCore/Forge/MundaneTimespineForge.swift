@@ -129,10 +129,10 @@ public enum MundaneTimespineForge {
                 let count = Self.sampleCount(start: region.start, end: region.end, step: region.sampleDays)
                 if sampleIndex >= count { regionIndex += 1; sampleIndex = 0; continue }
 
-                // Keep every stored knot on the declared cadence. When a region boundary
-                // is not cadence-aligned the final knot intentionally lies just beyond
-                // that boundary as a read-only interpolation guard. Runtime support
-                // remains half-open and never exposes the guard interval itself.
+                // Every stored knot stays on the declared cadence. The final knots may lie
+                // beyond the supported subregion as read-only interpolation guards. Four
+                // knots are always manufactured because a local cubic read requires four
+                // distinct temporal coordinates even in tiny construction fixtures.
                 let jdValue = region.start + Double(sampleIndex) * region.sampleDays
                 guard let jd = JulianDay(jdValue) else { throw MundaneTimespineError.malformedMetadata }
                 let state = try reference.state(of: profile.body, at: jd)
@@ -163,7 +163,7 @@ public enum MundaneTimespineForge {
                 for index in 0..<3 {
                     let rp = plans[index]
                     let expected = Self.sampleCount(start: rp.start, end: rp.end, step: rp.sampleDays)
-                    guard stored[index].count == expected, expected >= 2 else { throw MundaneTimespineError.malformedSeries(profile.body) }
+                    guard stored[index].count == expected, expected >= 4 else { throw MundaneTimespineError.malformedSeries(profile.body) }
                     regions.append(.init(startJulianDay: rp.start, endJulianDay: rp.end, sampleDays: rp.sampleDays, samples: stored[index]))
                 }
                 let motionChronology: MundaneMotionChronology
@@ -201,7 +201,9 @@ public enum MundaneTimespineForge {
                 .init(start: b.end.value, end: plan.supportedEnd.value, sampleDays: profile.edgeSampleDays),
             ]
         }
-        private static func sampleCount(start: Double, end: Double, step: Double) -> Int { Int(ceil((end - start) / step)) + 1 }
+        private static func sampleCount(start: Double, end: Double, step: Double) -> Int {
+            max(4, Int(ceil((end - start) / step)) + 1)
+        }
         fileprivate static func totalSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
             plan.profiles.reduce(0) { total, profile in
                 total + regionPlans(for: profile, plan: plan).reduce(0) { $0 + sampleCount(start: $1.start, end: $1.end, step: $1.sampleDays) }
