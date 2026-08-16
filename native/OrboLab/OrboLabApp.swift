@@ -37,7 +37,7 @@ private struct FoundationLabView: View {
     }
 
     var body: some View {
-        ScrollView {
+        ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 18) {
                 Text("ORBO LAB")
                     .font(.title2.monospaced().weight(.semibold))
@@ -114,6 +114,8 @@ private struct FoundationLabView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(24)
         }
+        .scrollIndicators(.visible)
+        .scrollBounceBehavior(.always)
     }
 
     private var dignityText: String {
@@ -150,7 +152,6 @@ private struct FoundationLabView: View {
 
             Text(value)
                 .font(.body.monospaced())
-                .textSelection(.enabled)
         }
     }
 
