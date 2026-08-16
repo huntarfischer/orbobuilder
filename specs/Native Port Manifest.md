@@ -236,7 +236,7 @@ The native proof apparatus gate is satisfied.
 | Ring | REPLICATE | EXACT | OrboCore / Ring | ASSESSED / NOT IMPLEMENTED |
 | Mater | REPLICATE | EXACT | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | ASSESSED / NOT IMPLEMENTED |
-| Rulers | PENDING | PENDING | PENDING | QUEUED |
+| Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
@@ -525,15 +525,15 @@ rulers.js
 
 ## What it currently does
 
-The Mater is the prototype's inherent sign-level zodiacal structure.
+The prototype Mater is the inherent sign-level zodiacal structure.
 
-The Ring owns inherent relation. The Mater owns inherent meaning at sign resolution.
+The Ring owns inherent relation. The Mater owns inherent zodiacal meaning at sign resolution.
 
 It is stamped before the app runs and requires no person, time, place, chart, or UI.
 
 ## Actual law
 
-The Mater owns:
+The prototype Mater owns:
 
 ```text
 twelve signs in canonical zodiacal order
@@ -561,7 +561,7 @@ sign-level essential dignity:
 
 It also preserves stable sign-symbol metadata, but that metadata is not foundational to computation.
 
-The Mater does not own:
+Prototype Mater does not currently own:
 
 ```text
 houses
@@ -575,10 +575,14 @@ peregrine determination
 occupants
 time
 place
-sect
+sect calculation
 orbs
 interpretation prose
 ```
+
+The Rulers assessment below changes the **native receiving boundary**, not the historical prototype fact. Native Mater receives the surviving sub-sign essential-dignity law from `rulers.js` through that component's REHOUSE treatment.
+
+The resulting native Mater is the single canonical owner of essential dignity at both sign and sub-sign resolution.
 
 ## What is proven
 
@@ -607,7 +611,7 @@ all falls are oppositions of exaltation
 sign-level dignity uses one vocabulary:
 domicile / exaltation / detriment / fall / null
 
-absence at the Mater layer is null, not peregrine
+absence at the prototype Mater layer is null, not peregrine
 
 house frames are absent from Mater
 house frames are owned by Tympan
@@ -617,9 +621,11 @@ framing, AstroDNA, and Rulers read Mater's canonical tables rather than maintain
 
 The test suite checks table identity where possible, not merely equality, so central ownership is proven rather than inferred from matching values.
 
+The Rulers archaeology additionally establishes that its surviving law is essential-dignity law, not a second kind of rulership law. That surviving law is recorded in the Rulers card and is destined for native Mater.
+
 ## Current dependencies
 
-None.
+Prototype Mater has none.
 
 Mater is an inherent floor component and imports nothing.
 
@@ -641,18 +647,21 @@ instrument/readout code
 
 Consumers must read Mater's sign-level facts rather than maintain competing copies.
 
+Native consumers will read Mater for the complete essential-dignity substrate as well.
+
 ## Known tests / fixtures
 
 ```text
 tests/mater.test.html
+tests/rulers.test.html
 tests/rewire-parity.test.html
 ```
 
-Mater's native parity fixtures should be derived from these proven tables and reads during Phase 1 preparation / implementation.
+Mater's native parity fixtures should derive from the proven Mater tables plus the factual dignity tables and boundaries preserved from Rulers.
 
 ## User-visible consequence
 
-A Mater error can change sign identity, element, modality, traditional rulership, dispositor eligibility, exaltation, detriment, fall, and every downstream technique that depends on those facts.
+A Mater error can change sign identity, element, modality, traditional rulership, dispositor eligibility, exaltation, detriment, fall, triplicity, bound, face, peregrine status, and every downstream technique that depends on those facts.
 
 The traditional / modern boundary is especially consequential. Adding Pluto, Uranus, or Neptune to Mater's traditional ruler table would alter classical disposition and governance logic rather than merely changing display.
 
@@ -662,25 +671,34 @@ The traditional / modern boundary is especially consequential. Adding Pluto, Ura
 
 ## Why
 
-Mater has a coherent single responsibility, no prototype dependency, mature tests, established consumers, and explicit boundaries with both Tympan and Rulers.
+Mater's own prototype law has a coherent single responsibility, no prototype dependency, mature tests, established consumers, and explicit boundaries with Tympan.
 
 The prototype has already completed important centralization work:
 
 ```text
 house frames moved out to Tympan
 modern co-rulership remains separate
-sign-level dignity remains here
-sub-sign dignity remains in Rulers
-private duplicate tables were removed from readers
+sign-level dignity remains in Mater
+private duplicate sign-level tables were removed from readers
 ```
 
-No architectural defect has been found that justifies redesigning or redistributing Mater's law.
+No architectural defect was found in Mater's own law, so Mater remains REPLICATE.
 
-The Phase 1 plan predicted REPLICATE. The prototype archaeology and test evidence now independently support that result, so the ruling is earned rather than assumed.
+The later Rulers assessment does not give Mater a second 4R treatment. Rulers receives its own single primary treatment, REHOUSE, and Mater is the receiving native owner for that surviving dignity law.
+
+This produces one native owner for one kind of inherent fact:
+
+```text
+Mater
+    complete zodiacal meaning
+    complete essential dignity
+```
+
+rather than preserving the prototype's historical sign-level / sub-sign file seam.
 
 ## Swift Sanding
 
-Preserve law and exact values while manufacturing the component to native tolerances.
+Preserve Mater's exact law and values while manufacturing the combined native owner to native tolerances.
 
 Expected sanding includes:
 
@@ -711,23 +729,62 @@ load-time JavaScript mutation / completeness defenses
 
 mater.browser.js / window.__ORBO_MATER
 -> no production native counterpart
+
+rulers.browser.js / browser-global Rulers transport
+-> no production native counterpart
 ```
+
+Native Mater additionally receives through the Rulers REHOUSE:
+
+```text
+Egyptian bounds
+Chaldean faces
+Dorothean triplicity rulers
+bound lookup
+face lookup
+triplicity lookup
+complete five-rung essential-dignity resolution
+correct peregrine determination
+```
+
+Doctrine variants are not separate owners. They are doctrine-qualified tables or policies held behind Mater's canonical dignity surface.
+
+For example:
+
+```text
+bounds:
+    Egyptian
+    Ptolemaic
+
+triplicity:
+    Dorothean
+    Ptolemaic
+
+faces:
+    Chaldean
+```
+
+Only implemented and proven variants become available. The default remains the admitted Orbo doctrine profile.
+
+Mater does not calculate sect. Where a dignity read needs sect to select a triplicity lord, sect is supplied by the caller as an explicit input.
 
 Swift Sanding must not merge modern co-rulers into the traditional rulership backbone.
 
 Swift Sanding must not move houses back into Mater.
 
-Swift Sanding must not absorb triplicity, bounds, faces, or the degree-level dignity ladder from Rulers.
-
-Swift Sanding must preserve the semantic distinction:
+Swift Sanding must preserve the distinction between:
 
 ```text
-no sign-level essential dignity
-!=
+no sign-level dignity
+```
+
+and:
+
+```text
 peregrine
 ```
 
-`peregrine` can only be decided by the later degree-level dignity layer after checking all admitted dignity rungs.
+Peregrine is true only when the planet holds none of the admitted positive essential-dignity rungs.
 
 ## Native destination
 
@@ -747,47 +804,57 @@ Planet
 Element
 Modality
 CelestialLongitude
+Sect
+DignityDoctrine
 ```
 
-Mater must not depend on Ring, Tympan, Rulers, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, or interpretation.
+`Sect` and `DignityDoctrine` are inputs where required, not external engines that Mater must own.
+
+Mater must not depend on Ring, Tympan, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, sect calculation, or interpretation.
 
 ## Native mating surface
 
-Native consumers should ask Mater for canonical sign-level facts rather than importing duplicate tables.
+Native consumers should ask Mater for canonical zodiacal facts and complete essential-dignity facts rather than importing duplicate tables.
 
 Conceptually, the mating surface may provide reads such as:
 
 ```text
+sign(of: CelestialLongitude)
 element(of: Sign)
 modality(of: Sign)
 domicileRuler(of: Sign)
 exaltation(in: Sign)
-dignity(of: Planet, in: Sign)
-sign(of: CelestialLongitude)
+bound(at: CelestialLongitude, doctrine: ...)
+face(at: CelestialLongitude, doctrine: ...)
+triplicity(of: Sign, sect: ..., doctrine: ...)
+dignities(of: Planet, at: CelestialLongitude, sect: ..., doctrine: ...)
 ```
 
 The exact Swift API is not decided in Phase 0.
 
 The production surface should expose only what downstream native components actually require. Alternate keyed / indexed shapes should be derived views, not independently maintained authorities.
 
-The ownership seam remains:
+The native ownership seam is:
 
 ```text
+Ring
+    inherent degree relation
+
 Mater
-    sign-level zodiacal law
+    inherent zodiacal meaning
+    complete essential dignity
 
 Tympan
     sign <-> house and governance indexes
-
-Rulers
-    sub-sign dignity law
 ```
+
+There is no separate native `Rulers` or `EssentialDignity` owner planned.
 
 ## Parity standard
 
-**EXACT**
+**EXACT** for the law already owned by prototype Mater.
 
-Exact means law and value parity, not line-for-line JavaScript API-shape parity.
+The dignity law received from Rulers is governed by the Rulers card's **STRUCTURAL** parity standard, with exact parity required for the factual tables, boundaries, and admitted ladder semantics.
 
 ## Proof method
 
@@ -811,9 +878,17 @@ all falls
 all 84 classical-planet / sign dignity reads
 longitude -> sign boundary behavior
 
+Egyptian bound table and every boundary
+Chaldean face sequence and every boundary
+Dorothean triplicity table and sect selection
+five-rung dignity facts
+peregrine only when no positive rung is held
+
+doctrine choices remain explicit
+no duplicate native dignity authority exists
+
 house material absent
 modern co-rulership absent
-sub-sign dignity material absent
 
 Golden fixture parity
 JavaScript / Swift parity
@@ -823,7 +898,9 @@ Ring + Mater accumulated suite green
 
 ## Proof evidence
 
-Prototype law and ownership are proven by the existing Mater and rewire parity tests.
+Prototype Mater law and ownership are proven by the existing Mater and rewire parity tests.
+
+The receiving dignity law and its rehouse are proven architecturally by the Rulers analysis recorded below.
 
 Native implementation has not begun.
 
@@ -915,10 +992,7 @@ occupants
 chart-specific destination houses
 house-routing graphs
 planet disposition graphs
-triplicity
-bounds
-faces
-degree-level dignity
+essential dignity
 aspects
 orbs
 sect
@@ -1115,7 +1189,7 @@ Planet
 CelestialLongitude
 ```
 
-Tympan must not depend on Ring, Rulers, AstroDNA, Connectome, ephemeris, Orbo Spine, Loom, UI, occupants, time, place, or interpretation.
+Tympan must not depend on Ring, AstroDNA, Connectome, ephemeris, Orbo Spine, Loom, UI, occupants, time, place, or interpretation.
 
 ## Native mating surface
 
@@ -1140,7 +1214,7 @@ The ownership seam remains:
 
 ```text
 Mater
-    sign-level zodiacal law
+    zodiacal meaning + essential dignity
         |
         v
 Tympan
@@ -1151,7 +1225,7 @@ later Connectome
     occupants + frame -> chart-specific routing
 ```
 
-Rulers remains the owner of sub-sign dignity law and is not absorbed into Tympan.
+The prototype Rulers dignity law is rehoused into native Mater, not Tympan.
 
 ## Parity standard
 
@@ -1205,7 +1279,363 @@ Tympan is not native canonical yet.
 
 ---
 
-# 8. Current Construction Boundary
+# 8. Component: Rulers
+
+## Prototype source
+
+Primary authority:
+
+```text
+rulers.js
+```
+
+Reference / browser material:
+
+```text
+rulers.browser.js
+```
+
+Primary proof material:
+
+```text
+tests/rulers.test.html
+tests/rewire-parity.test.html
+```
+
+Relevant ownership neighbors and duplicate readers:
+
+```text
+mater.js
+dispositor.js
+electional.js
+```
+
+## What it currently does
+
+The current prototype `rulers.js` no longer owns general sign rulership and no longer owns chart-level disposition.
+
+Mater owns the traditional sign-level rulership and exaltation facts that Rulers reads.
+
+Dispositor owns chart-specific chains, cycles, and receptions that were removed from Rulers.
+
+The surviving coherent job inside Rulers is the sub-sign and assembled **essential-dignity law**.
+
+## Actual law
+
+The useful surviving Rulers law is:
+
+```text
+Egyptian bounds
+Chaldean faces
+Dorothean triplicity rulers
+
+bound lookup
+face lookup
+triplicity lookup
+
+five positive essential-dignity rungs:
+    domicile
+    exaltation
+    triplicity
+    bound
+    face
+
+debilities read from Mater:
+    detriment
+    fall
+
+peregrine determination:
+    true only when none of the five positive rungs is held
+```
+
+Rulers does not properly own:
+
+```text
+canonical sign identity
+canonical domicile rulership
+canonical exaltation table
+canonical detriment / fall table
+house governance
+modern co-rulership
+chart-specific disposition graphs
+receptions
+sect calculation
+solar condition
+motion condition
+accidental house condition
+scoring / almuten
+interpretation
+```
+
+## What is proven
+
+Prototype source and tests establish:
+
+```text
+Egyptian bounds are twelve rows of five arcs and close every sign at 30 degrees
+Sun and Moon hold no Egyptian bounds
+bound ownership totals close the whole 360-degree circle
+
+faces follow the Chaldean sequence from Mars at 0 Aries
+all 36 ten-degree faces are derivable from one seven-planet cycle
+
+Dorothean triplicity is element-based
+triplicity preserves day, night, and participating rulers
+sect is supplied as an argument rather than calculated inside Rulers
+
+five positive dignity rungs are assembled without a score
+peregrine is a property of the complete ladder, not merely absence of sign-level dignity
+```
+
+The archaeology also exposes a prototype API inconsistency that must not become native canon:
+
+```text
+dignityOf(...)
+    treats absence of sign-level dignity as peregrine
+
+ladderOf(...)
+    correctly treats peregrine as holding none of the five positive rungs
+```
+
+The complete ladder semantics are the coherent law to preserve.
+
+A second important finding is duplication in `electional.js`: Electional currently carries its own dignity substrate for several of the same facts. Native Orbo should not preserve competing bound, face, triplicity, exaltation, or related dignity tables there.
+
+## Current dependencies
+
+```text
+Mater
+```
+
+Current Rulers reads Mater's:
+
+```text
+SIGNS
+DOMICILE
+EXALTATION
+DISPOSITORS
+dignityOfSign
+elementOf
+```
+
+This is evidence that sign-level rulership already has a canonical owner elsewhere.
+
+## Current consumers
+
+Prototype consumers include readers that need pointwise lord or dignity facts.
+
+Electional is also a duplicate dignity implementer that must eventually become a consumer of the canonical native dignity owner rather than maintaining competing tables.
+
+## Known tests / fixtures
+
+```text
+tests/rulers.test.html
+tests/rewire-parity.test.html
+```
+
+Electional's dignity machinery is additional architectural evidence for deduplication, but electional judgment and scoring remain outside this component pass.
+
+## User-visible consequence
+
+A dignity ownership error can misstate whether a planet is in domicile, exaltation, triplicity, bound, face, detriment, fall, or peregrine, and can cause downstream Horary, Electional, natal, and interpretive systems to disagree about the same celestial fact.
+
+## 4R
+
+**REHOUSE**
+
+## Why
+
+The useful law survives, but the prototype component name and owner no longer match the law.
+
+`rulers.js` has already lost the two jobs its name suggests:
+
+```text
+sign rulership -> Mater
+chart disposition -> Dispositor
+```
+
+What remains is essential dignity.
+
+Creating a new native `EssentialDignity` owner would preserve an unnecessary seam through one kind of inherent zodiacal meaning:
+
+```text
+domicile / exaltation / detriment / fall
+    in Mater
+
+triplicity / bound / face / peregrine
+    somewhere else
+```
+
+There is no architectural gain sufficient to justify that split.
+
+Therefore the surviving Rulers dignity law is rehoused into **Mater**, making Mater the single canonical native owner of complete essential dignity.
+
+Rulers still receives exactly one primary 4R treatment: REHOUSE.
+
+Mater still receives exactly one primary 4R treatment for its own component: REPLICATE.
+
+The receiving relationship does not create a second treatment for Mater.
+
+## Swift Sanding
+
+The rehouse should preserve the factual law while removing JavaScript and historical-file seams.
+
+Expected sanding includes:
+
+```text
+string planet identity
+-> Planet
+
+raw longitude Number
+-> CelestialLongitude
+
+Boolean / null sect argument
+-> explicit Sect? input
+
+string scheme labels
+-> typed DignityDoctrine / scheme identity
+
+string rung names
+-> typed dignity-rung values
+
+Object.freeze
+-> immutable Swift values
+
+null / undefined
+-> explicit Optional
+
+rulers.browser.js
+-> no production native counterpart
+
+old sign-only dignityOf(...)=peregrine shortcut
+-> not canonical
+
+complete ladder semantics
+-> canonical peregrine determination
+```
+
+Doctrine variation belongs behind the same Mater owner rather than spawning duplicate engines.
+
+The default factual substrate currently includes:
+
+```text
+Egyptian bounds
+Dorothean triplicity
+Chaldean faces
+```
+
+Future admitted alternatives, such as Ptolemaic bounds or Ptolemaic triplicity, should be explicit doctrine selections with provenance and tests.
+
+No score belongs in Mater. Five rungs remain five facts.
+
+No accidental dignity or broader planetary condition is absorbed in this rehouse. Combustion, cazimi, under-the-beams status, motion state, angularity, broader sect condition, and similar chart-context facts require their own later ownership analysis.
+
+Reception also remains outside Mater. Reception is a relationship mediated by dignity and belongs with the chart-specific disposition/reception machinery.
+
+## Native destination
+
+```text
+OrboCore / Mater
+```
+
+There is no separate native `Rulers` component planned from this prototype file.
+
+## Native dependencies
+
+The received law lives inside Mater and therefore uses Mater's native domain vocabulary.
+
+Conceptual inputs may include:
+
+```text
+Planet
+Sign
+CelestialLongitude
+Sect?
+DignityDoctrine
+```
+
+Mater does not derive sect. A caller supplies it when the selected triplicity doctrine requires it.
+
+## Native mating surface
+
+The useful capability becomes part of Mater's canonical zodiacal surface.
+
+Conceptually:
+
+```text
+Mater.bound(...)
+Mater.face(...)
+Mater.triplicity(...)
+Mater.dignities(...)
+```
+
+The exact Swift API is deferred to Phase 1 implementation.
+
+Downstream systems such as Electional should consume these factual reads and apply their own technique-specific weighting or judgment afterward.
+
+## Parity standard
+
+**STRUCTURAL**
+
+The ownership and API shape intentionally change, so whole-component exact API parity would preserve a known historical seam and a misleading `dignityOf` shortcut.
+
+Within structural parity, the factual substrate must be exact:
+
+```text
+Egyptian bound endpoints and owners            EXACT
+bound half-open boundary behavior              EXACT
+Chaldean face sequence                         EXACT
+face boundaries                                EXACT
+Dorothean triplicity table                     EXACT
+sect / participating selection                 EXACT
+five-rung dignity facts                        EXACT
+detriment and fall facts from Mater            EXACT
+classical-seven restriction                    EXACT
+no-score rule                                  EXACT
+```
+
+Peregrine follows the complete five-rung law, not the older sign-only shortcut.
+
+## Proof method
+
+When the Phase 1 rehouse is implemented, prove:
+
+```text
+all Egyptian bound rows, owners, and boundaries
+all bound coverage invariants
+all Chaldean faces and boundaries
+all Dorothean triplicity rows and sect selections
+all five-rung dignity facts across representative and exhaustive boundaries
+peregrine is false whenever any positive rung is held
+peregrine is true only when none is held
+
+Mater remains the only maintained owner of domicile / exaltation / detriment / fall
+native Mater becomes the only maintained owner of bound / face / triplicity / complete dignity
+no duplicate native Electional dignity tables survive
+no score enters Mater
+no chart-specific condition enters Mater
+
+Golden fixture parity
+JavaScript / Swift factual parity
+native invariant tests
+accumulated Ring + Mater + Tympan suite green
+```
+
+## Proof evidence
+
+Prototype archaeology and the Rulers test contract establish the surviving factual law and the historical ownership seam.
+
+The native rehouse has not been implemented.
+
+## Status
+
+**ASSESSED / NOT IMPLEMENTED**
+
+The Rulers assessment is complete. Its surviving dignity law is planned to enter native Mater during Phase 1.
+
+---
+
+# 9. Current Construction Boundary
 
 Phase 0 may continue archaeology, fixture work, manifest work, and Phase 1 queue preparation.
 
@@ -1215,7 +1645,7 @@ Do not implement the following production components during Phase 0:
 Ring
 Mater
 Tympan
-Rulers
+Rulers -> Mater dignity rehouse
 Ephemeris / Spine
 AstroDNA
 Horizon
