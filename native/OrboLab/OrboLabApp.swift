@@ -32,13 +32,17 @@ private struct FoundationLabView: View {
         return Ring.relation(between: bodyState, and: ascendantState)
     }
 
+    private var labPlaceResolution: GeoplacementResolution {
+        GeoplacementAtlas.resolve("Madison, WI, USA")
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 Text("ORBO LAB")
                     .font(.title2.monospaced().weight(.semibold))
 
-                Text("PHASE 1a / NATIVE FOUNDATION")
+                Text("PHASE 1b / OVUM CONSTRUCTION")
                     .font(.caption.monospaced())
 
                 Divider()
@@ -80,6 +84,26 @@ private struct FoundationLabView: View {
                         "house \(record.house.rawValue)",
                         "\(signName(record.sign)) / \(record.ruler.rawValue)\(coRuler)"
                     )
+                }
+
+                Divider()
+
+                sectionTitle("GEOPLACEMENT")
+                readout("atlas version", GeoplacementAtlas.version)
+                readout("records", "\(GeoplacementAtlas.count)")
+                readout("query", "Madison, WI, USA")
+
+                switch labPlaceResolution {
+                case let .found(place):
+                    readout("resolution", "found")
+                    readout("place", place.canonicalName)
+                    readout("latitude", "\(place.latitude.degrees)")
+                    readout("longitude", "\(place.longitude.degrees)")
+                    readout("timezone", place.timezone.rawValue)
+                case let .ambiguous(places):
+                    readout("resolution", "ambiguous / \(places.count) matches")
+                case .notFound:
+                    readout("resolution", "not found")
                 }
 
                 Divider()
