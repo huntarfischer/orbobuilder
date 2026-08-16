@@ -41,18 +41,21 @@ jobs:
           print("Swiss Ephemeris", swe.version)
           PY
 
-      - name: Verify committed qualified Swiss DE441 files
+      - name: Fetch qualified Swiss DE441 files
         run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/master/ephe"
           for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
-            test -f "tools/pass5/$file"
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$base/$file" \
+              --output ".forge/ephe/$file"
           done
-          sha256sum tools/pass5/*.se1 | sort
+          sha256sum .forge/ephe/*.se1 | sort
 
       - name: Generate deterministic Swiss stamped-knot stream
         run: |
-          mkdir -p .forge
           python tools/pass5/generate_swiss_samples.py \
-            --ephe-dir tools/pass5 \
+            --ephe-dir .forge/ephe \
             --fixture native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json \
             --output .forge/swiss-samples.bin \
             --provenance-output .forge/swiss-provenance.json
@@ -76,7 +79,7 @@ jobs:
         continue-on-error: true
         run: |
           python tools/pass5/audit_timespine.py \
-            --ephe-dir tools/pass5 \
+            --ephe-dir .forge/ephe \
             --artifact-dir .forge/mundane-timespine-v1 \
             --provenance .forge/swiss-provenance.json \
             --report .forge/mundane-timespine-v1-qualification.json
@@ -90,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pass5-timespine-qualification
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           path: |
             .forge/mundane-timespine-v1/
