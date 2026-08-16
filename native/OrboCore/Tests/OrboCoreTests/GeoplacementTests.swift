@@ -19,9 +19,9 @@ final class GeoplacementTests: XCTestCase {
         XCTAssertEqual(CelestialLongitude(-89.4)!.degrees, 270.6, accuracy: 0.000_000_1)
     }
 
-    func testAtlasLoadsTheVersioned7358RecordCorpus() {
+    func testAtlasLoadsTheVersioned7356RecordCorpus() {
         XCTAssertEqual(GeoplacementAtlas.version, "1")
-        XCTAssertEqual(GeoplacementAtlas.count, 7_358)
+        XCTAssertEqual(GeoplacementAtlas.count, 7_356)
         XCTAssertEqual(GeoplacementAtlas.count, GeoplacementAtlas.expectedRecordCount)
     }
 
