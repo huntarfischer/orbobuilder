@@ -1197,7 +1197,6 @@ rising sign + modern co-ruler
 canonical frame records
 
 six-house opposition / flip law
-
 absence / empty / malformed address contracts
 ```
 
@@ -1897,7 +1896,6 @@ The same accumulated Xcode proof that canonized Mater completed the Rulers rehou
 ## Status
 
 **PROVEN / COMPLETE**
-
 Rulers has no independent native production component. Its surviving essential-dignity law is now canonically owned by native Mater.
 
 ---
@@ -1927,7 +1925,7 @@ hand-curated major cities
 
 The file is deduplicated by rounded latitude / longitude and stores coordinates rounded to two decimal places.
 
-The current corpus contains 7,358 records in the compact prototype shape:
+The current corpus contains 7,356 records in the compact prototype shape:
 
 ```text
 n   display / canonical-ish place label
@@ -1992,7 +1990,7 @@ interpretation
 Archaeology establishes several important current behaviors and defects:
 
 ```text
-7,358 shipped records
+7,356 shipped records
 coordinates rounded to two decimal places
 IANA-style timezone identifiers carried as data
 case-insensitive substring search
@@ -2037,7 +2035,7 @@ There is no mature dedicated prototype Geoplacement test suite.
 Native proof is therefore built from:
 
 ```text
-the versioned 7,358-record source artifact
+the versioned 7,356-record source artifact
 known place rows
 real duplicate-label evidence
 synthetic ambiguity cases
@@ -2185,7 +2183,7 @@ The browser implementation shape, mirror, and implicit selection bugs are not pa
 Prove:
 
 ```text
-Atlas v1 loads exactly 7,358 records
+Atlas v1 loads exactly 7,356 records
 Latitude rejects values outside [-90, 90]
 GeographicLongitude rejects values outside [-180, 180]
 geographic longitude is not celestial cyclic longitude
