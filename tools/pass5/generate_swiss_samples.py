@@ -109,7 +109,11 @@ def main()->int:
             for region_start,region_end,step in regions(fixture,profile):
                 count=sample_count(region_start,region_end,step)
                 for i in range(count):
-                    jd=min(region_start+i*step,region_end); lon,speed=swiss.state(jd,body)
+                    # Every knot stays on the declared cadence. When a region boundary
+                    # is not cadence-aligned, the final knot intentionally lies just
+                    # beyond it as a read-only interpolation guard.
+                    jd=region_start+i*step
+                    lon,speed=swiss.state(jd,body)
                     out.write(struct.pack("<dd",lon,speed)); written+=1; body_written+=1
             print(f"{name}: {body_written:,} position knots",flush=True)
     if written!=expected: raise RuntimeError(f"Sample count mismatch: {written} != {expected}")
