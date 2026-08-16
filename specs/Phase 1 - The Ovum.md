@@ -41,7 +41,6 @@ Conceptually:
 │  Ring                                                        │
 │  Mater                                                       │
 │  Tympan                                                      │
-│  Rulers                                                      │
 │                                                              │
 │  TERRESTRIAL ADDRESS                                         │
 │  Geoplacement Atlas                                          │
@@ -437,9 +436,13 @@ Nothing later in native Orbo asks JavaScript Ring for an answer.
 
 # 1.8 Mater
 
-**Expected 4R:** Replicate.
+**Mater 4R:** Replicate.
 
-Transpose Orbo's inherent zodiacal structure:
+**Rulers rehouse destination:** Mater.
+
+Native Mater is the single canonical owner of inherent zodiacal meaning, including the complete essential-dignity substrate.
+
+Transpose Mater's proven sign-level law faithfully:
 
 ```text
 twelve signs
@@ -453,6 +456,60 @@ detriments
 falls
 ```
 
+Then receive the surviving dignity law from the Rulers REHOUSE:
+
+```text
+Egyptian bounds
+Chaldean faces
+Dorothean triplicity rulers
+bound lookup
+face lookup
+triplicity lookup
+complete five-rung essential-dignity resolution
+peregrine determination
+```
+
+The five positive essential-dignity rungs are:
+
+```text
+domicile
+exaltation
+triplicity
+bound
+face
+```
+
+Detriment and fall remain essential debilities derived from Mater's canonical sign-level tables.
+
+Peregrine means the planet holds none of the admitted positive dignity rungs. Absence of sign-level dignity alone is not enough to call a planet peregrine.
+
+## Doctrine-qualified dignity tables
+
+Dignity doctrine varies without creating another owner.
+
+Mater may hold multiple admitted, tested variants behind one canonical surface, for example:
+
+```text
+bounds:
+    Egyptian
+    Ptolemaic
+
+triplicity:
+    Dorothean
+    Ptolemaic
+
+faces:
+    Chaldean
+```
+
+Only implemented and proven variants are available.
+
+The default profile remains the admitted Orbo doctrine profile.
+
+Mater does not calculate sect. If a triplicity read requires sect, the caller supplies sect explicitly.
+
+Mater also does not score dignity. It reports factual dignity conditions. Electional, Horary, interpretation, or other later judgment systems decide what those facts mean or how they are weighted.
+
 This remains universal.
 
 No native.
@@ -465,7 +522,11 @@ No interpretation prose.
 
 ### Gate
 
-Every inherent relationship agrees with the prototype's proven tables.
+Every sign-level inherent relationship agrees with the prototype's proven Mater tables.
+
+Every received Rulers dignity table, boundary, and admitted ladder fact agrees with the proven prototype law under its declared structural parity standard.
+
+No competing native essential-dignity table exists.
 
 ---
 
@@ -511,35 +572,104 @@ Traditional and modern governance remain structurally separated.
 
 ---
 
-# 1.10 Rulers and Remaining Inherent Law
+# 1.10 Rulers Rehouse into Mater
 
-Perform a focused 4R pass on `rulers.js` and related doctrine tables.
+The Phase 0 archaeology has settled the `rulers.js` ownership question.
 
-The purpose is not to preserve a filename.
+**Primary 4R:** Rehouse.
 
-The purpose is to identify the canonical native owner of every remaining inherent rulership or dignity fact.
+**Native destination:** Mater.
 
-Possible outcomes:
+**Parity:** Structural, with exact factual parity for the admitted dignity tables and boundaries.
+
+The purpose is not to preserve the `Rulers` filename or manufacture a new `EssentialDignity` component.
+
+The prototype component has already lost the two jobs its name suggests:
 
 ```text
-Replicate some material
-Rehouse some into Mater
-Rehouse some into Tympan
-retain a smaller Rulers component
-retire duplicated tables
+sign rulership → Mater
+chart disposition → Dispositor
 ```
+
+What coherently remains is essential-dignity law:
+
+```text
+Egyptian bounds
+Chaldean faces
+Dorothean triplicity rulers
+bound / face / triplicity reads
+five-rung dignity assembly
+correct peregrine determination
+```
+
+That law enters native Mater.
 
 ### Core law
 
 > **One inherent fact, one maintained owner.**
 
-If Mater already owns it, Rulers does not own a second version.
+The native architecture must not split one kind of zodiacal meaning across two owners merely because the prototype historically stopped Mater at sign resolution.
 
-If Tympan owns it, a reader does not recompute it independently.
+Therefore:
+
+```text
+MATER
+
+sign identity
+sign element
+sign modality
+traditional domicile
+exaltation
+exaltation degree
+detriment
+fall
+triplicity
+bound
+face
+peregrine
+complete essential-dignity reads
+```
+
+all belong behind one native owner.
+
+## What does not enter Mater
+
+The rehouse is deliberately narrow.
+
+Do not absorb:
+
+```text
+combustion
+cazimi
+under-the-beams status
+retrograde / direct condition
+angularity
+accidental house strength
+broader sect condition
+reception
+chart-specific disposition
+almuten or dignity scoring
+interpretation
+```
+
+Those are chart-context relationships, conditions, or judgments rather than inherent essential-dignity facts and receive their own later ownership analysis.
+
+Reception remains a chart-specific relationship mediated by dignity, not a dignity itself.
+
+Electional's duplicate dignity tables are not a second authority. When Electional is rebuilt, it should consume Mater's canonical dignity facts and apply electional weighting afterward.
 
 ### Gate
 
-No inherent rulership/dignity fact exists in competing native tables.
+```text
+Rulers has no separate native production owner
+Mater owns the complete essential-dignity substrate
+all admitted factual tables preserve their proven values
+peregrine follows the complete five-rung law
+doctrine selection is explicit
+no score enters Mater
+no chart-context condition enters Mater
+no duplicate Electional dignity authority survives
+```
 
 ---
 
@@ -1219,7 +1349,7 @@ Ring ↔ geometry fixtures
 
 Loom ↔ known crossings
 
-Mater / Tympan / Rulers ↔ canonical tables
+Mater / Tympan ↔ canonical tables
 ```
 
 At runtime it may also inspect:
@@ -1406,12 +1536,11 @@ canonical geometry
 
 MATER
 canonical zodiacal structure
+complete essential dignity
+canonical doctrine-qualified dignity tables
 
 TYMPAN
 canonical whole-sign frames
-
-RULERS
-remaining inherent dignity/rulership law
 
 GEOPLACEMENT ATLAS
 offline place resolution
