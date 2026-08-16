@@ -219,25 +219,26 @@ internal struct MundaneTimespineRegion: Sendable {
         let preferredLead = max(0, pointCount / 2 - 1)
         let firstIndex = min(max(0, interval - preferredLead), samples.count - pointCount)
         let indices = Array(firstIndex..<(firstIndex + pointCount))
+        let coordinates = indices.map(sampleCoordinate)
         let positions = Self.unwrap(indices.map { samples[$0].longitudeDegrees })
 
         var value = 0.0
         var derivativeInSampleUnits = 0.0
 
         for i in 0..<pointCount {
-            let xi = Double(indices[i])
+            let xi = coordinates[i]
             var basis = 1.0
             for j in 0..<pointCount where j != i {
-                let xj = Double(indices[j])
+                let xj = coordinates[j]
                 basis *= (x - xj) / (xi - xj)
             }
 
             var derivativeBasis = 0.0
             for m in 0..<pointCount where m != i {
-                let xm = Double(indices[m])
+                let xm = coordinates[m]
                 var term = 1.0 / (xi - xm)
                 for j in 0..<pointCount where j != i && j != m {
-                    let xj = Double(indices[j])
+                    let xj = coordinates[j]
                     term *= (x - xj) / (xi - xj)
                 }
                 derivativeBasis += term
@@ -248,6 +249,12 @@ internal struct MundaneTimespineRegion: Sendable {
         }
 
         return (value, derivativeInSampleUnits / sampleDays)
+    }
+
+    private func sampleCoordinate(_ index: Int) -> Double {
+        let nominalJulianDay = startJulianDay + Double(index) * sampleDays
+        let actualJulianDay = min(nominalJulianDay, endJulianDay)
+        return (actualJulianDay - startJulianDay) / sampleDays
     }
 
     private static func unwrap(_ values: [Double]) -> [Double] {
@@ -330,9 +337,9 @@ public struct MundaneTimespineArtifactSet: Sendable {
 }
 
 public struct MundaneTimespine: Sendable {
-    public static let codec = 3
+    public static let codec = 4
     public static let positionUnitsPerDegree = 3_600_000
-    public static let representation = "separate stamped positions + station chronologies + local cubic reads"
+    public static let representation = "separate stamped positions + exact station chronologies + second-delta packed body files + local cubic reads"
 
     public let metadata: MundaneTimespineMetadata
     internal let seriesByBody: [MundaneBody: MundaneTimespineSeries]
