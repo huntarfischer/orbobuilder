@@ -1,7 +1,7 @@
 import Foundation
 
 internal enum MundaneTimespineCodec {
-    private static let bodyMagic: [UInt8] = Array("ORBTBD02".utf8)
+    private static let bodyMagic: [UInt8] = Array("ORBTBD03".utf8)
 
     private struct Manifest: Codable {
         struct Profile: Codable {
@@ -9,14 +9,13 @@ internal enum MundaneTimespineCodec {
             let edgeSampleDays: Double
             let coreSampleDays: Double
         }
-
         struct BodyArtifact: Codable {
             let body: String
             let file: String
             let bytes: Int
             let sha256: String
+            let stationCount: Int
         }
-
         let version: String
         let codec: Int
         let astroDNACodec: Int
@@ -28,7 +27,6 @@ internal enum MundaneTimespineCodec {
         let denseEndJulianDay: Double
         let supportedEndJulianDay: Double
         let positionUnitsPerDegree: Int
-        let speedUnitsPerDegreePerDay: Int
         let profiles: [Profile]
         let bodies: [BodyArtifact]
     }
@@ -36,21 +34,18 @@ internal enum MundaneTimespineCodec {
     static func encode(_ timespine: MundaneTimespine) -> MundaneTimespineArtifactSet {
         var bodyArtifacts: [MundaneBody: Data] = [:]
         var bodyRecords: [Manifest.BodyArtifact] = []
-
         for body in MundaneBody.canonicalOrder {
             guard let series = timespine.seriesByBody[body] else { continue }
             let data = encodeBody(series)
             bodyArtifacts[body] = data
-            bodyRecords.append(
-                Manifest.BodyArtifact(
-                    body: body.displayName,
-                    file: body.artifactFileName,
-                    bytes: data.count,
-                    sha256: sha256Hex(data)
-                )
-            )
+            bodyRecords.append(.init(
+                body: body.displayName,
+                file: body.artifactFileName,
+                bytes: data.count,
+                sha256: sha256Hex(data),
+                stationCount: series.motionChronology.stations.count
+            ))
         }
-
         let manifest = Manifest(
             version: timespine.metadata.version,
             codec: MundaneTimespine.codec,
@@ -63,17 +58,9 @@ internal enum MundaneTimespineCodec {
             denseEndJulianDay: timespine.metadata.denseEnd.value,
             supportedEndJulianDay: timespine.metadata.supportedEnd.value,
             positionUnitsPerDegree: MundaneTimespine.positionUnitsPerDegree,
-            speedUnitsPerDegreePerDay: MundaneTimespine.speedUnitsPerDegreePerDay,
-            profiles: timespine.metadata.profiles.map {
-                Manifest.Profile(
-                    body: $0.body.displayName,
-                    edgeSampleDays: $0.edgeSampleDays,
-                    coreSampleDays: $0.coreSampleDays
-                )
-            },
+            profiles: timespine.metadata.profiles.map { .init(body: $0.body.displayName, edgeSampleDays: $0.edgeSampleDays, coreSampleDays: $0.coreSampleDays) },
             bodies: bodyRecords
         )
-
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
         let manifestData = try! encoder.encode(manifest) + Data([0x0a])
@@ -84,22 +71,15 @@ internal enum MundaneTimespineCodec {
         )
     }
 
-    static func decode(
-        manifest manifestData: Data,
-        bodyArtifacts: [MundaneBody: Data]
-    ) throws -> MundaneTimespine {
+    static func decode(manifest manifestData: Data, bodyArtifacts: [MundaneBody: Data]) throws -> MundaneTimespine {
         let manifest: Manifest
-        do {
-            manifest = try JSONDecoder().decode(Manifest.self, from: manifestData)
-        } catch {
-            throw MundaneTimespineError.invalidManifest
-        }
+        do { manifest = try JSONDecoder().decode(Manifest.self, from: manifestData) }
+        catch { throw MundaneTimespineError.invalidManifest }
 
         guard manifest.codec == MundaneTimespine.codec,
               manifest.astroDNACodec == AstroDNA.codec,
               manifest.representation == MundaneTimespine.representation,
               manifest.positionUnitsPerDegree == MundaneTimespine.positionUnitsPerDegree,
-              manifest.speedUnitsPerDegreePerDay == MundaneTimespine.speedUnitsPerDegreePerDay,
               manifest.profiles.count == MundaneBody.canonicalOrder.count,
               manifest.bodies.count == MundaneBody.canonicalOrder.count,
               let supportedStart = JulianDay(manifest.supportedStartJulianDay),
@@ -111,26 +91,18 @@ internal enum MundaneTimespineCodec {
 
         var profiles: [MundaneTimespineProfile] = []
         var seriesByBody: [MundaneBody: MundaneTimespineSeries] = [:]
-
         for (index, body) in MundaneBody.canonicalOrder.enumerated() {
-            let profileRecord = manifest.profiles[index]
-            let bodyRecord = manifest.bodies[index]
-            guard profileRecord.body == body.displayName,
-                  bodyRecord.body == body.displayName,
-                  bodyRecord.file == body.artifactFileName,
-                  let profile = MundaneTimespineProfile(
-                    body: body,
-                    edgeSampleDays: profileRecord.edgeSampleDays,
-                    coreSampleDays: profileRecord.coreSampleDays
-                  ),
+            let p = manifest.profiles[index]
+            let b = manifest.bodies[index]
+            guard p.body == body.displayName,
+                  b.body == body.displayName,
+                  b.file == body.artifactFileName,
+                  let profile = MundaneTimespineProfile(body: body, edgeSampleDays: p.edgeSampleDays, coreSampleDays: p.coreSampleDays),
                   let data = bodyArtifacts[body],
-                  data.count == bodyRecord.bytes else {
-                throw MundaneTimespineError.invalidManifest
-            }
-            guard sha256Hex(data) == bodyRecord.sha256 else {
-                throw MundaneTimespineError.checksumMismatch(body)
-            }
+                  data.count == b.bytes else { throw MundaneTimespineError.invalidManifest }
+            guard sha256Hex(data) == b.sha256 else { throw MundaneTimespineError.checksumMismatch(body) }
             let series = try decodeBody(data, expectedBody: body, profile: profile)
+            guard series.motionChronology.stations.count == b.stationCount else { throw MundaneTimespineError.invalidManifest }
             profiles.append(profile)
             seriesByBody[body] = series
         }
@@ -146,91 +118,77 @@ internal enum MundaneTimespineCodec {
             denseEnd: denseEnd,
             supportedEnd: supportedEnd,
             positionUnitsPerDegree: manifest.positionUnitsPerDegree,
-            speedUnitsPerDegreePerDay: manifest.speedUnitsPerDegreePerDay,
             profiles: profiles
         )
         return try MundaneTimespine(metadata: metadata, seriesByBody: seriesByBody)
     }
 
     private static func encodeBody(_ series: MundaneTimespineSeries) -> Data {
-        var writer = Writer()
-        writer.append(bytes: bodyMagic)
-        writer.append(UInt16(MundaneTimespine.codec))
-        writer.append(series.profile.body.rawValue)
-        writer.append(UInt8(series.regions.count))
-        writer.append(UInt32(MundaneTimespine.positionUnitsPerDegree))
-        writer.append(UInt32(MundaneTimespine.speedUnitsPerDegreePerDay))
-
-        for region in series.regions {
-            writer.append(region.startJulianDay)
-            writer.append(region.endJulianDay)
-            writer.append(region.sampleDays)
-            writer.append(UInt32(region.samples.count))
-            for sample in region.samples {
-                writer.append(sample.positionUnits)
-                writer.append(sample.speedUnitsPerDay)
-            }
+        var w = Writer()
+        w.append(bytes: bodyMagic)
+        w.append(UInt16(MundaneTimespine.codec))
+        w.append(series.profile.body.rawValue)
+        w.append(UInt8(series.regions.count))
+        w.append(UInt32(MundaneTimespine.positionUnitsPerDegree))
+        w.append(motionByte(series.motionChronology.initialMotion))
+        w.append(UInt32(series.motionChronology.stations.count))
+        for station in series.motionChronology.stations {
+            w.append(station.julianDay.value)
+            w.append(motionByte(station.motionAfter))
         }
-        return writer.data
+        for region in series.regions {
+            w.append(region.startJulianDay)
+            w.append(region.endJulianDay)
+            w.append(region.sampleDays)
+            w.append(UInt32(region.samples.count))
+            for sample in region.samples { w.append(sample.positionUnits) }
+        }
+        return w.data
     }
 
-    private static func decodeBody(
-        _ data: Data,
-        expectedBody: MundaneBody,
-        profile: MundaneTimespineProfile
-    ) throws -> MundaneTimespineSeries {
-        var reader = Reader(data: data)
-        guard try reader.readBytes(count: bodyMagic.count) == bodyMagic else {
-            throw MundaneTimespineError.invalidArtifactMagic
-        }
-        let codec = Int(try reader.readUInt16())
-        guard codec == MundaneTimespine.codec else {
-            throw MundaneTimespineError.unsupportedCodec(codec)
-        }
-        let rawBody = try reader.readUInt8()
-        guard let body = MundaneBody(rawValue: rawBody), body == expectedBody else {
-            throw MundaneTimespineError.invalidManifest
-        }
-        let regionCount = Int(try reader.readUInt8())
+    private static func decodeBody(_ data: Data, expectedBody: MundaneBody, profile: MundaneTimespineProfile) throws -> MundaneTimespineSeries {
+        var r = Reader(data: data)
+        guard try r.readBytes(count: bodyMagic.count) == bodyMagic else { throw MundaneTimespineError.invalidArtifactMagic }
+        let codec = Int(try r.readUInt16())
+        guard codec == MundaneTimespine.codec else { throw MundaneTimespineError.unsupportedCodec(codec) }
+        guard let body = MundaneBody(rawValue: try r.readUInt8()), body == expectedBody else { throw MundaneTimespineError.invalidManifest }
+        let regionCount = Int(try r.readUInt8())
         guard regionCount == 3,
-              Int(try reader.readUInt32()) == MundaneTimespine.positionUnitsPerDegree,
-              Int(try reader.readUInt32()) == MundaneTimespine.speedUnitsPerDegreePerDay else {
+              Int(try r.readUInt32()) == MundaneTimespine.positionUnitsPerDegree,
+              let initialMotion = motion(from: try r.readUInt8()) else { throw MundaneTimespineError.invalidManifest }
+
+        let stationCount = Int(try r.readUInt32())
+        guard stationCount <= r.remainingBytes / 9 else { throw MundaneTimespineError.truncatedArtifact }
+        var stations: [MundaneStation] = []
+        for _ in 0..<stationCount {
+            guard let jd = JulianDay(try r.readDouble()),
+                  let motionAfter = motion(from: try r.readUInt8()) else { throw MundaneTimespineError.invalidManifest }
+            stations.append(MundaneStation(julianDay: jd, motionAfter: motionAfter))
+        }
+        guard let motionChronology = MundaneMotionChronology(initialMotion: initialMotion, stations: stations) else {
             throw MundaneTimespineError.invalidManifest
         }
 
         var regions: [MundaneTimespineRegion] = []
         for _ in 0..<regionCount {
-            let start = try reader.readDouble()
-            let end = try reader.readDouble()
-            let sampleDays = try reader.readDouble()
-            let sampleCount = Int(try reader.readUInt32())
-            guard start < end, sampleDays > 0, sampleCount >= 2,
-                  sampleCount <= reader.remainingBytes / 8 else {
-                throw MundaneTimespineError.truncatedArtifact
-            }
+            let start = try r.readDouble()
+            let end = try r.readDouble()
+            let sampleDays = try r.readDouble()
+            let sampleCount = Int(try r.readUInt32())
+            guard start < end, sampleDays > 0, sampleCount >= 4,
+                  sampleCount <= r.remainingBytes / MemoryLayout<UInt32>.size else { throw MundaneTimespineError.truncatedArtifact }
             var samples: [MundaneTimespineSample] = []
             samples.reserveCapacity(sampleCount)
-            for _ in 0..<sampleCount {
-                samples.append(
-                    MundaneTimespineSample(
-                        positionUnits: try reader.readUInt32(),
-                        speedUnitsPerDay: try reader.readInt32()
-                    )
-                )
-            }
-            regions.append(
-                MundaneTimespineRegion(
-                    startJulianDay: start,
-                    endJulianDay: end,
-                    sampleDays: sampleDays,
-                    samples: samples
-                )
-            )
+            for _ in 0..<sampleCount { samples.append(.init(positionUnits: try r.readUInt32())) }
+            regions.append(.init(startJulianDay: start, endJulianDay: end, sampleDays: sampleDays, samples: samples))
         }
-        guard reader.remainingBytes == 0 else {
-            throw MundaneTimespineError.invalidManifest
-        }
-        return MundaneTimespineSeries(profile: profile, regions: regions)
+        guard r.remainingBytes == 0 else { throw MundaneTimespineError.invalidManifest }
+        return MundaneTimespineSeries(profile: profile, motionChronology: motionChronology, regions: regions)
+    }
+
+    private static func motionByte(_ motion: Motion) -> UInt8 { motion == .direct ? 0 : 1 }
+    private static func motion(from byte: UInt8) -> Motion? {
+        switch byte { case 0: return .direct; case 1: return .retrograde; default: return nil }
     }
 
     static func sha256Hex(_ data: Data) -> String {
@@ -239,121 +197,65 @@ internal enum MundaneTimespineCodec {
 
     private static func sha256(_ input: [UInt8]) -> [UInt8] {
         let k: [UInt32] = [
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-            0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-            0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-            0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-            0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-            0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-            0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-            0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-            0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+            0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+            0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+            0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+            0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+            0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+            0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+            0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+            0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2,
         ]
         var message = input
         let bitLength = UInt64(message.count) * 8
         message.append(0x80)
         while message.count % 64 != 56 { message.append(0) }
-        for shift in stride(from: 56, through: 0, by: -8) {
-            message.append(UInt8((bitLength >> UInt64(shift)) & 0xff))
-        }
-        var h: [UInt32] = [
-            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-            0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
-        ]
+        for shift in stride(from: 56, through: 0, by: -8) { message.append(UInt8((bitLength >> UInt64(shift)) & 0xff)) }
+        var h: [UInt32] = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]
         for chunkStart in stride(from: 0, to: message.count, by: 64) {
             var w = [UInt32](repeating: 0, count: 64)
             for i in 0..<16 {
                 let j = chunkStart + i * 4
-                w[i] = UInt32(message[j]) << 24 |
-                    UInt32(message[j + 1]) << 16 |
-                    UInt32(message[j + 2]) << 8 |
-                    UInt32(message[j + 3])
+                w[i] = UInt32(message[j]) << 24 | UInt32(message[j+1]) << 16 | UInt32(message[j+2]) << 8 | UInt32(message[j+3])
             }
             for i in 16..<64 {
-                let s0 = rotateRight(w[i - 15], by: 7) ^ rotateRight(w[i - 15], by: 18) ^ (w[i - 15] >> 3)
-                let s1 = rotateRight(w[i - 2], by: 17) ^ rotateRight(w[i - 2], by: 19) ^ (w[i - 2] >> 10)
-                w[i] = w[i - 16] &+ s0 &+ w[i - 7] &+ s1
+                let s0 = rr(w[i-15],7) ^ rr(w[i-15],18) ^ (w[i-15] >> 3)
+                let s1 = rr(w[i-2],17) ^ rr(w[i-2],19) ^ (w[i-2] >> 10)
+                w[i] = w[i-16] &+ s0 &+ w[i-7] &+ s1
             }
-            var a = h[0], b = h[1], c = h[2], d = h[3]
-            var e = h[4], f = h[5], g = h[6], hh = h[7]
+            var a=h[0],b=h[1],c=h[2],d=h[3],e=h[4],f=h[5],g=h[6],hh=h[7]
             for i in 0..<64 {
-                let s1 = rotateRight(e, by: 6) ^ rotateRight(e, by: 11) ^ rotateRight(e, by: 25)
-                let choice = (e & f) ^ ((~e) & g)
-                let temp1 = hh &+ s1 &+ choice &+ k[i] &+ w[i]
-                let s0 = rotateRight(a, by: 2) ^ rotateRight(a, by: 13) ^ rotateRight(a, by: 22)
-                let majority = (a & b) ^ (a & c) ^ (b & c)
-                let temp2 = s0 &+ majority
-                hh = g; g = f; f = e; e = d &+ temp1
-                d = c; c = b; b = a; a = temp1 &+ temp2
+                let s1=rr(e,6)^rr(e,11)^rr(e,25), ch=(e & f)^((~e)&g)
+                let t1=hh &+ s1 &+ ch &+ k[i] &+ w[i]
+                let s0=rr(a,2)^rr(a,13)^rr(a,22), maj=(a & b)^(a & c)^(b & c), t2=s0 &+ maj
+                hh=g;g=f;f=e;e=d &+ t1;d=c;c=b;b=a;a=t1 &+ t2
             }
-            h[0] = h[0] &+ a; h[1] = h[1] &+ b; h[2] = h[2] &+ c; h[3] = h[3] &+ d
-            h[4] = h[4] &+ e; h[5] = h[5] &+ f; h[6] = h[6] &+ g; h[7] = h[7] &+ hh
+            h[0]&+=a;h[1]&+=b;h[2]&+=c;h[3]&+=d;h[4]&+=e;h[5]&+=f;h[6]&+=g;h[7]&+=hh
         }
-        var digest: [UInt8] = []
-        for value in h {
-            digest.append(UInt8((value >> 24) & 0xff))
-            digest.append(UInt8((value >> 16) & 0xff))
-            digest.append(UInt8((value >> 8) & 0xff))
-            digest.append(UInt8(value & 0xff))
-        }
-        return digest
+        var out:[UInt8]=[]
+        for v in h { out += [UInt8((v>>24)&0xff),UInt8((v>>16)&0xff),UInt8((v>>8)&0xff),UInt8(v&0xff)] }
+        return out
     }
-
-    private static func rotateRight(_ value: UInt32, by amount: UInt32) -> UInt32 {
-        (value >> amount) | (value << (32 - amount))
-    }
+    private static func rr(_ v: UInt32,_ n: UInt32)->UInt32 { (v >> n) | (v << (32-n)) }
 
     private struct Writer {
-        var data = Data()
-        mutating func append(bytes: [UInt8]) { data.append(contentsOf: bytes) }
-        mutating func append(_ value: UInt8) { data.append(value) }
-        mutating func append(_ value: UInt16) { appendLittleEndian(value) }
-        mutating func append(_ value: UInt32) { appendLittleEndian(value) }
-        mutating func append(_ value: Int32) { appendLittleEndian(UInt32(bitPattern: value)) }
-        mutating func append(_ value: Double) { appendLittleEndian(value.bitPattern) }
-        private mutating func appendLittleEndian<T: FixedWidthInteger>(_ value: T) {
-            var little = value.littleEndian
-            Swift.withUnsafeBytes(of: &little) { data.append(contentsOf: $0) }
-        }
+        var data=Data()
+        mutating func append(bytes:[UInt8]){data.append(contentsOf:bytes)}
+        mutating func append(_ v:UInt8){data.append(v)}
+        mutating func append(_ v:UInt16){le(v)}
+        mutating func append(_ v:UInt32){le(v)}
+        mutating func append(_ v:Double){le(v.bitPattern)}
+        private mutating func le<T:FixedWidthInteger>(_ v:T){var x=v.littleEndian;Swift.withUnsafeBytes(of:&x){data.append(contentsOf:$0)}}
     }
-
     private struct Reader {
-        let bytes: [UInt8]
-        var index = 0
-        init(data: Data) { bytes = Array(data) }
-        var remainingBytes: Int { bytes.count - index }
-        mutating func readBytes(count: Int) throws -> [UInt8] {
-            guard count >= 0, remainingBytes >= count else { throw MundaneTimespineError.truncatedArtifact }
-            defer { index += count }
-            return Array(bytes[index..<(index + count)])
-        }
-        mutating func readUInt8() throws -> UInt8 {
-            guard remainingBytes >= 1 else { throw MundaneTimespineError.truncatedArtifact }
-            defer { index += 1 }
-            return bytes[index]
-        }
-        mutating func readUInt16() throws -> UInt16 {
-            let r = try readBytes(count: 2)
-            return UInt16(r[0]) | UInt16(r[1]) << 8
-        }
-        mutating func readUInt32() throws -> UInt32 {
-            let r = try readBytes(count: 4)
-            return UInt32(r[0]) | UInt32(r[1]) << 8 | UInt32(r[2]) << 16 | UInt32(r[3]) << 24
-        }
-        mutating func readUInt64() throws -> UInt64 {
-            let r = try readBytes(count: 8)
-            var value: UInt64 = 0
-            for offset in 0..<8 { value |= UInt64(r[offset]) << UInt64(offset * 8) }
-            return value
-        }
-        mutating func readInt32() throws -> Int32 { Int32(bitPattern: try readUInt32()) }
-        mutating func readDouble() throws -> Double { Double(bitPattern: try readUInt64()) }
+        let bytes:[UInt8];var index=0
+        init(data:Data){bytes=Array(data)}
+        var remainingBytes:Int{bytes.count-index}
+        mutating func readBytes(count:Int)throws->[UInt8]{guard count>=0,remainingBytes>=count else{throw MundaneTimespineError.truncatedArtifact};defer{index+=count};return Array(bytes[index..<(index+count)])}
+        mutating func readUInt8()throws->UInt8{guard remainingBytes>=1 else{throw MundaneTimespineError.truncatedArtifact};defer{index+=1};return bytes[index]}
+        mutating func readUInt16()throws->UInt16{let r=try readBytes(count:2);return UInt16(r[0])|UInt16(r[1])<<8}
+        mutating func readUInt32()throws->UInt32{let r=try readBytes(count:4);return UInt32(r[0])|UInt32(r[1])<<8|UInt32(r[2])<<16|UInt32(r[3])<<24}
+        mutating func readUInt64()throws->UInt64{let r=try readBytes(count:8);var v:UInt64=0;for o in 0..<8{v|=UInt64(r[o])<<UInt64(o*8)};return v}
+        mutating func readDouble()throws->Double{Double(bitPattern:try readUInt64())}
     }
 }
