@@ -209,32 +209,34 @@ internal struct MundaneTimespineRegion: Sendable {
         guard startJulianDay <= julianDay,
               julianDay <= endJulianDay,
               sampleDays > 0,
-              samples.count >= 4 else {
+              samples.count >= 2 else {
             throw MundaneTimespineError.malformedMetadata
         }
 
         let x = (julianDay - startJulianDay) / sampleDays
         let interval = Int(floor(x))
-        let firstIndex = min(max(0, interval - 1), samples.count - 4)
-        let indices = Array(firstIndex..<(firstIndex + 4))
+        let pointCount = min(4, samples.count)
+        let preferredLead = max(0, pointCount / 2 - 1)
+        let firstIndex = min(max(0, interval - preferredLead), samples.count - pointCount)
+        let indices = Array(firstIndex..<(firstIndex + pointCount))
         let positions = Self.unwrap(indices.map { samples[$0].longitudeDegrees })
 
         var value = 0.0
         var derivativeInSampleUnits = 0.0
 
-        for i in 0..<4 {
+        for i in 0..<pointCount {
             let xi = Double(indices[i])
             var basis = 1.0
-            for j in 0..<4 where j != i {
+            for j in 0..<pointCount where j != i {
                 let xj = Double(indices[j])
                 basis *= (x - xj) / (xi - xj)
             }
 
             var derivativeBasis = 0.0
-            for m in 0..<4 where m != i {
+            for m in 0..<pointCount where m != i {
                 let xm = Double(indices[m])
                 var term = 1.0 / (xi - xm)
-                for j in 0..<4 where j != i && j != m {
+                for j in 0..<pointCount where j != i && j != m {
                     let xj = Double(indices[j])
                     term *= (x - xj) / (xi - xj)
                 }
