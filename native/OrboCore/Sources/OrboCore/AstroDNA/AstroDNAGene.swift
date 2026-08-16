@@ -1,13 +1,13 @@
 public enum AstroDNAMotionPolicy: String, Codable, Hashable, Sendable {
     case fixedDirect
     case variable
-    case fixedRetrograde
 }
 
 /// The twelve canonical AstroDNA genes in their persisted positional order.
 ///
 /// `northNode` intentionally preserves the prototype storage key `Node` while
-/// naming the native concept precisely. It is the mean north node gene.
+/// naming the native concept precisely. In codec 4 it is the true/osculating
+/// north node and therefore may occupy either motion half of the Ring.
 public enum AstroDNAGene: String, CaseIterable, Codable, Hashable, Sendable {
     case ascendant = "Ascendant"
     case moon = "Moon"
@@ -58,24 +58,18 @@ public enum AstroDNAGene: String, CaseIterable, Codable, Hashable, Sendable {
         }
     }
 
-    /// Motion participation in the codec-3 identity.
+    /// Motion participation in the codec-4 identity.
     ///
     /// The Ascendant is an angle and cannot station. The geocentric luminaries
-    /// are never encoded retrograde. The mean north node is uniformly
-    /// retrograde. The remaining eight planetary genes may occupy either half
-    /// of the Ring fine address space.
+    /// are never encoded retrograde. The eight planetary genes and the
+    /// true/osculating North Node may occupy either half of the Ring fine
+    /// address space.
     public var motionPolicy: AstroDNAMotionPolicy {
         switch self {
         case .ascendant, .moon, .sun:
             return .fixedDirect
-        case .mercury, .venus, .mars, .jupiter, .saturn, .uranus, .neptune, .pluto:
+        case .mercury, .venus, .mars, .jupiter, .saturn, .uranus, .neptune, .pluto, .northNode:
             return .variable
-        case .northNode:
-            return .fixedRetrograde
         }
-    }
-
-    public var isMeanNorthNode: Bool {
-        self == .northNode
     }
 }
