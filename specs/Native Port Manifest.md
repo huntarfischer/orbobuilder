@@ -1,14 +1,15 @@
 # Native Port Manifest
 
-**Status:** Living Phase 0 port authority for Orbo 1.0 native construction.
+**Status:** Living native port authority for Orbo 1.0 construction.
 
-**Last updated:** 2026-08-15
+**Last updated:** 2026-08-16
 
 **Governing authorities:**
 
 1. `specs/Orbo 1.0 Native Construction Plan.md`
 2. `specs/Phase 0 - The Lab.md`
 3. `specs/Phase 1 - The Ovum.md`
+4. `specs/Phase 1a - Native Foundation Implementation Plan.md`
 
 This document is the maintained ledger and manifest for moving solved Orbo work from the JavaScript/HTML prototype into native Orbo 1.0.
 
@@ -226,6 +227,47 @@ testPhaseZeroLinkageSentinel()        PASS
 
 The native proof apparatus gate is satisfied.
 
+## Phase 1a native domain vocabulary proof
+
+Phase 1a Pass 1 installed the approved native vocabulary directly under:
+
+```text
+native/OrboCore/Sources/OrboCore/Domain/
+```
+
+The pass established the typed foundational sockets required by Ring, Mater and Tympan, including:
+
+```text
+Planet
+Sign
+House
+Element
+Modality
+Motion
+Sect
+CelestialLongitude
+DegreeInSign
+DegreeBoundaryInSign
+DignityRung
+EssentialDebility
+dignity doctrine vocabulary
+```
+
+`Package.swift` required no source-layout change.
+
+Native Xcode proof was completed on 2026-08-15 by running the standalone `OrboCore` package test action on the development Mac. The accumulated suite reported:
+
+```text
+13 DomainTests                         PASS
+4 FixtureInfrastructureTests          PASS
+1 Phase 0 linkage sentinel test       PASS
+------------------------------------------
+18 total                              PASS
+0 failures
+```
+
+Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
+
 ---
 
 # 3. Port Ledger
@@ -233,7 +275,7 @@ The native proof apparatus gate is satisfied.
 | Component | Primary 4R | Parity | Native destination | Status |
 |---|---|---|---|---|
 | Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / NATIVE PROVEN |
-| Ring | REPLICATE | EXACT | OrboCore / Ring | ASSESSED / NOT IMPLEMENTED |
+| Ring | REPLICATE | EXACT | OrboCore / Ring | IMPLEMENTED / AWAITING NATIVE PROOF |
 | Mater | REPLICATE | EXACT | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | ASSESSED / NOT IMPLEMENTED |
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
@@ -319,11 +361,27 @@ tests/fixtures/aspect-atlas.md
 tests/rewire-parity.test.html
 ```
 
+Native implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/Ring/Ring.swift
+native/OrboCore/Sources/OrboCore/Ring/RingTypes.swift
+```
+
+Native proof material:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/RingTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/ring-parity.json
+```
+
 ## What it currently does
 
 The Ring is the prototype's inherent circular relationship surface.
 
 It provides the universal degree geometry consulted by multiple later systems without knowing what occupies those positions.
+
+The native implementation now transposes that same law into typed Swift without introducing occupants, sign meaning, time, place, orb or interpretation.
 
 ## Actual law
 
@@ -379,20 +437,42 @@ immutable stamped relationship behavior
 720-state / 14,400-target aspect atlas agreement
 ```
 
+The native test suite has been written to exercise those same laws, including exhaustive coarse-state relation and target sweeps. Native Xcode proof is still pending.
+
 ## Current dependencies
 
-None. Ring is the prototype floor for inherent degree relation.
+Prototype Ring has none.
+
+Native Ring depends only on the Phase 1a domain vocabulary where stronger native categories replace JavaScript validators:
+
+```text
+CelestialLongitude
+Motion
+```
+
+Ring remains independent of Mater, Tympan, AstroDNA, time, place and interpretation.
 
 ## Current consumers
 
 Prototype consumers include systems that require canonical aspect / degree geometry, including AstroDNA, framing, Loom-related work, and parity/readout machinery.
 
+No later native component is yet permitted to depend on native Ring as canonical until its Xcode proof gate closes.
+
 ## Known tests / fixtures
+
+Prototype:
 
 ```text
 tests/ring.test.html
 tests/fixtures/aspect-atlas.md
 tests/rewire-parity.test.html
+```
+
+Native:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/RingTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/ring-parity.json
 ```
 
 ## User-visible consequence
@@ -405,7 +485,7 @@ Any later Orbo feature that reads relationships between celestial positions depe
 
 ## Why
 
-The component has a coherent single responsibility, no foundational dependency, mature tests, a golden human-auditable atlas, and later prototype systems already treat it as canonical degree-relation authority.
+The component has a coherent single responsibility, no astrological dependency, mature tests, a golden human-auditable atlas, and later prototype systems already treat it as canonical degree-relation authority.
 
 No architectural defect has been found that justifies reopening its solved design.
 
@@ -413,22 +493,35 @@ Replication does not require line-for-line Swift translation. It requires preser
 
 ## Swift Sanding
 
-Preserve law and outputs while manufacturing to native tolerances.
-
-Expected sanding includes:
+The native implementation applies the approved sanding without changing Ring law:
 
 ```text
-anonymous Number
--> meaningful Swift numeric/domain types where category errors matter
+11 numeric angle constants
+-> RingMark enum
 
-runtime boolean validation
--> Bool
+integer state accepted by every public read
+-> RingState, valid only for 0..<720
+
+integer fine state accepted by every public read
+-> RingFineState, valid only for 0..<2,592,000
+
+truthy / falsey retrograde flag
+-> Motion
+
+non-zero numeric direction sign
+-> RingDirection.minus / .plus
+
+arbitrary finite separation Number
+-> RingSeparation with finite validation and canonical normalization
+
+0 conjunction versus null absence
+-> RingMark.conjunction versus Optional.none
+
+mutable-looking returned row / plate views
+-> immutable Swift value records and private stamped tables
 
 Object.freeze and typed-array mutation defenses
--> immutable native values / storage
-
-null / undefined absence behavior
--> explicit Optional
+-> immutable static values and private storage
 
 browser-global registration
 -> no native counterpart
@@ -437,7 +530,9 @@ ring.browser.js
 -> no production native mirror
 ```
 
-Do not expand or reduce Ring ownership merely because Swift permits a different representation.
+The JavaScript source used runtime validators because every argument entered as an untyped Number or flag. Native Ring moves those checks to type construction so malformed state IDs, fine-state IDs, unknown marks and ambiguous directions cannot enter ordinary Ring reads.
+
+The stamped target authority remains private. Consumers receive values, not a writable live plate.
 
 ## Native destination
 
@@ -447,11 +542,26 @@ OrboCore / Ring
 
 ## Native dependencies
 
-Only the minimum Phase 1 native domain vocabulary approved before Ring construction, if required.
+Only the minimum Phase 1a domain vocabulary required to keep unlike things unlike.
 
-Ring must not depend on Mater, Tympan, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, or place.
+Ring must not depend on Mater, Tympan, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, or interpretation.
 
 ## Native mating surface
+
+The implemented native surface provides typed equivalents of the prototype's meaningful capabilities:
+
+```text
+coarse state encoding
+fine state encoding
+fine -> coarse projection
+target degree / target states
+complete row reads
+exact relation / related
+separation / folded arc
+nearest mark / residual
+exact mark
+supplement
+```
 
 Later native components must receive canonical Ring geometry from OrboCore rather than reintroducing competing angle tables or asking the JavaScript prototype at runtime.
 
@@ -467,6 +577,8 @@ same Ring law
 same output
 ```
 
+Swift type shape is allowed to differ where the type system replaces a JavaScript validation trap. The resulting valid-domain answers must remain exact.
+
 ## Proof method
 
 ```text
@@ -474,20 +586,49 @@ native unit laws
 +
 exhaustive invariant sweeps
 +
-existing aspect atlas
+720-row / 14,400-target atlas law
 +
-JavaScript / Swift parity fixtures
+compact JavaScript-reference parity fixture
++
+full motion-blind relation sweep
++
+fine-to-coarse projection checks
 +
 accumulated integration tests
 ```
 
 ## Proof evidence
 
-Not yet implemented natively.
+Implementation is present.
+
+A local Swift preflight of the new Ring suite reported:
+
+```text
+12 RingTests    PASS
+0 failures
+```
+
+That preflight is construction evidence only. It is **not** the native Xcode proof required for canonical promotion.
+
+The native tests include:
+
+```text
+all 720 coarse state encodings
+all 720 rows
+14,400 exact atlas targets
+full 360 x 360 absolute-degree relation surface under all direct/retro combinations
+fine-state projection checks
+all nine lower-angle tie cases
+supplement closure
+prototype doctrine example
+compact parity fixture reads
+```
+
+The accumulated standalone Xcode package suite must still run green on the development Mac before Ring can become native canonical.
 
 ## Status
 
-**ASSESSED / NOT IMPLEMENTED**
+**IMPLEMENTED / AWAITING NATIVE PROOF**
 
 Ring is not native canonical yet.
 
@@ -1637,24 +1778,30 @@ The Rulers assessment is complete. Its surviving dignity law is planned to enter
 
 # 9. Current Construction Boundary
 
-Phase 0 may continue archaeology, fixture work, manifest work, and Phase 1 queue preparation.
+Phase 1a implementation has begun under `specs/Phase 1a - Native Foundation Implementation Plan.md`.
 
-Do not implement the following production components during Phase 0:
+The authorized manufacturing sequence is:
 
 ```text
-Ring
-Mater
-Tympan
-Rulers -> Mater dignity rehouse
-Ephemeris / Spine
-AstroDNA
-Horizon
-Loom
-Connectome
+Pass 1    Native domain vocabulary
+Pass 2    Ring
+Pass 3    Mater + Rulers rehouse
+Pass 4    Tympan
+Pass 5    Phase 1a closure
 ```
 
-The native proof apparatus prepares the bench.
+Current checkpoint:
 
-The Native Port Manifest records what has actually been learned.
+```text
+Native domain vocabulary    IMPLEMENTED / NATIVE PROVEN
+Ring                         IMPLEMENTED / AWAITING NATIVE PROOF
+Mater                        ASSESSED / NOT IMPLEMENTED
+Rulers -> Mater              ASSESSED / NOT IMPLEMENTED
+Tympan                       ASSESSED / NOT IMPLEMENTED
+```
 
-Neither is permission to begin Phase 1 early.
+Do not promote Ring to native canonical until its accumulated standalone Xcode suite passes on the development Mac.
+
+Do not begin the next Phase 1a production pass without the next explicit user authorization.
+
+Do not begin later Phase 1 systems such as Geoplacement, Civil Time, AstroDNA, Ephemeris / Spine, Horizon, Loom or Resonator during this foundation pass unless their own authorized construction step is reached.
