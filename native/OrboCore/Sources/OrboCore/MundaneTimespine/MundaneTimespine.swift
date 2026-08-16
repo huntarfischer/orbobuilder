@@ -209,36 +209,35 @@ internal struct MundaneTimespineRegion: Sendable {
         guard startJulianDay <= julianDay,
               julianDay <= endJulianDay,
               sampleDays > 0,
-              samples.count >= 2 else {
+              samples.count >= 4 else {
             throw MundaneTimespineError.malformedMetadata
         }
 
         let x = (julianDay - startJulianDay) / sampleDays
         let interval = Int(floor(x))
-        let pointCount = min(4, samples.count)
-        let preferredLead = max(0, pointCount / 2 - 1)
+        let pointCount = 4
+        let preferredLead = 1
         let firstIndex = min(max(0, interval - preferredLead), samples.count - pointCount)
         let indices = Array(firstIndex..<(firstIndex + pointCount))
-        let coordinates = indices.map(sampleCoordinate)
         let positions = Self.unwrap(indices.map { samples[$0].longitudeDegrees })
 
         var value = 0.0
         var derivativeInSampleUnits = 0.0
 
         for i in 0..<pointCount {
-            let xi = coordinates[i]
+            let xi = Double(indices[i])
             var basis = 1.0
             for j in 0..<pointCount where j != i {
-                let xj = coordinates[j]
+                let xj = Double(indices[j])
                 basis *= (x - xj) / (xi - xj)
             }
 
             var derivativeBasis = 0.0
             for m in 0..<pointCount where m != i {
-                let xm = coordinates[m]
+                let xm = Double(indices[m])
                 var term = 1.0 / (xi - xm)
                 for j in 0..<pointCount where j != i && j != m {
-                    let xj = coordinates[j]
+                    let xj = Double(indices[j])
                     term *= (x - xj) / (xi - xj)
                 }
                 derivativeBasis += term
@@ -249,12 +248,6 @@ internal struct MundaneTimespineRegion: Sendable {
         }
 
         return (value, derivativeInSampleUnits / sampleDays)
-    }
-
-    private func sampleCoordinate(_ index: Int) -> Double {
-        let nominalJulianDay = startJulianDay + Double(index) * sampleDays
-        let actualJulianDay = min(nominalJulianDay, endJulianDay)
-        return (actualJulianDay - startJulianDay) / sampleDays
     }
 
     private static func unwrap(_ values: [Double]) -> [Double] {
@@ -363,6 +356,7 @@ public struct MundaneTimespine: Sendable {
             guard let series = seriesByBody[body],
                   series.profile.body == body,
                   series.regions.count == 3,
+                  series.regions.allSatisfy({ $0.samples.count >= 4 }),
                   series.motionChronology.stations.allSatisfy({
                       $0.julianDay.value >= metadata.supportedStart.value &&
                       $0.julianDay.value < metadata.supportedEnd.value
