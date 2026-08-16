@@ -1,6 +1,6 @@
 # Pass 5: Mundane Timespine Representation Study
 
-**Status:** Data-forward stamped-body candidate under qualified Swiss C audit. Mundane Timespine v1 is not sealed until the astronomical audit, shipped artifact installation, and accumulated native proof are green.
+**Status:** Position-first codec 3 candidate under qualified official Swiss C audit. Mundane Timespine v1 is not sealed until astronomical qualification, shipped-artifact installation, accumulated native proof, and OrboLab proof are green.
 
 **Date:** 2026-08-16
 
@@ -16,9 +16,9 @@ same Mundane Timespine version
 same universal sky
 ```
 
-It exists between the Ephemeris and the rest of Orbo. Normal celestial traffic reads the Timespine rather than reopening the Ephemeris.
+It sits between the Ephemeris and the rest of Orbo. Normal celestial traffic reads the Timespine rather than reopening the Ephemeris.
 
-It must answer arbitrary supported time reads for:
+It must answer arbitrary supported-time reads for:
 
 ```text
 Sun
@@ -34,7 +34,7 @@ Pluto
 True / osculating North Node
 ```
 
-with celestial longitude and signed longitudinal speed. Horizon owns the Ascendant and other local geometry.
+The Ascendant is not part of the Mundane Timespine. Horizon owns local geometry.
 
 ---
 
@@ -47,11 +47,11 @@ Parity: STRUCTURAL
 Native owner: OrboCore / MundaneTimespine
 ```
 
-The prototype laws that survive are the universal artifact, deterministic manufacture, resumability, version identity, seam safety, and packed runtime reads. The old JavaScript event tables do not survive as the native representation.
+The prototype contributes the universal-artifact, deterministic-manufacture, resumability, seam-safety, version-identity, and packed-read laws. Its JavaScript event tables do not survive as the native representation.
 
 ---
 
-# 3. Representation principle
+# 3. Data law
 
 The Timespine is a data organ, not a disguised runtime ephemeris.
 
@@ -59,32 +59,46 @@ The Timespine is a data organ, not a disguised runtime ephemeris.
 
 When explicit stamped celestial data costs only a modest number of megabytes more than a more abstract approximation, Orbo prefers the explicit data.
 
-Package size matters, but it is not a reason to discard celestial resolution that the personal device can afford. The 1950...2050 personal-era center may therefore be denser than the historical and future edges while all supported years still satisfy the fidelity floor.
+Package size matters, but it is not a reason to discard celestial resolution that a personal device can afford. The 1950...2050 center may therefore be denser than the historical and future edges while the whole supported range remains above the fidelity floor.
+
+Each body is stored separately so its density can follow its own apparent motion and measured reconstruction error.
 
 ---
 
 # 4. Candidate history
 
-## A. Uniform dense knots
+## Candidate A: uniform dense knots
 
-A six-hour position + speed knot for every body across 1700...2149 was estimated around 55 MiB before packing. It established the data-first reference idea, but wastes bytes by sampling every body at the same rate.
+A six-hour position + speed knot for every body across 1700...2149 was estimated around 55 MiB before packing. It proved the data-first idea but wasted bytes by sampling Pluto as often as the Moon.
 
-## B. Fixed-point Chebyshev segments
+## Candidate B: fixed-point Chebyshev segments
 
-The first implemented candidate used degree-7 body-specific Chebyshev segments. With Mercury tightened to one-day segments it measured 15,778,794 total bytes.
+The first native candidate used degree-7 body-specific Chebyshev segments. With Mercury tightened to one-day segments it measured 15,778,794 bytes.
 
-The qualified Swiss audit rejected it. Maximum errors included several arcseconds for Venus through Neptune and the station audit found 348 Pluto and 236 true-Node direction mismatches at +/-5 minutes.
+The qualified Swiss audit rejected it. Several bodies missed the position gate by multiple arcseconds and station-direction checks found hundreds of mismatches for Pluto and the true Node.
 
-The polynomial implementation remains useful benchmark evidence. It is not the v1 representation.
+Chebyshev remains benchmark evidence, not the v1 representation.
 
-## C. Separate stamped body chronologies
+## Candidate C: stamped position + speed knots, codec 2
 
-The active representation stores each body's actual Swiss-derived knots separately:
+The next candidate stored actual Swiss-derived longitude and signed speed together in eleven separate body files.
+
+It proved the separate-body artifact architecture but exposed a more important problem: isolated Swiss `SEFLG_SPEED` discontinuities can be harmless to the longitude trajectory yet become destructive Hermite tangents. Making the body data denser did not solve that ownership problem.
+
+The same speed behavior was reproduced against the pinned official Swiss C library directly, so it was not treated as a Python-wrapper artifact.
+
+Codec 2 is therefore superseded.
+
+---
+
+# 5. Active representation: codec 3
+
+Mundane Timespine codec 3 is **position-first**.
 
 ```text
 Mundane Timespine v1
 |
-|-- manifest
+|-- mundane-timespine-v1.json
 |-- sun.orbbody
 |-- moon.orbbody
 |-- mercury.orbbody
@@ -98,51 +112,49 @@ Mundane Timespine v1
 `-- true-north-node.orbbody
 ```
 
-Each knot stores:
+Each ordinary celestial knot stores only:
 
 ```text
 UInt32 longitude
-Int32  signed longitudinal speed
-8 bytes total
 ```
 
-Both quantities are quantized at 0.001 arcsecond units. Runtime uses local cubic Hermite interpolation between adjacent stored knots. The interpolation sees only stamped celestial data. It does not evaluate an orbital model or call the Ephemeris.
-
----
-
-# 5. Codec 2
-
-The stamped representation is **Mundane Timespine codec 2**.
-
-Each body artifact carries its own identity, scales, temporal regions, cadences, knots, and SHA-256. A small JSON manifest binds all eleven body checksums into one versioned Timespine.
-
-This gives Orbo both laws at once:
+at:
 
 ```text
-one Timespine version = one universal sky
+0.001 arcsecond positional quantum
+4 bytes / knot
 ```
 
-and:
+Each body also carries a small explicit motion chronology:
 
 ```text
-each body may carry the density its actual motion requires
+initial motion
+station Julian Day
+motion after station
+station Julian Day
+motion after station
+...
 ```
 
-A corrupted or later changed body can therefore be identified independently without turning the Timespine into eleven unrelated authorities.
+Runtime state is then produced from two kinds of stored temporal fact:
+
+```text
+position knots
+    -> local polynomial read
+    -> longitude
+    -> local derivative magnitude
+
+station chronology
+    -> direct / retrograde sign
+```
+
+The Timespine does not evaluate an orbital model and does not reopen the Ephemeris.
+
+Velocity remains a pointwise node fact, but its local magnitude is reconstructed from the stamped positional trajectory while its direction is anchored to explicitly stamped station chronology.
 
 ---
 
-# 6. First stamped qualification
-
-The first stamped profile used a 1950...2050 dense center but remained deliberately modest, totaling 15,692,301 bytes including headers and manifest.
-
-That run proved the codec and the body-separated architecture, but the astronomical audit showed that the cadences were too sparse. Sun and Moon were already close to the construction gate. Mercury, apparent geocentric outer planets, and especially the true Node needed more stored temporal detail.
-
-The failure was treated as a density measurement, not as permission to weaken the fidelity gate.
-
----
-
-# 7. Second stamped qualification profile
+# 6. Body and era density
 
 Supported interval:
 
@@ -160,50 +172,138 @@ through
 2050-01-01 00:00 exclusive
 ```
 
-Current profile:
+Current qualification profile:
 
 | Body | Edge cadence | 1950-2050 cadence |
 |---|---:|---:|
 | Sun | 2 days | 1 day |
 | Moon | 6 hours | 3 hours |
-| Mercury | 6 hours | 1.5 hours |
-| Venus | 1 day | 6 hours |
-| Mars | 2 days | 12 hours |
-| Jupiter | 2 days | 12 hours |
-| Saturn | 2 days | 12 hours |
-| Uranus | 1 day | 6 hours |
-| Neptune | 1 day | 6 hours |
-| Pluto | 2 days | 12 hours |
+| Mercury | 2 hours | 30 minutes |
+| Venus | 6 hours | 1.5 hours |
+| Mars | 12 hours | 3 hours |
+| Jupiter | 12 hours | 3 hours |
+| Saturn | 1 day | 3 hours |
+| Uranus | 6 hours | 1.5 hours |
+| Neptune | 12 hours | 3 hours |
+| Pluto | 12 hours | 3 hours |
 | True North Node | 3 hours | 30 minutes |
 
-The profile contains 6,145,289 stamped knots and 49,162,312 raw knot bytes, approximately **46.9 MiB** before the small headers and manifest.
+The pinned candidate fixture estimates:
 
-The storage increase is intentionally uneven. The true Node and Mercury receive far more data than slow outer bodies because measured curvature and station behavior require it. This is the reason the body files are separate.
+```text
+47,080,276 raw positional bytes
+```
 
-This profile is a measured candidate, not a final frozen allocation. The qualified Swiss audit decides whether any one body can be relaxed or must become denser.
+before the small body headers, station tables, and binding manifest.
+
+This is not a file-size target that may override fidelity. It is the cost of the current measured candidate. If the audit says one body needs more data, that body changes independently.
 
 ---
 
-# 8. Forge law
+# 7. Local read law
+
+A production v1 region normally has many knots. Runtime reads the nearest four stamped positions and performs local cubic interpolation. The derivative of that local polynomial supplies speed magnitude.
+
+Tiny construction fixtures are also legal artifacts. When a region has only three knots, the same local interpolation machinery becomes quadratic; with two knots it becomes linear. This keeps the codec valid for microscopes and tests without weakening the production v1 representation.
+
+No interpolation may cross from unsupported time into a user-visible answer.
+
+---
+
+# 8. Guard-knot seam law
+
+Every stored knot must remain on the cadence declared by its region.
+
+If a region boundary is not an exact multiple of that cadence, Forge must **not** move the final knot onto the boundary. Doing so would create one irregular interval while the reader continued to interpret the series as uniformly sampled.
+
+Instead:
+
+```text
+region start
+  + n * cadence
+  + n * cadence
+  + n * cadence
+  + guard knot just beyond region end when necessary
+```
+
+The final cadence-aligned position may lie just beyond the region boundary solely as a read-only interpolation guard.
+
+The supported Timespine interval remains half-open. The guard interval itself is never exposed as supported runtime time.
+
+This law is generic codec seam safety, not a special case for the 1700/1950/2050/2150 v1 boundaries.
+
+---
+
+# 9. Artifact identity
+
+Each `.orbbody` contains:
+
+```text
+body magic
+Timespine codec
+body identity
+position scale
+initial motion
+station chronology
+three temporal regions
+region start / end
+region cadence
+position count
+UInt32 position knots
+```
+
+The JSON manifest binds:
+
+```text
+Timespine version
+codec
+AstroDNA codec compatibility
+representation identity
+astronomical source + version
+supported range
+dense range
+per-body cadence
+per-body filename
+per-body byte count
+per-body station count
+per-body SHA-256
+```
+
+Thus:
+
+```text
+one version + one manifest + eleven bound body hashes
+=
+one universal shipped sky
+```
+
+Separate body files are storage and maintenance boundaries, not eleven independent authorities.
+
+---
+
+# 10. Forge law
 
 For Mundane Timespine v1 the Forge:
 
 ```text
-asks the qualified Ephemeris for declared knot times
-quantizes those actual celestial states
-writes one body artifact per celestial occupant
+asks the qualified Ephemeris for declared position-knot times
+keeps every knot cadence-aligned
+quantizes and stores the positions
+solves station transitions at construction time
+stores the station chronology
+writes eleven independent body artifacts
 writes the binding manifest
 checksums every body
 versions the resulting set
 ```
 
-Construction is deterministic and resumable. The same source and plan must produce byte-identical output whether manufactured in one run or resumed in bounded chunks.
+Construction remains deterministic and resumable.
 
-Later child spines remain Forge products, but are forged from the Mundane Timespine plus other canonical Orbo state and Loom results. Child spines do not reopen the Ephemeris.
+Later child spines are also Forge products, but they are forged from the Mundane Timespine plus other canonical Orbo state and Loom results. Child spines do not reopen the Ephemeris.
 
 ---
 
-# 9. Qualified source and adapter
+# 11. Qualified astronomical source
 
 Pass 4 remains authoritative:
 
@@ -214,23 +314,21 @@ Swiss-file mode
 no silent Moshier fallback
 ```
 
-The qualification bench now pins the official Swiss repository at:
+The qualification bench pins the official Swiss repository at:
 
 ```text
 3fd0f956d73898b91cc4f67cf18b21af656d1342
 ```
 
-It builds `libswe.so` directly from the official C source with the repository's own Makefile. The sample generator and independent audit call that C library through `ctypes`; Python is orchestration, not the astronomical implementation.
+It builds `libswe.so` from the official C source and calls that library directly through `ctypes`. Python is construction orchestration, not the astronomical engine.
 
-This change was made after the earlier Python wrapper path produced isolated one-sample speed spikes inconsistent with the surrounding longitude trajectory and with Swiss Ephemeris' own `SEFLG_SPEED` precision claim. Before spending more Timespine bytes to compensate, Orbo requalified the actual source named by Pass 4.
+The audit downloads the `.se1` files from the same pinned official commit and verifies they identify as the DE441 generation.
 
-The `.se1` files used by the audit are fetched at the same pinned Swiss commit and must identify themselves as DE441. Returned calculation flags must remain Swiss-file mode.
-
-Four similarly named `.se1` files are currently committed under `tools/pass5/`. They identify as older DE431 files and are therefore **not** accepted as the Mundane Timespine v1 source. They remain untouched pending the separate distribution/licensing cleanup. Filename similarity is not authority.
+Four similarly named `.se1` files are currently committed under `tools/pass5/`. They identify as older DE431 files and are therefore not accepted as the Mundane Timespine v1 authority. They remain untouched pending later distribution/licensing cleanup.
 
 ---
 
-# 10. Coordinate contract
+# 12. Coordinate contract
 
 Forge reference reads are:
 
@@ -239,23 +337,39 @@ geocentric
 tropical
 ecliptic of date
 standard apparent Swiss Ephemeris position
-SEFLG_SPEED analytic signed longitudinal speed
 true / osculating North Node
 ```
+
+`SEFLG_SPEED` remains construction-time evidence used to solve motion transitions and audit local velocity behavior. Its sampled values are not stored as runtime interpolation tangents in codec 3.
 
 No topocentric, sidereal, J2000, heliocentric, or geometric-true-position override belongs to Mundane Timespine v1.
 
 ---
 
-# 11. Astronomical audit
+# 13. Astronomical audit
 
-The artifact is independently decoded outside the Swift Forge and compared back to the same pinned official Swiss C engine.
+The artifact is independently decoded outside Swift Forge and compared to the same pinned official Swiss C engine.
 
-For every body the audit checks quarter, midpoint, and three-quarter positions inside every stored interval plus deterministic random points. It records maximum and percentile angular residual, core versus edge residual, speed residual, RingFineState agreement, motion agreement, and the worst measured point.
+For every body the audit measures:
 
-Variable-motion bodies receive a separate station scan with probes on both sides of every discovered station.
+```text
+maximum angular residual
+maximum core angular residual
+maximum edge angular residual
+99.9-percentile angular residual
+99-percentile angular residual
+maximum speed residual
+99.9-percentile speed residual
+RingFineState agreement
+motion agreement
+worst measured point
+```
 
-Construction thresholds remain:
+The audit probes quarter, midpoint, and three-quarter positions inside every stored interval plus deterministic random points.
+
+Every stored station receives before/after motion probes.
+
+Current construction gates remain:
 
 ```text
 edge maximum angular residual     <= 0.05 arcsecond
@@ -267,30 +381,30 @@ maximum speed residual            <= 0.005 degree/day
 station mismatch at +/-5 minutes  0
 ```
 
-These are construction gates, not astrological orb tolerances.
+These are construction fidelity gates, not astrological orb tolerances.
 
-If a body fails, alter that body's stored density or representation and forge again. Do not weaken the gate merely to preserve a file-size target.
-
----
-
-# 12. Native proof
-
-The Apple Swift accumulated suite has proven both the earlier construction candidate and the codec-2 body-separated implementation path.
-
-The latest macOS qualification runner reports the accumulated OrboCore suite green after the codec-2 transition.
-
-The final v1 artifact still requires a fresh native bundled-resource proof after its body profile is frozen and installed.
+If one body fails because its position memory is too sparse, change that body's density rather than weakening the gate.
 
 ---
 
-# 13. Completion gate
+# 14. Native proof
+
+The native Forge, codec, per-body checksum behavior, deterministic resumability, position interpolation, station chronology, 0/360 handling, half-open range law, and artifact round-trip all have dedicated XCTest coverage.
+
+The accumulated suite target remains 98 tests.
+
+Final v1 still requires a fresh Apple Swift proof after the candidate passes astronomical audit and the shipped v1 body files are installed as resources.
+
+---
+
+# 15. Completion gate
 
 Pass 5 is complete only when:
 
 ```text
 qualified official Swiss C source verified     PASS
-stamped body profile audit                      PASS
-station-direction audit                         PASS
+position profile astronomical audit             PASS
+station chronology audit                        PASS
 final body-specific density frozen              PASS
 11 immutable body artifacts created             PASS
 binding v1 manifest created                     PASS
