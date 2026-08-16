@@ -23,7 +23,7 @@ final class AstroDNAContractTests: XCTestCase {
         return try XCTUnwrap(AstroDNA(rawSequence: fixture.sampleSequence))
     }
 
-    func testPrototypeContractParityFixturePinsCodecOrderAndRingAddressSpace() throws {
+    func testContractFixturePinsCodecOrderAndRingAddressSpace() throws {
         let fixture = try fixture()
         XCTAssertEqual(AstroDNA.codec, fixture.codec)
         XCTAssertEqual(AstroDNA.geneCount, 12)
@@ -42,10 +42,10 @@ final class AstroDNAContractTests: XCTestCase {
         XCTAssertEqual(AstroDNAGene.canonicalOrder.last, .northNode)
         XCTAssertEqual(AstroDNAGene.northNode.rawValue, "Node")
         XCTAssertEqual(AstroDNAGene.northNode.displayName, "North Node")
-        XCTAssertTrue(AstroDNAGene.northNode.isMeanNorthNode)
+        XCTAssertEqual(AstroDNAGene.northNode.motionPolicy, .variable)
     }
 
-    func testCodec3IdentityPreservesTheTwelveRingFineStatesExactly() throws {
+    func testCodec4IdentityPreservesTheTwelveRingFineStatesExactly() throws {
         let fixture = try fixture()
         let dna = try sampleDNA()
         XCTAssertEqual(dna.rawSequence, fixture.sampleSequence)
@@ -82,7 +82,7 @@ final class AstroDNAContractTests: XCTestCase {
         XCTAssertNil(AstroDNA(rawSequence: tooHigh))
     }
 
-    func testMotionIdentityEnforcesFixedDirectVariableAndMeanNodeRetrogradePolicies() throws {
+    func testMotionIdentityEnforcesFixedDirectAndVariablePoliciesIncludingTrueNorthNode() throws {
         let fixture = try fixture()
         let dna = try sampleDNA()
 
@@ -105,9 +105,11 @@ final class AstroDNAContractTests: XCTestCase {
         badSun[AstroDNAGene.sun.ordinal] += Ring.arcseconds
         XCTAssertNil(AstroDNA(rawSequence: badSun))
 
-        var badNode = fixture.sampleSequence
-        badNode[AstroDNAGene.northNode.ordinal] -= Ring.arcseconds
-        XCTAssertNil(AstroDNA(rawSequence: badNode))
+        var directNode = fixture.sampleSequence
+        directNode[AstroDNAGene.northNode.ordinal] -= Ring.arcseconds
+        let directNodeDNA = try XCTUnwrap(AstroDNA(rawSequence: directNode))
+        XCTAssertEqual(directNodeDNA.motion(of: .northNode), .direct)
+        XCTAssertEqual(directNodeDNA.longitude(of: .northNode), dna.longitude(of: .northNode))
     }
 
     func testLongitudeSignAndDegreeAreProjectionsOfTheGeneNotStoredPeers() throws {
@@ -130,7 +132,7 @@ final class AstroDNAContractTests: XCTestCase {
         let dna = try sampleDNA()
         let north = dna.longitude(of: .northNode).degrees
         let expectedSouth = CelestialLongitude(north + 180)!
-        XCTAssertEqual(dna.meanSouthNodeLongitude, expectedSouth)
+        XCTAssertEqual(dna.southNodeLongitude, expectedSouth)
         XCTAssertEqual(AstroDNAGene.canonicalOrder.count, 12)
         XCTAssertFalse(AstroDNAGene.canonicalOrder.map(\.rawValue).contains("SNode"))
     }
@@ -140,11 +142,11 @@ final class AstroDNAContractTests: XCTestCase {
         let data = try JSONEncoder().encode(dna)
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         XCTAssertEqual(Set(object.keys), Set(["codec", "sequence"]))
-        XCTAssertEqual(object["codec"] as? Int, 3)
+        XCTAssertEqual(object["codec"] as? Int, 4)
         XCTAssertEqual(object["sequence"] as? [Int], dna.rawSequence)
         XCTAssertEqual(try JSONDecoder().decode(AstroDNA.self, from: data), dna)
 
-        let badCodec = "{\"codec\":4,\"sequence\":\(dna.rawSequence)}".data(using: .utf8)!
+        let badCodec = "{\"codec\":3,\"sequence\":\(dna.rawSequence)}".data(using: .utf8)!
         XCTAssertThrowsError(try JSONDecoder().decode(AstroDNA.self, from: badCodec))
     }
 
