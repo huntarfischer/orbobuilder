@@ -5,7 +5,7 @@ Codec 4 keeps the Timespine position-first: each body owns stamped longitude kno
 exact station chronology. The body file merely packs those same knot integers losslessly
 with circular first deltas and signed second-delta varints. This auditor decodes that binary
 format independently of Swift, reconstructs the stored knots, performs the same local cubic
-read with the real final-knot time, and compares arbitrary-time reads back to Swiss C.
+read over cadence-aligned guard knots, and compares arbitrary-time reads back to Swiss C.
 """
 from __future__ import annotations
 
@@ -164,7 +164,7 @@ def decode_packed_positions(
     count: int,
     scale: int,
 ) -> tuple[list[int], int]:
-    if count < 2 or offset + 4 > len(data):
+    if count < 4 or offset + 4 > len(data):
         raise RuntimeError("Malformed packed knot sequence")
     circle_units = 360 * scale
     first = struct.unpack_from("<I", data, offset)[0]
@@ -230,7 +230,7 @@ def parse_body(path: Path, expected_body: int) -> dict:
         offset += 24
         count = struct.unpack_from("<I", data, offset)[0]
         offset += 4
-        if not start < end or step <= 0 or count < 2:
+        if not start < end or step <= 0 or count < 4:
             raise RuntimeError(f"Malformed region: {path}")
         positions, offset = decode_packed_positions(data, offset, count, scale)
         total_knots += count
@@ -283,21 +283,14 @@ def expected_motion(series: dict, jd: float) -> str:
     return series["initialMotion"] if low == 0 else series["stations"][low - 1][1]
 
 
-def sample_coordinate(region: dict, index: int) -> float:
-    nominal = region["start"] + index * region["step"]
-    actual = min(nominal, region["end"])
-    return (actual - region["start"]) / region["step"]
-
-
 def interpolate(series: dict, jd: float) -> tuple[float, float]:
     region = region_for(series, jd)
     x = (jd - region["start"]) / region["step"]
     interval = math.floor(x)
-    point_count = min(4, region["count"])
-    preferred_lead = max(0, point_count // 2 - 1)
-    first = min(max(0, interval - preferred_lead), region["count"] - point_count)
+    point_count = 4
+    first = min(max(0, interval - 1), region["count"] - point_count)
     indices = list(range(first, first + point_count))
-    coordinates = [sample_coordinate(region, index) for index in indices]
+    coordinates = [float(index) for index in indices]
 
     raw_positions = [sample_position(series, region, index) for index in indices]
     positions = [raw_positions[0]]
@@ -518,7 +511,6 @@ def main() -> int:
                     f"at +/- {STATION_PROBE_MINUTES:g} minutes"
                 )
 
-        # Free the largest decoded knot list before moving to the next body.
         del series
 
     provenance = json.loads(Path(args.provenance).read_text())
