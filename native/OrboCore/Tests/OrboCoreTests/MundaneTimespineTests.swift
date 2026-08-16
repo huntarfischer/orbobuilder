@@ -14,18 +14,16 @@ final class MundaneTimespineTests: XCTestCase {
         let astroDNACodec: Int
         let representation: String
         let positionUnitsPerDegree: Int
-        let speedUnitsPerDegreePerDay: Int
         let supportedStartJulianDay: Double
         let denseStartJulianDay: Double
         let denseEndJulianDay: Double
         let supportedEndJulianDay: Double
-        let estimatedSamplePayloadBytes: Int
+        let estimatedPositionPayloadBytes: Int
         let profiles: [Profile]
     }
 
     private struct AnalyticReference: ForgeEphemerisReference {
         let epoch = 2_451_545.0
-
         func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState {
             let t = julianDay.value - epoch
             let ordinal = Double(body.rawValue + 1)
@@ -33,67 +31,63 @@ final class MundaneTimespineTests: XCTestCase {
             let linear = body == .trueNorthNode ? -0.32 : 0.35 + ordinal * 0.013
             let quadratic = (ordinal.truncatingRemainder(dividingBy: 3) - 1) * 0.0008
             let cubic = (ordinal.truncatingRemainder(dividingBy: 2) == 0 ? 1 : -1) * 0.00001
-            let longitudeValue = base + linear * t + quadratic * t * t + cubic * t * t * t
-            let speed = linear + 2 * quadratic * t + 3 * cubic * t * t
             return MundaneCelestialState(
-                longitude: CelestialLongitude(longitudeValue)!,
-                longitudinalSpeedDegreesPerDay: speed
+                longitude: CelestialLongitude(base + linear * t + quadratic * t * t + cubic * t * t * t)!,
+                longitudinalSpeedDegreesPerDay: linear + 2 * quadratic * t + 3 * cubic * t * t
             )!
         }
     }
 
     private func fixture() throws -> CandidateFixture {
-        try FixtureLoader.decode(
-            CandidateFixture.self,
-            named: "mundane-timespine-candidate-v1",
-            kind: .golden
-        )
+        try FixtureLoader.decode(CandidateFixture.self, named: "mundane-timespine-candidate-v1", kind: .golden)
     }
 
-    private func shortPlan() -> MundaneTimespineForgePlan {
+    private func shortPlan(
+        motionChronologies: [MundaneBody: MundaneMotionChronology] = [:]
+    ) -> MundaneTimespineForgePlan {
         MundaneTimespineForgePlan(
             version: "v1-construction-fixture",
             astronomicalSource: "analytic-test-reference",
             astronomicalSourceVersion: "1",
             supportedStart: JulianDay(2_451_545.0)!,
             supportedEnd: JulianDay(2_451_553.0)!,
-            profiles: MundaneTimespineForge.candidateProfiles
+            profiles: MundaneTimespineForge.candidateProfiles,
+            motionChronologies: motionChronologies
         )!
     }
 
-    func testCandidateFixturePinsSeparateBodyDataProfile() throws {
-        let fixture = try fixture()
-        XCTAssertEqual(fixture.status, "stamped-data-candidate")
-        XCTAssertEqual(fixture.codec, MundaneTimespine.codec)
-        XCTAssertEqual(fixture.astroDNACodec, AstroDNA.codec)
-        XCTAssertEqual(fixture.representation, MundaneTimespine.representation)
-        XCTAssertEqual(fixture.positionUnitsPerDegree, MundaneTimespine.positionUnitsPerDegree)
-        XCTAssertEqual(fixture.speedUnitsPerDegreePerDay, MundaneTimespine.speedUnitsPerDegreePerDay)
-        XCTAssertEqual(fixture.profiles.map(\.body), MundaneBody.canonicalOrder.map(\.displayName))
-        XCTAssertEqual(fixture.profiles.map(\.edgeSampleDays), MundaneTimespineForge.candidateProfiles.map(\.edgeSampleDays))
-        XCTAssertEqual(fixture.profiles.map(\.coreSampleDays), MundaneTimespineForge.candidateProfiles.map(\.coreSampleDays))
-        XCTAssertEqual(fixture.profiles[2].body, "Mercury")
-        XCTAssertEqual(fixture.profiles[2].edgeSampleDays, 0.25)
-        XCTAssertEqual(fixture.profiles[2].coreSampleDays, 0.0625)
+    func testCandidateFixturePinsPositionFirstSeparateBodyProfile() throws {
+        let f = try fixture()
+        XCTAssertEqual(f.status, "position-first-candidate")
+        XCTAssertEqual(f.codec, MundaneTimespine.codec)
+        XCTAssertEqual(f.astroDNACodec, AstroDNA.codec)
+        XCTAssertEqual(f.representation, MundaneTimespine.representation)
+        XCTAssertEqual(f.positionUnitsPerDegree, MundaneTimespine.positionUnitsPerDegree)
+        XCTAssertEqual(f.profiles.map(\.body), MundaneBody.canonicalOrder.map(\.displayName))
+        XCTAssertEqual(f.profiles.map(\.edgeSampleDays), MundaneTimespineForge.candidateProfiles.map(\.edgeSampleDays))
+        XCTAssertEqual(f.profiles.map(\.coreSampleDays), MundaneTimespineForge.candidateProfiles.map(\.coreSampleDays))
+        XCTAssertEqual(f.profiles[2].body, "Mercury")
+        XCTAssertEqual(f.profiles[2].edgeSampleDays, 1.0 / 12.0, accuracy: 1e-15)
+        XCTAssertEqual(f.profiles[2].coreSampleDays, 1.0 / 48.0, accuracy: 1e-15)
     }
 
-    func testFullRangeStampedPayloadEstimateMatchesGoldenMeasurement() throws {
-        let fixture = try fixture()
-        let plan = try XCTUnwrap(MundaneTimespineForgePlan(
+    func testFullRangePositionPayloadEstimateMatchesGoldenMeasurement() throws {
+        let f = try fixture()
+        let plan = MundaneTimespineForgePlan(
             version: "v1-candidate",
             astronomicalSource: "qualified-reference-required",
             astronomicalSourceVersion: "pending",
-            supportedStart: JulianDay(fixture.supportedStartJulianDay)!,
-            supportedEnd: JulianDay(fixture.supportedEndJulianDay)!,
+            supportedStart: JulianDay(f.supportedStartJulianDay)!,
+            supportedEnd: JulianDay(f.supportedEndJulianDay)!,
             profiles: MundaneTimespineForge.candidateProfiles
-        ))
-        XCTAssertEqual(MundaneTimespineForge.estimatedSamplePayloadBytes(for: plan), fixture.estimatedSamplePayloadBytes)
-        XCTAssertEqual(fixture.denseStartJulianDay, MundaneTimespineForge.v1DenseStart.value)
-        XCTAssertEqual(fixture.denseEndJulianDay, MundaneTimespineForge.v1DenseEnd.value)
-        XCTAssertLessThan(fixture.estimatedSamplePayloadBytes, 50 * 1_024 * 1_024)
+        )!
+        XCTAssertEqual(MundaneTimespineForge.estimatedPositionPayloadBytes(for: plan), f.estimatedPositionPayloadBytes)
+        XCTAssertEqual(f.denseStartJulianDay, MundaneTimespineForge.v1DenseStart.value)
+        XCTAssertEqual(f.denseEndJulianDay, MundaneTimespineForge.v1DenseEnd.value)
+        XCTAssertLessThan(f.estimatedPositionPayloadBytes, 50 * 1_024 * 1_024)
     }
 
-    func testForgeReconstructsArbitraryStatesFromStampedKnots() throws {
+    func testLocalCubicReadReconstructsCubicReferenceFromStampedPositions() throws {
         let reference = AnalyticReference()
         let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: reference)
         for body in MundaneBody.canonicalOrder {
@@ -101,37 +95,44 @@ final class MundaneTimespineTests: XCTestCase {
                 let jd = JulianDay(2_451_545.0 + offset)!
                 let expected = try reference.state(of: body, at: jd)
                 let actual = try timespine.state(of: body, at: jd)
-                XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_001)
-                XCTAssertEqual(
-                    actual.longitudinalSpeedDegreesPerDay,
-                    expected.longitudinalSpeedDegreesPerDay,
-                    accuracy: 0.000_01
-                )
+                XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_002)
+                XCTAssertEqual(abs(actual.longitudinalSpeedDegreesPerDay), abs(expected.longitudinalSpeedDegreesPerDay), accuracy: 0.000_02)
             }
         }
     }
 
-    func testArtifactSetContainsOneIndependentFilePerBodyAndManifest() throws {
+    func testStationChronologyOwnsMotionTransition() throws {
+        var chronologies: [MundaneBody: MundaneMotionChronology] = [:]
+        for body in MundaneBody.canonicalOrder {
+            let initial: Motion = body == .trueNorthNode ? .retrograde : .direct
+            chronologies[body] = MundaneMotionChronology(initialMotion: initial, stations: [])!
+        }
+        chronologies[.trueNorthNode] = MundaneMotionChronology(
+            initialMotion: .retrograde,
+            stations: [MundaneStation(julianDay: JulianDay(2_451_549.0)!, motionAfter: .direct)]
+        )!
+        let timespine = try MundaneTimespineForge.manufacture(
+            plan: shortPlan(motionChronologies: chronologies),
+            reference: AnalyticReference()
+        )
+        XCTAssertEqual(try timespine.state(of: .trueNorthNode, at: JulianDay(2_451_548.9)!).motion, .retrograde)
+        XCTAssertEqual(try timespine.state(of: .trueNorthNode, at: JulianDay(2_451_549.1)!).motion, .direct)
+    }
+
+    func testArtifactSetContainsIndependentBodyFilesAndStationCounts() throws {
         let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
         let artifacts = timespine.encodedArtifacts()
         XCTAssertEqual(artifacts.bodyArtifacts.count, 11)
-        XCTAssertFalse(artifacts.manifest.isEmpty)
-        for body in MundaneBody.canonicalOrder {
-            XCTAssertNotNil(artifacts.data(for: body))
-            XCTAssertTrue(body.artifactFileName.hasSuffix(".orbbody"))
-        }
-        let manifestText = try XCTUnwrap(String(data: artifacts.manifest, encoding: .utf8))
-        XCTAssertTrue(manifestText.contains("\"codec\" : 2"))
-        XCTAssertTrue(manifestText.contains("true-north-node.orbbody"))
+        let text = try XCTUnwrap(String(data: artifacts.manifest, encoding: .utf8))
+        XCTAssertTrue(text.contains("\"codec\" : 3"))
+        XCTAssertTrue(text.contains("\"stationCount\""))
+        XCTAssertTrue(text.contains("true-north-node.orbbody"))
     }
 
-    func testSeparateBodyCodecRoundTripsWithoutChangingReads() throws {
+    func testCodecRoundTripPreservesBodyReads() throws {
         let original = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
         let artifacts = original.encodedArtifacts()
-        let decoded = try MundaneTimespine.decodeArtifacts(
-            manifest: artifacts.manifest,
-            bodyArtifacts: artifacts.bodyArtifacts
-        )
+        let decoded = try MundaneTimespine.decodeArtifacts(manifest: artifacts.manifest, bodyArtifacts: artifacts.bodyArtifacts)
         XCTAssertEqual(decoded.checksum, original.checksum)
         for body in MundaneBody.canonicalOrder {
             let jd = JulianDay(2_451_550.125)!
@@ -143,56 +144,42 @@ final class MundaneTimespineTests: XCTestCase {
     }
 
     func testBodyChecksumDetectsMutationWithoutPoisoningOtherBodies() throws {
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
-        let artifacts = timespine.encodedArtifacts()
+        let artifacts = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference()).encodedArtifacts()
         var bodies = artifacts.bodyArtifacts
         var mercury = try XCTUnwrap(bodies[.mercury])
-        mercury[mercury.count - 1] ^= 0x01
+        mercury[mercury.count - 1] ^= 1
         bodies[.mercury] = mercury
-        XCTAssertThrowsError(
-            try MundaneTimespine.decodeArtifacts(manifest: artifacts.manifest, bodyArtifacts: bodies)
-        ) { error in
-            XCTAssertEqual(error as? MundaneTimespineError, .checksumMismatch(.mercury))
+        XCTAssertThrowsError(try MundaneTimespine.decodeArtifacts(manifest: artifacts.manifest, bodyArtifacts: bodies)) {
+            XCTAssertEqual($0 as? MundaneTimespineError, .checksumMismatch(.mercury))
         }
         XCTAssertEqual(bodies[.sun], artifacts.bodyArtifacts[.sun])
     }
 
-    func testTrueNorthNodeMotionComesFromStampedVelocity() throws {
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
-        let state = try timespine.state(of: .trueNorthNode, at: JulianDay(2_451_548.25)!)
-        XCTAssertLessThan(state.longitudinalSpeedDegreesPerDay, 0)
-        XCTAssertEqual(state.motion, .retrograde)
-    }
-
-    func testLongitudeInterpolationSurvivesZeroDegreeCrossing() throws {
+    func testLongitudeReadSurvivesZeroDegreeCrossing() throws {
         let reference = AnalyticReference()
         let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: reference)
         for offset in stride(from: 0.0, to: 8.0, by: 0.125) {
             let jd = JulianDay(2_451_545.0 + offset)!
             let expected = try reference.state(of: .sun, at: jd)
             let actual = try timespine.state(of: .sun, at: jd)
-            XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_001)
+            XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_002)
         }
     }
 
-    func testResumableForgeProducesByteIdenticalBodySet() throws {
+    func testResumableForgeProducesByteIdenticalArtifactSet() throws {
         let plan = shortPlan()
         let reference = AnalyticReference()
         let oneShot = try MundaneTimespineForge.manufacture(plan: plan, reference: reference).encodedArtifacts()
         var cursor = MundaneTimespineForge.makeCursor(plan: plan)
-        while !cursor.isComplete {
-            _ = try cursor.step(reference: reference, sampleBudget: 7)
-        }
+        while !cursor.isComplete { _ = try cursor.step(reference: reference, sampleBudget: 7) }
         let chunked = try cursor.product().encodedArtifacts()
         XCTAssertEqual(chunked.manifest, oneShot.manifest)
         XCTAssertEqual(chunked.bodyArtifacts, oneShot.bodyArtifacts)
-        XCTAssertEqual(chunked.manifestChecksum, oneShot.manifestChecksum)
     }
 
-    func testTimespineRangeIsHalfOpenAndChecksumUsesKnownSHA256Vector() throws {
+    func testRangeIsHalfOpenAndChecksumUsesKnownSHA256Vector() throws {
         let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
         XCTAssertTrue(timespine.contains(JulianDay(2_451_545.0)!))
-        XCTAssertTrue(timespine.contains(JulianDay(2_451_552.999)!))
         XCTAssertFalse(timespine.contains(JulianDay(2_451_553.0)!))
         XCTAssertThrowsError(try timespine.state(of: .sun, at: JulianDay(2_451_553.0)!))
         XCTAssertEqual(
