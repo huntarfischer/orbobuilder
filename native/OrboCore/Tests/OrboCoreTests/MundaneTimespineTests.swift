@@ -69,6 +69,10 @@ final class MundaneTimespineTests: XCTestCase {
         XCTAssertEqual(fixture.polynomialDegree, 7)
         XCTAssertEqual(fixture.profiles.map(\.body), MundaneBody.canonicalOrder.map(\.displayName))
         XCTAssertEqual(fixture.profiles.map(\.segmentDays), MundaneTimespineForge.candidateProfiles.map(\.segmentDays))
+        XCTAssertEqual(
+            MundaneTimespineForge.candidateProfiles.first { $0.body == .mercury }?.segmentDays,
+            1.0
+        )
         XCTAssertEqual(MundaneBody.canonicalOrder.last, .trueNorthNode)
         XCTAssertNil(MundaneBody.trueNorthNode.planet)
     }
@@ -87,7 +91,7 @@ final class MundaneTimespineTests: XCTestCase {
             MundaneTimespineForge.estimatedCoefficientBytes(for: plan),
             fixture.estimatedCoefficientBytes
         )
-        XCTAssertLessThan(fixture.estimatedCoefficientBytes, 14 * 1_024 * 1_024)
+        XCTAssertLessThan(fixture.estimatedCoefficientBytes, 16 * 1_024 * 1_024)
     }
 
     func testForgeManufacturesArbitraryStateReadsFromOneUniversalChronology() throws {
@@ -215,7 +219,7 @@ final class MundaneTimespineTests: XCTestCase {
             reference: AnalyticReference()
         )
         XCTAssertTrue(timespine.contains(JulianDay(2_451_545.0)!))
-        XCTAssertTrue(timespine.contains(JulianDay(2_451_552.999)!) )
+        XCTAssertTrue(timespine.contains(JulianDay(2_451_552.999)!))
         XCTAssertFalse(timespine.contains(JulianDay(2_451_553.0)!))
         XCTAssertThrowsError(
             try timespine.state(of: .sun, at: JulianDay(2_451_544.999)!)
