@@ -1,8 +1,8 @@
 {
-  "status": "position-first-candidate",
-  "codec": 3,
+  "status": "position-first-packed-candidate",
+  "codec": 4,
   "astroDNACodec": 4,
-  "representation": "separate stamped positions + station chronologies + local cubic reads",
+  "representation": "separate stamped positions + exact station chronologies + second-delta packed body files + local cubic reads",
   "positionUnitsPerDegree": 3600000,
   "supportedStartJulianDay": 2341972.5,
   "denseStartJulianDay": 2433282.5,
