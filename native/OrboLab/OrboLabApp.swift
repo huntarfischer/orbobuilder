@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 import OrboCore
 
@@ -13,6 +14,8 @@ struct OrboLabApp: App {
 private struct FoundationLabView: View {
     private let bodyLongitude = CelestialLongitude(70)!
     private let ascendantLongitude = CelestialLongitude(220)!
+    private let civilDate = CivilDate(year: 1985, month: 4, day: 10)!
+    private let civilClock = CivilClockTime(hour: 20, minute: 16)!
 
     private var condition: EssentialCondition {
         Mater.essentialCondition(
@@ -34,6 +37,15 @@ private struct FoundationLabView: View {
 
     private var labPlaceResolution: GeoplacementResolution {
         GeoplacementAtlas.resolve("Madison, WI, USA")
+    }
+
+    private var labCivilResolution: CivilTimeResolution? {
+        guard case let .found(place) = labPlaceResolution else { return nil }
+        return CivilTime.resolve(
+            date: civilDate,
+            time: civilClock,
+            in: place.timezone
+        )
     }
 
     var body: some View {
@@ -104,6 +116,40 @@ private struct FoundationLabView: View {
                     readout("resolution", "ambiguous / \(places.count) matches")
                 case .notFound:
                     readout("resolution", "not found")
+                }
+
+                Divider()
+
+                sectionTitle("CIVIL TIME")
+                readout("local date", "1985-04-10")
+                readout("local clock", "20:16:00")
+                readout("tzdb version", CivilTime.timeZoneDataVersion)
+                readout("year range", "\(CivilTime.supportedYearRange.lowerBound)-\(CivilTime.supportedYearRange.upperBound)")
+
+                if let labCivilResolution {
+                    switch labCivilResolution {
+                    case let .resolved(match):
+                        readout("resolution", "resolved")
+                        readout("timezone", match.timezone?.rawValue ?? "none")
+                        readout("UTC offset", match.offset.clockDescription)
+                        readout("source", match.source.rawValue)
+                        readout("Julian Day", String(format: "%.8f", match.instant.julianDay.value))
+                    case let .ambiguous(first, second):
+                        readout("resolution", "ambiguous")
+                        readout("first offset", first.offset.clockDescription)
+                        readout("second offset", second.offset.clockDescription)
+                    case .nonexistent:
+                        readout("resolution", "nonexistent")
+                    case let .unknownTimeZone(zone):
+                        readout("resolution", "unknown timezone")
+                        readout("timezone", zone.rawValue)
+                    case let .unsupportedYear(year):
+                        readout("resolution", "unsupported year \(year)")
+                    case let .unsupportedCalendar(calendar):
+                        readout("resolution", "unsupported calendar \(calendar.rawValue)")
+                    }
+                } else {
+                    readout("resolution", "place unresolved")
                 }
 
                 Divider()
