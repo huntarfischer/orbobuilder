@@ -16,7 +16,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "OrboCore"
+            name: "OrboCore",
+            resources: [
+                .copy("Geoplacement/Resources/geoplacement-atlas-v1.js")
+            ]
         ),
         .testTarget(
             name: "OrboCoreTests",
