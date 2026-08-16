@@ -1,0 +1,84 @@
+{
+  "marks": [0, 30, 45, 60, 72, 90, 120, 135, 144, 150, 180],
+  "tieRule": "lower",
+  "constants": {
+    "degrees": 360,
+    "states": 720,
+    "arcsecondsPerDegree": 3600,
+    "arcseconds": 1296000,
+    "fineStates": 2592000,
+    "plateSize": 7920
+  },
+  "coarseStates": [
+    {"longitude": 0.4, "motion": "direct", "state": 0},
+    {"longitude": 0.4, "motion": "retrograde", "state": 360},
+    {"longitude": 7.93, "motion": "direct", "state": 7},
+    {"longitude": 359.99, "motion": "direct", "state": 359},
+    {"longitude": -370.5, "motion": "direct", "state": 349},
+    {"longitude": 1000.0, "motion": "retrograde", "state": 640}
+  ],
+  "fineStates": [
+    {"longitude": 21.14361111111111, "motion": "direct", "state": 76117},
+    {"longitude": 0.9999999, "motion": "direct", "state": 3599},
+    {"longitude": 359.99999999, "motion": "direct", "state": 1295999},
+    {"longitude": 0.0001, "motion": "retrograde", "state": 1296000},
+    {"longitude": 21.5, "motion": "direct", "state": 77400},
+    {"longitude": 21.5, "motion": "retrograde", "state": 1373400}
+  ],
+  "dms": [
+    {"fineState": 76117, "degree": 21, "minute": 8, "second": 37},
+    {"fineState": 1296045, "degree": 0, "minute": 0, "second": 45}
+  ],
+  "targets": [
+    {"state": 0, "mark": 0, "direction": "plus", "degree": 0},
+    {"state": 0, "mark": 0, "direction": "minus", "degree": 0},
+    {"state": 0, "mark": 30, "direction": "minus", "degree": 330},
+    {"state": 0, "mark": 30, "direction": "plus", "degree": 30},
+    {"state": 270, "mark": 90, "direction": "plus", "degree": 0},
+    {"state": 270, "mark": 90, "direction": "minus", "degree": 180},
+    {"state": 90, "mark": 90, "direction": "minus", "degree": 0},
+    {"state": 180, "mark": 180, "direction": "plus", "degree": 0},
+    {"state": 360, "mark": 72, "direction": "minus", "degree": 288},
+    {"state": 360, "mark": 72, "direction": "plus", "degree": 72},
+    {"state": 719, "mark": 150, "direction": "minus", "degree": 209},
+    {"state": 719, "mark": 150, "direction": "plus", "degree": 149}
+  ],
+  "relations": [
+    {"a": 0, "b": 0, "mark": 0},
+    {"a": 37, "b": 397, "mark": 0},
+    {"a": 0, "b": 90, "mark": 90},
+    {"a": 0, "b": 270, "mark": 90},
+    {"a": 360, "b": 450, "mark": 90},
+    {"a": 0, "b": 91, "mark": null},
+    {"a": 719, "b": 359, "mark": 0}
+  ],
+  "nearest": [
+    {"separation": 116.37, "arc": 116.37, "mark": 120, "residual": 3.63},
+    {"separation": 37.5, "arc": 37.5, "mark": 30, "residual": 7.5},
+    {"separation": 52.5, "arc": 52.5, "mark": 45, "residual": 7.5},
+    {"separation": 66.0, "arc": 66.0, "mark": 60, "residual": 6.0},
+    {"separation": 81.0, "arc": 81.0, "mark": 72, "residual": 9.0},
+    {"separation": 105.0, "arc": 105.0, "mark": 90, "residual": 15.0},
+    {"separation": 127.5, "arc": 127.5, "mark": 120, "residual": 7.5},
+    {"separation": 139.5, "arc": 139.5, "mark": 135, "residual": 4.5},
+    {"separation": 147.0, "arc": 147.0, "mark": 144, "residual": 3.0},
+    {"separation": 165.0, "arc": 165.0, "mark": 150, "residual": 15.0},
+    {"separation": 270.0, "arc": 90.0, "mark": 90, "residual": 0.0},
+    {"separation": 244.0, "arc": 116.0, "mark": 120, "residual": 4.0},
+    {"separation": 58.0, "arc": 58.0, "mark": 60, "residual": 2.0},
+    {"separation": 122.0, "arc": 122.0, "mark": 120, "residual": 2.0}
+  ],
+  "supplements": [
+    {"mark": 0, "supplement": 180},
+    {"mark": 30, "supplement": 150},
+    {"mark": 45, "supplement": 135},
+    {"mark": 60, "supplement": 120},
+    {"mark": 72, "supplement": null},
+    {"mark": 90, "supplement": 90},
+    {"mark": 120, "supplement": 60},
+    {"mark": 135, "supplement": 45},
+    {"mark": 144, "supplement": null},
+    {"mark": 150, "supplement": 30},
+    {"mark": 180, "supplement": 0}
+  ]
+}
