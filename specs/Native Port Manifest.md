@@ -282,8 +282,8 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | PROVEN / COMPLETE |
 | Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | NATIVE CANONICAL |
 | Civil Time | REPRODUCE | BEHAVIORAL | OrboCore / CivilTime | NATIVE CANONICAL |
-| Ephemeris | PENDING | PENDING | PENDING | QUEUED |
-| AstroDNA | PENDING | PENDING | PENDING | QUEUED |
+| AstroDNA | REPRODUCE | STRUCTURAL | OrboCore / AstroDNA | NATIVE CANONICAL |
+| Ephemeris | PENDING | PENDING | PENDING | IN ARCHAEOLOGY |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
 | Timespine temporal lessons | PENDING | PENDING | PENDING | QUEUED |
 | Loom | PENDING | PENDING | PENDING | QUEUED |
@@ -1198,6 +1198,7 @@ rising sign + modern co-ruler
 canonical frame records
 
 six-house opposition / flip law
+
 absence / empty / malformed address contracts
 ```
 
@@ -1897,6 +1898,7 @@ The same accumulated Xcode proof that canonized Mater completed the Rulers rehou
 ## Status
 
 **PROVEN / COMPLETE**
+
 Rulers has no independent native production component. Its surviving essential-dignity law is now canonically owned by native Mater.
 
 ---
@@ -2576,7 +2578,398 @@ Civil Time may now serve as the canonical native local-clock -> absolute-time / 
 
 ---
 
-# 11. Phase 1a Closure and Current Construction Boundary
+# 11. Component: AstroDNA Genome Contract
+
+## Prototype source
+
+Primary authority:
+
+```text
+astrodna.js
+```
+
+Reference / browser material:
+
+```text
+astrodna.browser.js
+```
+
+Relevant proof and architecture material:
+
+```text
+tests/astrodna.test.html
+specs/Unified Architecture Plan - Ovum AstroDNA Embryo and Connectome.md
+specs/Ideal Data Flow - Embryo AstroDNA Connectome Loom.md
+specs/Phase 1 - The Ovum.md
+specs/Phase 1b - Ovum Completion Outline.md
+```
+
+Native implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/AstroDNA/AstroDNA.swift
+native/OrboCore/Sources/OrboCore/AstroDNA/AstroDNAGene.swift
+```
+
+Native proof material:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/AstroDNAContractTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/astrodna-contract.json
+```
+
+## What it currently does
+
+Prototype `astrodna.js` combines multiple historical responsibilities in one file:
+
+```text
+physical ephemeris acquisition
+horizon acquisition
+canonical sequence encoding
+node records and full-precision longitude peers
+speed / speed ratio / stationary expression
+sign / house / element expression
+aspects
+stelliums
+elemental balance
+chart ruler
+extras
+sect
+Lots
+```
+
+The Phase 1b contract pass isolates only the genome itself.
+
+The native AstroDNA owner does not port the prototype file as a chart-expression engine. It owns the canonical identity-bearing sequence that later components manufacture and unfold.
+
+## Actual law
+
+Native AstroDNA owns:
+
+```text
+exactly twelve genes
+one explicit canonical order
+one RingFineState per gene
+codec identity
+position plus admitted direction identity
+fine -> coarse projection
+longitude / sign / degree projection from the gene
+South Node opposition derived from the North Node
+serialization of identity only
+```
+
+Canonical order:
+
+```text
+1   Ascendant
+2   Moon
+3   Sun
+4   Mercury
+5   Venus
+6   Mars
+7   Jupiter
+8   Saturn
+9   Uranus
+10  Neptune
+11  Pluto
+12  North Node
+```
+
+The native gene is the sole positional truth. AstroDNA does not store an independent floating-point longitude beside the Ring fine state.
+
+The native North Node gene is the **true / osculating North Node**. It may be direct or retrograde. Its South Node is exactly opposite and is derived rather than admitted as a thirteenth gene.
+
+The mean North Node is a separate astronomical quantity and is not AstroDNA identity.
+
+## Explicit exclusions
+
+AstroDNA does not own:
+
+```text
+velocity
+speed ratio
+stationary classification
+station proximity
+applying / separating
+relative motion
+aspects
+Ring target tables
+house placement
+rulers
+dignity
+dispositorship
+reception
+stelliums
+elemental balance
+chart ruler
+sect
+Lots
+MC
+IC
+Descendant
+Vertex
+interpretation
+```
+
+These may be derived from or related to a physical or derived state, but they do not enlarge the genome.
+
+## What is proven
+
+Prototype archaeology established the structural organism that survives:
+
+```text
+twelve ordered genes
+Ascendant first
+Moon before Sun
+Mercury through Pluto in canonical sequence
+North Node as gene 12
+South Node derived rather than sequenced
+Ring fine-state encoding at arcsecond identity
+coarse whole-degree sequence as a projection
+motion represented by the two Ring fine-state halves
+codec stamped rather than inferred
+```
+
+Two prototype decisions were intentionally not preserved as native canon:
+
+```text
+prototype codec 3:
+    gene 12 = mean North Node
+    mean node forced into retrograde half
+
+native codec 4:
+    gene 12 = true / osculating North Node
+    direct or retrograde are both legal
+```
+
+and:
+
+```text
+prototype node record:
+    Ring gene plus an independent full-precision floating longitude
+
+native genome:
+    RingFineState alone is positional identity
+    longitude / DMS / sign are projections of that gene
+```
+
+Codec 4 is therefore required. Reusing codec 3 would cause two incompatible meanings of gene 12 to claim the same persisted version stamp.
+
+## Current dependencies
+
+Prototype `astrodna.js` imports astronomy, Ring, Mater and Tympan because it also performs acquisition and expression.
+
+Native AstroDNA depends only on the canonical native identity vocabulary it actually needs:
+
+```text
+RingFineState
+RingState
+CelestialLongitude
+Sign
+DegreeInSign
+Motion
+```
+
+It does not depend on Ephemeris, Horizon, Mater, Tympan, Connectome, Civil Time, Geoplacement, Loom, UI or interpretation.
+
+## Current consumers
+
+The immediate future consumers are the Spine/Horizon manufacturing path and the Ovum Resolver.
+
+Later Connectome work will unfold the genome into expression rather than adding expression back into AstroDNA.
+
+## User-visible consequence
+
+AstroDNA is Orbo's celestial identity contract. A change to gene order, precision, node identity or codec meaning changes persisted chart identity and the required output of the entire celestial manufacturing chain.
+
+## 4R
+
+**REPRODUCE**
+
+## Why
+
+The prototype discovered the correct basic organism, but its implementation and two contract decisions should not survive unchanged.
+
+Native Orbo preserves the twelve-gene ordered Ring identity while deliberately changing:
+
+```text
+gene 12
+    mean North Node -> true / osculating North Node
+
+positional authority
+    Ring gene + floating peer -> RingFineState only
+```
+
+That is not exact replication. It is reproduction of the solved identity concept against the now-settled native architecture.
+
+## Swift Sanding
+
+```text
+array position remembered by convention
+-> AstroDNAGene with explicit ordinal and canonicalOrder
+
+raw fine-state integer
+-> RingFineState
+
+codec implied by data shape
+-> AstroDNA.codec == 4
+
+wrong gene count
+-> rejected at construction
+
+invalid Ring address
+-> rejected before genome exists
+
+retrograde Ascendant / Moon / Sun
+-> rejected by gene motion policy
+
+true North Node direction
+-> variable, both Ring halves legal
+
+independent stored floating longitude
+-> removed from identity
+
+longitude / sign / DMS
+-> projected from RingFineState
+
+South Node stored separately
+-> derived opposition
+
+large prototype nodes/extras object
+-> excluded from genome
+
+mutable JavaScript arrays
+-> immutable Swift value storage
+
+browser mirror
+-> no native counterpart
+```
+
+## Native destination
+
+```text
+OrboCore / AstroDNA
+```
+
+## Native mating surface
+
+```text
+AstroDNA.codec
+AstroDNA.geneCount
+AstroDNAGene.canonicalOrder
+AstroDNA(sequence:)
+AstroDNA(rawSequence:)
+AstroDNA[gene]
+AstroDNA.sequence
+AstroDNA.rawSequence
+AstroDNA.sequenceString
+AstroDNA.degreeSequence
+AstroDNA.degreeSequenceString
+AstroDNA.longitude(of:)
+AstroDNA.sign(of:)
+AstroDNA.degreeInSign(of:)
+AstroDNA.motion(of:)
+AstroDNA.southNodeLongitude
+Codable identity envelope { codec, sequence }
+```
+
+The later AstroDNA Encoder receives physical celestial values and creates these genes. The contract itself does not calculate the sky.
+
+## Parity standard
+
+**STRUCTURAL**
+
+The following structural laws are exact:
+
+```text
+12 genes
+canonical order through Pluto
+North Node remains gene 12
+gene value is RingFineState
+arcsecond positional identity
+two equal direct / retrograde Ring halves
+Ascendant / Moon / Sun fixed direct
+Mercury through Pluto variable
+South Node derived +180 degrees
+coarse sequence is a projection
+codec is explicit
+```
+
+Intentional native divergence:
+
+```text
+codec 3 mean-node identity
+-> codec 4 true/osculating-node identity
+
+independent floating longitude peer
+-> no second positional authority
+```
+
+The prototype's derived-expression object shape is not a parity target.
+
+## Proof method
+
+Prove:
+
+```text
+codec == 4
+exactly 12 genes
+canonical order explicit and complete
+all genes are legal RingFineState values
+sequence preserves each fine state exactly
+whole-degree sequence derives from each fine state
+wrong cardinality fails
+malformed fine addresses fail
+Ascendant / Moon / Sun reject retrograde states
+Mercury through Pluto accept either motion where supplied
+true North Node accepts direct and retrograde states
+longitude / sign / degree are projections rather than stored peers
+South Node is exact opposition and never gene 13
+serialization contains only codec + sequence
+codec 3 payload is rejected
+returned sequence values cannot mutate the genome
+accumulated native suite remains green
+OrboLab reads the live contract
+```
+
+## Proof evidence
+
+Implementation was completed under the explicitly authorized Phase 1b Pass 3 scope.
+
+The native `AstroDNAContractTests` contain 10 tests covering the contract above. The corrected codec-4 suite was run in Xcode on 2026-08-16 and every AstroDNA contract test was green.
+
+The user confirmed the accumulated standalone package run at:
+
+```text
+88 total tests    PASS
+0 failures
+```
+
+OrboLab then visibly read the corrected live native contract:
+
+```text
+codec          4
+genes          12
+identity       12 x RingFineState
+gene order     Ascendant · Moon · Sun · Mercury · Venus · Mars · Jupiter · Saturn · Uranus · Neptune · Pluto · North Node
+Node source    true / osculating north node
+Node motion    retrograde
+South Node     derived
+```
+
+The Lab sample happens to carry a retrograde true Node. The XCTest contract separately proves that a direct true North Node is also legal.
+
+The Phase 1b Pass 3 gate is satisfied.
+
+## Status
+
+**NATIVE CANONICAL**
+
+AstroDNA codec 4 is the canonical native celestial identity contract that the Ephemeris Forge, Orbo Spine, Horizon and Ovum Resolver must satisfy.
+
+---
+
+# 12. Phase 1a Closure and Current Construction Boundary
 
 Phase 1a was implemented under `specs/Phase 1a - Native Foundation Implementation Plan.md` in five controlled passes:
 
@@ -2643,16 +3036,16 @@ Current checkpoint:
 ```text
 Pass 1    Geoplacement + terrestrial vocabulary    NATIVE CANONICAL / COMPLETE
 Pass 2    Civil Time and timezone history          NATIVE CANONICAL / COMPLETE
-Pass 3    AstroDNA contract                         ARCHAEOLOGY / DECISION GATE
-Pass 4    Ephemeris Forge qualification             NOT STARTED
+Pass 3    AstroDNA contract                         NATIVE CANONICAL / COMPLETE
+Pass 4    Ephemeris Forge qualification             ARCHAEOLOGY / QUALIFICATION
 Pass 5    Spine Forge + Orbo Spine v1               NOT STARTED
 Pass 6    Horizon + AstroDNA Encoder + Resolver     NOT STARTED
 Pass 7    Loom                                      NOT STARTED
 Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
 ```
 
-Pass 3 is active only at the archaeology / contract-decision gate. Do not implement the native AstroDNA contract until the surviving law, exclusions, and genuinely open decisions are settled and the implementation write is explicitly authorized.
+Pass 3 is complete. Pass 4 is active at the archaeology / reference-qualification gate. Do not implement a native Forge or freeze a Spine representation until the astronomical source, coordinate contract, supported range and accuracy policy are qualified under the Phase 1b Pass 4 gate.
 
-This ordering does not preassign any future component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
+This ordering does not preassign any later component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
 
 Do not begin Phase 2 until the full Phase 1 Ovum exit gate is satisfied.
