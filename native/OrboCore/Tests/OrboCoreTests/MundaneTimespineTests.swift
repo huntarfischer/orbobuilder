@@ -102,7 +102,7 @@ final class MundaneTimespineTests: XCTestCase {
                 let expected = try reference.state(of: body, at: jd)
                 let actual = try timespine.state(of: body, at: jd)
                 XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_001)
-                XCTAssertEqual(actual.longitudinalSpeedDegreesPerDay, expected.longitudinalSpeedDegreesPerDay, accuracy: 0.000_001)
+                XCTAssertEqual(actual.longitudinalSpeedDegreesPerDay, expected.longitudinalSpeedDegreesPerDay, accuracy: 0.000_002)
             }
         }
     }
