@@ -1,5 +1,5 @@
 public struct AstroDNA: Hashable, Sendable, Codable {
-    public static let codec = 3
+    public static let codec = 4
     public static let geneCount = 12
 
     private let storage: [RingFineState]
@@ -14,8 +14,6 @@ public struct AstroDNA: Hashable, Sendable, Codable {
                 guard !state.isRetrograde else { return nil }
             case .variable:
                 break
-            case .fixedRetrograde:
-                guard state.isRetrograde else { return nil }
             }
         }
 
@@ -52,7 +50,7 @@ public struct AstroDNA: Hashable, Sendable, Codable {
     }
 
     /// Codec-2-compatible whole-degree projection. This is a named coarse cut
-    /// of the codec-3 genome, not a second identity.
+    /// of the codec-4 genome, not a second identity.
     public var degreeSequence: [RingState] {
         storage.map(\.coarseState)
     }
@@ -80,9 +78,9 @@ public struct AstroDNA: Hashable, Sendable, Codable {
         self[gene].motion
     }
 
-    /// The mean south node is definitionally opposite the encoded mean north
+    /// The true south node is definitionally opposite the encoded true north
     /// node and is therefore derived rather than admitted as a thirteenth gene.
-    public var meanSouthNodeLongitude: CelestialLongitude {
+    public var southNodeLongitude: CelestialLongitude {
         CelestialLongitude(longitude(of: .northNode).degrees + 180)!
     }
 
@@ -98,7 +96,7 @@ public struct AstroDNA: Hashable, Sendable, Codable {
             throw DecodingError.dataCorruptedError(
                 forKey: .codec,
                 in: container,
-                debugDescription: "AstroDNA requires codec 3."
+                debugDescription: "AstroDNA requires codec 4."
             )
         }
 
@@ -107,7 +105,7 @@ public struct AstroDNA: Hashable, Sendable, Codable {
             throw DecodingError.dataCorruptedError(
                 forKey: .sequence,
                 in: container,
-                debugDescription: "AstroDNA requires exactly twelve legal codec-3 Ring fine states in canonical gene order."
+                debugDescription: "AstroDNA requires exactly twelve legal codec-4 Ring fine states in canonical gene order."
             )
         }
         self = value
