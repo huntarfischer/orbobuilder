@@ -255,8 +255,6 @@ public enum MundaneTimespineForge {
             for profile: MundaneTimespineProfile,
             plan: MundaneTimespineForgePlan
         ) -> [RegionPlan] {
-            // Construction fixtures shorter than the global dense window still use
-            // three deterministic regions so the production codec is exercised.
             let start = plan.supportedStart.value
             let end = plan.supportedEnd.value
             var denseStart = clampedDenseStart(plan).value
@@ -279,7 +277,7 @@ public enum MundaneTimespineForge {
             Int(ceil((end - start) / step)) + 1
         }
 
-        private static func totalSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
+        fileprivate static func totalSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
             plan.profiles.reduce(0) { total, profile in
                 total + regionPlans(for: profile, plan: plan).reduce(0) { subtotal, region in
                     subtotal + sampleCount(start: region.start, end: region.end, step: region.sampleDays)
