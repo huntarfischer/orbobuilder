@@ -9,6 +9,9 @@
 1. `specs/Orbo 1.0 Native Construction Plan.md`
 2. `specs/Phase 1 - The Ovum.md`
 3. `specs/Native Port Manifest.md`
+4. `specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md`
+
+The temporal architecture document is an earned Phase 1b clarification of the older shorthand that called the Ephemeris itself "the Forge." Native Orbo distinguishes Ephemeris, Forge, Mundane Timespine, Loom, and child spines as separate owned concepts inside the Ovum.
 
 Phase 1a established the inherent native foundation:
 
@@ -43,11 +46,11 @@ native contract
         ↓
 Swift Sanding
         ↓
-implementation
+implementation or qualification appropriate to the pass
         ↓
 focused + accumulated proof
         ↓
-native canonical / proven status
+native canonical / proven / qualified status
 ```
 
 Do not choose a component's 4R from its filename, from a Phase 1 expectation, or from what would be convenient to build.
@@ -152,7 +155,7 @@ At the end of this pass, Orbo can resolve the terrestrial and temporal half of a
 
 # 3. Pass 3: AstroDNA Contract
 
-Define the required output before freezing the physical Orbo Spine format.
+Define the required output before freezing the physical Mundane Timespine format.
 
 This pass begins with fresh archaeology of the current AstroDNA implementation, tests, codec assumptions, consumers, motion encoding, precision, and horizon requirements.
 
@@ -178,50 +181,102 @@ The contract must keep AstroDNA as celestial identity rather than a bag of downs
 
 We can state exactly what information the celestial chronology and Horizon must provide to manufacture one valid AstroDNA, in one canonical order, at one declared fidelity.
 
-No Orbo Spine codec is frozen before this gate.
+No Mundane Timespine codec is frozen before this gate.
 
 ---
 
-# 4. Pass 4: Ephemeris Forge Archaeology and Reference Qualification
+# 4. Pass 4: Ephemeris and Forge Qualification
 
-Now inspect the astronomical source itself.
+Pass 4 establishes the deep astronomical source and the permanent maker that is allowed to use it.
 
-The pass begins with the actual ephemeris source, browser counterpart, tests, known fixtures, consumers, and any horizon logic currently mixed into it.
+Both are inside the Ovum, but they are separate organs:
 
-Do not decide its 4R before archaeology.
+```text
+Ephemeris
+    deep astronomical capability
+        ↓
+Forge
+    sole sanctioned Ephemeris client
+```
+
+The pass begins with the actual prototype ephemeris source, browser counterpart, tests, known fixtures, consumers, horizon logic currently mixed into it, and the prototype manufacturing behavior distributed across `mundane.js`, `timespine.js`, `fertilize.js`, and related conformance work.
+
+Do not decide either component's 4R before archaeology.
 
 The pass must determine:
 
 ```text
-what current algorithms calculate
+what current astronomical algorithms calculate
 body-by-body accuracy
 supported temporal range
 known weaknesses
-which material is planetary astronomy
-which material belongs to Horizon instead
-what source will be the reference Forge for Spine v1
-what accuracy claim Orbo is willing to make
+which material is planetary/lunar astronomy
+which material belongs to Civil Time, Horizon, Loom, or expression instead
+what astronomical source will be the qualified Ephemeris for Mundane Timespine v1
+source version and data provenance
+physical coordinate convention
+true North Node convention
+signed longitudinal velocity capability
+accuracy policy
+licensing/distribution gate
+Forge ownership law
+Forge / Ephemeris access boundary
+Mundane Timespine ancestry law
+child-spine ancestry law
 ```
 
-The output of this pass is a qualified astronomical reference boundary for construction and verification.
+The earned structure is documented in:
 
-It is not permission for normal Orbo runtime to query the ephemeris.
+```text
+specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md
+```
+
+The Ephemeris remains in the Ovum, but normal Orbo celestial traffic does not query it.
+
+The Forge remains in the Ovum permanently. It uses the Ephemeris to manufacture and maintain the universal Mundane Timespine, and later uses the Mundane Timespine plus canonical Orbo state to manufacture child spines.
+
+A child spine must never reopen the Ephemeris.
 
 ### Gate
 
 ```text
-reference source is named
+Ephemeris and Forge are separate owned concepts
+one primary 4R is earned for each
+qualified astronomical source is named
 version/provenance is known
-supported range is known
-accuracy policy is explicit
-required AstroDNA celestial state can be generated
+supported Orbo range is inside source capability
+coordinate convention is explicit
+true North Node is available
+signed longitudinal velocity is available
+silent lower-precision ephemeris fallback is forbidden
+Forge is the only sanctioned Ephemeris client
+Mundane Timespine is the normal celestial runtime authority
+same Mundane Timespine version means the same chronology for every Orbo
+child spines descend from the Mundane Timespine, not the Ephemeris
+licensing requirements are recorded before distribution
 ```
+
+Pass 4 qualifies ownership and source. It does not freeze a Mundane Timespine storage representation.
 
 ---
 
-# 5. Pass 5: Spine Forge and Orbo Spine v1
+# 5. Pass 5: Forge + Mundane Timespine v1
 
-With the AstroDNA contract known and the astronomical reference qualified, determine the smallest runtime chronology that meets the fidelity contract.
+With the AstroDNA contract known and the Ephemeris/Forge boundary qualified, give the Forge its first canonical manufacturing job.
+
+The Forge uses the qualified Ephemeris to manufacture **one immutable, versioned Mundane Timespine artifact** that ships with every Orbo.
+
+```text
+Ephemeris
+    ↓
+Forge
+    ↓
+Mundane Timespine v1
+    ↓
+ships identically with every Orbo carrying v1
+```
+
+The Mundane Timespine is the universal native-independent celestial chronology. It is the normal celestial substrate from which the rest of Orbo reads and from which later child spines descend.
 
 Do not preselect the storage representation.
 
@@ -229,36 +284,47 @@ Measure candidates such as:
 
 ```text
 samples
+adaptive samples
 segments
 interpolation coefficients
+Chebyshev or other fitted coefficients
 knots
 compressed runs
+body-specific representations
+explicit station boundaries
 hybrid representations
 event indexes
 ```
 
-Then build the deterministic Spine Forge and first production candidate.
+The Forge may use expensive astronomical reads and redundant verification while manufacturing. The shipped Timespine should be the smallest, fastest representation that meets Orbo's declared fidelity.
 
-Orbo Spine v1 must identify at least:
+Mundane Timespine v1 must identify at least:
 
 ```text
-Spine version
-codec version
-astronomical source version
+Timespine version
+artifact/storage codec
+AstroDNA compatibility
+astronomical source identity/version
+ephemeris-data provenance
 supported temporal range
+coordinate convention
 precision/fidelity contract
 checksum
-indexed event families, if admitted
+indexed universal event families, if admitted
 ```
+
+A Timespine version is immutable. A repair or changed chronology produces a new version rather than silently mutating v1.
 
 ### Proof
 
-Compare runtime reconstruction against the Forge reference across:
+Compare Mundane Timespine reconstruction against the qualified Ephemeris through Forge across:
 
 ```text
 random moments
 known natal moments
 fast Moon cases
+true North Node direct periods
+true North Node retrograde periods
 slow-body cases
 0/360 wrap
 ingresses
@@ -269,15 +335,25 @@ historical dates
 future dates
 ```
 
+Measure both categorical AstroDNA/Ring identity fidelity and numerical residuals, including longitudinal velocity where the Timespine contract exposes it.
+
 ### Gate
 
-Normal runtime celestial-state reads can use Orbo Spine v1 across the declared range at the declared fidelity without querying the ephemeris.
+```text
+one versioned Mundane Timespine v1 exists
+same v1 artifact/checksum is shipped for every Orbo
+normal celestial-state reads use the Mundane Timespine
+required physical state can be reconstructed across the declared range
+codec-4 AstroDNA requirements are met at the declared fidelity
+ordinary consumers do not query the Ephemeris
+Forge remains available inside the Ovum for maintenance and later child-spine manufacture
+```
 
 ---
 
 # 6. Pass 6: Horizon Geometry, AstroDNA Encoder, and Ovum Resolver
 
-The Orbo Spine is geographically universal. Horizon is local.
+The Mundane Timespine is geographically universal. Horizon is local.
 
 First perform fresh archaeology of current Ascendant/MC/horizon calculations and establish the Horizon owner's exact law.
 
@@ -302,7 +378,7 @@ Geoplacement Atlas
         ↓
 Celestial Address
         ↓
-Orbo Spine
+Mundane Timespine
 + Horizon
         ↓
 AstroDNA Encoder
@@ -312,19 +388,19 @@ canonical AstroDNA
 
 ### Reference parity
 
-Compare the production path against the reference construction path:
+Compare the production path against the Forge reference construction path:
 
 ```text
-reference astronomy + reference horizon
+qualified Ephemeris + reference horizon
 versus
-Orbo Spine + native Horizon
+Mundane Timespine + native Horizon
 ```
 
 The resulting AstroDNA must agree at the declared contract fidelity.
 
 ### Gate
 
-A supported human celestial address resolves fully offline to canonical AstroDNA, and routine production resolution has no ephemeris path.
+A supported human celestial address resolves fully offline to canonical AstroDNA, and ordinary production resolution has no direct Ephemeris path.
 
 ---
 
@@ -350,13 +426,26 @@ interval solving
 celestial target search
 ```
 
-It must not own the meaning or desirability of the target.
+It must not own the meaning or desirability of the target, artifact packing, or spine versioning.
 
-Runtime solving should read canonical Ovum machinery, primarily Orbo Spine and Horizon when required.
+Runtime solving should read canonical Ovum machinery, primarily the Mundane Timespine and Horizon when required.
+
+The manufacturing law is:
+
+```text
+Connectome / doctrine owner
+    knows target
+        ↓
+Loom
+    finds crossing
+        ↓
+Forge
+    makes durable child spine when one is called for
+```
 
 ### Gate
 
-Known ingresses, stations, aspect crossings, sign boundaries, planetary crossings, and admitted horizon-dependent crossings can be solved without ephemeris queries or interpretation logic.
+Known ingresses, stations, aspect crossings, sign boundaries, planetary crossings, and admitted horizon-dependent crossings can be solved from canonical Ovum machinery without child-spine Ephemeris queries or interpretation logic.
 
 ---
 
@@ -369,7 +458,7 @@ Fresh archaeology should determine which existing parity/checking machinery belo
 The Resonator may compare or inspect:
 
 ```text
-Ephemeris reference <-> Orbo Spine
+Ephemeris <-> Mundane Timespine through sanctioned Forge/reference paths
 Geoplacement <-> place fixtures
 Civil Time <-> timezone fixtures
 Horizon <-> angle fixtures
@@ -378,13 +467,14 @@ Ring <-> geometry fixtures
 Mater/Tympan <-> canonical invariants
 Loom <-> known crossings
 artifact versions / checksums / codec compatibility
+child-spine ancestry
 ```
 
-It detects drift. It does not invent missing truth.
+It detects drift. It does not invent missing truth and does not become another Forge.
 
-Complete OrboLab so the entire unfertilized organism can be inspected from one human address through AstroDNA, Loom, and integrity results.
+Complete OrboLab so the entire unfertilized organism can be inspected from one human address through AstroDNA, Loom, Forge/Timespine integrity, and other admitted construction readouts.
 
-Then make the Ovum wall real: ordinary production code receives sanctioned capabilities rather than raw Forge, raw Spine storage, timezone internals, horizon internals, or Loom sampling machinery.
+Then make the Ovum wall real: ordinary production code receives sanctioned capabilities rather than arbitrary Ephemeris access, raw Timespine storage, timezone internals, horizon internals, or Loom sampling machinery.
 
 ### Final Phase 1 gate
 
@@ -392,11 +482,16 @@ Then make the Ovum wall real: ordinary production code receives sanctioned capab
 supported human date/time/place resolves offline
 place ambiguity is explicit
 civil-time ambiguity is explicit
-Orbo Spine is versioned and fidelity-proven
-Horizon is independent of planetary ephemeris
+Ephemeris is a qualified deep Ovum capability
+Forge is its sole sanctioned client
+Mundane Timespine is versioned and fidelity-proven
+same Timespine version means the same chronology for every Orbo
+Horizon is independent of planetary Ephemeris ownership
 AstroDNA contract is explicit and canonical
-production AstroDNA resolution reads Spine, not ephemeris
+production AstroDNA resolution reads Timespine, not Ephemeris
 Loom searches canonical Ovum machinery
+Forge can manufacture durable temporal artifacts
+child spines descend from Mundane Timespine rather than Ephemeris
 Resonator detects drift
 no accidental alternate celestial authority exists
 all accumulated tests pass
@@ -410,14 +505,14 @@ Only then is Phase 1 complete and the Ovum sealed.
 
 # 9. Efficient Phase 1b Rhythm
 
-The likely construction sequence is:
+The construction sequence is:
 
 ```text
 1. Geoplacement + terrestrial vocabulary
 2. Civil Time
 3. AstroDNA contract
-4. Ephemeris Forge qualification
-5. Spine Forge + Orbo Spine v1
+4. Ephemeris + Forge qualification
+5. Forge + Mundane Timespine v1
 6. Horizon + AstroDNA Encoder + Ovum Resolver
 7. Loom
 8. Resonator + OrboLab + Ovum seal
@@ -435,6 +530,8 @@ Phase 1b ends only when the closed circuit exists:
 place + local time
         ↓
 celestial address
+        ↓
+Mundane Timespine + Horizon
         ↓
 canonical celestial state
         ↓
