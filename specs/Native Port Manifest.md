@@ -281,7 +281,7 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | NATIVE CANONICAL |
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | PROVEN / COMPLETE |
 | Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | NATIVE CANONICAL |
-| Civil Time | REPRODUCE | BEHAVIORAL | OrboCore / CivilTime | IMPLEMENTED / AWAITING NATIVE PROOF |
+| Civil Time | REPRODUCE | BEHAVIORAL | OrboCore / CivilTime | NATIVE CANONICAL |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
@@ -2544,13 +2544,35 @@ A local Swift 6.2 mini-package preflight ran all 12 new `CivilTimeTests`:
 
 The preflight includes the real DST gap/repeat behavior through Foundation timezone history, not mocked offsets.
 
-The authoritative accumulated Xcode proof and OrboLab readout are still pending.
+Native Xcode proof was completed on 2026-08-16. The standalone `OrboCore` package reported:
+
+```text
+12 CivilTimeTests    PASS
+78 total tests       PASS
+0 failures
+```
+
+OrboLab was then launched successfully and visibly resolved the native Civil Time sample as:
+
+```text
+local date       1985-04-10
+local clock      20:16:00
+tzdb version     2026c
+year range       1700-2149
+resolution       resolved
+timezone         America/Chicago
+UTC offset       -06:00
+source           timeZoneDatabase
+Julian Day       2446166.59444444
+```
+
+The Civil Time native proof gate is satisfied.
 
 ## Status
 
-**IMPLEMENTED / AWAITING NATIVE PROOF**
+**NATIVE CANONICAL**
 
-Do not promote Civil Time to native canonical until the accumulated Xcode suite and OrboLab readout pass.
+Civil Time may now serve as the canonical native local-clock -> absolute-time / Julian-Day authority.
 
 ---
 
@@ -2620,8 +2642,8 @@ Current checkpoint:
 
 ```text
 Pass 1    Geoplacement + terrestrial vocabulary    NATIVE CANONICAL / COMPLETE
-Pass 2    Civil Time and timezone history          IMPLEMENTED / AWAITING NATIVE PROOF
-Pass 3    AstroDNA contract                         NOT STARTED
+Pass 2    Civil Time and timezone history          NATIVE CANONICAL / COMPLETE
+Pass 3    AstroDNA contract                         ARCHAEOLOGY / DECISION GATE
 Pass 4    Ephemeris Forge qualification             NOT STARTED
 Pass 5    Spine Forge + Orbo Spine v1               NOT STARTED
 Pass 6    Horizon + AstroDNA Encoder + Resolver     NOT STARTED
@@ -2629,7 +2651,7 @@ Pass 7    Loom                                      NOT STARTED
 Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
 ```
 
-Do not begin the AstroDNA contract pass until Civil Time passes its accumulated native proof gate and the next pass is explicitly authorized.
+Pass 3 is active only at the archaeology / contract-decision gate. Do not implement the native AstroDNA contract until the surviving law, exclusions, and genuinely open decisions are settled and the implementation write is explicitly authorized.
 
 This ordering does not preassign any future component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
 
