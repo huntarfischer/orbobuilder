@@ -1,16 +1,18 @@
 # Pass 5: Mundane Timespine Representation Study
 
-**Status:** Candidate representation selected and implemented. Full Mundane Timespine v1 astronomical artifact is not yet sealed.
+**Status:** Native representation and Forge path proven locally. Qualified Swiss astronomical audit in progress. Mundane Timespine v1 is not sealed until that audit passes.
 
 **Date:** 2026-08-16
 
-**Purpose:** Record the representation measurement that chooses the first native Mundane Timespine format, distinguish representation proof from astronomical-source proof, and prevent the construction artifact from being mistaken for a forged v1 sky.
+**Purpose:** Record the representation measurement that chooses the first native Mundane Timespine format, distinguish native implementation proof from astronomical-source proof, and define the exact Swiss qualification gate before one universal v1 sky may ship.
 
 ---
 
 # 1. The Object Being Manufactured
 
-The Mundane Timespine is not the old prototype mundane event floor and it is not the old natal TimeSpine.
+The Mundane Timespine is the universal celestial chronology that every Orbo of the same Timespine version reads.
+
+It is not the old prototype mundane event floor and it is not the old natal TimeSpine.
 
 It must answer:
 
@@ -23,7 +25,7 @@ celestial longitude
 signed longitudinal motion
 ```
 
-for the eleven universal celestial occupants required by AstroDNA construction:
+for the eleven universal celestial occupants required downstream:
 
 ```text
 Sun
@@ -48,12 +50,15 @@ universal
 native-independent
 versioned
 immutable once released
+identical for every Orbo carrying that version
 offline-readable
 random-access
 compact enough to ship
-precise enough to manufacture AstroDNA codec 4
+precise enough to support AstroDNA codec 4
 capable of yielding signed longitudinal motion
 ```
+
+Normal Orbo celestial traffic reads the Mundane Timespine. It does not reopen the Ephemeris.
 
 ---
 
@@ -66,7 +71,7 @@ native-independent floor
 same artifact for every reader
 verified once before shipping
 compact packed runtime data
-universal temporal indexes may ride beside the chronology
+universal temporal indexes may ride beside chronology
 runtime reads decode rather than rescan
 ```
 
@@ -113,23 +118,14 @@ The useful laws survive. The JavaScript event-table forms do not.
 
 A straightforward representation stores longitude and signed speed at a fixed cadence and reconstructs between knots with cubic Hermite interpolation.
 
-A conservative six-hour cadence across all eleven bodies performed well as an interpolation stress shape, but over the 1700-01-01 through 2150-01-01 construction interval it requires roughly:
-
-```text
-657,436 intervals per body
-11 bodies
-2 x 32-bit state values per knot
-
-about 58 million decimal bytes
-about 55 MiB before secondary compression and metadata
-```
+A conservative six-hour cadence across all eleven bodies requires roughly 55 MiB before secondary compression and metadata across the v1 range.
 
 Advantages:
 
 ```text
 simple
 fast
-velocity is explicit
+velocity explicit
 excellent local interpolation
 ```
 
@@ -145,14 +141,14 @@ It remains a useful reference design, but it is not the selected candidate.
 
 ## Candidate B: fixed-point Chebyshev segments
 
-The selected candidate stores one polynomial description of longitude for each segment.
+The selected candidate stores one polynomial trajectory for each segment.
 
 ```text
 Chebyshev degree        7
 coefficients/segment    8
 coefficient storage     signed Int32
-coefficient scale       1,000,000 units / degree
-coefficient quantum     0.000001 degree = 0.0036 arcsecond
+coefficient scale       5,000,000 units / degree
+coefficient quantum     0.0000002 degree = 0.00072 arcsecond
 ```
 
 Longitude is evaluated from the polynomial.
@@ -167,21 +163,21 @@ position
 velocity
 ```
 
-rather than two independently stored celestial truths.
+There is no separately sampled velocity truth inside the artifact.
 
-This is a strong architectural fit for Orbo because velocity remains a node fact while the Timespine carries one mathematical trajectory from which both pointwise facts are read.
+The coefficient scale was tightened from the first construction candidate before v1 became canonical. The storage cost is unchanged because coefficients remain Int32, while fixed-point quantization headroom improves fivefold.
 
 ---
 
 # 5. Candidate Body Profile
 
-The initial conservative segment profile is:
+The current qualification profile is:
 
 | Body | Degree | Segment days |
 |---|---:|---:|
 | Sun | 7 | 16 |
 | Moon | 7 | 4 |
-| Mercury | 7 | 2 |
+| Mercury | 7 | 1 |
 | Venus | 7 | 16 |
 | Mars | 7 | 8 |
 | Jupiter | 7 | 2 |
@@ -190,6 +186,8 @@ The initial conservative segment profile is:
 | Neptune | 7 | 4 |
 | Pluto | 7 | 8 |
 | True North Node | 7 | 4 |
+
+Mercury is deliberately fixed at a one-day segment before the Swiss qualification run. Its fast apparent geocentric motion and station behavior justify more temporal headroom than the original two-day candidate.
 
 Across the Gregorian interval:
 
@@ -202,15 +200,13 @@ through
 this profile requires:
 
 ```text
-410,901 polynomial segments
-3,287,208 Int32 coefficients
-13,148,832 coefficient bytes
-12.54 MiB coefficient payload
+493,080 polynomial segments
+3,944,640 Int32 coefficients
+15,778,560 coefficient bytes
+15.05 MiB coefficient payload
 ```
 
 before the small artifact header and before any optional future secondary compression.
-
-This is roughly one quarter of the raw six-hour Hermite payload.
 
 ---
 
@@ -230,80 +226,153 @@ simple version comparison
 small runtime surface
 ```
 
-A more elaborate adaptive representation is not justified unless the qualified Swiss measurement shows that this candidate misses either fidelity or size goals.
+A more elaborate adaptive representation is justified only if qualified Swiss measurement proves that a fixed profile cannot satisfy fidelity at acceptable size.
 
-The representation is allowed to become smarter only when measurement pays for the additional machinery.
+The representation becomes smarter only when measurement pays for the machinery.
 
 ---
 
-# 7. Construction Measurement Source Versus Astronomical Authority
+# 7. Native Forge Law
 
-The current automated representation stress harness used the locally available Swiss Ephemeris API package, version 2.10.03, but the worksite does not contain the qualified Swiss `.se1` files.
+The native Forge is the maker.
 
-The harness therefore explicitly used the Moshier mode rather than pretending Swiss-file mode was active.
-
-That harness is useful for:
+For every body and segment it:
 
 ```text
-trajectory-shape stress
-wrap behavior
-polynomial-degree comparison
-segment-duration comparison
-rough storage measurement
-finding obviously inadequate representations
+selects deterministic Chebyshev-Gauss sample nodes
+asks the injected Forge Ephemeris reference for longitude
+unwraps circular longitude locally
+fits degree-7 Chebyshev coefficients
+quantizes the coefficients
+appends the body series
 ```
 
-It is **not** the astronomical authority for Mundane Timespine v1.
+Construction is resumable in bounded segment budgets.
 
-The Moshier runs also produced occasional discontinuity-like outer-body outliers under some candidate profiles. That is useful evidence against declaring a fidelity contract from this fallback harness.
-
-Therefore:
-
-> **No residual measured from the fallback stress harness is the final Orbo v1 accuracy claim.**
-
-Pass 4 remains authoritative:
+The same plan and same reference must produce byte-identical output whether forged:
 
 ```text
-qualified v1 Forge reference
-=
+one shot
+or
+many resumed chunks
+```
+
+That law is already covered by native tests.
+
+---
+
+# 8. Swiss Qualification Bench
+
+The qualified astronomical source from Pass 4 remains:
+
+```text
 official Swiss Ephemeris
-with the qualified Swiss ephemeris data
-and no silent lower-precision fallback
+Swiss-file mode
+DE441-derived .se1 data
+no silent Moshier fallback
 ```
 
----
-
-# 8. Required Swiss-Mode Qualification Before Artifact Seal
-
-Before the full 1700...2149 Mundane Timespine artifact can be called v1, rerun the representation study against the qualified Swiss source and record at least:
+The Pass 5 construction bench is now explicit:
 
 ```text
-maximum angular residual by body
-99.9-percentile angular residual by body
-maximum signed-velocity residual by body
-RingFineState agreement rate
-explicit tests immediately around arcsecond rounding boundaries
-0 / 360 wrap cases
-true North Node direct intervals
-true North Node retrograde intervals
-stations
-ingresses
-range-edge reads
-random moments across the entire interval
-known natal moments
+official Swiss .se1 files
+        ↓
+Python Swiss adapter
+        ↓
+deterministic longitude sample stream
+        ↓
+OrboCore MundaneTimespineForge
+        ↓
+binary Mundane Timespine candidate
+        ↓
+independent Python decoder
+        ↓
+Swiss comparison audit
 ```
 
-If any body fails the earned fidelity threshold, shorten that body's segment duration or change the representation and manufacture a new candidate.
+The Python sample generator is not a second Forge. It supplies astronomical samples at the exact nodes requested by the native Forge profile.
 
-Do not weaken the accuracy contract to protect the representation.
+The Python audit is deliberately independent of the Swift polynomial evaluator so a shared implementation mistake is less likely to certify itself.
+
+The construction workflow downloads exactly the planet and lunar files needed for the v1 interval:
+
+```text
+sepl_12.se1    1200-1799
+semo_12.se1    1200-1799
+sepl_18.se1    1800-2399
+semo_18.se1    1800-2399
+```
+
+The workflow requires Swiss-file mode and DE441 provenance at probes in both file blocks. A fallback calculation is a hard failure.
 
 ---
 
-# 9. Native Candidate Codec
+# 9. Coordinate Contract Under Audit
 
-The native candidate codec is binary.
+The reference reads are:
 
-It carries:
+```text
+geocentric
+tropical
+ecliptic of date
+standard apparent Swiss Ephemeris position
+signed longitudinal speed
+true / osculating North Node
+```
+
+The sample adapter requests `SWIEPH + SPEED` and explicitly rejects a returned Moshier flag.
+
+No topocentric, sidereal, J2000, heliocentric, or true-position override belongs to Mundane Timespine v1.
+
+---
+
+# 10. Astronomical Audit
+
+The audit does not protect the representation from the sky. It protects the sky from the representation.
+
+For each body it measures throughout every polynomial segment:
+
+```text
+maximum angular residual
+99.9-percentile angular residual
+99-percentile angular residual
+maximum signed-speed residual
+99.9-percentile signed-speed residual
+RingFineState agreement rate
+motion agreement rate
+worst measured angular point
+```
+
+It also includes deterministic random reads across the full interval.
+
+For variable-motion bodies it separately scans Swiss longitudinal speed for station sign changes and tests the Timespine on both sides of every discovered station.
+
+The true North Node audit must observe both direct and retrograde reference states.
+
+The initial qualification gate is intentionally stricter than AstroDNA's whole-arcsecond quantum:
+
+```text
+maximum angular residual        <= 0.05 arcsecond
+p99.9 angular residual          <= 0.01 arcsecond
+RingFineState agreement         >= 99.5%
+motion agreement                >= 99.999%
+maximum speed residual          <= 0.005 degree/day
+station direction mismatch      0 at +/- 5 minutes
+```
+
+These are construction gates, not astrological or interpretive tolerances.
+
+If a body fails, shorten that body's segment duration or otherwise improve the representation and forge again.
+
+Do not weaken the gate to protect a chosen cadence.
+
+The final qualification report is preserved with the artifact and becomes evidence for the v1 seal.
+
+---
+
+# 11. Candidate Codec
+
+The native binary codec carries:
 
 ```text
 magic
@@ -325,7 +394,7 @@ Bodies are encoded in one explicit canonical order.
 
 The artifact checksum is SHA-256 over the encoded bytes.
 
-The checksum is not a source of celestial truth. It proves byte identity.
+The checksum is not celestial truth. It proves byte identity.
 
 Thus:
 
@@ -339,36 +408,7 @@ same shipped chronology bytes
 
 ---
 
-# 10. Forge Construction Law
-
-The native Forge candidate is resumable.
-
-For every body and every segment it:
-
-```text
-selects deterministic Chebyshev-Gauss sample nodes
-asks the injected Forge Ephemeris reference for longitude
-unwraps the circular longitude locally
-fits degree-7 Chebyshev coefficients
-quantizes each coefficient to one microdegree
-appends it to the body series
-```
-
-Construction may be stepped in bounded segment budgets.
-
-The same plan and same reference must produce byte-identical output whether forged:
-
-```text
-one shot
-or
-many resumed chunks
-```
-
-That law is tested natively.
-
----
-
-# 11. Runtime Law
+# 12. Runtime Law
 
 Runtime never asks how the polynomial was forged.
 
@@ -392,44 +432,54 @@ A read outside the artifact range fails explicitly rather than extrapolating or 
 
 ---
 
-# 12. What Is Not Yet Claimed
+# 13. Native Proof Already Earned
 
-This study and its native implementation do **not** claim:
+The native construction candidate has passed the accumulated standalone Xcode suite:
 
 ```text
-the full Swiss-forged v1 artifact exists
-the final body-by-body fidelity thresholds have been earned
-the candidate profile is immutable
-Swiss code or data have been vendored into Orbo
-Pass 5 has passed its final astronomical parity gate
+98 tests
+98 passed
+0 failures
 ```
 
-Those claims require the qualified Swiss-mode forge run.
+OrboLab has also proven the live Forge -> artifact -> decode -> state-read path using an analytic construction fixture.
 
-The implementation can become native proven before the sky artifact becomes celestial canonical. Those are deliberately separate gates.
+That proof establishes the native machinery. It does not substitute for the Swiss astronomical audit.
 
 ---
 
-# 13. Pass 5 Candidate Boundary
+# 14. What Is Not Yet Claimed
 
-At this stage the architecture is:
+Until the Swiss workflow is green and the resulting artifact is installed as a package resource, this pass does not claim:
 
 ```text
-qualified Ephemeris reference
-        ↓
-Forge reference socket
-        ↓
-resumable deterministic Forge
-        ↓
-fixed-point Chebyshev artifact codec
-        ↓
-Mundane Timespine reader
-        ↓
-longitude + signed motion
+the canonical full-range v1 sky is sealed
+the current body profile survived the qualified source unchanged
+the final v1 checksum exists in the manifest
+the final artifact ships with Orbo
+Pass 5 is complete
 ```
 
-The next proof is native compilation and the accumulated XCTest suite.
+Those claims require the qualified Swiss-mode forge and residual audit.
 
-The subsequent celestial proof is the full Swiss-mode manufacture and residual audit.
+---
 
-Only after both are green may Mundane Timespine v1 be sealed as the canonical runtime sky.
+# 15. Pass 5 Completion Gate
+
+Pass 5 becomes complete only when all of the following are true:
+
+```text
+qualified Swiss-file sample source           PASS
+native Forge full-range manufacture           PASS
+independent residual audit                    PASS
+station-direction audit                       PASS
+final body profile                            FROZEN
+Mundane Timespine v1 binary                   CREATED
+v1 SHA-256                                    RECORDED
+v1 binary bundled as OrboCore resource        PASS
+native bundled-artifact tests                 PASS
+OrboLab reads the shipped v1 artifact         PASS
+Manifest                                      UPDATED
+```
+
+Only then may Mundane Timespine v1 become **NATIVE CANONICAL** and Pass 6 begin.
