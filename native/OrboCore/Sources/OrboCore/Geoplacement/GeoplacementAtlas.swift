@@ -28,15 +28,10 @@ public enum GeoplacementAtlas {
 
     public static var count: Int { records.count }
 
-    /// Case-insensitive substring search in stable Atlas order.
-    /// Core does not impose a minimum query length; UI callers may do so.
     public static func search(_ query: String, limit: Int = 50) -> [Place] {
         index.search(query, limit: limit)
     }
 
-    /// Resolves an exact canonical name first, then the prototype's convenient
-    /// `name, ...` prefix form. Unlike the prototype, multiple matches are
-    /// surfaced as ambiguity rather than silently selecting one record.
     public static func resolve(_ name: String) -> GeoplacementResolution {
         index.resolve(name)
     }
