@@ -58,7 +58,7 @@ final class MundaneTimespineTests: XCTestCase {
 
     func testCandidateFixturePinsPositionFirstSeparateBodyProfile() throws {
         let f = try fixture()
-        XCTAssertEqual(f.status, "position-first-candidate")
+        XCTAssertEqual(f.status, "position-first-packed-candidate")
         XCTAssertEqual(f.codec, MundaneTimespine.codec)
         XCTAssertEqual(f.astroDNACodec, AstroDNA.codec)
         XCTAssertEqual(f.representation, MundaneTimespine.representation)
@@ -124,8 +124,10 @@ final class MundaneTimespineTests: XCTestCase {
         let artifacts = timespine.encodedArtifacts()
         XCTAssertEqual(artifacts.bodyArtifacts.count, 11)
         let text = try XCTUnwrap(String(data: artifacts.manifest, encoding: .utf8))
-        XCTAssertTrue(text.contains("\"codec\" : 3"))
+        XCTAssertTrue(text.contains("\"codec\" : 4"))
         XCTAssertTrue(text.contains("\"stationCount\""))
+        XCTAssertTrue(text.contains("\"knotCount\""))
+        XCTAssertTrue(text.contains("\"unpackedPositionBytes\""))
         XCTAssertTrue(text.contains("true-north-node.orbbody"))
     }
 
