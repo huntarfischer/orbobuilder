@@ -56,7 +56,7 @@ public enum MundaneTimespineForge {
     public static let candidateProfiles: [MundaneTimespineProfile] = [
         MundaneTimespineProfile(body: .sun, polynomialDegree: 7, segmentDays: 16)!,
         MundaneTimespineProfile(body: .moon, polynomialDegree: 7, segmentDays: 4)!,
-        MundaneTimespineProfile(body: .mercury, polynomialDegree: 7, segmentDays: 2)!,
+        MundaneTimespineProfile(body: .mercury, polynomialDegree: 7, segmentDays: 1)!,
         MundaneTimespineProfile(body: .venus, polynomialDegree: 7, segmentDays: 16)!,
         MundaneTimespineProfile(body: .mars, polynomialDegree: 7, segmentDays: 8)!,
         MundaneTimespineProfile(body: .jupiter, polynomialDegree: 7, segmentDays: 2)!,
