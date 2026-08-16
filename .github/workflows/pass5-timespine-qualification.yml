@@ -10,7 +10,7 @@ on:
       - "native/OrboCore/Package.swift"
       - "native/OrboCore/Sources/OrboForgeTool/**"
       - "native/OrboCore/Sources/OrboCore/Forge/MundaneTimespineForge.swift"
-      - "native/OrboCore/Sources/OrboCore/MundaneTimespine/MundaneTimespine.swift"
+      - "native/OrboCore/Sources/OrboCore/MundaneTimespine/**"
       - "native/OrboCore/Tests/OrboCoreTests/MundaneTimespineTests.swift"
       - "native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json"
 
@@ -41,52 +41,49 @@ jobs:
           print("Swiss Ephemeris", swe.version)
           PY
 
-      - name: Fetch qualified Swiss DE441 files
+      - name: Verify committed qualified Swiss DE441 files
         run: |
-          mkdir -p .forge/ephe
-          base="https://raw.githubusercontent.com/aloistr/swisseph/master/ephe"
           for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
-            curl --fail --location --retry 4 --retry-all-errors \
-              "$base/$file" \
-              --output ".forge/ephe/$file"
+            test -f "tools/pass5/$file"
           done
-          sha256sum .forge/ephe/*.se1 | sort
+          sha256sum tools/pass5/*.se1 | sort
 
-      - name: Generate deterministic Swiss sample stream
+      - name: Generate deterministic Swiss stamped-knot stream
         run: |
+          mkdir -p .forge
           python tools/pass5/generate_swiss_samples.py \
-            --ephe-dir .forge/ephe \
+            --ephe-dir tools/pass5 \
             --fixture native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json \
             --output .forge/swiss-samples.bin \
             --provenance-output .forge/swiss-provenance.json
 
-      - name: Build Mundane Timespine with native Forge
+      - name: Build Mundane Timespine body artifacts with native Forge
         run: |
           swift run \
             --package-path native/OrboCore \
             -c release \
             OrboForgeTool \
             --samples "$PWD/.forge/swiss-samples.bin" \
-            --output "$PWD/.forge/mundane-timespine-v1.orbspine" \
+            --output-dir "$PWD/.forge/mundane-timespine-v1" \
             --version "v1" \
             --source "Swiss Ephemeris" \
             --source-version "2.10.03 / DE441 se1 2026" \
             --start-jd "2341972.5" \
             --end-jd "2506331.5"
 
-      - name: Audit forged artifact independently against Swiss
+      - name: Audit body artifacts independently against Swiss
         id: audit
         continue-on-error: true
         run: |
           python tools/pass5/audit_timespine.py \
-            --ephe-dir .forge/ephe \
-            --artifact .forge/mundane-timespine-v1.orbspine \
+            --ephe-dir tools/pass5 \
+            --artifact-dir .forge/mundane-timespine-v1 \
             --provenance .forge/swiss-provenance.json \
             --report .forge/mundane-timespine-v1-qualification.json
 
-      - name: Run accumulated native tests
+      - name: Build native package on qualification runner
         if: always()
-        run: swift test --package-path native/OrboCore
+        run: swift build --package-path native/OrboCore
 
       - name: Upload Pass 5 qualification products
         if: always()
@@ -96,12 +93,23 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           path: |
-            .forge/mundane-timespine-v1.orbspine
+            .forge/mundane-timespine-v1/
             .forge/mundane-timespine-v1-qualification.json
             .forge/swiss-provenance.json
 
       - name: Enforce astronomical qualification gate
         if: steps.audit.outcome != 'success'
         run: |
-          echo "The candidate Timespine did not satisfy the Swiss fidelity gate."
+          echo "The stamped Timespine candidate did not satisfy the Swiss fidelity gate."
           exit 1
+
+  native-tests:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Run accumulated OrboCore tests on Apple Swift
+        run: swift test --package-path native/OrboCore
