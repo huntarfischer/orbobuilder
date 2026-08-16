@@ -234,7 +234,7 @@ The native proof apparatus gate is satisfied.
 |---|---|---|---|---|
 | Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / NATIVE PROVEN |
 | Ring | REPLICATE | EXACT | OrboCore / Ring | ASSESSED / NOT IMPLEMENTED |
-| Mater | PENDING | PENDING | PENDING | QUEUED |
+| Mater | REPLICATE | EXACT | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
 | Tympan | PENDING | PENDING | PENDING | QUEUED |
 | Rulers | PENDING | PENDING | PENDING | QUEUED |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
@@ -493,7 +493,349 @@ Ring is not native canonical yet.
 
 ---
 
-# 6. Current Construction Boundary
+# 6. Component: Mater
+
+## Prototype source
+
+Primary authority:
+
+```text
+mater.js
+```
+
+Reference / browser material:
+
+```text
+mater.browser.js
+```
+
+Primary proof material:
+
+```text
+tests/mater.test.html
+tests/rewire-parity.test.html
+```
+
+Relevant ownership neighbors:
+
+```text
+tympan.js
+rulers.js
+```
+
+## What it currently does
+
+The Mater is the prototype's inherent sign-level zodiacal structure.
+
+The Ring owns inherent relation. The Mater owns inherent meaning at sign resolution.
+
+It is stamped before the app runs and requires no person, time, place, chart, or UI.
+
+## Actual law
+
+The Mater owns:
+
+```text
+twelve signs in canonical zodiacal order
+element of each sign
+modality of each sign
+
+traditional domicile ruler of each sign
+the seven classical dispositors
+signs ruled by each traditional governor
+
+classical exaltation sign
+classical exaltation degree
+
+detriment derived from opposite domicile
+fall derived from opposite exaltation
+
+longitude -> sign
+sign-level essential dignity:
+    domicile
+    exaltation
+    detriment
+    fall
+    absence
+```
+
+It also preserves stable sign-symbol metadata, but that metadata is not foundational to computation.
+
+The Mater does not own:
+
+```text
+houses
+whole-sign frames
+modern co-rulership
+triplicity
+bounds
+faces
+degree-level dignity ladder
+peregrine determination
+occupants
+time
+place
+sect
+orbs
+interpretation prose
+```
+
+## What is proven
+
+Prototype tests establish, among other laws:
+
+```text
+12 sign names in canonical order
+12 sign symbols
+four-element cycle from Aries
+each element holds three signs
+three-modality cycle from Aries
+each modality holds four signs
+name-keyed and index-keyed sign facts agree
+
+traditional domicile rulership is canonical
+every traditional ruler is one of the classical seven
+Pluto, Uranus and Neptune are absent from the traditional backbone
+ruler -> ruled-sign reverse relationships are complete
+
+all seven classical exaltations exist
+all seven exact exaltation degrees exist
+
+all detriments are oppositions of domicile
+all falls are oppositions of exaltation
+
+sign-level dignity uses one vocabulary:
+domicile / exaltation / detriment / fall / null
+
+absence at the Mater layer is null, not peregrine
+
+house frames are absent from Mater
+house frames are owned by Tympan
+
+framing, AstroDNA, and Rulers read Mater's canonical tables rather than maintaining private copies
+```
+
+The test suite checks table identity where possible, not merely equality, so central ownership is proven rather than inferred from matching values.
+
+## Current dependencies
+
+None.
+
+Mater is an inherent floor component and imports nothing.
+
+It is a sibling of Ring, not a child of Ring.
+
+## Current consumers
+
+Current prototype consumers include:
+
+```text
+Tympan
+Rulers
+AstroDNA
+framing
+dispositor
+Connectome-related readers
+instrument/readout code
+```
+
+Consumers must read Mater's sign-level facts rather than maintain competing copies.
+
+## Known tests / fixtures
+
+```text
+tests/mater.test.html
+tests/rewire-parity.test.html
+```
+
+Mater's native parity fixtures should be derived from these proven tables and reads during Phase 1 preparation / implementation.
+
+## User-visible consequence
+
+A Mater error can change sign identity, element, modality, traditional rulership, dispositor eligibility, exaltation, detriment, fall, and every downstream technique that depends on those facts.
+
+The traditional / modern boundary is especially consequential. Adding Pluto, Uranus, or Neptune to Mater's traditional ruler table would alter classical disposition and governance logic rather than merely changing display.
+
+## 4R
+
+**REPLICATE**
+
+## Why
+
+Mater has a coherent single responsibility, no prototype dependency, mature tests, established consumers, and explicit boundaries with both Tympan and Rulers.
+
+The prototype has already completed important centralization work:
+
+```text
+house frames moved out to Tympan
+modern co-rulership remains separate
+sign-level dignity remains here
+sub-sign dignity remains in Rulers
+private duplicate tables were removed from readers
+```
+
+No architectural defect has been found that justifies redesigning or redistributing Mater's law.
+
+The Phase 1 plan predicted REPLICATE. The prototype archaeology and test evidence now independently support that result, so the ruling is earned rather than assumed.
+
+## Swift Sanding
+
+Preserve law and exact values while manufacturing the component to native tolerances.
+
+Expected sanding includes:
+
+```text
+string sign identity
+-> native Sign type
+
+string planet identity
+-> native Planet type where appropriate
+
+string element / modality identity
+-> native Element / Modality types
+
+raw longitude Number
+-> CelestialLongitude or approved native numeric vocabulary
+
+parallel JavaScript table shapes
+-> one maintained native fact with derived views where useful
+
+Object.freeze
+-> immutable Swift values
+
+null
+-> explicit Optional
+
+load-time JavaScript mutation / completeness defenses
+-> construction-time invariants and native tests
+
+mater.browser.js / window.__ORBO_MATER
+-> no production native counterpart
+```
+
+Swift Sanding must not merge modern co-rulers into the traditional rulership backbone.
+
+Swift Sanding must not move houses back into Mater.
+
+Swift Sanding must not absorb triplicity, bounds, faces, or the degree-level dignity ladder from Rulers.
+
+Swift Sanding must preserve the semantic distinction:
+
+```text
+no sign-level essential dignity
+!=
+peregrine
+```
+
+`peregrine` can only be decided by the later degree-level dignity layer after checking all admitted dignity rungs.
+
+## Native destination
+
+```text
+OrboCore / Mater
+```
+
+## Native dependencies
+
+Only the minimum approved Phase 1 native domain vocabulary required to keep unlike things unlike.
+
+Likely vocabulary includes:
+
+```text
+Sign
+Planet
+Element
+Modality
+CelestialLongitude
+```
+
+Mater must not depend on Ring, Tympan, Rulers, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, or interpretation.
+
+## Native mating surface
+
+Native consumers should ask Mater for canonical sign-level facts rather than importing duplicate tables.
+
+Conceptually, the mating surface may provide reads such as:
+
+```text
+element(of: Sign)
+modality(of: Sign)
+domicileRuler(of: Sign)
+exaltation(in: Sign)
+dignity(of: Planet, in: Sign)
+sign(of: CelestialLongitude)
+```
+
+The exact Swift API is not decided in Phase 0.
+
+The production surface should expose only what downstream native components actually require. Alternate keyed / indexed shapes should be derived views, not independently maintained authorities.
+
+The ownership seam remains:
+
+```text
+Mater
+    sign-level zodiacal law
+
+Tympan
+    sign <-> house and governance indexes
+
+Rulers
+    sub-sign dignity law
+```
+
+## Parity standard
+
+**EXACT**
+
+Exact means law and value parity, not line-for-line JavaScript API-shape parity.
+
+## Proof method
+
+When Phase 1 implementation begins, prove:
+
+```text
+all 12 sign identities and order
+all 12 elements
+all 12 modalities
+
+all 12 traditional domicile rulers
+classical dispositor membership
+traditional / modern separation
+
+all 7 exaltation signs
+all 7 exaltation degrees
+
+all detriments
+all falls
+
+all 84 classical-planet / sign dignity reads
+longitude -> sign boundary behavior
+
+house material absent
+modern co-rulership absent
+sub-sign dignity material absent
+
+Golden fixture parity
+JavaScript / Swift parity
+native unit invariants
+Ring + Mater accumulated suite green
+```
+
+## Proof evidence
+
+Prototype law and ownership are proven by the existing Mater and rewire parity tests.
+
+Native implementation has not begun.
+
+## Status
+
+**ASSESSED / NOT IMPLEMENTED**
+
+Mater is not native canonical yet.
+
+---
+
+# 7. Current Construction Boundary
 
 Phase 0 may continue archaeology, fixture work, manifest work, and Phase 1 queue preparation.
 
