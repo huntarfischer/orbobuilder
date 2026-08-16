@@ -11,6 +11,7 @@
 3. `specs/Phase 1 - The Ovum.md`
 4. `specs/Phase 1a - Native Foundation Implementation Plan.md`
 5. `specs/Phase 1b - Ovum Completion Outline.md`
+6. `specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md`
 
 This document is the maintained ledger and manifest for moving solved Orbo work from the JavaScript/HTML prototype into native Orbo 1.0.
 
@@ -79,7 +80,7 @@ Orbo runs on physical iPhone          PASS
 Orbo links to OrboCore                PASS
 
 Prototype/native separation           PASS
-ios-wrapper unchanged                 PASS
+ios-wrapper untouched                 PASS
 No premature Phase 1 component port   PASS
 ```
 
@@ -283,9 +284,10 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | NATIVE CANONICAL |
 | Civil Time | REPRODUCE | BEHAVIORAL | OrboCore / CivilTime | NATIVE CANONICAL |
 | AstroDNA | REPRODUCE | STRUCTURAL | OrboCore / AstroDNA | NATIVE CANONICAL |
-| Ephemeris | PENDING | PENDING | PENDING | IN ARCHAEOLOGY |
-| Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
-| Timespine temporal lessons | PENDING | PENDING | PENDING | QUEUED |
+| Ephemeris Kernel | REPRODUCE | STRUCTURAL | OrboCore / Ephemeris | REFERENCE QUALIFIED / PASS 4 COMPLETE |
+| Forge | REPRODUCE | STRUCTURAL | OrboCore / Forge | OWNERSHIP QUALIFIED / PASS 4 COMPLETE |
+| Mundane Timespine | PENDING | PENDING | OrboCore / MundaneTimespine | PASS 5 READY |
+| Timespine temporal lessons | PENDING | PENDING | PENDING | ARCHAEOLOGY CAPTURED |
 | Loom | PENDING | PENDING | PENDING | QUEUED |
 
 The Phase 1 plan may contain expected 4R treatments. Those expectations are hypotheses until the component's actual pass is performed and recorded here.
@@ -2774,7 +2776,7 @@ It does not depend on Ephemeris, Horizon, Mater, Tympan, Connectome, Civil Time,
 
 ## Current consumers
 
-The immediate future consumers are the Spine/Horizon manufacturing path and the Ovum Resolver.
+The immediate future consumers are the Mundane Timespine/Horizon manufacturing path and the Ovum Resolver.
 
 Later Connectome work will unfold the genome into expression rather than adding expression back into AstroDNA.
 
@@ -2965,11 +2967,629 @@ The Phase 1b Pass 3 gate is satisfied.
 
 **NATIVE CANONICAL**
 
-AstroDNA codec 4 is the canonical native celestial identity contract that the Ephemeris Forge, Orbo Spine, Horizon and Ovum Resolver must satisfy.
+AstroDNA codec 4 is the canonical native celestial identity contract that the Mundane Timespine, Horizon and Ovum Resolver must satisfy.
 
 ---
 
-# 12. Phase 1a Closure and Current Construction Boundary
+# 12. Component: Ephemeris Kernel
+
+## Prototype source
+
+Primary prototype astronomical source:
+
+```text
+ephem.js
+ephem.browser.js
+```
+
+Relevant proof and consumer material:
+
+```text
+tests/ephem.test.html
+tests/astrodna.test.html
+tests/timespine.test.html
+astrodna.js
+timespine.js
+mundane.js
+```
+
+Qualified external source inspected during Pass 4:
+
+```text
+Official Swiss Ephemeris
+repository: aloistr/swisseph
+release: v2.10.3bfinal
+published: 2026-08-02
+2026 .se1 planetary/asteroid rebuild lineage: JPL DE441
+```
+
+Integration archaeology also inspected:
+
+```text
+vsmithers1087/SwissEphemeris
+```
+
+That archived repository demonstrates an unmodified Swiss C target beneath a Swift-facing package target. It is not Orbo's qualified astronomical authority.
+
+## What the prototype currently does
+
+Prototype `ephem.js` currently combines several jobs:
+
+```text
+planetary / lunar astronomy
+true and mean lunar node reads
+Julian Day helpers
+Delta-T approximation
+GMST / obliquity
+Ascendant / MC / Vertex
+Part of Fortune
+Ascendant-anchor solving
+```
+
+The component archaeology splits those jobs by owner.
+
+## Actual law
+
+The Ephemeris Kernel owns **deep physical astronomical capability**.
+
+It is capable of supplying the Forge with the universal celestial facts required to manufacture and verify the Mundane Timespine.
+
+For AstroDNA v1 that includes at least:
+
+```text
+Sun
+Moon
+Mercury
+Venus
+Mars
+Jupiter
+Saturn
+Uranus
+Neptune
+Pluto
+true / osculating North Node
+```
+
+For those physical celestial occupants the qualified Forge read must provide:
+
+```text
+geocentric tropical ecliptic longitude of date
+standard apparent astrological position
+signed longitudinal speed in degrees/day
+```
+
+The true North Node may move direct or retrograde.
+
+The mean North Node may remain available as a separate supplementary astronomical read, but it is not AstroDNA gene 12.
+
+## Explicit exclusions
+
+Ephemeris does not own:
+
+```text
+civil calendar / timezone resolution
+Julian Day policy already owned by Civil Time
+Ascendant
+MC
+IC
+Descendant
+Vertex
+whole-sign houses
+Part of Fortune or other Lots
+aspect geometry
+root-solving policy
+child-spine materialization
+interpretation
+```
+
+Horizon owns local horizon geometry. Ring owns universal angle geometry. Loom owns temporal solving as earned in its later pass. Forge owns durable temporal artifact manufacture.
+
+## What is proven
+
+Prototype source is sufficient to prove the capability but insufficient to become native astronomical authority.
+
+Its own comments document:
+
+```text
+JPL approximate Keplerian planetary elements primarily fit for 1800-2050
+prototype use stretched to roughly 1700-2150
+truncated Meeus lunar longitude series
+simple Delta-T approximation identified as suitable around 1950-2050
+body-dependent errors in the arcminute class or worse over parts of the range
+```
+
+AstroDNA codec 4 uses a one-arcsecond Ring positional quantum. The prototype ephemeris therefore cannot be promoted unchanged as the source that manufactures canonical codec-4 celestial identity.
+
+Official Swiss Ephemeris `v2.10.3bfinal` is qualified as the v1 reference source. Its official 2026 documentation states that the current `.se1` planetary data were rebuilt from JPL DE441 and that Swiss Ephemeris is designed as a precision astronomical/astrological programming engine.
+
+The Orbo v1 operating interval remains:
+
+```text
+1700...2149
+```
+
+which lies comfortably inside Swiss Ephemeris capability. The actual ephemeris-data bundle selected for Orbo must explicitly cover the entire declared Orbo interval.
+
+## Current dependencies
+
+The final integration details are a Pass 5 construction matter, but the qualified Ephemeris boundary will depend on:
+
+```text
+official Swiss Ephemeris C source
+qualified Swiss ephemeris data files
+JulianDay / absolute-time input from canonical native time vocabulary
+```
+
+It must not depend on AstroDNA, Connectome, Loom, child spines, UI, or interpretation.
+
+## Current consumers
+
+The sanctioned production consumer is:
+
+```text
+Forge
+```
+
+Construction tests and OrboLab may receive controlled inspection access where needed to prove the boundary, but that does not create another production celestial door.
+
+Disallowed ordinary consumers include:
+
+```text
+AstroDNA
+Connectome
+Loom
+Horizon for planetary positions
+child spines
+UI
+interpretation
+```
+
+## 4R
+
+**REPRODUCE**
+
+## Why
+
+The prototype solved the right capability but not at the numerical fidelity or ownership shape required by native Orbo.
+
+The native component preserves the deep astronomical job while replacing the prototype numerical implementation with a qualified precision source and removing Civil Time, Horizon, Lots and solving responsibilities from its boundary.
+
+## Swift Sanding
+
+The native integration must make the source and requested mode explicit:
+
+```text
+implicit / mixed JavaScript astronomy
+-> one Ephemeris owner
+
+prototype approximate algorithms
+-> qualified Swiss Ephemeris source
+
+string body names at the boundary
+-> typed admitted celestial body identity
+
+raw numeric time
+-> canonical JulianDay / absolute-time value
+
+implicit numerical fallback
+-> explicit failure when qualified Swiss data are unavailable
+
+finite-difference direction as the primary source
+-> signed longitudinal velocity supplied by qualified astronomy
+
+mean/true Node ambiguity
+-> explicit mean versus true node identities
+
+horizon formulas mixed into ephem.js
+-> Horizon later
+
+civil JD helpers mixed into ephem.js
+-> Civil Time already canonical
+```
+
+The Forge must explicitly request the intended Swiss ephemeris and speed output. It must not silently accept a lower-precision Moshier fallback when required `.se1` data are unavailable.
+
+## Native destination
+
+```text
+OrboCore / Ephemeris
+```
+
+## Native mating surface
+
+The exact Swift surface is intentionally not frozen before Pass 5 integration measurement, but the ownership-level contract is:
+
+```text
+Forge asks Ephemeris for physical celestial state at an absolute instant
+Ephemeris returns qualified position + signed longitudinal motion
+no other production component receives routine Ephemeris access
+```
+
+## Parity standard
+
+**STRUCTURAL**
+
+The astronomy capability and body semantics survive. Exact numerical parity with prototype `ephem.js` is not desired because its documented approximations are the reason for REPRODUCE.
+
+Parity instead requires:
+
+```text
+same conceptual bodies
+same geocentric tropical astrological coordinate family
+true North Node as a distinct physical point
+signed longitudinal motion
+same downstream ability to manufacture the required celestial identity
+```
+
+Numerical authority comes from the qualified Swiss reference.
+
+## Proof method
+
+Pass 4 proves the reference boundary. Pass 5 will prove the integrated astronomical reads and the resulting Mundane Timespine numerically.
+
+Pass 5 reference testing must include:
+
+```text
+random moments across 1700...2149
+known natal moments
+fast Moon cases
+slow outer-body cases
+true North Node direct and retrograde cases
+0/360 wrap
+stations
+ingresses
+range edges
+position residuals by body
+velocity residuals by body
+```
+
+## Proof evidence
+
+Pass 4 archaeology inspected:
+
+```text
+prototype ephem.js and browser counterpart
+prototype ephemeris regression suite
+AstroDNA conformance material
+TimeSpine conformance material
+official Swiss Ephemeris repository and current release
+official Swiss licensing notice
+archived Swift/C wrapper architecture
+```
+
+The official Swiss release inspected is `v2.10.3bfinal`. The official readme records the 2026 DE441 rebuild of Swiss `.se1` data.
+
+No native Ephemeris source was installed in Pass 4 by design. This pass qualified the astronomical authority and ownership seam rather than pretending source integration was complete.
+
+Swiss Ephemeris is dual-licensed. Distribution of an Ovum containing Swiss Ephemeris code requires the project to resolve the AGPL versus Swiss Ephemeris Professional License path before release. Pass 4 records that as a release gate and does not silently make a project-wide license choice.
+
+## Status
+
+**REFERENCE QUALIFIED / PASS 4 COMPLETE**
+
+The Ephemeris may now enter Pass 5 integration as the qualified deep astronomical capability used only through Forge.
+
+---
+
+# 13. Component: Forge
+
+## Prototype source
+
+There is no single prototype Forge component.
+
+The successful manufacturing behavior is distributed across:
+
+```text
+mundane.js
+timespine.js
+fertilize.js
+loom-related callers
+prototype codecs and conformance suites
+```
+
+The earned temporal architecture is documented in:
+
+```text
+specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md
+```
+
+## What the prototype currently does
+
+Different historical components already perform parts of the maker's job:
+
+`mundane.js` establishes:
+
+```text
+native-independent universal artifact
+byte-identical data for every reader
+verified-once principle
+packed storage
+runtime decoding
+universal event indexes
+canonical correction before shipping
+```
+
+`timespine.js` establishes:
+
+```text
+chunked temporal manufacture
+seam overlap
+phase-locked sampling
+event-identity deduplication
+sorted materialization
+version identity
+conformance between materialized and expensive live scans
+```
+
+`fertilize.js` establishes:
+
+```text
+resumable / optional manufacturing
+caller-owned yield points
+packing and codec discipline
+cache ancestry
+child temporal materialization
+materialize broadly, filter at read
+```
+
+Those behaviors are useful, but their ownership is historically scattered.
+
+## Actual law
+
+> **The Forge is Orbo's maker, not Orbo's oracle.**
+
+Forge manufactures durable temporal artifacts from canonical ingredients.
+
+Its permanent jobs include:
+
+```text
+manufacture a Mundane Timespine version
+verify a Mundane Timespine version
+compare Mundane Timespine against Ephemeris
+maintain artifact provenance
+extend supported temporal range
+repair by manufacturing a newly identified version
+produce golden celestial fixtures
+measure candidate chronology representations
+manufacture admitted universal temporal indexes
+materialize child spines
+pack child spines
+version child spines
+checksum child spines
+rebuild child spines when canonical ancestry changes
+```
+
+Forge has two legitimate input paths.
+
+Deep path:
+
+```text
+Ephemeris
+    ↓
+Forge
+    ↓
+Mundane Timespine vN
+```
+
+Orbo-native path:
+
+```text
+Mundane Timespine
++ canonical Orbo state
++ Loom results where required
+    ↓
+Forge
+    ↓
+child spine
+```
+
+Only the deep path may open the Ephemeris.
+
+## Mundane Timespine law
+
+The Mundane Timespine is the first and universal spine.
+
+It is native-independent world chronology, not a feature owned by later Mundane Astrology.
+
+```text
+same Mundane Timespine version
+=
+same universal celestial chronology
+for every Orbo carrying that version
+```
+
+A released Timespine version is immutable. Repairs, source changes, range extensions, fidelity changes, or representation changes that alter the artifact produce a newly identified version rather than silently changing v1.
+
+Normal celestial runtime traffic reads the Mundane Timespine. The presence of Ephemeris and Forge inside the Ovum does not create competing ordinary celestial authorities.
+
+## Child-spine law
+
+A child spine is not another sky.
+
+Every child spine descends from the versioned Mundane Timespine plus canonical Orbo state.
+
+A child spine must never reopen the Ephemeris.
+
+Conceptually, child-spine ancestry includes enough identity to determine when it must be reforged, such as:
+
+```text
+child-spine version / codec
+parent Mundane Timespine version or checksum
+relevant AstroDNA identity
+relevant doctrine / Connectome identity
+transformation provenance where applicable
+```
+
+## Loom boundary
+
+Loom and Forge are separate.
+
+```text
+Connectome / doctrine owner
+    knows the target
+        ↓
+Loom
+    finds the crossing / interval / root
+        ↓
+Forge
+    materializes / packs / indexes / versions
+        ↓
+child spine
+```
+
+The governing pair is:
+
+> **The Connectome knows the target. The Loom finds the crossing.**
+
+> **The Forge makes the durable temporal artifact.**
+
+## Explicit exclusions
+
+Forge does not own:
+
+```text
+astronomical equations
+zodiacal meaning
+house law
+Ring aspect geometry
+target doctrine
+interpretation
+root-solving mathematics
+user presentation
+```
+
+Those belong to Ephemeris, Mater/Tympan/Ring, Connectome/doctrine owners, Loom, and UI respectively.
+
+## 4R
+
+**REPRODUCE**
+
+## Why
+
+The prototype already discovered much of the correct manufacturing behavior, but no coherent single Forge component exists to transpose.
+
+The useful behavior is scattered across universal chronology construction, old personal TimeSpine work, fertilization-era packing, browser build machinery, and conformance tests.
+
+Native Orbo reproduces those laws as one explicit permanent Ovum owner.
+
+## Swift Sanding
+
+Pass 5 implementation should turn historical manufacturing conventions into explicit artifact contracts:
+
+```text
+scattered build functions
+-> Forge owner
+
+implicit parent chronology
+-> explicit Mundane Timespine ancestry
+
+ad hoc version constants
+-> typed artifact/version identities
+
+browser/IndexedDB assumptions
+-> storage-independent Core artifacts
+
+mutable arrays and JSON-ish rows
+-> immutable versioned artifact values / packed resources
+
+implicit source provenance
+-> explicit source + codec + range + checksum metadata
+
+child builder opening ephemeris
+-> impossible sanctioned path
+
+Loom scanner plus packing mixed together
+-> Loom solves, Forge materializes
+```
+
+## Native destination
+
+```text
+OrboCore / Forge
+```
+
+## Native dependencies
+
+The full dependency surface is constructed piece by piece. At the ownership level Forge may consume:
+
+```text
+Ephemeris, only for Mundane Timespine manufacture/maintenance
+Mundane Timespine
+AstroDNA / later canonical state identities
+Loom results
+artifact codecs / checksum machinery
+```
+
+Forge does not make the target doctrine it consumes.
+
+## Native mating surface
+
+The exact Swift API is intentionally left for Pass 5 measurement, but the permanent owner must expose sanctioned operations for:
+
+```text
+Mundane Timespine manufacture
+Mundane Timespine verification / reforge
+universal index manufacture
+golden fixture manufacture
+child-spine manufacture
+artifact provenance / version / checksum
+```
+
+No generic "give me an ephemeris" escape hatch belongs on the public surface.
+
+## Parity standard
+
+**STRUCTURAL**
+
+The prototype's HTML, browser, IndexedDB, generator and file seams are not parity targets.
+
+The surviving structure is:
+
+```text
+verified universal artifact
+version discipline
+chunk/resume capability where manufacturing cost demands it
+seam-safe temporal construction
+packing / compact storage
+stable sorted reads
+explicit cache / ancestry identity
+child temporal materialization
+conformance against authoritative parent data
+```
+
+## Proof method
+
+Pass 4 proves Forge ownership and source boundaries.
+
+Pass 5 must prove the actual Forge by manufacturing candidate Mundane Timespines and comparing each against the qualified Ephemeris across the full fidelity corpus.
+
+Later child-spine passes must additionally prove:
+
+```text
+no child Forge path queries Ephemeris
+same parent state + same Forge/artifact version -> deterministic child artifact
+ancestry changes invalidate/rebuild deterministically
+Loom result identity survives packing
+read-time views do not silently mutate stored ancestry
+```
+
+## Proof evidence
+
+Pass 4 inspected the prototype manufacturing ancestors and established one coherent owner.
+
+The resulting architecture is recorded in `specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md` and incorporated into the Phase 1b outline.
+
+No native Forge source was added during Pass 4. That is intentional. Pass 4 qualifies Forge's ownership and its relationship to the Ephemeris and spines. Pass 5 gives the Forge its first concrete manufacturing job and earns its native implementation through measurement.
+
+## Status
+
+**OWNERSHIP QUALIFIED / PASS 4 COMPLETE**
+
+Forge is the canonical destination for temporal-artifact manufacturing work entering Pass 5.
+
+---
+
+# 14. Phase 1a Closure and Current Construction Boundary
 
 Phase 1a was implemented under `specs/Phase 1a - Native Foundation Implementation Plan.md` in five controlled passes:
 
@@ -3029,6 +3649,7 @@ Phase 1b is active under:
 
 ```text
 specs/Phase 1b - Ovum Completion Outline.md
+specs/Ovum Temporal Architecture - Ephemeris Forge and Spines.md
 ```
 
 Current checkpoint:
@@ -3037,14 +3658,22 @@ Current checkpoint:
 Pass 1    Geoplacement + terrestrial vocabulary    NATIVE CANONICAL / COMPLETE
 Pass 2    Civil Time and timezone history          NATIVE CANONICAL / COMPLETE
 Pass 3    AstroDNA contract                         NATIVE CANONICAL / COMPLETE
-Pass 4    Ephemeris Forge qualification             ARCHAEOLOGY / QUALIFICATION
-Pass 5    Spine Forge + Orbo Spine v1               NOT STARTED
+Pass 4    Ephemeris + Forge qualification           QUALIFIED / COMPLETE
+Pass 5    Forge + Mundane Timespine v1              READY
 Pass 6    Horizon + AstroDNA Encoder + Resolver     NOT STARTED
 Pass 7    Loom                                      NOT STARTED
 Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
 ```
 
-Pass 3 is complete. Pass 4 is active at the archaeology / reference-qualification gate. Do not implement a native Forge or freeze a Spine representation until the astronomical source, coordinate contract, supported range and accuracy policy are qualified under the Phase 1b Pass 4 gate.
+Pass 4 is complete at the ownership and astronomical-reference gate.
+
+The qualified v1 astronomical reference is official Swiss Ephemeris `v2.10.3bfinal`, with its 2026 Swiss planetary-data rebuild based on JPL DE441. Ephemeris and Forge are separate Ovum organs. Forge is the sole sanctioned production client of Ephemeris.
+
+Pass 5 may now measure candidate chronology representations and implement Forge's first manufacturing path. The result must be one immutable, versioned Mundane Timespine whose same version/checksum represents the same celestial chronology for every Orbo carrying it.
+
+Swiss Ephemeris code/data must not be distributed inside Orbo until the project's AGPL-versus-Professional-License path is resolved. That is a release gate, not permission to substitute a weaker astronomical source silently.
+
+No child spine may query the Ephemeris. Child spines must descend from the canonical Mundane Timespine plus their other canonical Orbo ancestry.
 
 This ordering does not preassign any later component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
 
