@@ -1,0 +1,63 @@
+{
+  "codec": 3,
+  "geneOrder": [
+    "Ascendant",
+    "Moon",
+    "Sun",
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto",
+    "Node"
+  ],
+  "motionPolicies": [
+    "fixedDirect",
+    "fixedDirect",
+    "fixedDirect",
+    "variable",
+    "variable",
+    "variable",
+    "variable",
+    "variable",
+    "variable",
+    "variable",
+    "variable",
+    "fixedRetrograde"
+  ],
+  "ringFineStates": 2592000,
+  "ringArcseconds": 1296000,
+  "sampleSequence": [
+    40123,
+    997654,
+    1008000,
+    1584123,
+    244444,
+    1987200,
+    432000,
+    1407111,
+    1200000,
+    1297000,
+    3599,
+    2096000
+  ],
+  "sampleDegreeSequence": [
+    11,
+    277,
+    280,
+    440,
+    67,
+    552,
+    120,
+    390,
+    333,
+    360,
+    0,
+    582
+  ],
+  "sampleSequenceString": "40123-997654-1008000-1584123-244444-1987200-432000-1407111-1200000-1297000-3599-2096000",
+  "sampleDegreeSequenceString": "11-277-280-440-67-552-120-390-333-360-0-582"
+}
