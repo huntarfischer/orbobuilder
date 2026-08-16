@@ -275,10 +275,10 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Component | Primary 4R | Parity | Native destination | Status |
 |---|---|---|---|---|
 | Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / NATIVE PROVEN |
-| Ring | REPLICATE | EXACT | OrboCore / Ring | IMPLEMENTED / AWAITING NATIVE PROOF |
-| Mater | REPLICATE | EXACT | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
+| Ring | REPLICATE | EXACT | OrboCore / Ring | NATIVE CANONICAL |
+| Mater | REPLICATE | EXACT | OrboCore / Mater | IMPLEMENTED / AWAITING NATIVE PROOF |
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | ASSESSED / NOT IMPLEMENTED |
-| Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | ASSESSED / NOT IMPLEMENTED |
+| Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | IMPLEMENTED / AWAITING NATIVE PROOF |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
@@ -381,7 +381,7 @@ The Ring is the prototype's inherent circular relationship surface.
 
 It provides the universal degree geometry consulted by multiple later systems without knowing what occupies those positions.
 
-The native implementation now transposes that same law into typed Swift without introducing occupants, sign meaning, time, place, orb or interpretation.
+The native implementation transposes that same law into typed Swift without introducing occupants, sign meaning, time, place, orb or interpretation.
 
 ## Actual law
 
@@ -437,7 +437,7 @@ immutable stamped relationship behavior
 720-state / 14,400-target aspect atlas agreement
 ```
 
-The native test suite has been written to exercise those same laws, including exhaustive coarse-state relation and target sweeps. Native Xcode proof is still pending.
+The native suite exercises the same laws, including exhaustive coarse-state relation and target sweeps, and has passed its accumulated standalone Xcode proof gate.
 
 ## Current dependencies
 
@@ -456,7 +456,7 @@ Ring remains independent of Mater, Tympan, AstroDNA, time, place and interpretat
 
 Prototype consumers include systems that require canonical aspect / degree geometry, including AstroDNA, framing, Loom-related work, and parity/readout machinery.
 
-No later native component is yet permitted to depend on native Ring as canonical until its Xcode proof gate closes.
+Native Ring is now canonical and may be consumed by later native components whose own architecture requires Ring geometry.
 
 ## Known tests / fixtures
 
@@ -601,16 +601,26 @@ accumulated integration tests
 
 Implementation is present.
 
-A local Swift preflight of the new Ring suite reported:
+A local Swift preflight of the Ring suite reported:
 
 ```text
 12 RingTests    PASS
 0 failures
 ```
 
-That preflight is construction evidence only. It is **not** the native Xcode proof required for canonical promotion.
+Native Xcode proof was completed on 2026-08-16 by running the standalone `OrboCore` package test action on the development Mac. The accumulated suite reported:
 
-The native tests include:
+```text
+13 DomainTests                         PASS
+4 FixtureInfrastructureTests          PASS
+1 Phase 0 linkage sentinel test       PASS
+12 RingTests                           PASS
+------------------------------------------
+30 total                              PASS
+0 failures
+```
+
+The native Ring tests include:
 
 ```text
 all 720 coarse state encodings
@@ -624,13 +634,13 @@ prototype doctrine example
 compact parity fixture reads
 ```
 
-The accumulated standalone Xcode package suite must still run green on the development Mac before Ring can become native canonical.
+The accumulated Xcode gate is satisfied.
 
 ## Status
 
-**IMPLEMENTED / AWAITING NATIVE PROOF**
+**NATIVE CANONICAL**
 
-Ring is not native canonical yet.
+Ring may now serve as the canonical native degree-relation authority for later components.
 
 ---
 
@@ -654,6 +664,7 @@ Primary proof material:
 
 ```text
 tests/mater.test.html
+tests/rulers.test.html
 tests/rewire-parity.test.html
 ```
 
@@ -664,6 +675,21 @@ tympan.js
 rulers.js
 ```
 
+Native implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/Mater/Mater.swift
+native/OrboCore/Sources/OrboCore/Mater/DignityTables.swift
+native/OrboCore/Sources/OrboCore/Mater/DignityDoctrine.swift
+```
+
+Native proof material:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/MaterTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/mater-parity.json
+```
+
 ## What it currently does
 
 The prototype Mater is the inherent sign-level zodiacal structure.
@@ -671,6 +697,8 @@ The prototype Mater is the inherent sign-level zodiacal structure.
 The Ring owns inherent relation. The Mater owns inherent zodiacal meaning at sign resolution.
 
 It is stamped before the app runs and requires no person, time, place, chart, or UI.
+
+The native Mater now combines that proven sign-level law with the surviving essential-dignity law rehoused from prototype `rulers.js`.
 
 ## Actual law
 
@@ -762,7 +790,7 @@ framing, AstroDNA, and Rulers read Mater's canonical tables rather than maintain
 
 The test suite checks table identity where possible, not merely equality, so central ownership is proven rather than inferred from matching values.
 
-The Rulers archaeology additionally establishes that its surviving law is essential-dignity law, not a second kind of rulership law. That surviving law is recorded in the Rulers card and is destined for native Mater.
+The Rulers archaeology additionally establishes that its surviving law is essential-dignity law, not a second kind of rulership law. That surviving law is recorded in the Rulers card and is now implemented inside native Mater.
 
 ## Current dependencies
 
@@ -771,6 +799,8 @@ Prototype Mater has none.
 Mater is an inherent floor component and imports nothing.
 
 It is a sibling of Ring, not a child of Ring.
+
+Native Mater depends only on the approved Phase 1a domain vocabulary. It does not depend on native Ring or any chart, time, place, horizon, UI, or interpretation component.
 
 ## Current consumers
 
@@ -792,13 +822,22 @@ Native consumers will read Mater for the complete essential-dignity substrate as
 
 ## Known tests / fixtures
 
+Prototype:
+
 ```text
 tests/mater.test.html
 tests/rulers.test.html
 tests/rewire-parity.test.html
 ```
 
-Mater's native parity fixtures should derive from the proven Mater tables plus the factual dignity tables and boundaries preserved from Rulers.
+Native:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/MaterTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/mater-parity.json
+```
+
+The native parity fixture preserves the proven Mater tables plus the factual dignity tables and boundaries received from Rulers.
 
 ## User-visible consequence
 
@@ -825,7 +864,7 @@ private duplicate sign-level tables were removed from readers
 
 No architectural defect was found in Mater's own law, so Mater remains REPLICATE.
 
-The later Rulers assessment does not give Mater a second 4R treatment. Rulers receives its own single primary treatment, REHOUSE, and Mater is the receiving native owner for that surviving dignity law.
+The Rulers assessment does not give Mater a second 4R treatment. Rulers receives its own single primary treatment, REHOUSE, and Mater is the receiving native owner for that surviving dignity law.
 
 This produces one native owner for one kind of inherent fact:
 
@@ -839,43 +878,53 @@ rather than preserving the prototype's historical sign-level / sub-sign file sea
 
 ## Swift Sanding
 
-Preserve Mater's exact law and values while manufacturing the combined native owner to native tolerances.
-
-Expected sanding includes:
+The native implementation applies the approved sanding while manufacturing the combined owner to native tolerances:
 
 ```text
 string sign identity
--> native Sign type
+-> Sign
 
 string planet identity
--> native Planet type where appropriate
+-> Planet
 
 string element / modality identity
--> native Element / Modality types
+-> Element / Modality
 
 raw longitude Number
--> CelestialLongitude or approved native numeric vocabulary
+-> CelestialLongitude
+
+0..<30 sub-sign position
+-> DegreeInSign
+
+0...30 interval boundary
+-> DegreeBoundaryInSign
+
+string dignity names
+-> DignityRung / EssentialDebility
+
+Boolean / null sect
+-> Sect?
+
+scheme labels
+-> typed DignityDoctrine selections
 
 parallel JavaScript table shapes
--> one maintained native fact with derived views where useful
+-> one maintained native fact with derived views
 
 Object.freeze
--> immutable Swift values
+-> immutable Swift static values
 
-null
+null / undefined
 -> explicit Optional
 
 load-time JavaScript mutation / completeness defenses
--> construction-time invariants and native tests
+-> typed construction plus invariant tests
 
-mater.browser.js / window.__ORBO_MATER
--> no production native counterpart
-
-rulers.browser.js / browser-global Rulers transport
+mater.browser.js / rulers.browser.js
 -> no production native counterpart
 ```
 
-Native Mater additionally receives through the Rulers REHOUSE:
+Native Mater receives through the Rulers REHOUSE:
 
 ```text
 Egyptian bounds
@@ -888,44 +937,23 @@ complete five-rung essential-dignity resolution
 correct peregrine determination
 ```
 
-Doctrine variants are not separate owners. They are doctrine-qualified tables or policies held behind Mater's canonical dignity surface.
+Doctrine variants are not separate owners. They are doctrine-qualified tables held behind Mater's canonical dignity surface.
 
-For example:
+Only implemented and proven variants are available. The initial admitted profile is:
 
 ```text
-bounds:
-    Egyptian
-    Ptolemaic
-
-triplicity:
-    Dorothean
-    Ptolemaic
-
-faces:
-    Chaldean
+Egyptian bounds
+Dorothean triplicity
+Chaldean faces
 ```
-
-Only implemented and proven variants become available. The default remains the admitted Orbo doctrine profile.
 
 Mater does not calculate sect. Where a dignity read needs sect to select a triplicity lord, sect is supplied by the caller as an explicit input.
 
-Swift Sanding must not merge modern co-rulers into the traditional rulership backbone.
+Swift Sanding does not merge modern co-rulers into the traditional rulership backbone.
 
-Swift Sanding must not move houses back into Mater.
+Swift Sanding does not move houses back into Mater.
 
-Swift Sanding must preserve the distinction between:
-
-```text
-no sign-level dignity
-```
-
-and:
-
-```text
-peregrine
-```
-
-Peregrine is true only when the planet holds none of the admitted positive essential-dignity rungs.
+The old single-valued sign helper is not used as the native definition of peregrine. Native `EssentialCondition` can preserve simultaneous debilities, and peregrine is derived only from the complete set of positive dignity rungs.
 
 ## Native destination
 
@@ -935,45 +963,45 @@ OrboCore / Mater
 
 ## Native dependencies
 
-Only the minimum approved Phase 1 native domain vocabulary required to keep unlike things unlike.
-
-Likely vocabulary includes:
-
 ```text
 Sign
 Planet
 Element
 Modality
 CelestialLongitude
+DegreeInSign
+DegreeBoundaryInSign
 Sect
+DignityRung
+EssentialDebility
 DignityDoctrine
 ```
 
 `Sect` and `DignityDoctrine` are inputs where required, not external engines that Mater must own.
 
-Mater must not depend on Ring, Tympan, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, sect calculation, or interpretation.
+Mater does not depend on Ring, Tympan, AstroDNA, ephemeris, Orbo Spine, Loom, UI, time, place, sect calculation, or interpretation.
 
 ## Native mating surface
 
-Native consumers should ask Mater for canonical zodiacal facts and complete essential-dignity facts rather than importing duplicate tables.
-
-Conceptually, the mating surface may provide reads such as:
+The implemented native surface provides canonical reads for:
 
 ```text
-sign(of: CelestialLongitude)
-element(of: Sign)
-modality(of: Sign)
-domicileRuler(of: Sign)
-exaltation(in: Sign)
-bound(at: CelestialLongitude, doctrine: ...)
-face(at: CelestialLongitude, doctrine: ...)
-triplicity(of: Sign, sect: ..., doctrine: ...)
-dignities(of: Planet, at: CelestialLongitude, sect: ..., doctrine: ...)
+Mater.element(of:)
+Mater.modality(of:)
+Mater.domicileRuler(of:)
+Mater.signsRuled(by:)
+Mater.exaltation(in:)
+Mater.exaltation(of:)
+Mater.detrimentRuler(in:)
+Mater.fallRuler(in:)
+Mater.debilities(of:in:)
+Mater.bound(at:doctrine:)
+Mater.face(at:doctrine:)
+Mater.triplicity(of:doctrine:)
+Mater.essentialCondition(of:at:sect:doctrine:)
 ```
 
-The exact Swift API is not decided in Phase 0.
-
-The production surface should expose only what downstream native components actually require. Alternate keyed / indexed shapes should be derived views, not independently maintained authorities.
+Alternate keyed or indexed shapes are derived views, not independently maintained authorities.
 
 The native ownership seam is:
 
@@ -989,7 +1017,7 @@ Tympan
     sign <-> house and governance indexes
 ```
 
-There is no separate native `Rulers` or `EssentialDignity` owner planned.
+There is no separate native `Rulers` or `EssentialDignity` owner.
 
 ## Parity standard
 
@@ -999,7 +1027,7 @@ The dignity law received from Rulers is governed by the Rulers card's **STRUCTUR
 
 ## Proof method
 
-When Phase 1 implementation begins, prove:
+Prove:
 
 ```text
 all 12 sign identities and order
@@ -1016,38 +1044,64 @@ all 7 exaltation degrees
 all detriments
 all falls
 
-all 84 classical-planet / sign dignity reads
-longitude -> sign boundary behavior
-
 Egyptian bound table and every boundary
 Chaldean face sequence and every boundary
 Dorothean triplicity table and sect selection
 five-rung dignity facts
 peregrine only when no positive rung is held
+simultaneous detriment + fall can be represented
+positive dignity and debility remain independent facts
 
 doctrine choices remain explicit
-no duplicate native dignity authority exists
+no separate native Rulers authority exists
 
 house material absent
 modern co-rulership absent
 
-Golden fixture parity
-JavaScript / Swift parity
+JavaScript-reference parity fixture
 native unit invariants
-Ring + Mater accumulated suite green
+accumulated Ring + Mater suite green
 ```
 
 ## Proof evidence
 
-Prototype Mater law and ownership are proven by the existing Mater and rewire parity tests.
+Implementation is present in the three native Mater source files listed above. No native production `Rulers.swift` or `Rulers/` owner was created.
 
-The receiving dignity law and its rehouse are proven architecturally by the Rulers analysis recorded below.
+A local Swift preflight of the new Mater suite reported:
 
-Native implementation has not begun.
+```text
+12 MaterTests    PASS
+0 failures
+```
+
+The test suite includes:
+
+```text
+12 canonical sign-fact parity records
+all 7 exaltations and exact degrees
+all 60 Egyptian bounds
+all Egyptian half-open boundaries
+Egyptian ownership totals:
+    Saturn 57
+    Jupiter 79
+    Mars 66
+    Venus 82
+    Mercury 76
+all 36 Chaldean faces and boundaries
+all 4 Dorothean triplicity groups
+7 classical planets x 360 whole degrees x 3 sect states
+    = 7,560 complete essential-condition comparisons
+simultaneous Mercury detriment + fall in Pisces
+Moon fall plus participating triplicity in Scorpio
+Mars face dignity in Gemini, proving the old sign-only peregrine shortcut is not native canon
+modern-planet exclusion from the classical dignity ladder
+```
+
+The local preflight is construction evidence only. The accumulated standalone Xcode package suite must run green on the development Mac before Mater becomes native canonical and the Rulers rehouse is declared proven.
 
 ## Status
 
-**ASSESSED / NOT IMPLEMENTED**
+**IMPLEMENTED / AWAITING NATIVE PROOF**
 
 Mater is not native canonical yet.
 
@@ -1451,6 +1505,16 @@ dispositor.js
 electional.js
 ```
 
+Native receiving implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/Mater/Mater.swift
+native/OrboCore/Sources/OrboCore/Mater/DignityTables.swift
+native/OrboCore/Sources/OrboCore/Mater/DignityDoctrine.swift
+```
+
+There is deliberately no native production `Rulers` component.
+
 ## What it currently does
 
 The current prototype `rulers.js` no longer owns general sign rulership and no longer owns chart-level disposition.
@@ -1538,9 +1602,9 @@ ladderOf(...)
     correctly treats peregrine as holding none of the five positive rungs
 ```
 
-The complete ladder semantics are the coherent law to preserve.
+The complete ladder semantics are the coherent law preserved by native Mater.
 
-A second important finding is duplication in `electional.js`: Electional currently carries its own dignity substrate for several of the same facts. Native Orbo should not preserve competing bound, face, triplicity, exaltation, or related dignity tables there.
+A second important finding is duplication in `electional.js`: Electional currently carries its own dignity substrate for several of the same facts. Native Orbo must not preserve competing bound, face, triplicity, exaltation, or related dignity tables there.
 
 ## Current dependencies
 
@@ -1548,7 +1612,7 @@ A second important finding is duplication in `electional.js`: Electional current
 Mater
 ```
 
-Current Rulers reads Mater's:
+Current prototype Rulers reads Mater's:
 
 ```text
 SIGNS
@@ -1569,9 +1633,18 @@ Electional is also a duplicate dignity implementer that must eventually become a
 
 ## Known tests / fixtures
 
+Prototype:
+
 ```text
 tests/rulers.test.html
 tests/rewire-parity.test.html
+```
+
+Native receiving proof:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/MaterTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/mater-parity.json
 ```
 
 Electional's dignity machinery is additional architectural evidence for deduplication, but electional judgment and scoring remain outside this component pass.
@@ -1619,9 +1692,7 @@ The receiving relationship does not create a second treatment for Mater.
 
 ## Swift Sanding
 
-The rehouse should preserve the factual law while removing JavaScript and historical-file seams.
-
-Expected sanding includes:
+The rehouse preserves factual law while removing JavaScript and historical-file seams:
 
 ```text
 string planet identity
@@ -1631,13 +1702,16 @@ raw longitude Number
 -> CelestialLongitude
 
 Boolean / null sect argument
--> explicit Sect? input
+-> Sect?
 
 string scheme labels
--> typed DignityDoctrine / scheme identity
+-> DignityDoctrine / typed scheme identity
 
 string rung names
--> typed dignity-rung values
+-> DignityRung
+
+single debility slot
+-> Set<EssentialDebility>
 
 Object.freeze
 -> immutable Swift values
@@ -1649,15 +1723,15 @@ rulers.browser.js
 -> no production native counterpart
 
 old sign-only dignityOf(...)=peregrine shortcut
--> not canonical
+-> not native canon
 
 complete ladder semantics
--> canonical peregrine determination
+-> EssentialCondition.isPeregrine derived from all five positive rungs
 ```
 
 Doctrine variation belongs behind the same Mater owner rather than spawning duplicate engines.
 
-The default factual substrate currently includes:
+The initial factual substrate is:
 
 ```text
 Egyptian bounds
@@ -1665,7 +1739,7 @@ Dorothean triplicity
 Chaldean faces
 ```
 
-Future admitted alternatives, such as Ptolemaic bounds or Ptolemaic triplicity, should be explicit doctrine selections with provenance and tests.
+Future admitted alternatives, such as Ptolemaic bounds or Ptolemaic triplicity, require explicit doctrine selections with provenance and tests.
 
 No score belongs in Mater. Five rungs remain five facts.
 
@@ -1679,13 +1753,13 @@ Reception also remains outside Mater. Reception is a relationship mediated by di
 OrboCore / Mater
 ```
 
-There is no separate native `Rulers` component planned from this prototype file.
+There is no separate native `Rulers` component.
 
 ## Native dependencies
 
-The received law lives inside Mater and therefore uses Mater's native domain vocabulary.
+The received law lives inside Mater and uses Mater's native domain vocabulary.
 
-Conceptual inputs may include:
+Inputs include:
 
 ```text
 Planet
@@ -1699,18 +1773,14 @@ Mater does not derive sect. A caller supplies it when the selected triplicity do
 
 ## Native mating surface
 
-The useful capability becomes part of Mater's canonical zodiacal surface.
-
-Conceptually:
+The useful capability is now part of Mater's canonical zodiacal surface:
 
 ```text
 Mater.bound(...)
 Mater.face(...)
 Mater.triplicity(...)
-Mater.dignities(...)
+Mater.essentialCondition(...)
 ```
-
-The exact Swift API is deferred to Phase 1 implementation.
 
 Downstream systems such as Electional should consume these factual reads and apply their own technique-specific weighting or judgment afterward.
 
@@ -1739,46 +1809,56 @@ Peregrine follows the complete five-rung law, not the older sign-only shortcut.
 
 ## Proof method
 
-When the Phase 1 rehouse is implemented, prove:
+Prove:
 
 ```text
 all Egyptian bound rows, owners, and boundaries
 all bound coverage invariants
 all Chaldean faces and boundaries
 all Dorothean triplicity rows and sect selections
-all five-rung dignity facts across representative and exhaustive boundaries
+all five-rung dignity facts across the complete whole-degree / sect surface
 peregrine is false whenever any positive rung is held
 peregrine is true only when none is held
 
-Mater remains the only maintained owner of domicile / exaltation / detriment / fall
-native Mater becomes the only maintained owner of bound / face / triplicity / complete dignity
-no duplicate native Electional dignity tables survive
+Mater remains the only maintained native owner of domicile / exaltation / detriment / fall
+native Mater is the only maintained owner of bound / face / triplicity / complete dignity
+no native Rulers component exists
 no score enters Mater
 no chart-specific condition enters Mater
 
-Golden fixture parity
-JavaScript / Swift factual parity
+JavaScript-reference factual parity
 native invariant tests
-accumulated Ring + Mater + Tympan suite green
+accumulated Ring + Mater suite green
 ```
 
 ## Proof evidence
 
-Prototype archaeology and the Rulers test contract establish the surviving factual law and the historical ownership seam.
+The REHOUSE is implemented inside native Mater. The prototype Rulers tables and complete ladder law were transposed into `DignityTables.swift`, `DignityDoctrine.swift`, and `Mater.essentialCondition(...)`; no native `Rulers.swift` or `Rulers/` production owner was created.
 
-The native rehouse has not been implemented.
+The local Mater preflight reported:
+
+```text
+12 MaterTests    PASS
+0 failures
+```
+
+Those tests include exact factual parity for the 60 Egyptian bounds, 36 Chaldean faces, four Dorothean triplicity groups, all bound/face boundaries, and 7,560 complete whole-degree/sect essential-condition comparisons.
+
+The test suite explicitly pins the architectural correction that motivated STRUCTURAL rather than whole-API parity: Mars at 10 Gemini holds face dignity and is therefore **not peregrine**, even though the old sign-only `dignityOf(...)` helper called that position peregrine.
+
+The accumulated standalone Xcode package suite must still run green before the Rulers rehouse is declared native proven.
 
 ## Status
 
-**ASSESSED / NOT IMPLEMENTED**
+**IMPLEMENTED / AWAITING NATIVE PROOF**
 
-The Rulers assessment is complete. Its surviving dignity law is planned to enter native Mater during Phase 1.
+Rulers has no independent native production component. Its surviving law is implemented in Mater and awaits the same Xcode proof gate as Mater.
 
 ---
 
 # 9. Current Construction Boundary
 
-Phase 1a implementation has begun under `specs/Phase 1a - Native Foundation Implementation Plan.md`.
+Phase 1a implementation is active under `specs/Phase 1a - Native Foundation Implementation Plan.md`.
 
 The authorized manufacturing sequence is:
 
@@ -1794,14 +1874,14 @@ Current checkpoint:
 
 ```text
 Native domain vocabulary    IMPLEMENTED / NATIVE PROVEN
-Ring                         IMPLEMENTED / AWAITING NATIVE PROOF
-Mater                        ASSESSED / NOT IMPLEMENTED
-Rulers -> Mater              ASSESSED / NOT IMPLEMENTED
+Ring                         NATIVE CANONICAL
+Mater                        IMPLEMENTED / AWAITING NATIVE PROOF
+Rulers -> Mater              IMPLEMENTED / AWAITING NATIVE PROOF
 Tympan                       ASSESSED / NOT IMPLEMENTED
 ```
 
-Do not promote Ring to native canonical until its accumulated standalone Xcode suite passes on the development Mac.
+Do not promote Mater or the Rulers rehouse to native proven/canonical status until the accumulated standalone Xcode suite passes on the development Mac.
 
-Do not begin the next Phase 1a production pass without the next explicit user authorization.
+Do not begin Pass 4 Tympan until Pass 3 proof is complete and the next production write is explicitly authorized.
 
 Do not begin later Phase 1 systems such as Geoplacement, Civil Time, AstroDNA, Ephemeris / Spine, Horizon, Loom or Resonator during this foundation pass unless their own authorized construction step is reached.
