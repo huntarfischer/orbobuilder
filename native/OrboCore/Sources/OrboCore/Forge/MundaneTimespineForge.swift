@@ -1,8 +1,7 @@
 import Foundation
 
 /// Controlled deep-astronomy socket used by Forge construction only.
-/// A qualified Swiss Ephemeris bridge may conform here in the construction environment;
-/// ordinary Ovum consumers must read the Mundane Timespine instead.
+/// Ordinary Ovum consumers read the Mundane Timespine instead.
 public protocol ForgeEphemerisReference: Sendable {
     func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState
 }
@@ -40,31 +39,34 @@ public struct MundaneTimespineForgePlan: Hashable, Sendable {
 }
 
 public struct MundaneTimespineForgeProgress: Hashable, Sendable {
-    public let completedSegments: Int
-    public let totalSegments: Int
+    public let completedSamples: Int
+    public let totalSamples: Int
     public let currentBody: MundaneBody?
 
     public var fractionComplete: Double {
-        guard totalSegments > 0 else { return 1 }
-        return min(1, Double(completedSegments) / Double(totalSegments))
+        guard totalSamples > 0 else { return 1 }
+        return min(1, Double(completedSamples) / Double(totalSamples))
     }
 }
 
 public enum MundaneTimespineForge {
-    /// Candidate profile earned by the Pass 5 representation study.
-    /// This is a manufacturing profile, not a claim that the full v1 artifact is sealed.
+    public static let v1DenseStart = JulianDay(2_433_282.5)! // 1950-01-01 Gregorian
+    public static let v1DenseEnd = JulianDay(2_469_807.5)!   // 2050-01-01 Gregorian
+
+    /// Data-forward Pass 5 candidate. Each body owns its own cadence.
+    /// The personal-era core is deliberately denser than the edges.
     public static let candidateProfiles: [MundaneTimespineProfile] = [
-        MundaneTimespineProfile(body: .sun, polynomialDegree: 7, segmentDays: 16)!,
-        MundaneTimespineProfile(body: .moon, polynomialDegree: 7, segmentDays: 4)!,
-        MundaneTimespineProfile(body: .mercury, polynomialDegree: 7, segmentDays: 1)!,
-        MundaneTimespineProfile(body: .venus, polynomialDegree: 7, segmentDays: 16)!,
-        MundaneTimespineProfile(body: .mars, polynomialDegree: 7, segmentDays: 8)!,
-        MundaneTimespineProfile(body: .jupiter, polynomialDegree: 7, segmentDays: 2)!,
-        MundaneTimespineProfile(body: .saturn, polynomialDegree: 7, segmentDays: 8)!,
-        MundaneTimespineProfile(body: .uranus, polynomialDegree: 7, segmentDays: 4)!,
-        MundaneTimespineProfile(body: .neptune, polynomialDegree: 7, segmentDays: 4)!,
-        MundaneTimespineProfile(body: .pluto, polynomialDegree: 7, segmentDays: 8)!,
-        MundaneTimespineProfile(body: .trueNorthNode, polynomialDegree: 7, segmentDays: 4)!,
+        MundaneTimespineProfile(body: .sun, edgeSampleDays: 4, coreSampleDays: 1)!,
+        MundaneTimespineProfile(body: .moon, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .mercury, edgeSampleDays: 1, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .venus, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .mars, edgeSampleDays: 4, coreSampleDays: 1)!,
+        MundaneTimespineProfile(body: .jupiter, edgeSampleDays: 8, coreSampleDays: 2)!,
+        MundaneTimespineProfile(body: .saturn, edgeSampleDays: 8, coreSampleDays: 2)!,
+        MundaneTimespineProfile(body: .uranus, edgeSampleDays: 8, coreSampleDays: 2)!,
+        MundaneTimespineProfile(body: .neptune, edgeSampleDays: 8, coreSampleDays: 2)!,
+        MundaneTimespineProfile(body: .pluto, edgeSampleDays: 8, coreSampleDays: 2)!,
+        MundaneTimespineProfile(body: .trueNorthNode, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
     ]
 
     public static func makeCursor(plan: MundaneTimespineForgePlan) -> Cursor {
@@ -77,46 +79,42 @@ public enum MundaneTimespineForge {
     ) throws -> MundaneTimespine {
         var cursor = Cursor(plan: plan)
         while !cursor.isComplete {
-            _ = try cursor.step(reference: reference, segmentBudget: 256)
+            _ = try cursor.step(reference: reference, sampleBudget: 4_096)
         }
         return try cursor.product()
     }
 
-    public static func estimatedCoefficientBytes(for plan: MundaneTimespineForgePlan) -> Int {
-        let span = plan.supportedEnd.value - plan.supportedStart.value
-        return plan.profiles.reduce(0) { total, profile in
-            let segments = Int(ceil(span / profile.segmentDays))
-            return total + segments * (profile.polynomialDegree + 1) * MemoryLayout<Int32>.size
-        }
+    public static func estimatedSamplePayloadBytes(for plan: MundaneTimespineForgePlan) -> Int {
+        totalSampleCount(for: plan) * 8
+    }
+
+    public static func expectedSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
+        totalSampleCount(for: plan)
     }
 
     public struct Cursor: Sendable {
         public let plan: MundaneTimespineForgePlan
 
         private var bodyIndex = 0
-        private var segmentIndex = 0
-        private var completedSegments = 0
-        private var coefficientsByBody: [MundaneBody: [Int32]] = [:]
+        private var regionIndex = 0
+        private var sampleIndex = 0
+        private var completedSamples = 0
+        private var samplesByBody: [MundaneBody: [[MundaneTimespineSample]]] = [:]
 
         fileprivate init(plan: MundaneTimespineForgePlan) {
             self.plan = plan
             for body in MundaneBody.canonicalOrder {
-                coefficientsByBody[body] = []
+                samplesByBody[body] = [[], [], []]
             }
         }
 
-        public var totalSegments: Int {
-            Self.totalSegments(for: plan)
-        }
-
-        public var isComplete: Bool {
-            bodyIndex >= plan.profiles.count
-        }
+        public var totalSamples: Int { Self.totalSampleCount(for: plan) }
+        public var isComplete: Bool { bodyIndex >= plan.profiles.count }
 
         public var progress: MundaneTimespineForgeProgress {
             MundaneTimespineForgeProgress(
-                completedSegments: completedSegments,
-                totalSegments: totalSegments,
+                completedSamples: completedSamples,
+                totalSamples: totalSamples,
                 currentBody: isComplete ? nil : plan.profiles[bodyIndex].body
             )
         }
@@ -124,66 +122,101 @@ public enum MundaneTimespineForge {
         @discardableResult
         public mutating func step(
             reference: any ForgeEphemerisReference,
-            segmentBudget: Int = 64
+            sampleBudget: Int = 256
         ) throws -> MundaneTimespineForgeProgress {
-            guard segmentBudget > 0 else { return progress }
-            var remaining = segmentBudget
+            guard sampleBudget > 0 else { return progress }
+            var remaining = sampleBudget
 
             while remaining > 0, !isComplete {
                 let profile = plan.profiles[bodyIndex]
-                let count = Self.segmentCount(for: profile, plan: plan)
+                let regions = Self.regionPlans(for: profile, plan: plan)
 
-                if segmentIndex >= count {
+                if regionIndex >= regions.count {
                     bodyIndex += 1
-                    segmentIndex = 0
+                    regionIndex = 0
+                    sampleIndex = 0
                     continue
                 }
 
-                let segmentStart = plan.supportedStart.value + Double(segmentIndex) * profile.segmentDays
-                let coefficients = try Self.fitSegment(
-                    body: profile.body,
-                    startJulianDay: segmentStart,
-                    durationDays: profile.segmentDays,
-                    degree: profile.polynomialDegree,
-                    reference: reference
+                let region = regions[regionIndex]
+                let count = Self.sampleCount(start: region.start, end: region.end, step: region.sampleDays)
+                if sampleIndex >= count {
+                    regionIndex += 1
+                    sampleIndex = 0
+                    continue
+                }
+
+                let jdValue = min(
+                    region.start + Double(sampleIndex) * region.sampleDays,
+                    region.end
                 )
-                coefficientsByBody[profile.body, default: []].append(contentsOf: coefficients)
-                segmentIndex += 1
-                completedSegments += 1
+                guard let jd = JulianDay(jdValue) else {
+                    throw MundaneTimespineError.malformedMetadata
+                }
+                let state = try reference.state(of: profile.body, at: jd)
+                guard let sample = MundaneTimespineSample(state: state) else {
+                    throw MundaneTimespineError.sampleOverflow
+                }
+                samplesByBody[profile.body]![regionIndex].append(sample)
+
+                sampleIndex += 1
+                completedSamples += 1
                 remaining -= 1
             }
 
             while !isComplete {
                 let profile = plan.profiles[bodyIndex]
-                let count = Self.segmentCount(for: profile, plan: plan)
-                guard segmentIndex >= count else { break }
-                bodyIndex += 1
-                segmentIndex = 0
+                let regions = Self.regionPlans(for: profile, plan: plan)
+                if regionIndex >= regions.count {
+                    bodyIndex += 1
+                    regionIndex = 0
+                    sampleIndex = 0
+                    continue
+                }
+                let region = regions[regionIndex]
+                let count = Self.sampleCount(start: region.start, end: region.end, step: region.sampleDays)
+                guard sampleIndex >= count else { break }
+                regionIndex += 1
+                sampleIndex = 0
             }
 
             return progress
         }
 
         public func product() throws -> MundaneTimespine {
-            guard isComplete else {
-                throw MundaneTimespineError.malformedMetadata
-            }
+            guard isComplete else { throw MundaneTimespineError.malformedMetadata }
 
             var seriesByBody: [MundaneBody: MundaneTimespineSeries] = [:]
             for profile in plan.profiles {
-                let segmentCount = Self.segmentCount(for: profile, plan: plan)
-                let coefficients = coefficientsByBody[profile.body] ?? []
-                guard coefficients.count == segmentCount * (profile.polynomialDegree + 1) else {
+                let plans = Self.regionPlans(for: profile, plan: plan)
+                guard let stored = samplesByBody[profile.body], stored.count == 3 else {
                     throw MundaneTimespineError.malformedSeries(profile.body)
                 }
-                seriesByBody[profile.body] = MundaneTimespineSeries(
-                    profile: profile,
-                    startJulianDay: plan.supportedStart.value,
-                    segmentCount: segmentCount,
-                    coefficients: coefficients
-                )
+                var regions: [MundaneTimespineRegion] = []
+                for index in 0..<3 {
+                    let regionPlan = plans[index]
+                    let expected = Self.sampleCount(
+                        start: regionPlan.start,
+                        end: regionPlan.end,
+                        step: regionPlan.sampleDays
+                    )
+                    guard stored[index].count == expected else {
+                        throw MundaneTimespineError.malformedSeries(profile.body)
+                    }
+                    regions.append(
+                        MundaneTimespineRegion(
+                            startJulianDay: regionPlan.start,
+                            endJulianDay: regionPlan.end,
+                            sampleDays: regionPlan.sampleDays,
+                            samples: stored[index]
+                        )
+                    )
+                }
+                seriesByBody[profile.body] = MundaneTimespineSeries(profile: profile, regions: regions)
             }
 
+            let denseStart = Self.clampedDenseStart(plan)
+            let denseEnd = Self.clampedDenseEnd(plan)
             let metadata = MundaneTimespineMetadata(
                 version: plan.version,
                 codec: MundaneTimespine.codec,
@@ -191,96 +224,71 @@ public enum MundaneTimespineForge {
                 astronomicalSource: plan.astronomicalSource,
                 astronomicalSourceVersion: plan.astronomicalSourceVersion,
                 supportedStart: plan.supportedStart,
+                denseStart: denseStart,
+                denseEnd: denseEnd,
                 supportedEnd: plan.supportedEnd,
-                coefficientScale: MundaneTimespine.coefficientScale,
+                positionUnitsPerDegree: MundaneTimespine.positionUnitsPerDegree,
+                speedUnitsPerDegreePerDay: MundaneTimespine.speedUnitsPerDegreePerDay,
                 profiles: plan.profiles
             )
             return try MundaneTimespine(metadata: metadata, seriesByBody: seriesByBody)
         }
 
-        private static func totalSegments(for plan: MundaneTimespineForgePlan) -> Int {
-            plan.profiles.reduce(0) { $0 + segmentCount(for: $1, plan: plan) }
+        private struct RegionPlan {
+            let start: Double
+            let end: Double
+            let sampleDays: Double
         }
 
-        private static func segmentCount(
+        private static func clampedDenseStart(_ plan: MundaneTimespineForgePlan) -> JulianDay {
+            let candidate = min(max(v1DenseStart.value, plan.supportedStart.value + 1e-9), plan.supportedEnd.value - 2e-9)
+            return JulianDay(candidate)!
+        }
+
+        private static func clampedDenseEnd(_ plan: MundaneTimespineForgePlan) -> JulianDay {
+            let start = clampedDenseStart(plan).value
+            let candidate = min(max(v1DenseEnd.value, start + 1e-9), plan.supportedEnd.value - 1e-9)
+            return JulianDay(candidate)!
+        }
+
+        private static func regionPlans(
             for profile: MundaneTimespineProfile,
             plan: MundaneTimespineForgePlan
-        ) -> Int {
-            Int(ceil((plan.supportedEnd.value - plan.supportedStart.value) / profile.segmentDays))
-        }
+        ) -> [RegionPlan] {
+            // Construction fixtures shorter than the global dense window still use
+            // three deterministic regions so the production codec is exercised.
+            let start = plan.supportedStart.value
+            let end = plan.supportedEnd.value
+            var denseStart = clampedDenseStart(plan).value
+            var denseEnd = clampedDenseEnd(plan).value
 
-        private static func fitSegment(
-            body: MundaneBody,
-            startJulianDay: Double,
-            durationDays: Double,
-            degree: Int,
-            reference: any ForgeEphemerisReference
-        ) throws -> [Int32] {
-            let sampleCount = degree + 1
-            var samples: [(x: Double, longitude: Double)] = []
-            samples.reserveCapacity(sampleCount)
-
-            // Chebyshev-Gauss nodes avoid endpoint weighting and give a tiny deterministic
-            // cosine transform for each segment.
-            for j in 0..<sampleCount {
-                let theta = Double.pi * (Double(j) + 0.5) / Double(sampleCount)
-                let x = cos(theta)
-                let jd = startJulianDay + (x + 1) * durationDays / 2
-                guard let julianDay = JulianDay(jd) else {
-                    throw MundaneTimespineError.malformedMetadata
-                }
-                let state = try reference.state(of: body, at: julianDay)
-                samples.append((x: x, longitude: state.longitude.degrees))
+            if !(start < denseStart && denseStart < denseEnd && denseEnd < end) {
+                let span = end - start
+                denseStart = start + span / 3
+                denseEnd = start + 2 * span / 3
             }
 
-            samples.sort { $0.x < $1.x }
+            return [
+                RegionPlan(start: start, end: denseStart, sampleDays: profile.edgeSampleDays),
+                RegionPlan(start: denseStart, end: denseEnd, sampleDays: profile.coreSampleDays),
+                RegionPlan(start: denseEnd, end: end, sampleDays: profile.edgeSampleDays),
+            ]
+        }
 
-            var unwrapped: [(x: Double, longitude: Double)] = []
-            unwrapped.reserveCapacity(sampleCount)
-            for sample in samples {
-                if let previous = unwrapped.last {
-                    let previousCanonical = normalize360(previous.longitude)
-                    let delta = wrap180(sample.longitude - previousCanonical)
-                    unwrapped.append((sample.x, previous.longitude + delta))
-                } else {
-                    unwrapped.append(sample)
+        private static func sampleCount(start: Double, end: Double, step: Double) -> Int {
+            Int(ceil((end - start) / step)) + 1
+        }
+
+        private static func totalSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
+            plan.profiles.reduce(0) { total, profile in
+                total + regionPlans(for: profile, plan: plan).reduce(0) { subtotal, region in
+                    subtotal + sampleCount(start: region.start, end: region.end, step: region.sampleDays)
                 }
             }
-
-            var coefficients: [Int32] = []
-            coefficients.reserveCapacity(sampleCount)
-            let scale = Double(MundaneTimespine.coefficientScale)
-
-            for k in 0..<sampleCount {
-                var sum = 0.0
-                for sample in unwrapped {
-                    let theta = acos(max(-1, min(1, sample.x)))
-                    sum += sample.longitude * cos(Double(k) * theta)
-                }
-                var coefficient = 2 * sum / Double(sampleCount)
-                if k == 0 {
-                    coefficient *= 0.5
-                }
-
-                let scaled = (coefficient * scale).rounded()
-                guard scaled >= Double(Int32.min), scaled <= Double(Int32.max) else {
-                    throw MundaneTimespineError.coefficientOverflow
-                }
-                coefficients.append(Int32(scaled))
-            }
-            return coefficients
         }
+    }
 
-        private static func normalize360(_ value: Double) -> Double {
-            var result = value.truncatingRemainder(dividingBy: 360)
-            if result < 0 { result += 360 }
-            return result == 0 ? 0 : result
-        }
-
-        private static func wrap180(_ value: Double) -> Double {
-            var result = (value + 180).truncatingRemainder(dividingBy: 360)
-            if result < 0 { result += 360 }
-            return result - 180
-        }
+    private static func totalSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
+        Cursor.totalSampleCount(for: plan)
     }
 }
