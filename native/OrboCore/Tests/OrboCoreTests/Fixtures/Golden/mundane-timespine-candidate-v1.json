@@ -9,18 +9,18 @@
   "denseStartJulianDay": 2433282.5,
   "denseEndJulianDay": 2469807.5,
   "supportedEndJulianDay": 2506331.5,
-  "estimatedSamplePayloadBytes": 15687624,
+  "estimatedSamplePayloadBytes": 49162312,
   "profiles": [
-    { "body": "Sun", "edgeSampleDays": 4.0, "coreSampleDays": 1.0 },
-    { "body": "Moon", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 },
-    { "body": "Mercury", "edgeSampleDays": 1.0, "coreSampleDays": 0.125 },
-    { "body": "Venus", "edgeSampleDays": 2.0, "coreSampleDays": 0.5 },
-    { "body": "Mars", "edgeSampleDays": 4.0, "coreSampleDays": 1.0 },
-    { "body": "Jupiter", "edgeSampleDays": 8.0, "coreSampleDays": 2.0 },
-    { "body": "Saturn", "edgeSampleDays": 8.0, "coreSampleDays": 2.0 },
-    { "body": "Uranus", "edgeSampleDays": 8.0, "coreSampleDays": 2.0 },
-    { "body": "Neptune", "edgeSampleDays": 8.0, "coreSampleDays": 2.0 },
-    { "body": "Pluto", "edgeSampleDays": 8.0, "coreSampleDays": 2.0 },
-    { "body": "True North Node", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 }
+    { "body": "Sun", "edgeSampleDays": 2.0, "coreSampleDays": 1.0 },
+    { "body": "Moon", "edgeSampleDays": 0.25, "coreSampleDays": 0.125 },
+    { "body": "Mercury", "edgeSampleDays": 0.25, "coreSampleDays": 0.0625 },
+    { "body": "Venus", "edgeSampleDays": 1.0, "coreSampleDays": 0.25 },
+    { "body": "Mars", "edgeSampleDays": 2.0, "coreSampleDays": 0.5 },
+    { "body": "Jupiter", "edgeSampleDays": 2.0, "coreSampleDays": 0.5 },
+    { "body": "Saturn", "edgeSampleDays": 2.0, "coreSampleDays": 0.5 },
+    { "body": "Uranus", "edgeSampleDays": 1.0, "coreSampleDays": 0.25 },
+    { "body": "Neptune", "edgeSampleDays": 1.0, "coreSampleDays": 0.25 },
+    { "body": "Pluto", "edgeSampleDays": 2.0, "coreSampleDays": 0.5 },
+    { "body": "True North Node", "edgeSampleDays": 0.125, "coreSampleDays": 0.020833333333333332 }
   ]
 }
