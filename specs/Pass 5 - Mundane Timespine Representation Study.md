@@ -1,6 +1,6 @@
 # Pass 5: Mundane Timespine Representation Study
 
-**Status:** Data-forward stamped-body candidate under qualified Swiss audit. Mundane Timespine v1 is not sealed until the astronomical audit, shipped artifact installation, and accumulated native proof are green.
+**Status:** Data-forward stamped-body candidate under qualified Swiss C audit. Mundane Timespine v1 is not sealed until the astronomical audit, shipped artifact installation, and accumulated native proof are green.
 
 **Date:** 2026-08-16
 
@@ -203,7 +203,7 @@ Later child spines remain Forge products, but are forged from the Mundane Timesp
 
 ---
 
-# 9. Qualified source
+# 9. Qualified source and adapter
 
 Pass 4 remains authoritative:
 
@@ -214,7 +214,17 @@ Swiss-file mode
 no silent Moshier fallback
 ```
 
-The qualification workflow fetches the official current files into a temporary construction workspace and verifies DE441 provenance at historical and modern probes.
+The qualification bench now pins the official Swiss repository at:
+
+```text
+3fd0f956d73898b91cc4f67cf18b21af656d1342
+```
+
+It builds `libswe.so` directly from the official C source with the repository's own Makefile. The sample generator and independent audit call that C library through `ctypes`; Python is orchestration, not the astronomical implementation.
+
+This change was made after the earlier Python wrapper path produced isolated one-sample speed spikes inconsistent with the surrounding longitude trajectory and with Swiss Ephemeris' own `SEFLG_SPEED` precision claim. Before spending more Timespine bytes to compensate, Orbo requalified the actual source named by Pass 4.
+
+The `.se1` files used by the audit are fetched at the same pinned Swiss commit and must identify themselves as DE441. Returned calculation flags must remain Swiss-file mode.
 
 Four similarly named `.se1` files are currently committed under `tools/pass5/`. They identify as older DE431 files and are therefore **not** accepted as the Mundane Timespine v1 source. They remain untouched pending the separate distribution/licensing cleanup. Filename similarity is not authority.
 
@@ -229,7 +239,7 @@ geocentric
 tropical
 ecliptic of date
 standard apparent Swiss Ephemeris position
-signed longitudinal speed
+SEFLG_SPEED analytic signed longitudinal speed
 true / osculating North Node
 ```
 
@@ -239,7 +249,7 @@ No topocentric, sidereal, J2000, heliocentric, or geometric-true-position overri
 
 # 11. Astronomical audit
 
-The artifact is independently decoded outside the Swift Forge and compared back to Swiss.
+The artifact is independently decoded outside the Swift Forge and compared back to the same pinned official Swiss C engine.
 
 For every body the audit checks quarter, midpoint, and three-quarter positions inside every stored interval plus deterministic random points. It records maximum and percentile angular residual, core versus edge residual, speed residual, RingFineState agreement, motion agreement, and the worst measured point.
 
@@ -278,7 +288,7 @@ The final v1 artifact still requires a fresh native bundled-resource proof after
 Pass 5 is complete only when:
 
 ```text
-qualified Swiss-file source verified           PASS
+qualified official Swiss C source verified     PASS
 stamped body profile audit                      PASS
 station-direction audit                         PASS
 final body-specific density frozen              PASS
