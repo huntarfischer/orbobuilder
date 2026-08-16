@@ -1,6 +1,6 @@
 # Phase 1a: Native Foundation Implementation Plan
 
-**Status:** Planned. Do not implement until explicitly authorized.
+**Status:** COMPLETE. Native foundation implemented and proven on 2026-08-16.
 
 **Purpose:** Build the minimum native domain vocabulary, then efficiently manufacture and prove the foundational OrboCore components that Phase 1 depends on: Ring, Mater with the Rulers rehouse, and Tympan.
 
@@ -1106,7 +1106,7 @@ The foundation should be deliberately boring.
 
 # 11. Phase 1a Completion State
 
-At the end of Phase 1a:
+The completed Phase 1a foundation is:
 
 ```text
 OrboCore
@@ -1121,6 +1121,7 @@ Domain
     Sect
     CelestialLongitude
     DegreeInSign
+    DegreeBoundaryInSign
     dignity vocabulary
 
 Ring
@@ -1132,37 +1133,67 @@ Mater
 
 Rulers
     REHOUSED INTO MATER
+    PROVEN / COMPLETE
 
 Tympan
     NATIVE CANONICAL
 ```
 
-Then Phase 1 continues into the terrestrial and celestial-address work of the Ovum rather than continuing to polish the foundation indefinitely.
+The final closure also added `FoundationIntegrationTests`, proving Ring, Mater and Tympan compose through one native foundation rather than merely passing in isolation.
+
+Phase 1 now continues into the terrestrial and celestial-address work of the Ovum rather than continuing to polish this foundation indefinitely.
 
 ---
 
-# 12. Phase 1a Execution Boundary
+# 12. Phase 1a Closure Record
 
-This document is a construction plan only.
-
-Creating it does not authorize native implementation.
-
-Before implementation begins:
+Phase 1a was explicitly authorized and implemented in five passes:
 
 ```text
-Phase 0 exit gate must be satisfied
-+
-user explicitly authorizes Phase 1a implementation
+Pass 1    Native domain vocabulary
+Pass 2    Ring
+Pass 3    Mater + Rulers rehouse
+Pass 4    Tympan
+Pass 5    Foundation closure
 ```
 
-At implementation time, preserve the repository write protocol:
+The final standalone `OrboCore` Xcode run on 2026-08-16 reported:
 
 ```text
-state exact repository
-state exact paths
-state creates / changes / deletes
-receive explicit authorization
-then write
+13 DomainTests                         PASS
+4 FixtureInfrastructureTests          PASS
+3 FoundationIntegrationTests          PASS
+12 MaterTests                          PASS
+1 Phase 0 linkage sentinel test       PASS
+12 RingTests                           PASS
+10 TympanTests                         PASS
+------------------------------------------
+55 total                              PASS
+0 failures
 ```
 
-The first implementation action should begin with the native domain vocabulary, not with Ring, Mater, or Tympan code.
+The final OrboLab launch also displayed live native readouts from:
+
+```text
+Ring
+Mater
+Tympan
+```
+
+including the shared sample foundation read used by `FoundationIntegrationTests`.
+
+The production Orbo shell no longer consumes the Phase 0 linkage sentinel. The sentinel remains only as an inert historical smoke fixture inside OrboCoreTests and does not define or gate the Phase 1a production API.
+
+Phase 1a is therefore:
+
+```text
+COMPLETE
+```
+
+The next construction slice is documented in:
+
+```text
+specs/Phase 1b - Ovum Completion Outline.md
+```
+
+That outline does not preassign future 4R outcomes. Every meaningful Phase 1b component still begins with fresh archaeology and receives exactly one earned primary 4R treatment before implementation.
