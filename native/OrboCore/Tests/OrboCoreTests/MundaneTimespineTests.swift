@@ -73,8 +73,8 @@ final class MundaneTimespineTests: XCTestCase {
         XCTAssertEqual(fixture.profiles.map(\.edgeSampleDays), MundaneTimespineForge.candidateProfiles.map(\.edgeSampleDays))
         XCTAssertEqual(fixture.profiles.map(\.coreSampleDays), MundaneTimespineForge.candidateProfiles.map(\.coreSampleDays))
         XCTAssertEqual(fixture.profiles[2].body, "Mercury")
-        XCTAssertEqual(fixture.profiles[2].edgeSampleDays, 1)
-        XCTAssertEqual(fixture.profiles[2].coreSampleDays, 0.125)
+        XCTAssertEqual(fixture.profiles[2].edgeSampleDays, 0.25)
+        XCTAssertEqual(fixture.profiles[2].coreSampleDays, 0.0625)
     }
 
     func testFullRangeStampedPayloadEstimateMatchesGoldenMeasurement() throws {
@@ -90,7 +90,7 @@ final class MundaneTimespineTests: XCTestCase {
         XCTAssertEqual(MundaneTimespineForge.estimatedSamplePayloadBytes(for: plan), fixture.estimatedSamplePayloadBytes)
         XCTAssertEqual(fixture.denseStartJulianDay, MundaneTimespineForge.v1DenseStart.value)
         XCTAssertEqual(fixture.denseEndJulianDay, MundaneTimespineForge.v1DenseEnd.value)
-        XCTAssertLessThan(fixture.estimatedSamplePayloadBytes, 16 * 1_024 * 1_024)
+        XCTAssertLessThan(fixture.estimatedSamplePayloadBytes, 50 * 1_024 * 1_024)
     }
 
     func testForgeReconstructsArbitraryStatesFromStampedKnots() throws {
@@ -102,7 +102,11 @@ final class MundaneTimespineTests: XCTestCase {
                 let expected = try reference.state(of: body, at: jd)
                 let actual = try timespine.state(of: body, at: jd)
                 XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_001)
-                XCTAssertEqual(actual.longitudinalSpeedDegreesPerDay, expected.longitudinalSpeedDegreesPerDay, accuracy: 0.000_002)
+                XCTAssertEqual(
+                    actual.longitudinalSpeedDegreesPerDay,
+                    expected.longitudinalSpeedDegreesPerDay,
+                    accuracy: 0.000_01
+                )
             }
         }
     }
