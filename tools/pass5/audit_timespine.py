@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Independently audit Orbo's stamped body Timespine against Swiss Ephemeris."""
+"""Independently audit Orbo's stamped body Timespine against official Swiss C."""
 
 from __future__ import annotations
 
 import argparse
+import ctypes
 import hashlib
 import json
 import math
@@ -12,16 +13,17 @@ import random
 import struct
 import sys
 
-import swisseph as swe
-
 BODY_MAGIC = b"ORBTBD02"
 EXPECTED_CODEC = 2
 EXPECTED_SWE_VERSION = "2.10.03"
+SEFLG_SWIEPH = 2
+SEFLG_MOSEPH = 4
+SEFLG_SPEED = 256
 BODY_IDS = {
-    0: ("Sun", swe.SUN), 1: ("Moon", swe.MOON), 2: ("Mercury", swe.MERCURY),
-    3: ("Venus", swe.VENUS), 4: ("Mars", swe.MARS), 5: ("Jupiter", swe.JUPITER),
-    6: ("Saturn", swe.SATURN), 7: ("Uranus", swe.URANUS), 8: ("Neptune", swe.NEPTUNE),
-    9: ("Pluto", swe.PLUTO), 10: ("True North Node", swe.TRUE_NODE),
+    0: ("Sun", 0), 1: ("Moon", 1), 2: ("Mercury", 2),
+    3: ("Venus", 3), 4: ("Mars", 4), 5: ("Jupiter", 5),
+    6: ("Saturn", 6), 7: ("Uranus", 7), 8: ("Neptune", 8),
+    9: ("Pluto", 9), 10: ("True North Node", 11),
 }
 VARIABLE_BODIES = {2: 0.5, 3: 1.0, 4: 1.0, 5: 1.0, 6: 1.0, 7: 1.0, 8: 1.0, 9: 1.0, 10: 0.25}
 AUDIT_FRACTIONS = (0.25, 0.5, 0.75)
@@ -32,6 +34,45 @@ MAX_SPEED_ERROR_DEG_PER_DAY = 0.005
 MIN_FINE_STATE_AGREEMENT = 0.995
 MIN_MOTION_AGREEMENT = 0.99999
 STATION_PROBE_MINUTES = 5.0
+
+
+class SwissC:
+    def __init__(self, library: Path, ephe_dir: Path) -> None:
+        self.lib = ctypes.CDLL(str(library.resolve()))
+        self.lib.swe_set_ephe_path.argtypes = [ctypes.c_char_p]
+        self.lib.swe_set_ephe_path.restype = None
+        self.lib.swe_calc_ut.argtypes = [
+            ctypes.c_double,
+            ctypes.c_int32,
+            ctypes.c_int32,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+        ]
+        self.lib.swe_calc_ut.restype = ctypes.c_int32
+        self.lib.swe_version.argtypes = [ctypes.c_char_p]
+        self.lib.swe_version.restype = ctypes.c_char_p
+        self.lib.swe_close.argtypes = []
+        self.lib.swe_close.restype = None
+        version_buffer = ctypes.create_string_buffer(256)
+        self.lib.swe_version(version_buffer)
+        self.version = version_buffer.value.decode("ascii", errors="replace")
+        if self.version != EXPECTED_SWE_VERSION:
+            raise RuntimeError(f"Swiss C version drift: expected {EXPECTED_SWE_VERSION}, got {self.version}")
+        self.lib.swe_set_ephe_path(str(ephe_dir.resolve()).encode())
+        self.flags = SEFLG_SWIEPH | SEFLG_SPEED
+
+    def state(self, jd: float, body_id: int) -> tuple[float, float]:
+        xx = (ctypes.c_double * 6)()
+        serr = ctypes.create_string_buffer(256)
+        returned = int(self.lib.swe_calc_ut(jd, body_id, self.flags, xx, serr))
+        if returned < 0:
+            raise RuntimeError(f"swe_calc_ut failed at JD {jd}: {serr.value.decode(errors='replace')}")
+        if not (returned & SEFLG_SWIEPH) or (returned & SEFLG_MOSEPH):
+            raise RuntimeError(f"Swiss-file mode lost at JD {jd}; flags={returned}")
+        return float(xx[0]), float(xx[3])
+
+    def close(self) -> None:
+        self.lib.swe_close()
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -64,16 +105,8 @@ def motion(speed: float) -> str:
     return "retrograde" if speed < 0 else "direct"
 
 
-def swiss_state(jd: float, body_id: int, flags: int) -> tuple[float, float]:
-    values, returned = swe.calc_ut(jd, body_id, flags)
-    if not (returned & swe.FLG_SWIEPH) or (returned & swe.FLG_MOSEPH):
-        raise RuntimeError(f"Swiss-file mode lost at JD {jd}; flags={returned}")
-    return values[0], values[3]
-
-
 def parse_body(path: Path, expected_body: int) -> dict:
     raw = path.read_bytes()
-    if sha256_bytes(raw) == "": raise AssertionError
     data = memoryview(raw)
     offset = 0
     if bytes(data[:8]) != BODY_MAGIC: raise RuntimeError(f"Bad body magic: {path}")
@@ -136,14 +169,14 @@ def state_at(series: dict, jd: float) -> tuple[float, float]:
     return normalize360(longitude), speed
 
 
-def audit_body(series: dict, body: int, body_id: int, flags: int, dense_start: float, dense_end: float) -> dict:
+def audit_body(series: dict, body: int, body_id: int, swiss: SwissC, dense_start: float, dense_end: float) -> dict:
     angular, speed_errors, core_angular, edge_angular = [], [], [], []
     fine_matches = motion_matches = total = 0
     worst = None
 
     def check(jd: float) -> None:
         nonlocal fine_matches, motion_matches, total, worst
-        ref_lon, ref_speed = swiss_state(jd, body_id, flags)
+        ref_lon, ref_speed = swiss.state(jd, body_id)
         spine_lon, spine_speed = state_at(series, jd)
         error = abs(wrap180(spine_lon - ref_lon)) * 3600.0
         speed_error = abs(spine_speed - ref_speed)
@@ -187,18 +220,18 @@ def audit_body(series: dict, body: int, body_id: int, flags: int, dense_start: f
     }
 
 
-def find_station_roots(start: float, end: float, body_id: int, flags: int, step: float) -> list[float]:
+def find_station_roots(start: float, end: float, body_id: int, swiss: SwissC, step: float) -> list[float]:
     roots = []
     left = start
-    _, left_speed = swiss_state(left, body_id, flags)
+    _, left_speed = swiss.state(left, body_id)
     while left + step < end:
         right = left + step
-        _, right_speed = swiss_state(right, body_id, flags)
+        _, right_speed = swiss.state(right, body_id)
         if (left_speed < 0) != (right_speed < 0):
             lo, hi, lo_speed = left, right, left_speed
             for _ in range(44):
                 mid = (lo + hi) / 2
-                _, mid_speed = swiss_state(mid, body_id, flags)
+                _, mid_speed = swiss.state(mid, body_id)
                 if (lo_speed < 0) == (mid_speed < 0): lo, lo_speed = mid, mid_speed
                 else: hi = mid
             roots.append((lo + hi) / 2)
@@ -206,15 +239,15 @@ def find_station_roots(start: float, end: float, body_id: int, flags: int, step:
     return roots
 
 
-def audit_stations(series: dict, body: int, body_id: int, flags: int) -> dict:
+def audit_stations(series: dict, body: int, body_id: int, swiss: SwissC) -> dict:
     start, end = series["regions"][0]["start"], series["regions"][-1]["end"]
-    roots = find_station_roots(start, end, body_id, flags, VARIABLE_BODIES[body])
+    roots = find_station_roots(start, end, body_id, swiss, VARIABLE_BODIES[body])
     delta = STATION_PROBE_MINUTES / 1440.0
     mismatches = []
     for root in roots:
         for side, jd in (("before", root-delta), ("after", root+delta)):
             if not (start <= jd < end): continue
-            _, ref_speed = swiss_state(jd, body_id, flags)
+            _, ref_speed = swiss.state(jd, body_id)
             _, spine_speed = state_at(series, jd)
             if motion(ref_speed) != motion(spine_speed):
                 mismatches.append({
@@ -229,16 +262,15 @@ def audit_stations(series: dict, body: int, body_id: int, flags: int) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--library", required=True)
     parser.add_argument("--ephe-dir", required=True)
     parser.add_argument("--artifact-dir", required=True)
     parser.add_argument("--provenance", required=True)
     parser.add_argument("--report", required=True)
     args = parser.parse_args()
 
-    if swe.version != EXPECTED_SWE_VERSION:
-        raise RuntimeError(f"Swiss version drift: {swe.version}")
-    swe.set_ephe_path(str(Path(args.ephe_dir).resolve()))
-    flags = swe.FLG_SWIEPH | swe.FLG_SPEED
+    ephe_dir = Path(args.ephe_dir)
+    swiss = SwissC(Path(args.library), ephe_dir)
     artifact_dir = Path(args.artifact_dir)
     manifest_path = artifact_dir / "mundane-timespine-v1.json"
     manifest_raw = manifest_path.read_bytes()
@@ -257,8 +289,8 @@ def main() -> int:
 
     body_reports, station_reports, failures = {}, {}, []
     for body, (name, body_id) in BODY_IDS.items():
-        print(f"Auditing {name}...", flush=True)
-        report = audit_body(series_by_body[body], body, body_id, flags, dense_start, dense_end)
+        print(f"Auditing {name} against official Swiss C...", flush=True)
+        report = audit_body(series_by_body[body], body, body_id, swiss, dense_start, dense_end)
         body_reports[name] = report
         if report["maxEdgeAngularArcseconds"] > MAX_EDGE_ANGULAR_ARCSEC:
             failures.append(f"{name} edge max {report['maxEdgeAngularArcseconds']:.9f} arcsec")
@@ -275,7 +307,7 @@ def main() -> int:
 
         if body in VARIABLE_BODIES:
             print(f"Auditing {name} stations...", flush=True)
-            station = audit_stations(series_by_body[body], body, body_id, flags)
+            station = audit_stations(series_by_body[body], body, body_id, swiss)
             station_reports[name] = station
             if station["motionMismatches"]:
                 failures.append(f"{name} has {station['motionMismatches']} station-direction mismatches at +/- {STATION_PROBE_MINUTES:g} minutes")
@@ -308,6 +340,7 @@ def main() -> int:
     }
     Path(args.report).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(json.dumps(result, indent=2, sort_keys=True))
+    swiss.close()
     if failures:
         print("PASS 5 QUALIFICATION FAILED", file=sys.stderr)
         for failure in failures: print(f"  - {failure}", file=sys.stderr)
