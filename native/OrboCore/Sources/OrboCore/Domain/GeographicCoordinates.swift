@@ -1,3 +1,5 @@
+import Foundation
+
 public struct Latitude: Hashable, Codable, Sendable {
     public let degrees: Double
 
