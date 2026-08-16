@@ -34,6 +34,22 @@ public enum MundaneBody: UInt8, CaseIterable, Codable, Hashable, Sendable {
         }
     }
 
+    public var artifactFileName: String {
+        switch self {
+        case .sun: return "sun.orbbody"
+        case .moon: return "moon.orbbody"
+        case .mercury: return "mercury.orbbody"
+        case .venus: return "venus.orbbody"
+        case .mars: return "mars.orbbody"
+        case .jupiter: return "jupiter.orbbody"
+        case .saturn: return "saturn.orbbody"
+        case .uranus: return "uranus.orbbody"
+        case .neptune: return "neptune.orbbody"
+        case .pluto: return "pluto.orbbody"
+        case .trueNorthNode: return "true-north-node.orbbody"
+        }
+    }
+
     public var planet: Planet? {
         switch self {
         case .sun: return .sun
@@ -66,18 +82,24 @@ public struct MundaneCelestialState: Hashable, Sendable {
     }
 }
 
+/// Per-body temporal density. The outer interval uses `edgeSampleDays`; the
+/// personal-era 1950...2050 interval uses `coreSampleDays`.
 public struct MundaneTimespineProfile: Hashable, Codable, Sendable {
     public let body: MundaneBody
-    public let polynomialDegree: Int
-    public let segmentDays: Double
+    public let edgeSampleDays: Double
+    public let coreSampleDays: Double
 
-    public init?(body: MundaneBody, polynomialDegree: Int, segmentDays: Double) {
-        guard (1...15).contains(polynomialDegree), segmentDays.isFinite, segmentDays > 0 else {
+    public init?(body: MundaneBody, edgeSampleDays: Double, coreSampleDays: Double) {
+        guard edgeSampleDays.isFinite,
+              coreSampleDays.isFinite,
+              edgeSampleDays > 0,
+              coreSampleDays > 0,
+              coreSampleDays <= edgeSampleDays else {
             return nil
         }
         self.body = body
-        self.polynomialDegree = polynomialDegree
-        self.segmentDays = segmentDays
+        self.edgeSampleDays = edgeSampleDays
+        self.coreSampleDays = coreSampleDays
     }
 }
 
@@ -88,8 +110,11 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
     public let astronomicalSource: String
     public let astronomicalSourceVersion: String
     public let supportedStart: JulianDay
+    public let denseStart: JulianDay
+    public let denseEnd: JulianDay
     public let supportedEnd: JulianDay
-    public let coefficientScale: Int
+    public let positionUnitsPerDegree: Int
+    public let speedUnitsPerDegreePerDay: Int
     public let profiles: [MundaneTimespineProfile]
 
     internal init(
@@ -99,8 +124,11 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
         astronomicalSource: String,
         astronomicalSourceVersion: String,
         supportedStart: JulianDay,
+        denseStart: JulianDay,
+        denseEnd: JulianDay,
         supportedEnd: JulianDay,
-        coefficientScale: Int,
+        positionUnitsPerDegree: Int,
+        speedUnitsPerDegreePerDay: Int,
         profiles: [MundaneTimespineProfile]
     ) {
         self.version = version
@@ -109,8 +137,11 @@ public struct MundaneTimespineMetadata: Hashable, Sendable {
         self.astronomicalSource = astronomicalSource
         self.astronomicalSourceVersion = astronomicalSourceVersion
         self.supportedStart = supportedStart
+        self.denseStart = denseStart
+        self.denseEnd = denseEnd
         self.supportedEnd = supportedEnd
-        self.coefficientScale = coefficientScale
+        self.positionUnitsPerDegree = positionUnitsPerDegree
+        self.speedUnitsPerDegreePerDay = speedUnitsPerDegreePerDay
         self.profiles = profiles
     }
 }
@@ -120,104 +151,149 @@ public enum MundaneTimespineError: Error, Equatable, Sendable {
     case missingBody(MundaneBody)
     case malformedSeries(MundaneBody)
     case malformedMetadata
-    case coefficientOverflow
+    case sampleOverflow
     case invalidArtifactMagic
     case unsupportedCodec(Int)
     case truncatedArtifact
     case invalidUTF8
+    case invalidManifest
+    case checksumMismatch(MundaneBody)
 }
 
-internal struct MundaneTimespineSeries: Sendable {
-    let profile: MundaneTimespineProfile
-    let startJulianDay: Double
-    let segmentCount: Int
-    let coefficients: [Int32]
+internal struct MundaneTimespineSample: Hashable, Sendable {
+    let positionUnits: UInt32
+    let speedUnitsPerDay: Int32
 
-    var coefficientsPerSegment: Int {
-        profile.polynomialDegree + 1
+    init?(state: MundaneCelestialState) {
+        let positionScale = Double(MundaneTimespine.positionUnitsPerDegree)
+        let speedScale = Double(MundaneTimespine.speedUnitsPerDegreePerDay)
+        let circleUnits = Int64(360 * MundaneTimespine.positionUnitsPerDegree)
+
+        var position = Int64((state.longitude.degrees * positionScale).rounded()) % circleUnits
+        if position < 0 { position += circleUnits }
+        let speed = (state.longitudinalSpeedDegreesPerDay * speedScale).rounded()
+
+        guard position >= 0,
+              position <= Int64(UInt32.max),
+              speed >= Double(Int32.min),
+              speed <= Double(Int32.max) else {
+            return nil
+        }
+        self.positionUnits = UInt32(position)
+        self.speedUnitsPerDay = Int32(speed)
     }
 
-    func state(at julianDay: Double, coefficientScale: Double) throws -> MundaneCelestialState {
-        guard segmentCount > 0,
-              coefficients.count == segmentCount * coefficientsPerSegment else {
-            throw MundaneTimespineError.malformedSeries(profile.body)
+    func state() -> MundaneCelestialState {
+        let longitude = CelestialLongitude(
+            Double(positionUnits) / Double(MundaneTimespine.positionUnitsPerDegree)
+        )!
+        let speed = Double(speedUnitsPerDay) / Double(MundaneTimespine.speedUnitsPerDegreePerDay)
+        return MundaneCelestialState(
+            longitude: longitude,
+            longitudinalSpeedDegreesPerDay: speed
+        )!
+    }
+}
+
+internal struct MundaneTimespineRegion: Sendable {
+    let startJulianDay: Double
+    let endJulianDay: Double
+    let sampleDays: Double
+    let samples: [MundaneTimespineSample]
+
+    var intervalCount: Int { samples.count - 1 }
+
+    func state(at julianDay: Double) throws -> MundaneCelestialState {
+        guard startJulianDay <= julianDay,
+              julianDay <= endJulianDay,
+              sampleDays > 0,
+              samples.count >= 2 else {
+            throw MundaneTimespineError.malformedMetadata
         }
 
-        let relative = max(0, julianDay - startJulianDay)
-        let rawIndex = Int(floor(relative / profile.segmentDays))
-        let segmentIndex = min(max(0, rawIndex), segmentCount - 1)
-        let segmentStart = startJulianDay + Double(segmentIndex) * profile.segmentDays
-        let u = (julianDay - segmentStart) / profile.segmentDays
-        let x = max(-1, min(1, 2 * u - 1))
-        let offset = segmentIndex * coefficientsPerSegment
+        let rawIndex = Int(floor((julianDay - startJulianDay) / sampleDays))
+        let index = min(max(0, rawIndex), intervalCount - 1)
+        let t0 = startJulianDay + Double(index) * sampleDays
+        let t1 = min(t0 + sampleDays, endJulianDay)
+        let h = t1 - t0
+        guard h > 0 else { throw MundaneTimespineError.malformedMetadata }
 
-        var c = [Double]()
-        c.reserveCapacity(coefficientsPerSegment)
-        for index in 0..<coefficientsPerSegment {
-            c.append(Double(coefficients[offset + index]) / coefficientScale)
-        }
+        let left = samples[index].state()
+        let right = samples[index + 1].state()
+        let u = max(0, min(1, (julianDay - t0) / h))
 
-        let unwrappedLongitude = Self.chebyshevValue(coefficients: c, x: x)
-        let speedInX = Self.chebyshevDerivative(coefficients: c, x: x)
-        let speedPerDay = speedInX * 2 / profile.segmentDays
+        let p0 = left.longitude.degrees
+        let delta = Self.wrap180(right.longitude.degrees - p0)
+        let p1 = p0 + delta
+        let v0 = left.longitudinalSpeedDegreesPerDay
+        let v1 = right.longitudinalSpeedDegreesPerDay
+
+        let u2 = u * u
+        let u3 = u2 * u
+        let h00 = 2 * u3 - 3 * u2 + 1
+        let h10 = u3 - 2 * u2 + u
+        let h01 = -2 * u3 + 3 * u2
+        let h11 = u3 - u2
+
+        let unwrappedLongitude = h00 * p0 + h10 * h * v0 + h01 * p1 + h11 * h * v1
+
+        let dh00 = 6 * u2 - 6 * u
+        let dh10 = 3 * u2 - 4 * u + 1
+        let dh01 = -6 * u2 + 6 * u
+        let dh11 = 3 * u2 - 2 * u
+        let derivativeU = dh00 * p0 + dh10 * h * v0 + dh01 * p1 + dh11 * h * v1
+        let speed = derivativeU / h
 
         guard let longitude = CelestialLongitude(unwrappedLongitude),
               let state = MundaneCelestialState(
                 longitude: longitude,
-                longitudinalSpeedDegreesPerDay: speedPerDay
+                longitudinalSpeedDegreesPerDay: speed
               ) else {
-            throw MundaneTimespineError.malformedSeries(profile.body)
+            throw MundaneTimespineError.malformedSeries(.sun)
         }
         return state
     }
 
-    private static func chebyshevValue(coefficients: [Double], x: Double) -> Double {
-        guard !coefficients.isEmpty else { return 0 }
-        if coefficients.count == 1 { return coefficients[0] }
+    private static func wrap180(_ value: Double) -> Double {
+        var result = (value + 180).truncatingRemainder(dividingBy: 360)
+        if result < 0 { result += 360 }
+        return result - 180
+    }
+}
 
-        var t0 = 1.0
-        var t1 = x
-        var value = coefficients[0] + coefficients[1] * x
+internal struct MundaneTimespineSeries: Sendable {
+    let profile: MundaneTimespineProfile
+    let regions: [MundaneTimespineRegion]
 
-        if coefficients.count > 2 {
-            for k in 2..<coefficients.count {
-                let tk = 2 * x * t1 - t0
-                value += coefficients[k] * tk
-                t0 = t1
-                t1 = tk
-            }
+    func state(at julianDay: Double) throws -> MundaneCelestialState {
+        guard let region = regions.first(where: {
+            julianDay >= $0.startJulianDay && julianDay < $0.endJulianDay
+        }) else {
+            throw MundaneTimespineError.malformedSeries(profile.body)
         }
-        return value
+        return try region.state(at: julianDay)
+    }
+}
+
+public struct MundaneTimespineArtifactSet: Sendable {
+    public let manifest: Data
+    public let bodyArtifacts: [MundaneBody: Data]
+    public let manifestChecksum: String
+
+    public var totalBytes: Int {
+        manifest.count + bodyArtifacts.values.reduce(0) { $0 + $1.count }
     }
 
-    private static func chebyshevDerivative(coefficients: [Double], x: Double) -> Double {
-        guard coefficients.count > 1 else { return 0 }
-
-        // dT_k/dx = k U_(k-1). Build U directly so the stored polynomial remains
-        // the only state authority and no independent velocity coefficients are needed.
-        var uPrevious = 1.0
-        var derivative = coefficients[1]
-        guard coefficients.count > 2 else { return derivative }
-
-        var uCurrent = 2 * x
-        derivative += 2 * coefficients[2] * uCurrent
-
-        if coefficients.count > 3 {
-            for k in 3..<coefficients.count {
-                let uNext = 2 * x * uCurrent - uPrevious
-                derivative += Double(k) * coefficients[k] * uNext
-                uPrevious = uCurrent
-                uCurrent = uNext
-            }
-        }
-        return derivative
+    public func data(for body: MundaneBody) -> Data? {
+        bodyArtifacts[body]
     }
 }
 
 public struct MundaneTimespine: Sendable {
-    public static let codec = 1
-    public static let coefficientScale = 5_000_000
-    public static let representation = "fixed-point Chebyshev segments"
+    public static let codec = 2
+    public static let positionUnitsPerDegree = 3_600_000 // 0.001 arcsecond
+    public static let speedUnitsPerDegreePerDay = 3_600_000 // 0.001 arcsecond/day
+    public static let representation = "separate stamped body knots + cubic Hermite reads"
 
     public let metadata: MundaneTimespineMetadata
     internal let seriesByBody: [MundaneBody: MundaneTimespineSeries]
@@ -228,19 +304,29 @@ public struct MundaneTimespine: Sendable {
     ) throws {
         guard metadata.codec == Self.codec,
               metadata.astroDNACodec == AstroDNA.codec,
-              metadata.coefficientScale == Self.coefficientScale,
-              metadata.supportedStart.value < metadata.supportedEnd.value,
+              metadata.positionUnitsPerDegree == Self.positionUnitsPerDegree,
+              metadata.speedUnitsPerDegreePerDay == Self.speedUnitsPerDegreePerDay,
+              metadata.supportedStart.value < metadata.denseStart.value,
+              metadata.denseStart.value < metadata.denseEnd.value,
+              metadata.denseEnd.value < metadata.supportedEnd.value,
               metadata.profiles.map(\.body) == MundaneBody.canonicalOrder,
               Set(seriesByBody.keys) == Set(MundaneBody.canonicalOrder) else {
             throw MundaneTimespineError.malformedMetadata
         }
+
+        for body in MundaneBody.canonicalOrder {
+            guard let series = seriesByBody[body],
+                  series.profile.body == body,
+                  series.regions.count == 3 else {
+                throw MundaneTimespineError.malformedSeries(body)
+            }
+        }
+
         self.metadata = metadata
         self.seriesByBody = seriesByBody
     }
 
-    public var bodies: [MundaneBody] {
-        MundaneBody.canonicalOrder
-    }
+    public var bodies: [MundaneBody] { MundaneBody.canonicalOrder }
 
     public var supportedRangeDescription: String {
         String(format: "%.5f..<%.5f", metadata.supportedStart.value, metadata.supportedEnd.value)
@@ -258,21 +344,21 @@ public struct MundaneTimespine: Sendable {
         guard let series = seriesByBody[body] else {
             throw MundaneTimespineError.missingBody(body)
         }
-        return try series.state(
-            at: julianDay.value,
-            coefficientScale: Double(metadata.coefficientScale)
-        )
+        return try series.state(at: julianDay.value)
     }
 
-    public func encodedArtifact() -> Data {
+    public func encodedArtifacts() -> MundaneTimespineArtifactSet {
         MundaneTimespineCodec.encode(self)
     }
 
     public var checksum: String {
-        MundaneTimespineCodec.sha256Hex(encodedArtifact())
+        encodedArtifacts().manifestChecksum
     }
 
-    public static func decodeArtifact(_ data: Data) throws -> MundaneTimespine {
-        try MundaneTimespineCodec.decode(data)
+    public static func decodeArtifacts(
+        manifest: Data,
+        bodyArtifacts: [MundaneBody: Data]
+    ) throws -> MundaneTimespine {
+        try MundaneTimespineCodec.decode(manifest: manifest, bodyArtifacts: bodyArtifacts)
     }
 }
