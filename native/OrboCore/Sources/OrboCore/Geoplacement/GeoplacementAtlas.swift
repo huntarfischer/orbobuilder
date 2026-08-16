@@ -9,7 +9,7 @@ public enum GeoplacementResolution: Equatable, Sendable {
 public enum GeoplacementAtlas {
     public static let version = "1"
     public static let sourceDescription = "Orbo cities.js: city-timezones cityMapping.json (MIT) plus hand-curated major cities; coordinates rounded to 2 decimals"
-    public static let expectedRecordCount = 7_358
+    public static let expectedRecordCount = 7_356
 
     private static let records: [Place] = {
         do {
