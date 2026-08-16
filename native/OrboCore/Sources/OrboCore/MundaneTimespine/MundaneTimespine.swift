@@ -82,8 +82,6 @@ public struct MundaneCelestialState: Hashable, Sendable {
     }
 }
 
-/// Per-body temporal density. The outer interval uses `edgeSampleDays`; the
-/// personal-era 1950...2050 interval uses `coreSampleDays`.
 public struct MundaneTimespineProfile: Hashable, Codable, Sendable {
     public let body: MundaneBody
     public let edgeSampleDays: Double
@@ -164,6 +162,11 @@ internal struct MundaneTimespineSample: Hashable, Sendable {
     let positionUnits: UInt32
     let speedUnitsPerDay: Int32
 
+    init(positionUnits: UInt32, speedUnitsPerDay: Int32) {
+        self.positionUnits = positionUnits
+        self.speedUnitsPerDay = speedUnitsPerDay
+    }
+
     init?(state: MundaneCelestialState) {
         let positionScale = Double(MundaneTimespine.positionUnitsPerDegree)
         let speedScale = Double(MundaneTimespine.speedUnitsPerDegreePerDay)
@@ -234,7 +237,6 @@ internal struct MundaneTimespineRegion: Sendable {
         let h10 = u3 - 2 * u2 + u
         let h01 = -2 * u3 + 3 * u2
         let h11 = u3 - u2
-
         let unwrappedLongitude = h00 * p0 + h10 * h * v0 + h01 * p1 + h11 * h * v1
 
         let dh00 = 6 * u2 - 6 * u
@@ -249,7 +251,7 @@ internal struct MundaneTimespineRegion: Sendable {
                 longitude: longitude,
                 longitudinalSpeedDegreesPerDay: speed
               ) else {
-            throw MundaneTimespineError.malformedSeries(.sun)
+            throw MundaneTimespineError.malformedMetadata
         }
         return state
     }
@@ -291,8 +293,8 @@ public struct MundaneTimespineArtifactSet: Sendable {
 
 public struct MundaneTimespine: Sendable {
     public static let codec = 2
-    public static let positionUnitsPerDegree = 3_600_000 // 0.001 arcsecond
-    public static let speedUnitsPerDegreePerDay = 3_600_000 // 0.001 arcsecond/day
+    public static let positionUnitsPerDegree = 3_600_000
+    public static let speedUnitsPerDegreePerDay = 3_600_000
     public static let representation = "separate stamped body knots + cubic Hermite reads"
 
     public let metadata: MundaneTimespineMetadata
