@@ -10,6 +10,7 @@
 2. `specs/Phase 0 - The Lab.md`
 3. `specs/Phase 1 - The Ovum.md`
 4. `specs/Phase 1a - Native Foundation Implementation Plan.md`
+5. `specs/Phase 1b - Ovum Completion Outline.md`
 
 This document is the maintained ledger and manifest for moving solved Orbo work from the JavaScript/HTML prototype into native Orbo 1.0.
 
@@ -279,6 +280,7 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Mater | REPLICATE | EXACT | OrboCore / Mater | NATIVE CANONICAL |
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | NATIVE CANONICAL |
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | PROVEN / COMPLETE |
+| Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | IMPLEMENTED / AWAITING NATIVE PROOF |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
@@ -1900,7 +1902,321 @@ Rulers has no independent native production component. Its surviving essential-d
 
 ---
 
-# 9. Phase 1a Closure and Current Construction Boundary
+# 9. Component: Geoplacement Atlas
+
+## Prototype source
+
+There is no single prototype Geoplacement component.
+
+The current behavior is distributed across:
+
+```text
+cities.js
+cities.browser.js
+Orbo Astrolabe.dc.html
+packs/index.js
+```
+
+The factual city corpus is `cities.js`. Its header identifies the source as:
+
+```text
+city-timezones cityMapping.json (MIT)
++
+hand-curated major cities
+```
+
+The file is deduplicated by rounded latitude / longitude and stores coordinates rounded to two decimal places.
+
+The current corpus contains 7,358 records in the compact prototype shape:
+
+```text
+n   display / canonical-ish place label
+la  latitude
+lo  longitude
+tz  timezone identifier
+```
+
+The older `packs/index.js` location path references `packs/data/cityMap.json`, but that data file is not present in the current repository and is therefore stale scaffolding rather than the live authority.
+
+## What it currently does
+
+Prototype Orbo uses the city corpus and embedded UI code to:
+
+```text
+search city labels by case-insensitive substring
+cap UI suggestions at 50
+resolve an exact city label
+fall back to a `name, ...` prefix read
+return latitude
+return longitude
+return timezone identity
+```
+
+Device geolocation is a separate path and can supply exact coordinates without passing through the named-place corpus.
+
+The selected timezone identifier is later passed to separate civil-time logic, which calculates the historical/local UTC offset. That offset calculation is not Geoplacement law.
+
+## Actual law
+
+The useful component law is:
+
+```text
+human place query
+-> zero / one / many matching canonical place records
+
+canonical place record
+-> latitude
+-> geographic longitude
+-> timezone jurisdiction identity
+
+stable offline search over the shipped place corpus
+
+explicit Atlas version / provenance
+```
+
+It does not own:
+
+```text
+UTC offset
+DST calculation
+historical timezone transition law
+local clock -> absolute time
+planetary astronomy
+horizon geometry
+AstroDNA
+interpretation
+```
+
+## What is proven
+
+Archaeology establishes several important current behaviors and defects:
+
+```text
+7,358 shipped records
+coordinates rounded to two decimal places
+IANA-style timezone identifiers carried as data
+case-insensitive substring search
+prototype exact-name resolution
+prototype prefix convenience resolution
+```
+
+The current dataset also contains duplicate exact labels with different coordinates. For example, `Tokyo, Japan` appears with more than one coordinate pair.
+
+Prototype matching silently resolves ambiguity:
+
+```text
+Map construction can overwrite an earlier exact duplicate
+prefix fallback uses the first match
+```
+
+That behavior conflicts with the Phase 1 gate requiring ambiguous place names to be surfaced rather than guessed.
+
+## Current dependencies
+
+The factual `cities.js` corpus is static and has no astrology dependency.
+
+The browser implementation depends on UI/runtime machinery for matching and browser geolocation, but those are not part of the native Atlas law.
+
+## Current consumers
+
+Current prototype consumers include:
+
+```text
+natal / birth-place entry
+current-location / place state
+local civil-time preparation
+UI suggestion lists
+```
+
+The immediate native consumer expected next is Civil Time, which needs a stable timezone jurisdiction identity after place resolution.
+
+## Known tests / fixtures
+
+There is no mature dedicated prototype Geoplacement test suite.
+
+Native proof is therefore built from:
+
+```text
+the versioned 7,358-record source artifact
+known place rows
+real duplicate-label evidence
+synthetic ambiguity cases
+search behavior
+native coordinate invariants
+```
+
+Native implementation and proof material:
+
+```text
+native/OrboCore/Sources/OrboCore/Domain/GeographicCoordinates.swift
+native/OrboCore/Sources/OrboCore/Geoplacement/GeoplacementAtlas.swift
+native/OrboCore/Sources/OrboCore/Geoplacement/Resources/geoplacement-atlas-v1.js
+native/OrboCore/Tests/OrboCoreTests/GeoplacementTests.swift
+```
+
+## User-visible consequence
+
+A Geoplacement error can choose the wrong terrestrial coordinate or timezone jurisdiction before any astronomical calculation begins.
+
+Ambiguity is therefore a correctness state, not a UI inconvenience.
+
+## 4R
+
+**REPRODUCE**
+
+## Why
+
+There is no single coherent prototype component to transpose.
+
+The solved result is distributed across:
+
+```text
+static city data
+browser mirror
+embedded UI search / matching logic
+stale pack-era lookup scaffolding
+```
+
+The useful behavior survives, but the implementation shape should not.
+
+Native Orbo reproduces the capability as one explicit offline Atlas owner with typed coordinates, stable versioned data, and explicit resolution outcomes.
+
+## Swift Sanding
+
+```text
+raw latitude Number
+-> Latitude
+
+raw geographic longitude Number
+-> GeographicLongitude
+
+celestial and geographic longitude sharing a primitive type
+-> distinct native types
+
+raw timezone String
+-> TimezoneIdentifier
+
+plain city object
+-> Place
+
+null / implicit miss
+-> GeoplacementResolution.notFound
+
+silent duplicate overwrite / first prefix match
+-> GeoplacementResolution.ambiguous([...])
+
+browser substring matcher
+-> deterministic Core search
+
+browser-global cities mirror
+-> no native counterpart
+
+unversioned runtime corpus
+-> Geoplacement Atlas v1 resource
+```
+
+The current prototype corpus is reused as the **v1 source artifact** rather than silently swapping datasets during migration. This keeps the native pass auditable and gives future dataset improvements an explicit version boundary.
+
+The Atlas parser treats malformed shipped records as artifact/programmer failure rather than silently dropping them.
+
+The current two-decimal coordinate precision is preserved and declared as the fidelity of Atlas v1. It is not represented as exact street-address or hospital-level geolocation.
+
+## Native destination
+
+```text
+OrboCore / GeoplacementAtlas
+```
+
+## Native dependencies
+
+```text
+Latitude
+GeographicLongitude
+TimezoneIdentifier
+Place
+Foundation resource loading / string parsing
+```
+
+Geoplacement does not depend on Ring, Mater, Tympan, AstroDNA, Ephemeris, Orbo Spine, Horizon, Loom, UI, or Civil Time calculations.
+
+## Native mating surface
+
+```text
+GeoplacementAtlas.search(...)
+GeoplacementAtlas.resolve(...)
+GeoplacementAtlas.version
+GeoplacementAtlas.count
+
+GeoplacementResolution
+    found(Place)
+    ambiguous([Place])
+    notFound
+```
+
+Civil Time receives the resolved `TimezoneIdentifier`; it does not ask Geoplacement for a UTC offset.
+
+## Parity standard
+
+**BEHAVIORAL**
+
+For unambiguous valid reads, preserve the useful prototype result:
+
+```text
+same v1 source record
+same canonical label
+same rounded coordinates
+same timezone identity
+same case-insensitive search behavior
+same unique prefix convenience
+```
+
+Intentional native correction:
+
+```text
+ambiguous exact or prefix match
+prototype: silently chooses
+native: returns ambiguity
+```
+
+The browser implementation shape, mirror, and implicit selection bugs are not parity requirements.
+
+## Proof method
+
+Prove:
+
+```text
+Atlas v1 loads exactly 7,358 records
+Latitude rejects values outside [-90, 90]
+GeographicLongitude rejects values outside [-180, 180]
+geographic longitude is not celestial cyclic longitude
+known unique place rows agree with prototype data
+case and surrounding whitespace do not change exact resolution
+unique prefix convenience survives
+real duplicate exact labels surface ambiguity
+synthetic prefix ambiguity surfaces ambiguity
+unknown and empty queries return notFound
+search remains stable, case-insensitive, substring-based and bounded
+JavaScript escaped place names decode correctly
+timezone jurisdiction identity survives without civil-offset calculation
+```
+
+Then run the entire accumulated standalone Xcode package suite and inspect the Atlas in OrboLab.
+
+## Proof evidence
+
+Implementation is present. A local Swift 6.2 mini-package preflight verified the resource-bundle parser shape, JavaScript apostrophe escape handling, Unicode escape handling, typed place construction, and basic resolution behavior.
+
+The authoritative accumulated native proof still requires the standalone OrboCore Xcode test run on the development Mac.
+
+## Status
+
+**IMPLEMENTED / AWAITING NATIVE PROOF**
+
+Do not promote Geoplacement Atlas to native canonical until the accumulated Xcode suite and OrboLab readout pass.
+
+---
+
+# 10. Phase 1a Closure and Current Construction Boundary
 
 Phase 1a was implemented under `specs/Phase 1a - Native Foundation Implementation Plan.md` in five controlled passes:
 
@@ -1956,24 +2272,26 @@ Phase 1a is therefore:
 COMPLETE
 ```
 
-The next dependency-driven construction slice is outlined in:
+Phase 1b is now active under:
 
 ```text
 specs/Phase 1b - Ovum Completion Outline.md
 ```
 
-Its current sequence is:
+Current checkpoint:
 
 ```text
-1. Geoplacement + terrestrial vocabulary
-2. Civil Time and timezone history
-3. AstroDNA contract
-4. Ephemeris Forge archaeology and qualification
-5. Spine Forge + Orbo Spine v1
-6. Horizon + AstroDNA Encoder + Ovum Resolver
-7. Loom
-8. Resonator + OrboLab completion + seal the Ovum
+Pass 1    Geoplacement + terrestrial vocabulary    IMPLEMENTED / AWAITING NATIVE PROOF
+Pass 2    Civil Time and timezone history          NOT STARTED
+Pass 3    AstroDNA contract                         NOT STARTED
+Pass 4    Ephemeris Forge qualification             NOT STARTED
+Pass 5    Spine Forge + Orbo Spine v1               NOT STARTED
+Pass 6    Horizon + AstroDNA Encoder + Resolver     NOT STARTED
+Pass 7    Loom                                      NOT STARTED
+Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
 ```
+
+Do not begin Civil Time until Geoplacement passes its accumulated native proof gate and the next pass is explicitly authorized.
 
 This ordering does not preassign any future component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
 
