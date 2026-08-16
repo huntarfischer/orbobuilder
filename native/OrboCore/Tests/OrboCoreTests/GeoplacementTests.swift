@@ -16,7 +16,7 @@ final class GeoplacementTests: XCTestCase {
         XCTAssertNil(GeographicLongitude(.nan))
 
         XCTAssertEqual(GeographicLongitude(-89.4)?.degrees, -89.4)
-        XCTAssertEqual(CelestialLongitude(-89.4)?.degrees, 270.6, accuracy: 0.000_000_1)
+        XCTAssertEqual(CelestialLongitude(-89.4)!.degrees, 270.6, accuracy: 0.000_000_1)
     }
 
     func testAtlasLoadsTheVersioned7358RecordCorpus() {
