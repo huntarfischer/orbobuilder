@@ -1,0 +1,24 @@
+{
+  "status": "candidate-representation-only",
+  "codec": 1,
+  "astroDNACodec": 4,
+  "representation": "fixed-point Chebyshev segments",
+  "coefficientScale": 1000000,
+  "polynomialDegree": 7,
+  "supportedStartJulianDay": 2341972.5,
+  "supportedEndJulianDay": 2506331.5,
+  "estimatedCoefficientBytes": 13148832,
+  "profiles": [
+    { "body": "Sun", "segmentDays": 16.0 },
+    { "body": "Moon", "segmentDays": 4.0 },
+    { "body": "Mercury", "segmentDays": 2.0 },
+    { "body": "Venus", "segmentDays": 16.0 },
+    { "body": "Mars", "segmentDays": 8.0 },
+    { "body": "Jupiter", "segmentDays": 2.0 },
+    { "body": "Saturn", "segmentDays": 8.0 },
+    { "body": "Uranus", "segmentDays": 4.0 },
+    { "body": "Neptune", "segmentDays": 4.0 },
+    { "body": "Pluto", "segmentDays": 8.0 },
+    { "body": "True North Node", "segmentDays": 4.0 }
+  ]
+}
