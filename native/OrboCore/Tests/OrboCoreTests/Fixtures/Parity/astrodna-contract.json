@@ -1,5 +1,5 @@
 {
-  "codec": 3,
+  "codec": 4,
   "geneOrder": [
     "Ascendant",
     "Moon",
@@ -26,7 +26,7 @@
     "variable",
     "variable",
     "variable",
-    "fixedRetrograde"
+    "variable"
   ],
   "ringFineStates": 2592000,
   "ringArcseconds": 1296000,
