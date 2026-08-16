@@ -216,7 +216,7 @@ internal struct MundaneTimespineSeries: Sendable {
 
 public struct MundaneTimespine: Sendable {
     public static let codec = 1
-    public static let coefficientScale = 1_000_000
+    public static let coefficientScale = 5_000_000
     public static let representation = "fixed-point Chebyshev segments"
 
     public let metadata: MundaneTimespineMetadata
