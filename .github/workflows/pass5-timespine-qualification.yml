@@ -24,7 +24,6 @@ jobs:
   qualify:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
@@ -43,27 +42,26 @@ jobs:
           git -C .forge/swisseph checkout --detach FETCH_HEAD
           make -C .forge/swisseph libswe.so
           test -f .forge/swisseph/libswe.so
-          git -C .forge/swisseph rev-parse HEAD
 
       - name: Fetch pinned qualified Swiss DE441 files
         run: |
           mkdir -p .forge/ephe
           base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
           for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
-            curl --fail --location --retry 4 --retry-all-errors \
-              "$base/$file" \
-              --output ".forge/ephe/$file"
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
           sha256sum .forge/ephe/*.se1 | sort
 
-      - name: Generate deterministic Swiss C stamped-knot stream
+      - name: Generate position knots and exact station chronology
         run: |
+          mkdir -p .forge
           python tools/pass5/generate_swiss_samples.py \
             --library .forge/swisseph/libswe.so \
             --ephe-dir .forge/ephe \
             --fixture native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json \
             --output .forge/swiss-samples.bin \
+            --stations-output .forge/swiss-stations.json \
             --provenance-output .forge/swiss-provenance.json
 
       - name: Build Mundane Timespine body artifacts with native Forge
@@ -73,6 +71,7 @@ jobs:
             -c release \
             OrboForgeTool \
             --samples "$PWD/.forge/swiss-samples.bin" \
+            --stations "$PWD/.forge/swiss-stations.json" \
             --output-dir "$PWD/.forge/mundane-timespine-v1" \
             --version "v1" \
             --source "Swiss Ephemeris" \
@@ -80,7 +79,7 @@ jobs:
             --start-jd "2341972.5" \
             --end-jd "2506331.5"
 
-      - name: Audit body artifacts independently against official Swiss C
+      - name: Audit codec 3 independently against official Swiss C
         id: audit
         continue-on-error: true
         run: |
@@ -106,20 +105,19 @@ jobs:
             .forge/mundane-timespine-v1/
             .forge/mundane-timespine-v1-qualification.json
             .forge/swiss-provenance.json
+            .forge/swiss-stations.json
 
       - name: Enforce astronomical qualification gate
         if: steps.audit.outcome != 'success'
         run: |
-          echo "The stamped Timespine candidate did not satisfy the official Swiss C fidelity gate."
+          echo "Timespine codec 3 did not satisfy the official Swiss C fidelity gate."
           exit 1
 
   native-tests:
     runs-on: macos-15
     timeout-minutes: 30
-
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
-
       - name: Run accumulated OrboCore tests on Apple Swift
         run: swift test --package-path native/OrboCore
