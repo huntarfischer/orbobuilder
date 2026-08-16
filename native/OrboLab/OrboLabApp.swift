@@ -178,9 +178,9 @@ private struct FoundationLabView: View {
                 )
                 readout("Asc fine state", "\(labAstroDNA[.ascendant].rawValue)")
                 readout("Asc longitude", String(format: "%.6f", labAstroDNA.longitude(of: .ascendant).degrees))
-                readout("Node source", "mean north node")
+                readout("Node source", "true / osculating north node")
                 readout("Node motion", labAstroDNA.motion(of: .northNode).rawValue)
-                readout("South Node", String(format: "%.6f", labAstroDNA.meanSouthNodeLongitude.degrees))
+                readout("South Node", String(format: "%.6f", labAstroDNA.southNodeLongitude.degrees))
                 readout("degree projection", labAstroDNA.degreeSequenceString)
 
                 Divider()
