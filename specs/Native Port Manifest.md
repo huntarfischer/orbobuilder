@@ -280,7 +280,8 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Mater | REPLICATE | EXACT | OrboCore / Mater | NATIVE CANONICAL |
 | Tympan | REPLICATE | EXACT | OrboCore / Tympan | NATIVE CANONICAL |
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | PROVEN / COMPLETE |
-| Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | IMPLEMENTED / AWAITING NATIVE PROOF |
+| Geoplacement Atlas | REPRODUCE | BEHAVIORAL | OrboCore / GeoplacementAtlas | NATIVE CANONICAL |
+| Civil Time | REPRODUCE | BEHAVIORAL | OrboCore / CivilTime | IMPLEMENTED / AWAITING NATIVE PROOF |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
 | Mundane chronology | PENDING | PENDING | PENDING | QUEUED |
@@ -2026,7 +2027,7 @@ local civil-time preparation
 UI suggestion lists
 ```
 
-The immediate native consumer expected next is Civil Time, which needs a stable timezone jurisdiction identity after place resolution.
+The immediate native consumer is Civil Time, which receives the stable timezone jurisdiction identity after place resolution.
 
 ## Known tests / fixtures
 
@@ -2202,19 +2203,358 @@ Then run the entire accumulated standalone Xcode package suite and inspect the A
 
 ## Proof evidence
 
-Implementation is present. A local Swift 6.2 mini-package preflight verified the resource-bundle parser shape, JavaScript apostrophe escape handling, Unicode escape handling, typed place construction, and basic resolution behavior.
+Implementation is present.
 
-The authoritative accumulated native proof still requires the standalone OrboCore Xcode test run on the development Mac.
+A local Swift preflight of the Geoplacement code passed before native proof. The first Xcode launch exposed an incorrect expected-record invariant: the source contains two internal comment marker lines, so the true record count is 7,356 rather than 7,358. The invariant and tests were corrected without changing the Atlas data.
+
+Native Xcode proof was completed on 2026-08-16. The standalone `OrboCore` package reported:
+
+```text
+66 total tests    PASS
+0 failures
+```
+
+All 11 Geoplacement tests were green, including the 7,356-record corpus gate and ambiguity behavior.
+
+OrboLab was then launched successfully. After the diagnostic view's vertical scrolling was made explicit, the Lab visibly showed the full Tympan section followed by Geoplacement with:
+
+```text
+atlas version    1
+records          7356
+query            Madison, WI, USA
+```
+
+The Geoplacement native proof gate is satisfied.
+
+## Status
+
+**NATIVE CANONICAL**
+
+Geoplacement Atlas may now serve as the canonical native offline place -> coordinates + timezone-jurisdiction authority.
+
+---
+
+# 10. Component: Civil Time
+
+## Prototype source
+
+There is no single prototype Civil Time component.
+
+The current law is distributed across:
+
+```text
+Orbo Astrolabe.dc.html
+    _zoneOffH(...)
+    _resolveJd(...)
+
+aaf.js
+    parseDate(...)
+    parseZone(...)
+    toJD(...)
+    Local Mean Time validation
+
+ephem.js
+    julianDay(...)
+    jdToDate(...)
+```
+
+Relevant authority notes include:
+
+```text
+specs/Phase 1 - The Ovum.md
+specs/Phase 1b - Ovum Completion Outline.md
+specs/Celestial to Civil Time Conversion.md
+AAF Translation Protocol.md
+```
+
+Native implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/Domain/CivilTimeVocabulary.swift
+native/OrboCore/Sources/OrboCore/CivilTime/CivilTime.swift
+```
+
+Native proof material:
+
+```text
+native/OrboCore/Tests/OrboCoreTests/CivilTimeTests.swift
+native/OrboCore/Tests/OrboCoreTests/Fixtures/Parity/civil-time-parity.json
+```
+
+## What it currently does
+
+Prototype Orbo has two useful time paths.
+
+The app path resolves a human local birth clock through the birthplace's IANA timezone using browser `Intl`, with longitude/15 and finally the device timezone as fallbacks. It converts the selected offset into Julian Day.
+
+The AAF path accepts an explicit applied UTC offset, preserves Local Mean Time metadata, and computes a calendar-aware Julian Day. It correctly distinguishes Gregorian and Julian calendar arithmetic where the app's `ephem.julianDay()` does not.
+
+## Actual law
+
+Civil Time owns:
+
+```text
+civil date
+civil clock
+calendar identity
+UTC offset identity
+IANA timezone jurisdiction resolution
+historical timezone offset at an instant
+repeated local-clock detection
+nonexistent local-clock detection
+explicit fixed-offset conversion
+explicit Local Mean Time conversion
+absolute instant
+Julian Day conversion
+timezone-data provenance/version
+supported year range
+```
+
+It does not own:
+
+```text
+place search
+latitude / longitude lookup
+planetary astronomy
+horizon geometry
+AstroDNA
+interpretation
+live cursor state
+celestial event solving
+```
+
+## What survives
+
+Prototype archaeology establishes several correct laws worth preserving:
+
+```text
+the birth clock belongs to the birthplace, not the device
+UTC offsets are east-positive
+IANA timezone history is the preferred civil-zone authority
+Julian Day is the canonical absolute-time address used downstream
+explicit applied offsets are legitimate inputs
+Local Mean Time is longitude / 15 hours
+AAF calendar-aware JD distinguishes Gregorian and Julian arithmetic
+```
+
+## Prototype scaffolding and defects
+
+The native implementation must not preserve:
+
+```text
+browser Intl as an architectural dependency
+device timezone fallback
+silent first/last choice during a repeated clock hour
+silent shifting through a nonexistent clock time
+separate competing JD formulas
+proleptic-Gregorian-only ephem.julianDay as universal calendar law
+raw strings and numbers flowing through every time socket
+```
+
+The browser `_zoneOffH` two-pass probe is useful evidence of DST-edge awareness, but it still returns one offset rather than representing ambiguity as a first-class result.
+
+## Current dependencies
+
+Prototype Civil Time logic is coupled to browser runtime services, city matching, raw date strings, and ephemeris-style JD math.
+
+Native Civil Time depends on:
+
+```text
+CivilDate
+CivilClockTime
+CivilCalendar
+UTCOffset
+AbsoluteInstant
+JulianDay
+TimezoneIdentifier
+GeographicLongitude
+Foundation Calendar / TimeZone
+```
+
+It does not depend on Geoplacement itself. Geoplacement supplies a typed `TimezoneIdentifier`; Civil Time does the temporal work.
+
+## Current consumers
+
+The immediate next native consumer is the AstroDNA contract / eventual Ovum Resolver, which needs a stable absolute instant from the human civil address.
+
+Later consumers may also use fixed-offset or Local Mean Time reads for imported historical records.
+
+## 4R
+
+**REPRODUCE**
+
+## Why
+
+There is no coherent single prototype owner to transpose. The useful law is split across app UI code, AAF import code, and ephemeris helpers, and those paths disagree about calendar handling and failure behavior.
+
+The result should survive; the implementation shape should not.
+
+Native Orbo therefore reproduces the civil-time capability as one explicit owner with one typed contract.
+
+## Swift Sanding
+
+```text
+raw Y/M/D numbers
+-> CivilDate
+
+raw H/M/S numbers
+-> CivilClockTime
+
+implicit calendar convention
+-> CivilCalendar
+
+floating offset hours
+-> UTCOffset in exact seconds east of UTC
+
+raw Julian Day Number
+-> JulianDay
+
+JS Date / millisecond timestamp
+-> AbsoluteInstant
+
+null / guessed clock result
+-> CivilTimeResolution
+
+repeated local time silently chosen
+-> ambiguous(first, second)
+
+spring-forward gap silently adjusted
+-> nonexistent
+
+unknown zone -> device fallback
+-> unknownTimeZone
+
+longitude/15 arithmetic scattered in callers
+-> UTCOffset.localMeanTime(for:)
+
+browser Intl timezone probing
+-> Foundation TimeZone / Calendar
+
+unidentified system timezone rules
+-> CivilTime.timeZoneDataVersion
+```
+
+The native zone path uses strict matching and the platform's repeated-time policy to obtain both valid instants when a local clock reading occurs twice. A strict miss is represented as `nonexistent` rather than shifted to a nearby legal time.
+
+The explicit fixed-offset / LMT path preserves the AAF law without asking an IANA zone to reinterpret a historically stated applied offset.
+
+## Native destination
+
+```text
+OrboCore / CivilTime
+```
+
+## Native dependencies
+
+Only Foundation date/time primitives plus the typed native domain vocabulary listed above.
+
+Civil Time does not depend on Ring, Mater, Tympan, AstroDNA, Ephemeris, Orbo Spine, Horizon, Loom, UI, or interpretation.
+
+## Native mating surface
+
+```text
+CivilTime.resolve(date:time:in: TimezoneIdentifier)
+CivilTime.resolve(date:time:fixedOffset:)
+CivilTime.resolveLocalMeanTime(date:time:longitude:)
+CivilTime.julianDay(date:time:offset:)
+CivilTime.supportedYearRange
+CivilTime.timeZoneDataVersion
+
+CivilTimeResolution
+    resolved(CivilTimeMatch)
+    ambiguous(first:second:)
+    nonexistent
+    unknownTimeZone
+    unsupportedYear
+    unsupportedCalendar
+```
+
+The Phase 1b v1 operating range is explicitly:
+
+```text
+1700...2149
+```
+
+This aligns Civil Time with the current Orbo temporal instrument. Spine v1 may later narrow the final Ovum domain by intersection, but Civil Time does not silently widen its declared operating range.
+
+Zone-based resolution currently accepts Gregorian civil dates across that operating range. Calendar-aware explicit-offset Julian Day conversion remains available for provenance/import work, including the older AAF calendar law.
+
+## Parity standard
+
+**BEHAVIORAL**
+
+Preserve exact valid-domain results where the prototype has coherent answers:
+
+```text
+same applied east-positive offset
+same resulting Julian Day
+same birthplace-zone law
+same calendar-aware AAF fixed-offset law
+same longitude/15 LMT law
+```
+
+Intentional native corrections:
+
+```text
+ambiguous local clock
+prototype: chooses one
+native: returns both
+
+nonexistent local clock
+prototype/runtime service may shift or guess
+native: explicit nonexistent
+
+unknown timezone
+prototype: may fall back to device
+native: explicit unknownTimeZone
+```
+
+## Proof method
+
+Prove:
+
+```text
+CivilDate / CivilClockTime / UTCOffset reject invalid states
+Gregorian and Julian calendar arithmetic remain distinct
+J2000 noon UTC = JD 2451545.0
+prototype / AAF parity fixture reproduces valid results
+1985 Madison clock resolves through America/Chicago without device timezone
+pre-1970 timezone history is read correctly
+fall-back repeated hour yields two instants one hour apart
+spring-forward gap yields nonexistent
+unknown timezone never uses device fallback
+1700...2149 range is explicit
+fixed-offset historical AAF case remains exact
+Local Mean Time remains longitude / 15
+timezone data version/source is exposed
+```
+
+Then run the full accumulated standalone Xcode suite and inspect the Civil Time section in OrboLab.
+
+## Proof evidence
+
+Implementation is present.
+
+A local Swift 6.2 mini-package preflight ran all 12 new `CivilTimeTests`:
+
+```text
+12 CivilTimeTests    PASS
+0 failures
+```
+
+The preflight includes the real DST gap/repeat behavior through Foundation timezone history, not mocked offsets.
+
+The authoritative accumulated Xcode proof and OrboLab readout are still pending.
 
 ## Status
 
 **IMPLEMENTED / AWAITING NATIVE PROOF**
 
-Do not promote Geoplacement Atlas to native canonical until the accumulated Xcode suite and OrboLab readout pass.
+Do not promote Civil Time to native canonical until the accumulated Xcode suite and OrboLab readout pass.
 
 ---
 
-# 10. Phase 1a Closure and Current Construction Boundary
+# 11. Phase 1a Closure and Current Construction Boundary
 
 Phase 1a was implemented under `specs/Phase 1a - Native Foundation Implementation Plan.md` in five controlled passes:
 
@@ -2270,7 +2610,7 @@ Phase 1a is therefore:
 COMPLETE
 ```
 
-Phase 1b is now active under:
+Phase 1b is active under:
 
 ```text
 specs/Phase 1b - Ovum Completion Outline.md
@@ -2279,8 +2619,8 @@ specs/Phase 1b - Ovum Completion Outline.md
 Current checkpoint:
 
 ```text
-Pass 1    Geoplacement + terrestrial vocabulary    IMPLEMENTED / AWAITING NATIVE PROOF
-Pass 2    Civil Time and timezone history          NOT STARTED
+Pass 1    Geoplacement + terrestrial vocabulary    NATIVE CANONICAL / COMPLETE
+Pass 2    Civil Time and timezone history          IMPLEMENTED / AWAITING NATIVE PROOF
 Pass 3    AstroDNA contract                         NOT STARTED
 Pass 4    Ephemeris Forge qualification             NOT STARTED
 Pass 5    Spine Forge + Orbo Spine v1               NOT STARTED
@@ -2289,7 +2629,7 @@ Pass 7    Loom                                      NOT STARTED
 Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
 ```
 
-Do not begin Civil Time until Geoplacement passes its accumulated native proof gate and the next pass is explicitly authorized.
+Do not begin the AstroDNA contract pass until Civil Time passes its accumulated native proof gate and the next pass is explicitly authorized.
 
 This ordering does not preassign any future component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
 
