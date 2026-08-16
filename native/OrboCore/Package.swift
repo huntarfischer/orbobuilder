@@ -20,7 +20,10 @@ let package = Package(
         ),
         .testTarget(
             name: "OrboCoreTests",
-            dependencies: ["OrboCore"]
+            dependencies: ["OrboCore"],
+            resources: [
+                .copy("Fixtures")
+            ]
         )
     ]
 )
