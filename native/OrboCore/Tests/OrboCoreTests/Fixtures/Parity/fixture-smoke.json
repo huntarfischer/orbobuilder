@@ -1,0 +1,5 @@
+{
+  "id": "phase0-parity-smoke",
+  "input": "prototype-reference",
+  "expected": "parity-readable"
+}
