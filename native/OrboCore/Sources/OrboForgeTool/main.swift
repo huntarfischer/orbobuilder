@@ -9,12 +9,10 @@ enum OrboForgeToolError: Error, CustomStringConvertible {
 
     var description: String {
         switch self {
-        case let .missingArgument(name):
-            return "Missing required argument: \(name)"
-        case let .invalidArgument(value):
-            return "Invalid argument: \(value)"
+        case let .missingArgument(name): return "Missing required argument: \(name)"
+        case let .invalidArgument(value): return "Invalid argument: \(value)"
         case .malformedSampleStream:
-            return "Swiss sample stream is not a whole sequence of little-endian Float64 values."
+            return "Swiss sample stream must contain longitude/speed Float64 pairs."
         case let .unusedSamples(expected, consumed):
             return "Sample stream cardinality mismatch: expected \(expected), consumed \(consumed)."
         }
@@ -22,19 +20,17 @@ enum OrboForgeToolError: Error, CustomStringConvertible {
 }
 
 private final class SequentialSwissSampleReference: @unchecked Sendable, ForgeEphemerisReference {
-    private let samples: [Double]
+    private let values: [Double]
     private(set) var consumedCount = 0
 
     init(url: URL) throws {
         let data = try Data(contentsOf: url)
-        guard data.count.isMultiple(of: MemoryLayout<UInt64>.size) else {
+        guard data.count.isMultiple(of: 16) else {
             throw OrboForgeToolError.malformedSampleStream
         }
-
         let bytes = [UInt8](data)
-        var values: [Double] = []
-        values.reserveCapacity(bytes.count / 8)
-
+        var decoded: [Double] = []
+        decoded.reserveCapacity(bytes.count / 8)
         var offset = 0
         while offset < bytes.count {
             var bits: UInt64 = 0
@@ -42,25 +38,22 @@ private final class SequentialSwissSampleReference: @unchecked Sendable, ForgeEp
                 bits |= UInt64(bytes[offset + byteOffset]) << UInt64(byteOffset * 8)
             }
             let value = Double(bitPattern: bits)
-            guard value.isFinite else {
-                throw OrboForgeToolError.malformedSampleStream
-            }
-            values.append(value)
+            guard value.isFinite else { throw OrboForgeToolError.malformedSampleStream }
+            decoded.append(value)
             offset += 8
         }
-        self.samples = values
+        values = decoded
     }
 
-    var sampleCount: Int {
-        samples.count
-    }
+    var sampleCount: Int { values.count / 2 }
 
     func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState {
-        guard consumedCount < samples.count,
-              let longitude = CelestialLongitude(samples[consumedCount]),
+        let valueIndex = consumedCount * 2
+        guard valueIndex + 1 < values.count,
+              let longitude = CelestialLongitude(values[valueIndex]),
               let state = MundaneCelestialState(
                 longitude: longitude,
-                longitudinalSpeedDegreesPerDay: 0
+                longitudinalSpeedDegreesPerDay: values[valueIndex + 1]
               ) else {
             throw OrboForgeToolError.malformedSampleStream
         }
@@ -71,7 +64,7 @@ private final class SequentialSwissSampleReference: @unchecked Sendable, ForgeEp
 
 private struct Arguments {
     let samples: URL
-    let output: URL
+    let outputDirectory: URL
     let version: String
     let source: String
     let sourceVersion: String
@@ -89,7 +82,6 @@ private struct Arguments {
             values[key] = raw[index + 1]
             index += 2
         }
-
         func require(_ key: String) throws -> String {
             guard let value = values[key], !value.isEmpty else {
                 throw OrboForgeToolError.missingArgument(key)
@@ -97,14 +89,8 @@ private struct Arguments {
             return value
         }
 
-        let samplesPath = try require("--samples")
-        let outputPath = try require("--output")
-        let version = try require("--version")
-        let source = try require("--source")
-        let sourceVersion = try require("--source-version")
         let startRaw = try require("--start-jd")
         let endRaw = try require("--end-jd")
-
         guard let startValue = Double(startRaw),
               let endValue = Double(endRaw),
               let start = JulianDay(startValue),
@@ -113,25 +99,13 @@ private struct Arguments {
             throw OrboForgeToolError.invalidArgument("Julian Day range")
         }
 
-        self.samples = URL(fileURLWithPath: samplesPath)
-        self.output = URL(fileURLWithPath: outputPath)
-        self.version = version
-        self.source = source
-        self.sourceVersion = sourceVersion
-        self.startJulianDay = start
-        self.endJulianDay = end
-    }
-}
-
-private func expectedSampleCount(
-    start: JulianDay,
-    end: JulianDay,
-    profiles: [MundaneTimespineProfile]
-) -> Int {
-    let span = end.value - start.value
-    return profiles.reduce(0) { total, profile in
-        let segments = Int(ceil(span / profile.segmentDays))
-        return total + segments * (profile.polynomialDegree + 1)
+        samples = URL(fileURLWithPath: try require("--samples"))
+        outputDirectory = URL(fileURLWithPath: try require("--output-dir"), isDirectory: true)
+        version = try require("--version")
+        source = try require("--source")
+        sourceVersion = try require("--source-version")
+        startJulianDay = start
+        endJulianDay = end
     }
 }
 
@@ -140,19 +114,6 @@ struct OrboForgeTool {
     static func main() throws {
         let arguments = try Arguments(Array(CommandLine.arguments.dropFirst()))
         let profiles = MundaneTimespineForge.candidateProfiles
-        let reference = try SequentialSwissSampleReference(url: arguments.samples)
-        let expected = expectedSampleCount(
-            start: arguments.startJulianDay,
-            end: arguments.endJulianDay,
-            profiles: profiles
-        )
-        guard reference.sampleCount == expected else {
-            throw OrboForgeToolError.unusedSamples(
-                expected: expected,
-                consumed: reference.sampleCount
-            )
-        }
-
         guard let plan = MundaneTimespineForgePlan(
             version: arguments.version,
             astronomicalSource: arguments.source,
@@ -164,42 +125,55 @@ struct OrboForgeTool {
             throw OrboForgeToolError.invalidArgument("Forge plan")
         }
 
+        let reference = try SequentialSwissSampleReference(url: arguments.samples)
+        let expected = MundaneTimespineForge.expectedSampleCount(for: plan)
+        guard reference.sampleCount == expected else {
+            throw OrboForgeToolError.unusedSamples(expected: expected, consumed: reference.sampleCount)
+        }
+
         var cursor = MundaneTimespineForge.makeCursor(plan: plan)
         var lastPrintedPercent = -1
         while !cursor.isComplete {
-            let progress = try cursor.step(reference: reference, segmentBudget: 2_048)
+            let progress = try cursor.step(reference: reference, sampleBudget: 8_192)
             let percent = Int((progress.fractionComplete * 100).rounded(.down))
             if percent != lastPrintedPercent, percent.isMultiple(of: 5) {
-                let body = progress.currentBody?.displayName ?? "complete"
-                print("Forge \(percent)% / \(body)")
+                print("Forge \(percent)% / \(progress.currentBody?.displayName ?? "complete")")
                 lastPrintedPercent = percent
             }
         }
-
         let product = try cursor.product()
         guard reference.consumedCount == expected else {
-            throw OrboForgeToolError.unusedSamples(
-                expected: expected,
-                consumed: reference.consumedCount
+            throw OrboForgeToolError.unusedSamples(expected: expected, consumed: reference.consumedCount)
+        }
+
+        let artifacts = product.encodedArtifacts()
+        try FileManager.default.createDirectory(
+            at: arguments.outputDirectory,
+            withIntermediateDirectories: true
+        )
+        try artifacts.manifest.write(
+            to: arguments.outputDirectory.appendingPathComponent("mundane-timespine-v1.json"),
+            options: .atomic
+        )
+        for body in MundaneBody.canonicalOrder {
+            guard let data = artifacts.data(for: body) else { continue }
+            try data.write(
+                to: arguments.outputDirectory.appendingPathComponent(body.artifactFileName),
+                options: .atomic
             )
         }
 
-        let artifact = product.encodedArtifact()
-        try FileManager.default.createDirectory(
-            at: arguments.output.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-        try artifact.write(to: arguments.output, options: .atomic)
-
-        print("Mundane Timespine artifact")
+        print("Mundane Timespine artifact set")
         print("version: \(product.metadata.version)")
         print("codec: \(product.metadata.codec)")
         print("AstroDNA codec: \(product.metadata.astroDNACodec)")
         print("source: \(product.metadata.astronomicalSource)")
         print("source version: \(product.metadata.astronomicalSourceVersion)")
         print("range: \(product.supportedRangeDescription)")
-        print("bytes: \(artifact.count)")
-        print("sha256: \(product.checksum)")
+        print("representation: \(MundaneTimespine.representation)")
+        print("body files: \(artifacts.bodyArtifacts.count)")
+        print("total bytes: \(artifacts.totalBytes)")
+        print("manifest sha256: \(artifacts.manifestChecksum)")
         print("samples consumed: \(reference.consumedCount)")
     }
 }
