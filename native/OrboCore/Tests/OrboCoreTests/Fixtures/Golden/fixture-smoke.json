@@ -1,0 +1,5 @@
+{
+  "id": "phase0-golden-smoke",
+  "input": "fixture-loader",
+  "expected": "golden-readable"
+}
