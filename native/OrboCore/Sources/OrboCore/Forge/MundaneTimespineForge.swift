@@ -53,20 +53,20 @@ public enum MundaneTimespineForge {
     public static let v1DenseStart = JulianDay(2_433_282.5)! // 1950-01-01 Gregorian
     public static let v1DenseEnd = JulianDay(2_469_807.5)!   // 2050-01-01 Gregorian
 
-    /// Data-forward Pass 5 candidate. Each body owns its own cadence.
-    /// The personal-era core is deliberately denser than the edges.
+    /// Data-forward Pass 5 candidate. Cadence is body-specific and based on
+    /// measured Swiss residuals rather than one global compression target.
     public static let candidateProfiles: [MundaneTimespineProfile] = [
-        MundaneTimespineProfile(body: .sun, edgeSampleDays: 4, coreSampleDays: 1)!,
-        MundaneTimespineProfile(body: .moon, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
-        MundaneTimespineProfile(body: .mercury, edgeSampleDays: 1, coreSampleDays: 0.125)!,
-        MundaneTimespineProfile(body: .venus, edgeSampleDays: 2, coreSampleDays: 0.5)!,
-        MundaneTimespineProfile(body: .mars, edgeSampleDays: 4, coreSampleDays: 1)!,
-        MundaneTimespineProfile(body: .jupiter, edgeSampleDays: 8, coreSampleDays: 2)!,
-        MundaneTimespineProfile(body: .saturn, edgeSampleDays: 8, coreSampleDays: 2)!,
-        MundaneTimespineProfile(body: .uranus, edgeSampleDays: 8, coreSampleDays: 2)!,
-        MundaneTimespineProfile(body: .neptune, edgeSampleDays: 8, coreSampleDays: 2)!,
-        MundaneTimespineProfile(body: .pluto, edgeSampleDays: 8, coreSampleDays: 2)!,
-        MundaneTimespineProfile(body: .trueNorthNode, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .sun, edgeSampleDays: 2, coreSampleDays: 1)!,
+        MundaneTimespineProfile(body: .moon, edgeSampleDays: 0.25, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .mercury, edgeSampleDays: 0.25, coreSampleDays: 0.0625)!,
+        MundaneTimespineProfile(body: .venus, edgeSampleDays: 1, coreSampleDays: 0.25)!,
+        MundaneTimespineProfile(body: .mars, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .jupiter, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .saturn, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .uranus, edgeSampleDays: 1, coreSampleDays: 0.25)!,
+        MundaneTimespineProfile(body: .neptune, edgeSampleDays: 1, coreSampleDays: 0.25)!,
+        MundaneTimespineProfile(body: .pluto, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .trueNorthNode, edgeSampleDays: 0.125, coreSampleDays: 1.0 / 48.0)!,
     ]
 
     public static func makeCursor(plan: MundaneTimespineForgePlan) -> Cursor {
@@ -146,10 +146,7 @@ public enum MundaneTimespineForge {
                     continue
                 }
 
-                let jdValue = min(
-                    region.start + Double(sampleIndex) * region.sampleDays,
-                    region.end
-                )
+                let jdValue = min(region.start + Double(sampleIndex) * region.sampleDays, region.end)
                 guard let jd = JulianDay(jdValue) else {
                     throw MundaneTimespineError.malformedMetadata
                 }
