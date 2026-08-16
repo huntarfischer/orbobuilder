@@ -1,6 +1,6 @@
 # Pass 5: Mundane Timespine Representation Study
 
-**Status:** Data-forward separate-body codec 4 under qualified Swiss C audit. Mundane Timespine v1 is not sealed until the astronomical audit, shipped-artifact installation, accumulated native proof, and OrboLab readout are green.
+**Status:** Data-forward separate-body codec 4 under qualified Swiss C audit. Apple-Swift accumulated native proof is green at 98/98. Mundane Timespine v1 is not sealed until the astronomical audit, shipped-artifact installation, and OrboLab readout are green.
 
 **Date:** 2026-08-16
 
@@ -91,9 +91,9 @@ Codec 2 is superseded.
 
 Codec 3 moved to stamped longitude knots plus an explicit station chronology. It proved the ownership split and the independent-body artifact set.
 
-Its first Apple-Swift run exposed an implementation seam defect: Forge can place the last knot exactly on a region boundary even when that last interval is shorter than the region's nominal cadence, while the local reader treated every knot as if it were uniformly spaced.
+Its first Apple-Swift run exposed that the guard-knot seam law had not been made explicit enough across Forge, reader, and tests. Forge already kept its interpolation knots on the declared cadence and allowed final knots to extend beyond a subregion boundary as read-only guards. A reader experiment incorrectly reinterpreted those guard positions as if they occurred exactly on the boundary, producing bad cubic geometry. Tiny construction fixtures also revealed that a local cubic contract must require at least four distinct cadence-aligned knots per region.
 
-That defect was caught before canonicalization. Codec 3 is superseded rather than silently changing its binary meaning.
+Those defects were caught before canonicalization. Codec 3 is superseded rather than silently changing its binary meaning.
 
 ---
 
@@ -179,7 +179,17 @@ exact station chronology
 
 The interpolation only operates on Timespine memory. It never evaluates planetary elements, lunar theory, Swiss Ephemeris, JPL, or any other orbital model.
 
-A temporal region's final knot may occur sooner than one nominal cadence after the preceding knot when Forge clamps that knot to the exact region boundary. Codec 4 therefore evaluates each selected knot at its **actual temporal coordinate** rather than assuming all selected knots are equally spaced.
+Every stored position knot remains on its body's declared cadence. If a subregion boundary is not cadence-aligned, Forge may stamp one or more cadence-aligned knots beyond that boundary as **read-only interpolation guards**. Those guards preserve regular local cubic geometry but do not expand the supported runtime interval or the subregion itself.
+
+```text
+regular knots             subregion boundary       guard knot
+...  o ---- o ---- o ---- | ---------------------- o
+       declared cadence    |      same cadence
+                           |
+                           +-- runtime does not expose the guard interval
+```
+
+Every region must contain at least four distinct cadence-aligned knots because a local cubic read requires four points.
 
 The supported Timespine interval remains half-open. No interpolation result outside that interval is exposed as a supported read.
 
@@ -374,7 +384,7 @@ absolute first knot
 circular first delta
 signed second-delta varints
 exact stamped integer sequence
-actual temporal coordinate of a shortened final interval
+cadence-aligned guard knots beyond subregion seams
 ```
 
 For every body it records:
@@ -437,11 +447,17 @@ The dense 1950...2050 center is allowed to spend more bytes because it serves th
 
 The earlier Chebyshev construction candidate completed a 98/98 Xcode proof and OrboLab runtime readout before astronomical qualification rejected that representation.
 
-The separate-body path has already proven independent body checksums, deterministic resumable manufacture, manifest binding, station chronology, and codec round-trip.
+The separate-body path has proven independent body checksums, deterministic resumable manufacture, manifest binding, exact station chronology, lossless codec round-trip, zero-degree crossing behavior, and separate-body corruption isolation.
 
-The first Apple-Swift position-first run then exposed the irregular-final-knot interpolation defect described above. Codec 4 corrects that reader law and changes the body binary format for lossless second-delta packing.
+After the guard-knot law was made explicit and codec 4 introduced lossless second-delta packing, the accumulated package suite ran on Apple Swift on 2026-08-16:
 
-A fresh accumulated Apple-Swift run is required. No prior green count is reused as proof of codec 4.
+```text
+MundaneTimespineTests        10 / 10 PASS
+Accumulated OrboCore suite   98 / 98 PASS
+Failures                      0
+```
+
+This is the native implementation proof for the current codec-4 construction candidate. It is not yet the astronomical qualification or shipped-resource proof.
 
 ---
 
