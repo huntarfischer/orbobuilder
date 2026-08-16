@@ -1,0 +1,107 @@
+name: Pass 5 Mundane Timespine Qualification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pass5-timespine-qualification.yml"
+      - "tools/pass5/**"
+      - "native/OrboCore/Package.swift"
+      - "native/OrboCore/Sources/OrboForgeTool/**"
+      - "native/OrboCore/Sources/OrboCore/Forge/MundaneTimespineForge.swift"
+      - "native/OrboCore/Sources/OrboCore/MundaneTimespine/MundaneTimespine.swift"
+      - "native/OrboCore/Tests/OrboCoreTests/MundaneTimespineTests.swift"
+      - "native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json"
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Swiss adapter
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyswisseph==2.10.3.2
+          python - <<'PY'
+          import swisseph as swe
+          assert swe.version == "2.10.03", swe.version
+          print("Swiss Ephemeris", swe.version)
+          PY
+
+      - name: Fetch qualified Swiss DE441 files
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/master/ephe"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$base/$file" \
+              --output ".forge/ephe/$file"
+          done
+          sha256sum .forge/ephe/*.se1 | sort
+
+      - name: Generate deterministic Swiss sample stream
+        run: |
+          python tools/pass5/generate_swiss_samples.py \
+            --ephe-dir .forge/ephe \
+            --fixture native/OrboCore/Tests/OrboCoreTests/Fixtures/Golden/mundane-timespine-candidate-v1.json \
+            --output .forge/swiss-samples.bin \
+            --provenance-output .forge/swiss-provenance.json
+
+      - name: Build Mundane Timespine with native Forge
+        run: |
+          swift run \
+            --package-path native/OrboCore \
+            -c release \
+            OrboForgeTool \
+            --samples "$PWD/.forge/swiss-samples.bin" \
+            --output "$PWD/.forge/mundane-timespine-v1.orbspine" \
+            --version "v1" \
+            --source "Swiss Ephemeris" \
+            --source-version "2.10.03 / DE441 se1 2026" \
+            --start-jd "2341972.5" \
+            --end-jd "2506331.5"
+
+      - name: Audit forged artifact independently against Swiss
+        id: audit
+        continue-on-error: true
+        run: |
+          python tools/pass5/audit_timespine.py \
+            --ephe-dir .forge/ephe \
+            --artifact .forge/mundane-timespine-v1.orbspine \
+            --provenance .forge/swiss-provenance.json \
+            --report .forge/mundane-timespine-v1-qualification.json
+
+      - name: Run accumulated native tests
+        if: always()
+        run: swift test --package-path native/OrboCore
+
+      - name: Upload Pass 5 qualification products
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pass5-timespine-qualification
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            .forge/mundane-timespine-v1.orbspine
+            .forge/mundane-timespine-v1-qualification.json
+            .forge/swiss-provenance.json
+
+      - name: Enforce astronomical qualification gate
+        if: steps.audit.outcome != 'success'
+        run: |
+          echo "The candidate Timespine did not satisfy the Swiss fidelity gate."
+          exit 1
