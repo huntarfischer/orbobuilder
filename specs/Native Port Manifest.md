@@ -210,9 +210,21 @@ existing Core tests remain green
 
 ## Status
 
-**IMPLEMENTED / LOCALLY PROVEN**
+**IMPLEMENTED / NATIVE PROVEN**
 
-The exact fixture apparatus was dry-run with SwiftPM before repository installation: 5 tests passed, 0 failures. Repository/Xcode proof remains to be run after the files land.
+The exact fixture apparatus was first dry-run with SwiftPM before repository installation: 5 tests passed, 0 failures.
+
+Native Xcode proof was then completed on 2026-08-15 by opening `OrboCore` as the standalone Swift package and running its test action on the development Mac. Xcode reported **5 passed** with one test target:
+
+```text
+testGoldenFixtureLoadsAndDecodes()    PASS
+testMismatchIsDetectable()            PASS
+testMissingFixtureFailsExplicitly()   PASS
+testParityFixtureLoadsAndDecodes()    PASS
+testPhaseZeroLinkageSentinel()        PASS
+```
+
+The native proof apparatus gate is satisfied.
 
 ---
 
@@ -220,7 +232,7 @@ The exact fixture apparatus was dry-run with SwiftPM before repository installat
 
 | Component | Primary 4R | Parity | Native destination | Status |
 |---|---|---|---|---|
-| Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / LOCALLY PROVEN |
+| Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / NATIVE PROVEN |
 | Ring | REPLICATE | EXACT | OrboCore / Ring | ASSESSED / NOT IMPLEMENTED |
 | Mater | PENDING | PENDING | PENDING | QUEUED |
 | Tympan | PENDING | PENDING | PENDING | QUEUED |
