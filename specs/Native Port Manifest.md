@@ -82,7 +82,7 @@ ios-wrapper unchanged                 PASS
 No premature Phase 1 component port   PASS
 ```
 
-The temporary `OrboCoreBuild.linkageSentinel` remains construction scaffolding only. It defines no production OrboCore API.
+The original `OrboCoreBuild.linkageSentinel` remains only as an inert historical smoke fixture inside `OrboCoreTests`. The production Orbo shell no longer consumes it, and the Phase 1a OrboLab now proves live OrboCore linkage by reading Ring, Mater and Tympan directly.
 
 ---
 
@@ -277,7 +277,7 @@ Phase 1a Pass 1 is **IMPLEMENTED / NATIVE PROVEN**.
 | Native proof apparatus | REPRODUCE | Behavioral | OrboCoreTests | IMPLEMENTED / NATIVE PROVEN |
 | Ring | REPLICATE | EXACT | OrboCore / Ring | NATIVE CANONICAL |
 | Mater | REPLICATE | EXACT | OrboCore / Mater | NATIVE CANONICAL |
-| Tympan | REPLICATE | EXACT | OrboCore / Tympan | IMPLEMENTED / AWAITING NATIVE PROOF |
+| Tympan | REPLICATE | EXACT | OrboCore / Tympan | NATIVE CANONICAL |
 | Rulers | REHOUSE | STRUCTURAL | OrboCore / Mater | PROVEN / COMPLETE |
 | Ephemeris | PENDING | PENDING | PENDING | QUEUED |
 | AstroDNA | PENDING | PENDING | PENDING | QUEUED |
@@ -1488,13 +1488,35 @@ six-house flip law and involution
 native malformed-address boundary behavior
 ```
 
-The accumulated standalone Xcode package suite must run green on the development Mac before Tympan becomes native canonical.
+Native Xcode proof was completed on 2026-08-16 by running the standalone `OrboCore` package test action on the development Mac. The first accumulated Tympan gate reported:
+
+```text
+52 total tests    PASS
+0 failures
+```
+
+The final Phase 1a closure run then added and proved the three foundation-integration tests, bringing the accumulated package suite to:
+
+```text
+13 DomainTests                         PASS
+4 FixtureInfrastructureTests          PASS
+3 FoundationIntegrationTests          PASS
+12 MaterTests                          PASS
+1 Phase 0 linkage sentinel test       PASS
+12 RingTests                           PASS
+10 TympanTests                         PASS
+------------------------------------------
+55 total                              PASS
+0 failures
+```
+
+The accumulated Xcode gate is satisfied.
 
 ## Status
 
-**IMPLEMENTED / AWAITING NATIVE PROOF**
+**NATIVE CANONICAL**
 
-Tympan is not native canonical yet.
+Tympan may now serve as the canonical native whole-sign frame and governance authority for later components.
 
 ---
 
@@ -1878,11 +1900,9 @@ Rulers has no independent native production component. Its surviving essential-d
 
 ---
 
-# 9. Current Construction Boundary
+# 9. Phase 1a Closure and Current Construction Boundary
 
-Phase 1a implementation is active under `specs/Phase 1a - Native Foundation Implementation Plan.md`.
-
-The authorized manufacturing sequence is:
+Phase 1a was implemented under `specs/Phase 1a - Native Foundation Implementation Plan.md` in five controlled passes:
 
 ```text
 Pass 1    Native domain vocabulary
@@ -1892,18 +1912,69 @@ Pass 4    Tympan
 Pass 5    Phase 1a closure
 ```
 
-Current checkpoint:
+Final native state:
 
 ```text
 Native domain vocabulary    IMPLEMENTED / NATIVE PROVEN
 Ring                         NATIVE CANONICAL
 Mater                        NATIVE CANONICAL
 Rulers -> Mater              PROVEN / COMPLETE
-Tympan                       IMPLEMENTED / AWAITING NATIVE PROOF
+Tympan                       NATIVE CANONICAL
 ```
 
-Do not promote Tympan to native canonical status until the accumulated standalone Xcode suite passes on the development Mac.
+Pass 5 added `FoundationIntegrationTests.swift`, which proves the three native foundation authorities compose rather than merely passing independently:
 
-Do not begin Pass 5 Phase 1a closure until Pass 4 proof is complete and the next write is explicitly authorized.
+```text
+Ring + Mater + Tympan share one canonical longitude/address vocabulary
+Tympan consumes canonical Mater rulership
+modern co-rulership remains outside the traditional governor socket
+canonical foundational surfaces remain closed and complete
+```
 
-Do not begin later Phase 1 systems such as Geoplacement, Civil Time, AstroDNA, Ephemeris / Spine, Horizon, Loom or Resonator during this foundation pass unless their own authorized construction step is reached.
+The final standalone `OrboCore` Xcode run on 2026-08-16 reported:
+
+```text
+13 DomainTests                         PASS
+4 FixtureInfrastructureTests          PASS
+3 FoundationIntegrationTests          PASS
+12 MaterTests                          PASS
+1 Phase 0 linkage sentinel test       PASS
+12 RingTests                           PASS
+10 TympanTests                         PASS
+------------------------------------------
+55 total                              PASS
+0 failures
+```
+
+The Phase 1a OrboLab microscope was also launched successfully and displayed live native reads from Ring, Mater and Tympan. The sample read showed the same shared foundation used by the integration suite, including Ring relation, Mater dignity facts and Tympan frame data.
+
+The production Orbo shell no longer consumes the Phase 0 linkage sentinel. The sentinel remains only as an inert historical smoke fixture and is not part of the production Phase 1a API.
+
+Phase 1a is therefore:
+
+```text
+COMPLETE
+```
+
+The next dependency-driven construction slice is outlined in:
+
+```text
+specs/Phase 1b - Ovum Completion Outline.md
+```
+
+Its current sequence is:
+
+```text
+1. Geoplacement + terrestrial vocabulary
+2. Civil Time and timezone history
+3. AstroDNA contract
+4. Ephemeris Forge archaeology and qualification
+5. Spine Forge + Orbo Spine v1
+6. Horizon + AstroDNA Encoder + Ovum Resolver
+7. Loom
+8. Resonator + OrboLab completion + seal the Ovum
+```
+
+This ordering does not preassign any future component's 4R. Every meaningful Phase 1b component begins unclassified, receives fresh archaeology, and gets exactly one earned primary treatment before implementation.
+
+Do not begin Phase 2 until the full Phase 1 Ovum exit gate is satisfied.
