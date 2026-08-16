@@ -6,13 +6,14 @@ public protocol ForgeEphemerisReference: Sendable {
     func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState
 }
 
-public struct MundaneTimespineForgePlan: Hashable, Sendable {
+public struct MundaneTimespineForgePlan: Sendable {
     public let version: String
     public let astronomicalSource: String
     public let astronomicalSourceVersion: String
     public let supportedStart: JulianDay
     public let supportedEnd: JulianDay
     public let profiles: [MundaneTimespineProfile]
+    public let motionChronologies: [MundaneBody: MundaneMotionChronology]
 
     public init?(
         version: String,
@@ -20,7 +21,8 @@ public struct MundaneTimespineForgePlan: Hashable, Sendable {
         astronomicalSourceVersion: String,
         supportedStart: JulianDay,
         supportedEnd: JulianDay,
-        profiles: [MundaneTimespineProfile]
+        profiles: [MundaneTimespineProfile],
+        motionChronologies: [MundaneBody: MundaneMotionChronology] = [:]
     ) {
         guard !version.isEmpty,
               !astronomicalSource.isEmpty,
@@ -29,12 +31,22 @@ public struct MundaneTimespineForgePlan: Hashable, Sendable {
               profiles.map(\.body) == MundaneBody.canonicalOrder else {
             return nil
         }
+        if !motionChronologies.isEmpty {
+            guard Set(motionChronologies.keys) == Set(MundaneBody.canonicalOrder) else { return nil }
+            for chronology in motionChronologies.values {
+                guard chronology.stations.allSatisfy({
+                    $0.julianDay.value >= supportedStart.value &&
+                    $0.julianDay.value < supportedEnd.value
+                }) else { return nil }
+            }
+        }
         self.version = version
         self.astronomicalSource = astronomicalSource
         self.astronomicalSourceVersion = astronomicalSourceVersion
         self.supportedStart = supportedStart
         self.supportedEnd = supportedEnd
         self.profiles = profiles
+        self.motionChronologies = motionChronologies
     }
 }
 
@@ -53,19 +65,20 @@ public enum MundaneTimespineForge {
     public static let v1DenseStart = JulianDay(2_433_282.5)! // 1950-01-01 Gregorian
     public static let v1DenseEnd = JulianDay(2_469_807.5)!   // 2050-01-01 Gregorian
 
-    /// Data-forward Pass 5 candidate. Cadence is body-specific and based on
-    /// measured Swiss residuals rather than one global compression target.
+    /// Position-first profile. Storage density follows measured apparent motion.
+    /// Stations are carried separately as exact temporal data rather than inferred
+    /// from sparse endpoint tangents.
     public static let candidateProfiles: [MundaneTimespineProfile] = [
         MundaneTimespineProfile(body: .sun, edgeSampleDays: 2, coreSampleDays: 1)!,
         MundaneTimespineProfile(body: .moon, edgeSampleDays: 0.25, coreSampleDays: 0.125)!,
-        MundaneTimespineProfile(body: .mercury, edgeSampleDays: 0.25, coreSampleDays: 0.0625)!,
-        MundaneTimespineProfile(body: .venus, edgeSampleDays: 1, coreSampleDays: 0.25)!,
-        MundaneTimespineProfile(body: .mars, edgeSampleDays: 2, coreSampleDays: 0.5)!,
-        MundaneTimespineProfile(body: .jupiter, edgeSampleDays: 2, coreSampleDays: 0.5)!,
-        MundaneTimespineProfile(body: .saturn, edgeSampleDays: 2, coreSampleDays: 0.5)!,
-        MundaneTimespineProfile(body: .uranus, edgeSampleDays: 1, coreSampleDays: 0.25)!,
-        MundaneTimespineProfile(body: .neptune, edgeSampleDays: 1, coreSampleDays: 0.25)!,
-        MundaneTimespineProfile(body: .pluto, edgeSampleDays: 2, coreSampleDays: 0.5)!,
+        MundaneTimespineProfile(body: .mercury, edgeSampleDays: 1.0 / 12.0, coreSampleDays: 1.0 / 48.0)!,
+        MundaneTimespineProfile(body: .venus, edgeSampleDays: 0.25, coreSampleDays: 0.0625)!,
+        MundaneTimespineProfile(body: .mars, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .jupiter, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .saturn, edgeSampleDays: 1, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .uranus, edgeSampleDays: 0.25, coreSampleDays: 0.0625)!,
+        MundaneTimespineProfile(body: .neptune, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
+        MundaneTimespineProfile(body: .pluto, edgeSampleDays: 0.5, coreSampleDays: 0.125)!,
         MundaneTimespineProfile(body: .trueNorthNode, edgeSampleDays: 0.125, coreSampleDays: 1.0 / 48.0)!,
     ]
 
@@ -84,8 +97,8 @@ public enum MundaneTimespineForge {
         return try cursor.product()
     }
 
-    public static func estimatedSamplePayloadBytes(for plan: MundaneTimespineForgePlan) -> Int {
-        totalSampleCount(for: plan) * 8
+    public static func estimatedPositionPayloadBytes(for plan: MundaneTimespineForgePlan) -> Int {
+        totalSampleCount(for: plan) * MemoryLayout<UInt32>.size
     }
 
     public static func expectedSampleCount(for plan: MundaneTimespineForgePlan) -> Int {
@@ -100,6 +113,7 @@ public enum MundaneTimespineForge {
         private var sampleIndex = 0
         private var completedSamples = 0
         private var samplesByBody: [MundaneBody: [[MundaneTimespineSample]]] = [:]
+        private var initialMotionByBody: [MundaneBody: Motion] = [:]
 
         fileprivate init(plan: MundaneTimespineForgePlan) {
             self.plan = plan
@@ -147,15 +161,15 @@ public enum MundaneTimespineForge {
                 }
 
                 let jdValue = min(region.start + Double(sampleIndex) * region.sampleDays, region.end)
-                guard let jd = JulianDay(jdValue) else {
-                    throw MundaneTimespineError.malformedMetadata
-                }
+                guard let jd = JulianDay(jdValue) else { throw MundaneTimespineError.malformedMetadata }
                 let state = try reference.state(of: profile.body, at: jd)
-                guard let sample = MundaneTimespineSample(state: state) else {
+                guard let sample = MundaneTimespineSample(longitude: state.longitude) else {
                     throw MundaneTimespineError.sampleOverflow
                 }
+                if initialMotionByBody[profile.body] == nil {
+                    initialMotionByBody[profile.body] = state.motion
+                }
                 samplesByBody[profile.body]![regionIndex].append(sample)
-
                 sampleIndex += 1
                 completedSamples += 1
                 remaining -= 1
@@ -176,14 +190,13 @@ public enum MundaneTimespineForge {
                 regionIndex += 1
                 sampleIndex = 0
             }
-
             return progress
         }
 
         public func product() throws -> MundaneTimespine {
             guard isComplete else { throw MundaneTimespineError.malformedMetadata }
-
             var seriesByBody: [MundaneBody: MundaneTimespineSeries] = [:]
+
             for profile in plan.profiles {
                 let plans = Self.regionPlans(for: profile, plan: plan)
                 guard let stored = samplesByBody[profile.body], stored.count == 3 else {
@@ -192,28 +205,36 @@ public enum MundaneTimespineForge {
                 var regions: [MundaneTimespineRegion] = []
                 for index in 0..<3 {
                     let regionPlan = plans[index]
-                    let expected = Self.sampleCount(
-                        start: regionPlan.start,
-                        end: regionPlan.end,
-                        step: regionPlan.sampleDays
-                    )
-                    guard stored[index].count == expected else {
+                    let expected = Self.sampleCount(start: regionPlan.start, end: regionPlan.end, step: regionPlan.sampleDays)
+                    guard stored[index].count == expected, expected >= 4 else {
                         throw MundaneTimespineError.malformedSeries(profile.body)
                     }
-                    regions.append(
-                        MundaneTimespineRegion(
-                            startJulianDay: regionPlan.start,
-                            endJulianDay: regionPlan.end,
-                            sampleDays: regionPlan.sampleDays,
-                            samples: stored[index]
-                        )
-                    )
+                    regions.append(.init(
+                        startJulianDay: regionPlan.start,
+                        endJulianDay: regionPlan.end,
+                        sampleDays: regionPlan.sampleDays,
+                        samples: stored[index]
+                    ))
                 }
-                seriesByBody[profile.body] = MundaneTimespineSeries(profile: profile, regions: regions)
+
+                let motionChronology: MundaneMotionChronology
+                if let supplied = plan.motionChronologies[profile.body] {
+                    motionChronology = supplied
+                } else {
+                    guard let initial = initialMotionByBody[profile.body],
+                          let fallback = MundaneMotionChronology(initialMotion: initial, stations: []) else {
+                        throw MundaneTimespineError.malformedSeries(profile.body)
+                    }
+                    motionChronology = fallback
+                }
+                seriesByBody[profile.body] = .init(
+                    profile: profile,
+                    motionChronology: motionChronology,
+                    regions: regions
+                )
             }
 
-            let denseStart = Self.clampedDenseStart(plan)
-            let denseEnd = Self.clampedDenseEnd(plan)
+            let bounds = Self.effectiveDenseBounds(plan)
             let metadata = MundaneTimespineMetadata(
                 version: plan.version,
                 codec: MundaneTimespine.codec,
@@ -221,11 +242,10 @@ public enum MundaneTimespineForge {
                 astronomicalSource: plan.astronomicalSource,
                 astronomicalSourceVersion: plan.astronomicalSourceVersion,
                 supportedStart: plan.supportedStart,
-                denseStart: denseStart,
-                denseEnd: denseEnd,
+                denseStart: bounds.start,
+                denseEnd: bounds.end,
                 supportedEnd: plan.supportedEnd,
                 positionUnitsPerDegree: MundaneTimespine.positionUnitsPerDegree,
-                speedUnitsPerDegreePerDay: MundaneTimespine.speedUnitsPerDegreePerDay,
                 profiles: plan.profiles
             )
             return try MundaneTimespine(metadata: metadata, seriesByBody: seriesByBody)
@@ -237,36 +257,24 @@ public enum MundaneTimespineForge {
             let sampleDays: Double
         }
 
-        private static func clampedDenseStart(_ plan: MundaneTimespineForgePlan) -> JulianDay {
-            let candidate = min(max(v1DenseStart.value, plan.supportedStart.value + 1e-9), plan.supportedEnd.value - 2e-9)
-            return JulianDay(candidate)!
-        }
-
-        private static func clampedDenseEnd(_ plan: MundaneTimespineForgePlan) -> JulianDay {
-            let start = clampedDenseStart(plan).value
-            let candidate = min(max(v1DenseEnd.value, start + 1e-9), plan.supportedEnd.value - 1e-9)
-            return JulianDay(candidate)!
-        }
-
-        private static func regionPlans(
-            for profile: MundaneTimespineProfile,
-            plan: MundaneTimespineForgePlan
-        ) -> [RegionPlan] {
+        private static func effectiveDenseBounds(_ plan: MundaneTimespineForgePlan) -> (start: JulianDay, end: JulianDay) {
             let start = plan.supportedStart.value
             let end = plan.supportedEnd.value
-            var denseStart = clampedDenseStart(plan).value
-            var denseEnd = clampedDenseEnd(plan).value
-
-            if !(start < denseStart && denseStart < denseEnd && denseEnd < end) {
-                let span = end - start
-                denseStart = start + span / 3
-                denseEnd = start + 2 * span / 3
+            if start < v1DenseStart.value,
+               v1DenseStart.value < v1DenseEnd.value,
+               v1DenseEnd.value < end {
+                return (v1DenseStart, v1DenseEnd)
             }
+            let span = end - start
+            return (JulianDay(start + span / 3)!, JulianDay(start + 2 * span / 3)!)
+        }
 
+        private static func regionPlans(for profile: MundaneTimespineProfile, plan: MundaneTimespineForgePlan) -> [RegionPlan] {
+            let bounds = effectiveDenseBounds(plan)
             return [
-                RegionPlan(start: start, end: denseStart, sampleDays: profile.edgeSampleDays),
-                RegionPlan(start: denseStart, end: denseEnd, sampleDays: profile.coreSampleDays),
-                RegionPlan(start: denseEnd, end: end, sampleDays: profile.edgeSampleDays),
+                RegionPlan(start: plan.supportedStart.value, end: bounds.start.value, sampleDays: profile.edgeSampleDays),
+                RegionPlan(start: bounds.start.value, end: bounds.end.value, sampleDays: profile.coreSampleDays),
+                RegionPlan(start: bounds.end.value, end: plan.supportedEnd.value, sampleDays: profile.edgeSampleDays),
             ]
         }
 
