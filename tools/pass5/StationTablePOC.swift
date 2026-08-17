@@ -50,9 +50,43 @@ func normalize(_ x: Double) -> Double {
     return r == 0 ? 0 : r
 }
 
+let signs = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
+
+func sequence(_ speed: Double) -> String { speed < 0 ? "decreasing" : "increasing" }
+
+struct CelestialTime: Codable {
+    let longitudeDegrees: Double
+    let wholeDegree: Int
+    let sign: String
+    let degreeWithinSign: Double
+}
+
+func celestialTime(_ longitude: Double) -> CelestialTime {
+    let lon = normalize(longitude)
+    let whole = Int(floor(lon))
+    return CelestialTime(
+        longitudeDegrees: lon,
+        wholeDegree: whole,
+        sign: signs[whole / 30],
+        degreeWithinSign: lon - Double((whole / 30) * 30)
+    )
+}
+
+struct CivicTime: Codable {
+    let julianDayUT: Double
+    let utOffsetSeconds: UInt32
+}
+
+func civicTime(_ jd: Double) -> CivicTime {
+    let seconds = UInt32(max(0, min(Double(UInt32.max), ((jd - saturnStartJD) * 86_400.0).rounded())))
+    return CivicTime(julianDayUT: jd, utOffsetSeconds: seconds)
+}
+
 typealias SweSetEphePath = @convention(c) (UnsafePointer<CChar>?) -> Void
 typealias SweCalcUT = @convention(c) (Double, Int32, Int32, UnsafeMutablePointer<Double>?, UnsafeMutablePointer<CChar>?) -> Int32
-
 typealias SweVersion = @convention(c) (UnsafeMutablePointer<CChar>?) -> UnsafePointer<CChar>?
 
 final class Swiss {
@@ -109,34 +143,43 @@ final class Swiss {
     }
 }
 
-struct Station: Codable {
+struct CelestialTurn: Codable {
     let body: String
-    let kind: String
-    let julianDayUT: Double
-    let utOffsetSeconds: UInt32
-    let longitude: Double
-    let wholeDegree: Int
-    let directionBefore: String
-    let directionAfter: String
+    let celestialTime: CelestialTime
+    let civicTime: CivicTime
+    let sequenceBefore: String
+    let sequenceAfter: String
+    let turn: String
+}
+
+struct VertebraBoundary: Codable {
+    let body: String
+    let boundary: String
+    let celestialTime: CelestialTime
+    let civicTime: CivicTime
+    let sequence: String
 }
 
 struct BodySummary: Codable {
     let body: String
-    let stationCount: Int
+    let celestialTurnCount: Int
     let packedBytesAt0_01Degree: Int
     let packedBytesAt0_001Degree: Int
 }
 
 struct Output: Codable {
     let status: String
+    let framing: String
+    let constructionMethod: String
     let astronomicalSource: String
     let swissVersion: String
     let saturnStartJulianDayUT: Double
     let saturnEndJulianDayUT: Double
-    let samplingStepDays: Double
-    let stations: [Station]
+    let scanStepDays: Double
+    let vertebraBoundaries: [VertebraBoundary]
+    let celestialTurns: [CelestialTurn]
     let byBody: [BodySummary]
-    let totalStations: Int
+    let totalCelestialTurns: Int
     let packedBytesAt0_01Degree: Int
     let packedBytesAt0_001Degree: Int
 }
@@ -144,8 +187,6 @@ struct Output: Codable {
 let saturnStartJD = 2439553.3967229538
 let saturnEndJD = 2450180.8673149766
 let scanStepDays = 0.25
-
-func direction(_ speed: Double) -> String { speed < 0 ? "retrograde" : "direct" }
 
 func parseArgs() throws -> (library: String, epheDir: String, output: String) {
     var library: String?
@@ -171,7 +212,7 @@ func parseArgs() throws -> (library: String, epheDir: String, output: String) {
     return (l, e, o)
 }
 
-func refineStation(body: Body, lo initialLo: Double, hi initialHi: Double, swiss: Swiss) throws -> Double {
+func refineTurn(body: Body, lo initialLo: Double, hi initialHi: Double, swiss: Swiss) throws -> Double {
     var lo = initialLo
     var hi = initialHi
     var slo = try swiss.state(body, jd: lo).speed
@@ -189,8 +230,8 @@ func refineStation(body: Body, lo initialLo: Double, hi initialHi: Double, swiss
     return (lo + hi) / 2
 }
 
-func findStations(body: Body, swiss: Swiss) throws -> [Station] {
-    var result: [Station] = []
+func findCelestialTurns(body: Body, swiss: Swiss) throws -> [CelestialTurn] {
+    var result: [CelestialTurn] = []
     var previousJD = saturnStartJD
     var previous = try swiss.state(body, jd: previousJD)
     var jd = previousJD + scanStepDays
@@ -200,24 +241,23 @@ func findStations(body: Body, swiss: Swiss) throws -> [Station] {
         let current = try swiss.state(body, jd: currentJD)
         let signChanged = (previous.speed < 0 && current.speed >= 0) || (previous.speed >= 0 && current.speed < 0)
         if signChanged {
-            let stationJD = try refineStation(body: body, lo: previousJD, hi: currentJD, swiss: swiss)
-            let stationState = try swiss.state(body, jd: stationJD)
+            let turnJD = try refineTurn(body: body, lo: previousJD, hi: currentJD, swiss: swiss)
+            let turnState = try swiss.state(body, jd: turnJD)
             let epsilon = 1.0 / 1440.0
-            let before = try swiss.state(body, jd: max(saturnStartJD, stationJD - epsilon))
-            let after = try swiss.state(body, jd: min(saturnEndJD, stationJD + epsilon))
-            let beforeDirection = direction(before.speed)
-            let afterDirection = direction(after.speed)
-            let kind = beforeDirection == "direct" && afterDirection == "retrograde" ? "station_retrograde" : "station_direct"
-            let offset = UInt32(max(0, min(Double(UInt32.max), ((stationJD - saturnStartJD) * 86400.0).rounded())))
-            result.append(Station(
+            let before = try swiss.state(body, jd: max(saturnStartJD, turnJD - epsilon))
+            let after = try swiss.state(body, jd: min(saturnEndJD, turnJD + epsilon))
+            let beforeSequence = sequence(before.speed)
+            let afterSequence = sequence(after.speed)
+            let turn = beforeSequence == "increasing" && afterSequence == "decreasing"
+                ? "increasing_to_decreasing"
+                : "decreasing_to_increasing"
+            result.append(CelestialTurn(
                 body: body.name,
-                kind: kind,
-                julianDayUT: stationJD,
-                utOffsetSeconds: offset,
-                longitude: stationState.longitude,
-                wholeDegree: Int(floor(stationState.longitude)),
-                directionBefore: beforeDirection,
-                directionAfter: afterDirection
+                celestialTime: celestialTime(turnState.longitude),
+                civicTime: civicTime(turnJD),
+                sequenceBefore: beforeSequence,
+                sequenceAfter: afterSequence,
+                turn: turn
             ))
         }
         previousJD = currentJD
@@ -231,44 +271,64 @@ func findStations(body: Body, swiss: Swiss) throws -> [Station] {
 func main() throws {
     let args = try parseArgs()
     let swiss = try Swiss(library: args.library, epheDir: args.epheDir)
-    var allStations: [Station] = []
+    var allTurns: [CelestialTurn] = []
+    var boundaries: [VertebraBoundary] = []
     var summaries: [BodySummary] = []
 
     for body in Body.allCases {
-        let stations = try findStations(body: body, swiss: swiss)
-        allStations.append(contentsOf: stations)
+        let startState = try swiss.state(body, jd: saturnStartJD)
+        let endState = try swiss.state(body, jd: saturnEndJD)
+        boundaries.append(VertebraBoundary(
+            body: body.name,
+            boundary: "start",
+            celestialTime: celestialTime(startState.longitude),
+            civicTime: civicTime(saturnStartJD),
+            sequence: sequence(startState.speed)
+        ))
+        boundaries.append(VertebraBoundary(
+            body: body.name,
+            boundary: "end",
+            celestialTime: celestialTime(endState.longitude),
+            civicTime: civicTime(saturnEndJD),
+            sequence: sequence(endState.speed)
+        ))
+
+        let turns = try findCelestialTurns(body: body, swiss: swiss)
+        allTurns.append(contentsOf: turns)
         summaries.append(BodySummary(
             body: body.name,
-            stationCount: stations.count,
-            packedBytesAt0_01Degree: stations.count * 6,
-            packedBytesAt0_001Degree: stations.count * 7
+            celestialTurnCount: turns.count,
+            packedBytesAt0_01Degree: turns.count * 6,
+            packedBytesAt0_001Degree: turns.count * 7
         ))
-        print("\(body.name): \(stations.count) stations")
+        print("\(body.name): \(turns.count) celestial-time turns")
     }
 
-    allStations.sort { $0.julianDayUT < $1.julianDayUT }
+    allTurns.sort { $0.civicTime.julianDayUT < $1.civicTime.julianDayUT }
     let output = Output(
-        status: "Construction-time station table learning specimen; intended to remove routine runtime Ephemeris queries around direction changes",
+        status: "Construction-time celestial-turn table learning specimen",
+        framing: "A station is stored as a turn in a body's celestial-time sequence. Civic UT is the corresponding civil-time coordinate, not the primary frame.",
+        constructionMethod: "Swiss signed longitudinal speed is used only to locate the exact zero-speed turn during construction; the stored Timespine fact is celestial-time position + civic UT + sequence before/after.",
         astronomicalSource: "Swiss Ephemeris; geocentric tropical apparent ecliptic longitude and signed longitudinal speed; UT",
         swissVersion: swiss.version,
         saturnStartJulianDayUT: saturnStartJD,
         saturnEndJulianDayUT: saturnEndJD,
-        samplingStepDays: scanStepDays,
-        stations: allStations,
+        scanStepDays: scanStepDays,
+        vertebraBoundaries: boundaries,
+        celestialTurns: allTurns,
         byBody: summaries,
-        totalStations: allStations.count,
-        packedBytesAt0_01Degree: allStations.count * 6,
-        packedBytesAt0_001Degree: allStations.count * 7
+        totalCelestialTurns: allTurns.count,
+        packedBytesAt0_01Degree: allTurns.count * 6,
+        packedBytesAt0_001Degree: allTurns.count * 7
     )
 
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-    let data = try encoder.encode(output)
-    try data.write(to: URL(fileURLWithPath: args.output))
+    try encoder.encode(output).write(to: URL(fileURLWithPath: args.output))
 
-    print("TOTAL stations: \(allStations.count)")
-    print("Packed estimate @0.01°: \(allStations.count * 6) bytes")
-    print("Packed estimate @0.001°: \(allStations.count * 7) bytes")
+    print("TOTAL celestial-time turns: \(allTurns.count)")
+    print("Packed estimate @0.01°: \(allTurns.count * 6) bytes")
+    print("Packed estimate @0.001°: \(allTurns.count * 7) bytes")
 }
 
 do {
