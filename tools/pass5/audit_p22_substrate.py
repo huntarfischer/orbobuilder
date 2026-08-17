@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent / "p22-data"
 OUT = Path(__file__).resolve().parent / "p22-results" / "substrate-audit.json"
+COMPACT = Path(__file__).resolve().parent / "p22-results" / "substrate-audit-compact.json"
 
 
 def percentile(xs, p):
@@ -56,7 +57,6 @@ for path in sorted((ROOT / "body-tables").glob("*.csv.gz")):
                 int(row["utOffsetSeconds"]),
                 row["sequenceDirection"],
                 tuple(int(row[c]) for c in marker_cols),
-                tuple(int(row[c]) for c in marker_cols if c == "SunDegree"),
             ))
     gaps_hours = [(rows[i][1]-rows[i-1][1])/3600 for i in range(1, len(rows)) if rows[i][1] > rows[i-1][1]]
     tick_counts = {}
@@ -126,4 +126,36 @@ result["totals"] = {
 }
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-print(json.dumps(result, indent=2, sort_keys=True))
+
+compact = {
+    "span": result["span"],
+    "bodies": []
+}
+for b in result["bodies"]:
+    compact["bodies"].append({
+        "body": b["body"],
+        "resolution": b["resolutionDegrees"],
+        "records": b["records"],
+        "markers": [x.removesuffix("Degree") for x in b["markerColumns"]],
+        "markerUnique": b["currentMarkerCollision"]["unique"],
+        "sunRepeatedKeys": None if b["sunAloneCollision"] is None else b["sunAloneCollision"]["repeatedKeys"],
+        "gapMedianHours": round(b["gapHours"]["median"], 3),
+        "gapP90Hours": round(b["gapHours"]["p90"], 3),
+        "gapP99Hours": round(b["gapHours"]["p99"], 3),
+        "gapMaxHours": round(b["gapHours"]["max"], 3),
+        "packedBytes": b["candidatePackedBytes"],
+        "coarsening": [
+            {
+                "resolution": x["resolutionDegrees"],
+                "records": x["records"],
+                "markerUnique": x["currentMarkerSetCollision"]["unique"],
+                "sunRepeatedKeys": None if "sunAloneCollision" not in x else x["sunAloneCollision"]["repeatedKeys"],
+                "gapMedianHours": round(x["gapHours"]["median"], 3),
+                "gapP99Hours": round(x["gapHours"]["p99"], 3),
+                "gapMaxHours": round(x["gapHours"]["max"], 3),
+            }
+            for x in b["coarsening"]
+        ]
+    })
+COMPACT.write_text(json.dumps(compact, indent=2) + "\n")
+print(json.dumps(compact, indent=2))
