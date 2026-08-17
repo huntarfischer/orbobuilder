@@ -17,16 +17,14 @@ env:
 
 jobs:
   learn:
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
 
-      - name: Set up Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "6.2"
+      - name: Confirm native Swift
+        run: swift --version
 
       - name: Build pinned Swiss C
         run: |
@@ -35,8 +33,8 @@ jobs:
           git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
           git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
           git -C .forge/swisseph checkout --detach FETCH_HEAD
-          make -C .forge/swisseph libswe.so
-          test -f .forge/swisseph/libswe.so
+          make -C .forge/swisseph libswe.dylib
+          test -f .forge/swisseph/libswe.dylib
 
       - name: Fetch Swiss DE441 data
         run: |
@@ -55,7 +53,7 @@ jobs:
       - name: Run Saturnian slinky specimen
         run: |
           .forge/CelestialWebPOC \
-            --library "$PWD/.forge/swisseph/libswe.so" \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
             --ephe-dir "$PWD/.forge/ephe" \
             --output "$PWD/.forge/saturn-vertebra-poc.json"
 
