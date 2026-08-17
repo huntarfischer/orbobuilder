@@ -64,17 +64,18 @@ def stations(sw,b,a,z,step):
 def stat(e):
  if not e:return {'n':0,'median_s':0,'p95_s':0,'max_s':0}
  e=sorted(e);q=lambda p:e[min(len(e)-1,int(round((len(e)-1)*p)))];return {'n':len(e),'median_s':q(.5),'p95_s':q(.95),'max_s':e[-1]}
-def interp(hi):
- wh=[x for x in hi if x[0]%10==0];lin=[];quad=[]
+def interp(hi,stn):
+ wh=[x for x in hi if x[0]%10==0];lin=[];quad=[];sj=[x[0] for x in stn]
+ def clear(a,b): return not any(a<q<b for q in sj)
  for i in range(len(wh)-1):
   a,b=wh[i],wh[i+1];ex=(a[0]+(10 if a[2]>0 else -10))%3600
-  if a[2]!=b[2] or b[0]!=ex:continue
+  if a[2]!=b[2] or b[0]!=ex or not clear(a[1],b[1]):continue
   for h in hi:
    if a[1]<h[1]<b[1] and h[2]==a[2]:
     f=((h[0]-a[0])%3600 if a[2]>0 else (a[0]-h[0])%3600)/10;lin.append(abs((a[1]+f*(b[1]-a[1])-h[1])*86400))
  for i in range(len(wh)-2):
   a,b,c=wh[i:i+3]
-  if not(a[2]==b[2]==c[2]):continue
+  if not(a[2]==b[2]==c[2]) or not clear(a[1],c[1]):continue
   if b[0]!=(a[0]+(10 if a[2]>0 else -10))%3600 or c[0]!=(b[0]+(10 if b[2]>0 else -10))%3600:continue
   for h in hi:
    if b[1]<h[1]<c[1] and h[2]==b[2]:
@@ -91,7 +92,7 @@ def markers(rows,focal):
  for m in cand:
   c,u=met([m]);rates.append({'marker':m,'unique_fraction':u/len(rows),'collision_excess':c})
  sol=[];k=0
- for k in range(1,5):
+ for k in range(1,len(cand)+1):
   sol=[list(x) for x in itertools.combinations(cand,k) if met(x)[0]==0]
   if sol:break
  return {'minimal_count':k,'selected':sol[0] if sol else [],'solutions':sol,'single_rates':sorted(rates,key=lambda x:(-x['unique_fraction'],x['marker']))}
@@ -109,7 +110,7 @@ def main():
    rows.append(r)
   ma=markers(rows,name);cnt={}
   for d,_,_ in wh:cnt[d]=cnt.get(d,0)+1
-  li,qu=interp(hi);dur=end-start;bits=math.ceil(math.log2(dur*86400+1));m=ma['minimal_count'];store={'offset_bits':bits,'offset_bytes':math.ceil(bits/8),'simple_total_bytes':len(rows)*(math.ceil(bits/8)+2+2*m),'packed_total_bytes':math.ceil(len(rows)*(bits+9*m)/8)}
+  li,qu=interp(hi,stn);dur=end-start;bits=math.ceil(math.log2(dur*86400+1));m=ma['minimal_count'];store={'offset_bits':bits,'offset_bytes':math.ceil(bits/8),'simple_total_bytes':len(rows)*(math.ceil(bits/8)+2+2*m),'packed_total_bytes':math.ceil(len(rows)*(bits+9*m)/8)}
   sm={'body':name,'cycle_start_jd':start,'cycle_end_jd':end,'cycle_start_utc':iso(start),'cycle_end_utc':iso(end),'duration_days':dur,'duration_years':dur/365.2425,'whole_degree_crossings':len(wh),'tenth_degree_crossings':len(hi),'repeated_whole_degrees':sum(v>1 for v in cnt.values()),'max_occurrences_one_degree':max(cnt.values()),'stations':len(stn),'retrograde_passages':len(retro),'retrograde_whole_degree_crossings':sum(x['whole_degree_crossings'] for x in retro),'linear_interpolation':li,'quadratic_interpolation':qu,'markers':ma,'storage':store};SUM.append(sm)
   od=os.path.join(a.output_dir,name);os.makedirs(od,exist_ok=True);json.dump(sm,open(os.path.join(od,'summary.json'),'w'),indent=2);json.dump([{'celestial_time':x[1],'jd':x[0],'utc':iso(x[0]),'before':x[2],'after':x[3]} for x in stn],open(os.path.join(od,'stations-celestial-time.json'),'w'),indent=2);json.dump(retro,open(os.path.join(od,'retrograde-celestial-time.json'),'w'),indent=2)
   fields=['deg','jd','sequence']+ma['selected'];w=csv.DictWriter(open(os.path.join(od,'body-table.csv'),'w',newline=''),fieldnames=fields);w.writeheader();w.writerows({k:r[k] for k in fields} for r in rows);print(name,json.dumps(sm))
