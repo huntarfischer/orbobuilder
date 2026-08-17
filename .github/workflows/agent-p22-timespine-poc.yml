@@ -93,6 +93,55 @@ jobs:
           if-no-files-found: error
           compression-level: 6
 
+      - name: Stage persistent P22 dataset
+        if: success()
+        run: |
+          rm -rf tools/pass5/p22-data
+          mkdir -p tools/pass5/p22-data/body-tables
+          cp .forge/p22-timespine/summary.json tools/pass5/p22-data/summary.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import gzip, hashlib, json, shutil
+
+          src = Path('.forge/p22-timespine')
+          dst = Path('tools/pass5/p22-data')
+          sources = sorted((src / 'body-tables').glob('*.csv'))
+          sources += [
+              src / 'station-table.csv',
+              src / 'retrograde-passages.csv',
+              src / 'retrograde-crossings.csv',
+          ]
+
+          files = []
+          for source in sources:
+              if source.parent.name == 'body-tables':
+                  target = dst / 'body-tables' / f'{source.name}.gz'
+              else:
+                  target = dst / f'{source.name}.gz'
+              target.parent.mkdir(parents=True, exist_ok=True)
+              with source.open('rb') as inp, target.open('wb') as raw:
+                  with gzip.GzipFile(filename='', mode='wb', fileobj=raw, compresslevel=9, mtime=0) as out:
+                      shutil.copyfileobj(inp, out)
+              payload = target.read_bytes()
+              files.append({
+                  'path': target.relative_to(dst).as_posix(),
+                  'uncompressedBytes': source.stat().st_size,
+                  'compressedBytes': len(payload),
+                  'sha256': hashlib.sha256(payload).hexdigest(),
+              })
+
+          manifest = {
+              'span': 'P22 Pluto Zeitgeist',
+              'format': 'gzip-compressed CSV learning substrate; summary JSON remains plain text',
+              'bodyTableCount': 11,
+              'sharedTables': ['station-table', 'retrograde-passages', 'retrograde-crossings'],
+              'files': files,
+              'compressedBytesTotal': sum(x['compressedBytes'] for x in files),
+              'uncompressedBytesTotal': sum(x['uncompressedBytes'] for x in files),
+          }
+          (dst / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+
       - name: Persist P22 build result
         if: always()
         run: |
@@ -102,8 +151,11 @@ jobs:
           fi
           printf '{\n  "workflowStatus": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$GITHUB_SHA" > tools/pass5/p22-results/workflow-status.json
           git add tools/pass5/p22-results
+          if test -d tools/pass5/p22-data; then
+            git add tools/pass5/p22-data
+          fi
           if ! git diff --cached --quiet; then
-            git commit -m "record P22 Timespine POC result"
+            git commit -m "record persistent P22 Timespine dataset"
             git push origin HEAD:agent/timespine-celestial-time-build
           fi
 
