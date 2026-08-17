@@ -8,7 +8,9 @@ on:
       - "tools/pass5/CelestialWebPOC.swift"
       - "tools/pass5/TimespineResolutionFastPOC.swift"
       - "tools/pass5/StationTablePOC.swift"
+      - "tools/pass5/ExactMundaneTransitPOC.swift"
       - "tools/pass5/build_body_oriented_timespine.py"
+      - "tools/pass5/build_retrograde_celestial_table.py"
       - ".github/workflows/agent-saturn-vertebra-poc.yml"
   workflow_dispatch:
 
@@ -54,6 +56,7 @@ jobs:
           swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
           swiftc tools/pass5/TimespineResolutionFastPOC.swift -o .forge/TimespineResolutionPOC
           swiftc tools/pass5/StationTablePOC.swift -o .forge/StationTablePOC
+          swiftc tools/pass5/ExactMundaneTransitPOC.swift -o .forge/ExactMundaneTransitPOC
 
       - name: Run Saturnian slinky specimen
         run: |
@@ -75,12 +78,26 @@ jobs:
             --input-dir "$PWD/.forge/timespine-resolution/low-1deg" \
             --output-dir "$PWD/.forge/body-oriented-timespine"
 
-      - name: Build station table
+      - name: Build celestial-time turn table
         run: |
           .forge/StationTablePOC \
             --library "$PWD/.forge/swisseph/libswe.dylib" \
             --ephe-dir "$PWD/.forge/ephe" \
             --output "$PWD/.forge/station-table.json"
+
+      - name: Build explicit retrograde celestial-time table
+        run: |
+          python3 tools/pass5/build_retrograde_celestial_table.py \
+            --input-dir "$PWD/.forge/timespine-resolution/low-1deg" \
+            --station-table "$PWD/.forge/station-table.json" \
+            --output-dir "$PWD/.forge/retrograde-celestial-time"
+
+      - name: Build exact mundane transit lattice
+        run: |
+          .forge/ExactMundaneTransitPOC \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir "$PWD/.forge/exact-mundane-transits"
 
       - name: Compress binary tables for shipping-size comparison
         run: |
@@ -103,8 +120,14 @@ jobs:
       - name: Read seven body table results
         run: cat .forge/body-oriented-timespine/summary.json
 
-      - name: Read station table results
+      - name: Read celestial-turn table results
         run: cat .forge/station-table.json
+
+      - name: Read retrograde celestial-time results
+        run: cat .forge/retrograde-celestial-time/summary.json
+
+      - name: Read exact mundane transit results
+        run: cat .forge/exact-mundane-transits/summary.json
 
       - name: Upload Timespine learning specimens
         uses: actions/upload-artifact@v4
@@ -117,6 +140,11 @@ jobs:
             .forge/body-oriented-timespine/summary.json
             .forge/body-oriented-timespine/*.csv
             .forge/station-table.json
+            .forge/retrograde-celestial-time/*.json
+            .forge/retrograde-celestial-time/*.csv
+            .forge/exact-mundane-transits/*.json
+            .forge/exact-mundane-transits/*.csv
+            .forge/exact-mundane-transits/*.svg
           if-no-files-found: error
           compression-level: 0
 
