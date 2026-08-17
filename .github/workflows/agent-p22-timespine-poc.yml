@@ -9,6 +9,10 @@ on:
       - ".github/workflows/agent-p22-timespine-poc.yml"
   workflow_dispatch:
 
+concurrency:
+  group: p22-timespine-learning
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -22,6 +26,16 @@ jobs:
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
+
+      - name: Record P22 build start
+        run: |
+          mkdir -p tools/pass5/p22-results
+          printf '{\n  "workflowStatus": "started",\n  "sourceCommit": "%s"\n}\n' "$GITHUB_SHA" > tools/pass5/p22-results/workflow-status.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/p22-results/workflow-status.json
+          git commit -m "record P22 Timespine POC start"
+          git push origin HEAD:agent/timespine-celestial-time-build
 
       - name: Build pinned Swiss C
         run: |
@@ -87,8 +101,6 @@ jobs:
             cp .forge/p22-timespine/summary.json tools/pass5/p22-results/summary.json
           fi
           printf '{\n  "workflowStatus": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$GITHUB_SHA" > tools/pass5/p22-results/workflow-status.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tools/pass5/p22-results
           if ! git diff --cached --quiet; then
             git commit -m "record P22 Timespine POC result"
