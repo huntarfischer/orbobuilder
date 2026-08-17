@@ -1,0 +1,163 @@
+{
+  "question": "Can Mercury or Venus replace three whole-degree markers with Sun plus one finer companion?",
+  "bodies": [
+    {
+      "body": "Mercury",
+      "records": 108604,
+      "currentMarkerBits": 27,
+      "pairs": [
+        {
+          "markers": [
+            "Sun",
+            "Moon"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 0.02,
+          "markerBits": 26
+        },
+        {
+          "markers": [
+            "Sun",
+            "Mars"
+          ],
+          "sunResolution": 1.0,
+          "companionResolution": 0.01,
+          "markerBits": 25
+        },
+        {
+          "markers": [
+            "Sun",
+            "Mars"
+          ],
+          "sunResolution": 0.02,
+          "companionResolution": 0.5,
+          "markerBits": 25
+        },
+        {
+          "markers": [
+            "Sun",
+            "Mars"
+          ],
+          "sunResolution": 0.01,
+          "companionResolution": 1.0,
+          "markerBits": 25
+        },
+        {
+          "markers": [
+            "Sun",
+            "Saturn"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 0.5,
+          "markerBits": 21
+        },
+        {
+          "markers": [
+            "Sun",
+            "Uranus"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 1.0,
+          "markerBits": 20
+        },
+        {
+          "markers": [
+            "Sun",
+            "NorthNode"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 1.0,
+          "markerBits": 20
+        }
+      ],
+      "bestPair": {
+        "markers": [
+          "Sun",
+          "Uranus"
+        ],
+        "sunResolution": 0.2,
+        "companionResolution": 1.0,
+        "markerBits": 20
+      }
+    },
+    {
+      "body": "Venus",
+      "records": 92858,
+      "currentMarkerBits": 27,
+      "pairs": [
+        {
+          "markers": [
+            "Sun",
+            "Moon"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 0.1,
+          "markerBits": 23
+        },
+        {
+          "markers": [
+            "Sun",
+            "Moon"
+          ],
+          "sunResolution": 0.1,
+          "companionResolution": 0.2,
+          "markerBits": 23
+        },
+        {
+          "markers": [
+            "Sun",
+            "Mars"
+          ],
+          "sunResolution": 1.0,
+          "companionResolution": 0.2,
+          "markerBits": 20
+        },
+        {
+          "markers": [
+            "Sun",
+            "Uranus"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 1.0,
+          "markerBits": 20
+        },
+        {
+          "markers": [
+            "Sun",
+            "Pluto"
+          ],
+          "sunResolution": 1.0,
+          "companionResolution": 0.2,
+          "markerBits": 20
+        },
+        {
+          "markers": [
+            "Sun",
+            "Pluto"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 1.0,
+          "markerBits": 20
+        },
+        {
+          "markers": [
+            "Sun",
+            "NorthNode"
+          ],
+          "sunResolution": 0.2,
+          "companionResolution": 1.0,
+          "markerBits": 20
+        }
+      ],
+      "bestPair": {
+        "markers": [
+          "Sun",
+          "Mars"
+        ],
+        "sunResolution": 1.0,
+        "companionResolution": 0.2,
+        "markerBits": 20
+      }
+    }
+  ]
+}
