@@ -6,7 +6,7 @@ on:
       - agent/timespine-celestial-time-build
     paths:
       - "tools/pass5/CelestialWebPOC.swift"
-      - "tools/pass5/TimespineResolutionPOC.swift"
+      - "tools/pass5/TimespineResolutionFastPOC.swift"
       - ".github/workflows/agent-saturn-vertebra-poc.yml"
   workflow_dispatch:
 
@@ -49,9 +49,8 @@ jobs:
       - name: Compile Swift learning harnesses
         run: |
           mkdir -p .forge
-          sed -i '' 's/\\"%.3f\\"/"%.3f"/g; s/\\"%.2f%%\\"/"%.2f%%"/g' tools/pass5/TimespineResolutionPOC.swift
           swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
-          swiftc tools/pass5/TimespineResolutionPOC.swift -o .forge/TimespineResolutionPOC
+          swiftc tools/pass5/TimespineResolutionFastPOC.swift -o .forge/TimespineResolutionPOC
 
       - name: Run Saturnian slinky specimen
         run: |
@@ -75,25 +74,7 @@ jobs:
 
       - name: Read resolution results
         run: |
-          jq '{
-            status,
-            saturnStartJulianDay,
-            saturnEndJulianDay,
-            durationDays,
-            samplingStepDays,
-            timingMethod,
-            relativeRecordLayout,
-            directRecordLayout,
-            resolutions: [.resolutions[] | {
-              label,
-              degrees,
-              records,
-              relativeSecondsBytes,
-              directJulianDayBytes,
-              moonRecordShare,
-              byBody
-            }]
-          }' .forge/timespine-resolution/summary.json
+          cat .forge/timespine-resolution/summary.json
           echo "--- raw and gzip totals ---"
           for dir in .forge/timespine-resolution/low-1deg .forge/timespine-resolution/medium-0_5deg .forge/timespine-resolution/high-0_1deg; do
             echo "$dir"
@@ -103,18 +84,6 @@ jobs:
             find "$dir" -name '*.direct-jd.bin.gz' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "direct gzip bytes=" s}'
           done
 
-      - name: Read what the celestial specimen teaches
-        run: |
-          jq '{
-            focus,
-            saturnVertebra,
-            bodyRevolutionsAcrossSaturnVertebra: [.bodyRevolutionsAcrossSaturnVertebra[] | {body, revolutionCount}],
-            focalRevolutions: [.focalRevolutions[] | {body, count:(.revolutionsTouchingFocalSolarLoop|length), revolutionsTouchingFocalSolarLoop}],
-            mercury8AriesPassCountInsideSaturnVertebra: (.mercury8AriesWithinSaturnVertebra | length),
-            focalMercuryDegreeWithMostPasses,
-            learning
-          }' .forge/saturn-vertebra-poc.json
-
       - name: Upload resolution specimen
         uses: actions/upload-artifact@v4
         with:
@@ -123,7 +92,6 @@ jobs:
             .forge/timespine-resolution/summary.json
             .forge/timespine-resolution/**/*.bin
             .forge/timespine-resolution/**/*.bin.gz
-            .forge/timespine-resolution/samples/*.csv
           if-no-files-found: error
           compression-level: 0
 
