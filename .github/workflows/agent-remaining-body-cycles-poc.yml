@@ -5,7 +5,7 @@ on:
     branches:
       - agent/timespine-celestial-time-build
     paths:
-      - "tools/pass5/RemainingBodyCyclesPOC.swift"
+      - "tools/pass5/remaining_body_cycles_poc.py"
       - ".github/workflows/agent-remaining-body-cycles-poc.yml"
   workflow_dispatch:
 
@@ -22,9 +22,6 @@ jobs:
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
-
-      - name: Confirm native Swift
-        run: swift --version
 
       - name: Build pinned Swiss C
         run: |
@@ -45,14 +42,12 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
-      - name: Compile remaining-body cycle harness
-        run: |
-          mkdir -p .forge
-          swiftc tools/pass5/RemainingBodyCyclesPOC.swift -o .forge/RemainingBodyCyclesPOC
+      - name: Validate comparison harness
+        run: python3 -m py_compile tools/pass5/remaining_body_cycles_poc.py
 
       - name: Build and test North Node Uranus Neptune Pluto cycles
         run: |
-          .forge/RemainingBodyCyclesPOC \
+          python3 tools/pass5/remaining_body_cycles_poc.py \
             --library "$PWD/.forge/swisseph/libswe.dylib" \
             --ephe-dir "$PWD/.forge/ephe" \
             --output-dir "$PWD/.forge/remaining-body-cycles"
