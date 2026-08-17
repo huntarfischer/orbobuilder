@@ -1,0 +1,74 @@
+name: Agent Remaining Body Cycles POC
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+    paths:
+      - "tools/pass5/RemainingBodyCyclesPOC.swift"
+      - ".github/workflows/agent-remaining-body-cycles-poc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  compare-cycles:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Confirm native Swift
+        run: swift --version
+
+      - name: Build pinned Swiss C
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.dylib
+          test -f .forge/swisseph/libswe.dylib
+
+      - name: Fetch Swiss DE441 data
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Compile remaining-body cycle harness
+        run: |
+          mkdir -p .forge
+          swiftc tools/pass5/RemainingBodyCyclesPOC.swift -o .forge/RemainingBodyCyclesPOC
+
+      - name: Build and test North Node Uranus Neptune Pluto cycles
+        run: |
+          .forge/RemainingBodyCyclesPOC \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir "$PWD/.forge/remaining-body-cycles"
+
+      - name: Read comparative results
+        run: cat .forge/remaining-body-cycles/summary.json
+
+      - name: Upload comparative cycle specimens
+        uses: actions/upload-artifact@v4
+        with:
+          name: remaining-body-cycle-specimen
+          path: |
+            .forge/remaining-body-cycles/summary.json
+            .forge/remaining-body-cycles/**/*.json
+            .forge/remaining-body-cycles/**/*.csv
+          if-no-files-found: error
+          compression-level: 6
+
+# Learning branch only. No production ownership implied.
