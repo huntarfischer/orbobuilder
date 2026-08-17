@@ -1,0 +1,82 @@
+name: Agent P22 Timespine POC
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+    paths:
+      - "tools/pass5/P22TimespinePOC.swift"
+      - ".github/workflows/agent-p22-timespine-poc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  build-p22:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.dylib
+          test -f .forge/swisseph/libswe.dylib
+
+      - name: Fetch DE441 segments spanning P22
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Compile P22 harness
+        run: |
+          mkdir -p .forge
+          swiftc -O tools/pass5/P22TimespinePOC.swift -o .forge/P22TimespinePOC
+
+      - name: Build P22 eleven-body Timespine substrate
+        run: |
+          .forge/P22TimespinePOC \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir "$PWD/.forge/p22-timespine"
+
+      - name: Read P22 summary
+        run: cat .forge/p22-timespine/summary.json
+
+      - name: Measure generated table sizes
+        run: |
+          echo "body table CSV bytes"
+          find .forge/p22-timespine/body-tables -name '*.csv' -print0 | xargs -0 stat -f '%z %N'
+          echo "total body table CSV bytes"
+          find .forge/p22-timespine/body-tables -name '*.csv' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print s}'
+          echo "station/retrograde table bytes"
+          stat -f '%z %N' .forge/p22-timespine/station-table.csv .forge/p22-timespine/retrograde-passages.csv .forge/p22-timespine/retrograde-crossings.csv
+
+      - name: Upload P22 Timespine specimen
+        uses: actions/upload-artifact@v4
+        with:
+          name: p22-timespine-specimen
+          path: |
+            .forge/p22-timespine/summary.json
+            .forge/p22-timespine/body-tables/*.csv
+            .forge/p22-timespine/station-table.csv
+            .forge/p22-timespine/retrograde-passages.csv
+            .forge/p22-timespine/retrograde-crossings.csv
+          if-no-files-found: error
+          compression-level: 6
+
+# Learning branch only. No production OrboCore ownership implied.
