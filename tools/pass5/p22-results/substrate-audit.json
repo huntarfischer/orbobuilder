@@ -1,0 +1,848 @@
+{
+  "bodies": [
+    {
+      "body": "Jupiter",
+      "candidatePackedBytes": 933542,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 549.4811111111111,
+            "median": 25.628055555555555,
+            "p90": 54.33644444444446,
+            "p99": 170.12872777777687
+          },
+          "records": 59264,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 18869,
+            "repeatedKeys": 14478,
+            "repeatedRows": 33347,
+            "unique": false
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 873.7411111111111,
+            "median": 64.12069444444444,
+            "p90": 136.28680555555556,
+            "p99": 568.1659111111111
+          },
+          "records": 23713,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 7587,
+            "repeatedKeys": 5811,
+            "repeatedRows": 13398,
+            "unique": false
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1231.2297222222223,
+            "median": 128.11388888888888,
+            "p90": 274.2914166666667,
+            "p99": 1009.2371500000002
+          },
+          "records": 11851,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 3781,
+            "repeatedKeys": 2912,
+            "repeatedRows": 6693,
+            "unique": false
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 22251,
+        "increasing": 96294
+      },
+      "gapHours": {
+        "max": 386.5,
+        "median": 12.815555555555555,
+        "p90": 27.201305555555557,
+        "p99": 83.1793583333333
+      },
+      "markerColumns": [
+        "SunDegree",
+        "PlutoDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 39,
+        "mean": 32.92916666666667,
+        "median": 33.0
+      },
+      "persistedCompressedBytes": 2473792,
+      "records": 118545,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 37868,
+        "repeatedKeys": 28956,
+        "repeatedRows": 66824,
+        "unique": false
+      }
+    },
+    {
+      "body": "Mars",
+      "candidatePackedBytes": 378840,
+      "coarsening": [],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 1872,
+        "increasing": 48640
+      },
+      "gapHours": {
+        "max": 611.2130555555556,
+        "median": 36.401666666666664,
+        "p90": 53.58972222222222,
+        "p99": 146.5423611111113
+      },
+      "markerColumns": [
+        "SunDegree",
+        "PlutoDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 150,
+        "mean": 140.3111111111111,
+        "median": 140.0
+      },
+      "persistedCompressedBytes": 1091321,
+      "records": 50512,
+      "resolutionDegrees": 1.0,
+      "sunAloneCollision": {
+        "collisionExcess": 3533,
+        "repeatedKeys": 3533,
+        "repeatedRows": 7066,
+        "unique": false
+      }
+    },
+    {
+      "body": "Mercury",
+      "candidatePackedBytes": 936710,
+      "coarsening": [],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 10330,
+        "increasing": 98274
+      },
+      "gapHours": {
+        "max": 251.6375,
+        "median": 15.262222222222222,
+        "p90": 29.13083333333333,
+        "p99": 105.82632222222203
+      },
+      "markerColumns": [
+        "SunDegree",
+        "PlutoDegree",
+        "MoonDegree"
+      ],
+      "markerCount": 3,
+      "occurrencesPerCelestialTick": {
+        "max": 322,
+        "mean": 301.6777777777778,
+        "median": 304.0
+      },
+      "persistedCompressedBytes": 2425009,
+      "records": 108604,
+      "resolutionDegrees": 1.0,
+      "sunAloneCollision": {
+        "collisionExcess": 92026,
+        "repeatedKeys": 16554,
+        "repeatedRows": 108580,
+        "unique": false
+      }
+    },
+    {
+      "body": "Moon",
+      "candidatePackedBytes": 8813340,
+      "coarsening": [],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 0,
+        "increasing": 1175112
+      },
+      "gapHours": {
+        "max": 2.0408333333333335,
+        "median": 1.8163888888888888,
+        "p90": 2.0180555555555557,
+        "p99": 2.035
+      },
+      "markerColumns": [
+        "SunDegree",
+        "PlutoDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 3265,
+        "mean": 3264.2,
+        "median": 3264.0
+      },
+      "persistedCompressedBytes": 20824888,
+      "records": 1175112,
+      "resolutionDegrees": 1.0,
+      "sunAloneCollision": {
+        "collisionExcess": 1045512,
+        "repeatedKeys": 129600,
+        "repeatedRows": 1175112,
+        "unique": false
+      }
+    },
+    {
+      "body": "Neptune",
+      "candidatePackedBytes": 127798,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1314.7130555555555,
+            "median": 176.4638888888889,
+            "p90": 331.79555555555555,
+            "p99": 1207.248305555556
+          },
+          "records": 9457,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 2111.324722222222,
+            "median": 442.6933333333333,
+            "p90": 995.7619722222225,
+            "p99": 2004.5321972222223
+          },
+          "records": 3773,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 3077.605,
+            "median": 898.4147222222222,
+            "p90": 2332.7021111111108,
+            "p99": 2981.17735
+          },
+          "records": 1884,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 6785,
+        "increasing": 12148
+      },
+      "gapHours": {
+        "max": 924.9794444444444,
+        "median": 88.17722222222221,
+        "p90": 166.95050000000015,
+        "p99": 736.6547277777763
+      },
+      "markerColumns": [
+        "SunDegree"
+      ],
+      "markerCount": 1,
+      "occurrencesPerCelestialTick": {
+        "max": 10,
+        "mean": 5.259166666666666,
+        "median": 5.0
+      },
+      "persistedCompressedBytes": 399415,
+      "records": 18933,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "NorthNode",
+      "candidatePackedBytes": 416328,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1151.1233333333332,
+            "median": 38.24777777777778,
+            "p90": 180.44916666666666,
+            "p99": 870.23786111111
+          },
+          "records": 26392,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 39,
+            "repeatedKeys": 39,
+            "repeatedRows": 78,
+            "unique": false
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1511.6058333333333,
+            "median": 108.88499999999999,
+            "p90": 329.7054166666667,
+            "p99": 1279.5074444444444
+          },
+          "records": 10637,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 22,
+            "repeatedKeys": 22,
+            "repeatedRows": 44,
+            "unique": false
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1860.2091666666668,
+            "median": 289.62333333333333,
+            "p90": 723.6138611111111,
+            "p99": 1834.1701583333333
+          },
+          "records": 5315,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 12,
+            "repeatedKeys": 12,
+            "repeatedRows": 24,
+            "unique": false
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 50055,
+        "increasing": 2812
+      },
+      "gapHours": {
+        "max": 850.5011111111111,
+        "median": 18.939027777777778,
+        "p90": 110.81055555555557,
+        "p99": 296.4311388888873
+      },
+      "markerColumns": [
+        "SunDegree",
+        "MoonDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 23,
+        "mean": 14.685277777777777,
+        "median": 15.0
+      },
+      "persistedCompressedBytes": 1269836,
+      "records": 52867,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 95,
+        "repeatedKeys": 95,
+        "repeatedRows": 190,
+        "unique": false
+      }
+    },
+    {
+      "body": "Pluto",
+      "candidatePackedBytes": 99306,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1630.9602777777777,
+            "median": 226.6563888888889,
+            "p90": 445.9815555555556,
+            "p99": 1372.4096111111107
+          },
+          "records": 7346,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 2661.4908333333333,
+            "median": 569.5088888888889,
+            "p90": 1444.2063888888888,
+            "p99": 2419.1324999999997
+          },
+          "records": 2952,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 3945.262777777778,
+            "median": 1158.763611111111,
+            "p90": 2847.928333333336,
+            "p99": 3754.887233333334
+          },
+          "records": 1486,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 5556,
+        "increasing": 9156
+      },
+      "gapHours": {
+        "max": 1142.1502777777778,
+        "median": 113.15388888888889,
+        "p90": 219.8011111111111,
+        "p99": 856.9803888888888
+      },
+      "markerColumns": [
+        "SunDegree"
+      ],
+      "markerCount": 1,
+      "occurrencesPerCelestialTick": {
+        "max": 7,
+        "mean": 4.086666666666667,
+        "median": 5.0
+      },
+      "persistedCompressedBytes": 310337,
+      "records": 14712,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Saturn",
+      "candidatePackedBytes": 488250,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 751.3172222222222,
+            "median": 51.298611111111114,
+            "p90": 103.64916666666667,
+            "p99": 443.829277777779
+          },
+          "records": 30982,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 1,
+            "repeatedKeys": 1,
+            "repeatedRows": 2,
+            "unique": false
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1198.5633333333333,
+            "median": 128.13944444444445,
+            "p90": 263.59050000000025,
+            "p99": 973.8413777777771
+          },
+          "records": 12404,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1697.7480555555555,
+            "median": 257.12083333333334,
+            "p90": 539.4296666666667,
+            "p99": 1514.067888888889
+          },
+          "records": 6210,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 16030,
+        "increasing": 45970
+      },
+      "gapHours": {
+        "max": 530.31,
+        "median": 25.655277777777776,
+        "p90": 52.0210555555556,
+        "p99": 166.36711111111086
+      },
+      "markerColumns": [
+        "SunDegree",
+        "JupiterDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 21,
+        "mean": 17.22222222222222,
+        "median": 18.0
+      },
+      "persistedCompressedBytes": 1376100,
+      "records": 62000,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 1,
+        "repeatedKeys": 1,
+        "repeatedRows": 2,
+        "unique": false
+      }
+    },
+    {
+      "body": "Sun",
+      "candidatePackedBytes": 659258,
+      "coarsening": [],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 0,
+        "increasing": 87901
+      },
+      "gapHours": {
+        "max": 25.18777777777778,
+        "median": 24.34027777777778,
+        "p90": 25.13222222222222,
+        "p99": 25.17861111111111
+      },
+      "markerColumns": [
+        "PlutoDegree",
+        "NeptuneDegree"
+      ],
+      "markerCount": 2,
+      "occurrencesPerCelestialTick": {
+        "max": 245,
+        "mean": 244.16944444444445,
+        "median": 244.0
+      },
+      "persistedCompressedBytes": 1706966,
+      "records": 87901,
+      "resolutionDegrees": 1.0,
+      "sunAloneCollision": null
+    },
+    {
+      "body": "Uranus",
+      "candidatePackedBytes": 201981,
+      "coarsening": [
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1070.5897222222222,
+            "median": 112.58777777777777,
+            "p90": 213.6997222222223,
+            "p99": 878.6631444444436
+          },
+          "records": 14946,
+          "resolutionDegrees": 0.2,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 1702.2933333333333,
+            "median": 281.8136111111111,
+            "p90": 565.1889444444445,
+            "p99": 1554.0154194444451
+          },
+          "records": 6001,
+          "resolutionDegrees": 0.5,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "currentMarkerSetCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          },
+          "gapHours": {
+            "max": 2382.3322222222223,
+            "median": 572.9190277777777,
+            "p90": 1462.6244444444446,
+            "p99": 2240.093544444445
+          },
+          "records": 3009,
+          "resolutionDegrees": 1.0,
+          "sunAloneCollision": {
+            "collisionExcess": 0,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        }
+      ],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 9734,
+        "increasing": 20189
+      },
+      "gapHours": {
+        "max": 756.5111111111111,
+        "median": 56.319722222222225,
+        "p90": 106.26916666666669,
+        "p99": 466.869361111112
+      },
+      "markerColumns": [
+        "SunDegree"
+      ],
+      "markerCount": 1,
+      "occurrencesPerCelestialTick": {
+        "max": 9,
+        "mean": 8.311944444444444,
+        "median": 9.0
+      },
+      "persistedCompressedBytes": 633292,
+      "records": 29923,
+      "resolutionDegrees": 0.1,
+      "sunAloneCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Venus",
+      "candidatePackedBytes": 800901,
+      "coarsening": [],
+      "currentMarkerCollision": {
+        "collisionExcess": 0,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "directionRows": {
+        "decreasing": 2438,
+        "increasing": 90420
+      },
+      "gapHours": {
+        "max": 348.60527777777776,
+        "median": 19.77,
+        "p90": 26.50883333333335,
+        "p99": 71.75145555555567
+      },
+      "markerColumns": [
+        "SunDegree",
+        "PlutoDegree",
+        "MercuryDegree"
+      ],
+      "markerCount": 3,
+      "occurrencesPerCelestialTick": {
+        "max": 261,
+        "mean": 257.93888888888887,
+        "median": 258.0
+      },
+      "persistedCompressedBytes": 2083925,
+      "records": 92858,
+      "resolutionDegrees": 1.0,
+      "sunAloneCollision": {
+        "collisionExcess": 59197,
+        "repeatedKeys": 32732,
+        "repeatedRows": 91929,
+        "unique": false
+      }
+    }
+  ],
+  "durationYears": 244.17219351731123,
+  "purpose": "Read-only audit of persisted P22 body tables for resolution spacing, marker uniqueness, and coarsening behavior.",
+  "span": "P22 Pluto Zeitgeist",
+  "totals": {
+    "candidatePackedBytes": 13856254,
+    "persistedBodyCompressedBytes": 34594881,
+    "records": 1811967
+  }
+}
