@@ -79,15 +79,19 @@ jobs:
           if-no-files-found: error
           compression-level: 6
 
-      - name: Persist compact P22 build summary
+      - name: Persist P22 build result
+        if: always()
         run: |
           mkdir -p tools/pass5/p22-results
-          cp .forge/p22-timespine/summary.json tools/pass5/p22-results/summary.json
+          if test -f .forge/p22-timespine/summary.json; then
+            cp .forge/p22-timespine/summary.json tools/pass5/p22-results/summary.json
+          fi
+          printf '{\n  "workflowStatus": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$GITHUB_SHA" > tools/pass5/p22-results/workflow-status.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/pass5/p22-results/summary.json
+          git add tools/pass5/p22-results
           if ! git diff --cached --quiet; then
-            git commit -m "record P22 Timespine POC summary"
+            git commit -m "record P22 Timespine POC result"
             git push origin HEAD:agent/timespine-celestial-time-build
           fi
 
