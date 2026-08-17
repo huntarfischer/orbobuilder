@@ -1,0 +1,440 @@
+{
+  "astronomicalSource" : "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT",
+  "bodyTables" : [
+    {
+      "body" : "Sun",
+      "candidatePackedBytes" : 659258,
+      "retrogradePassages" : 0,
+      "retrogradeSelectedCrossings" : 0,
+      "selectedRecords" : 87901,
+      "selectedResolutionDegrees" : 1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Pluto",
+          "Neptune"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunFirst" : false
+      },
+      "stationCount" : 0,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Pluto",
+          "Neptune"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunFirst" : false
+      },
+      "wholeDegreeRecords" : 87901
+    },
+    {
+      "body" : "Moon",
+      "candidatePackedBytes" : 8813340,
+      "retrogradePassages" : 0,
+      "retrogradeSelectedCrossings" : 0,
+      "selectedRecords" : 1175112,
+      "selectedResolutionDegrees" : 1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 129600,
+        "sunAloneRepeatedRows" : 1175112,
+        "sunFirst" : true
+      },
+      "stationCount" : 0,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 129600,
+        "sunAloneRepeatedRows" : 1175112,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 1175112
+    },
+    {
+      "body" : "Mercury",
+      "candidatePackedBytes" : 936710,
+      "retrogradePassages" : 769,
+      "retrogradeSelectedCrossings" : 10330,
+      "selectedRecords" : 108604,
+      "selectedResolutionDegrees" : 1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 3,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto",
+          "Moon"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 16554,
+        "sunAloneRepeatedRows" : 108580,
+        "sunFirst" : true
+      },
+      "stationCount" : 1538,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 3,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto",
+          "Moon"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 16554,
+        "sunAloneRepeatedRows" : 108580,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 108604
+    },
+    {
+      "body" : "Venus",
+      "candidatePackedBytes" : 800901,
+      "retrogradePassages" : 152,
+      "retrogradeSelectedCrossings" : 2438,
+      "selectedRecords" : 92858,
+      "selectedResolutionDegrees" : 1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 3,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto",
+          "Mercury"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 32732,
+        "sunAloneRepeatedRows" : 91929,
+        "sunFirst" : true
+      },
+      "stationCount" : 304,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 3,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto",
+          "Mercury"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 32732,
+        "sunAloneRepeatedRows" : 91929,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 92858
+    },
+    {
+      "body" : "Mars",
+      "candidatePackedBytes" : 378840,
+      "retrogradePassages" : 114,
+      "retrogradeSelectedCrossings" : 1872,
+      "selectedRecords" : 50512,
+      "selectedResolutionDegrees" : 1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 3533,
+        "sunAloneRepeatedRows" : 7066,
+        "sunFirst" : true
+      },
+      "stationCount" : 228,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 3533,
+        "sunAloneRepeatedRows" : 7066,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 50512
+    },
+    {
+      "body" : "Jupiter",
+      "candidatePackedBytes" : 933542,
+      "retrogradePassages" : 224,
+      "retrogradeSelectedCrossings" : 22251,
+      "selectedRecords" : 118545,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 28956,
+        "sunAloneRepeatedRows" : 66824,
+        "sunFirst" : true
+      },
+      "stationCount" : 447,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Pluto"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 2912,
+        "sunAloneRepeatedRows" : 6693,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 11851
+    },
+    {
+      "body" : "Saturn",
+      "candidatePackedBytes" : 488250,
+      "retrogradePassages" : 236,
+      "retrogradeSelectedCrossings" : 16030,
+      "selectedRecords" : 62000,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Jupiter"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 1,
+        "sunAloneRepeatedRows" : 2,
+        "sunFirst" : true
+      },
+      "stationCount" : 472,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 6210
+    },
+    {
+      "body" : "Uranus",
+      "candidatePackedBytes" : 201981,
+      "retrogradePassages" : 242,
+      "retrogradeSelectedCrossings" : 9734,
+      "selectedRecords" : 29923,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "stationCount" : 482,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 3009
+    },
+    {
+      "body" : "Neptune",
+      "candidatePackedBytes" : 127798,
+      "retrogradePassages" : 243,
+      "retrogradeSelectedCrossings" : 6785,
+      "selectedRecords" : 18933,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "stationCount" : 485,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 1884
+    },
+    {
+      "body" : "Pluto",
+      "candidatePackedBytes" : 99306,
+      "retrogradePassages" : 243,
+      "retrogradeSelectedCrossings" : 5556,
+      "selectedRecords" : 14712,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "stationCount" : 486,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 1,
+        "selectedMarkers" : [
+          "Sun"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+          "Sun"
+        ],
+        "sunAloneRepeatedKeys" : 0,
+        "sunAloneRepeatedRows" : 0,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 1486
+    },
+    {
+      "body" : "NorthNode",
+      "candidatePackedBytes" : 416328,
+      "retrogradePassages" : 6547,
+      "retrogradeSelectedCrossings" : 50055,
+      "selectedRecords" : 52867,
+      "selectedResolutionDegrees" : 0.1,
+      "selectedResolutionMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Moon"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 95,
+        "sunAloneRepeatedRows" : 190,
+        "sunFirst" : true
+      },
+      "stationCount" : 13093,
+      "wholeDegreeMarkerAudit" : {
+        "markerCount" : 2,
+        "selectedMarkers" : [
+          "Sun",
+          "Moon"
+        ],
+        "selectedRepeatedKeys" : 0,
+        "singleMarkerWinners" : [
+
+        ],
+        "sunAloneRepeatedKeys" : 12,
+        "sunAloneRepeatedRows" : 24,
+        "sunFirst" : true
+      },
+      "wholeDegreeRecords" : 5315
+    }
+  ],
+  "candidatePackedBodyBytesTotal" : 13856254,
+  "civicOffsetBitsRequired" : 33,
+  "durationDays" : 89182.06239074655,
+  "durationYears" : 244.17219351731123,
+  "endJulianDayUT" : 2475819.1417904524,
+  "endUTC" : "2066-06-17T15:24:10.695Z",
+  "nodeRepresentation" : "True North Node body table. Code stores increasing\/decreasing celestial-time sequence; user-facing direct\/retrograde terminology is retained. South Node is derived at +180 degrees.",
+  "notes" : [
+    "All body tables share one civic coordinate: integer seconds since the P22 Pluto 0 Aries boundary.",
+    "Sun-first marker audit is run twice: at whole-degree resolution for direct comparison with the earlier pair tests, and at each body's selected candidate storage resolution.",
+    "For non-Sun tables, the selected marker rule keeps Sun as the first companion and adds the smallest additional whole-degree marker set only when Sun alone repeats across P22.",
+    "Sun cannot mark itself, so the Sun table selects the smallest non-repeating companion set from the other bodies.",
+    "Selected candidate resolution is 1 degree for Sun through Mars and 0.1 degree for Jupiter, Saturn, Uranus, Neptune, Pluto, and the True North Node. This encodes the observed inverse relationship between celestial speed and economical angular fidelity.",
+    "Crossing times are root-refined within station-bounded monotonic sample intervals. Stations are speed-zero turns located by bisection.",
+    "This build is a candidate P22 body substrate, not final production serialization."
+  ],
+  "spanName" : "P22 Pluto Zeitgeist",
+  "startJulianDayUT" : 2386637.079399706,
+  "startUTC" : "1822-04-16T13:54:20.135Z",
+  "status" : "P22 eleven-body Mundane Timespine learning build; major\/minor aspects and eclipses intentionally excluded",
+  "swissVersion" : "2.10.03",
+  "totalRetrogradePassages" : 8770,
+  "totalSelectedBodyRecords" : 1811967,
+  "totalStations" : 17535
+}

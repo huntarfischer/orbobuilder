@@ -1,0 +1,98 @@
+{
+  "span": "P22 Pluto Zeitgeist",
+  "format": "gzip-compressed CSV learning substrate; summary JSON remains plain text",
+  "bodyTableCount": 11,
+  "sharedTables": [
+    "station-table",
+    "retrograde-passages",
+    "retrograde-crossings"
+  ],
+  "files": [
+    {
+      "path": "body-tables/Jupiter.csv.gz",
+      "uncompressedBytes": 7969474,
+      "compressedBytes": 2473792,
+      "sha256": "dd84ef4ff818c1fe25b42c6a128b511068b9e797c2f6d86e4eba0c446ecba7e0"
+    },
+    {
+      "path": "body-tables/Mars.csv.gz",
+      "uncompressedBytes": 3370638,
+      "compressedBytes": 1091321,
+      "sha256": "9943f59d47ddb4d04c7cb11308cbc3351befbdd3e46b82e0cad0f9fb8a52ed49"
+    },
+    {
+      "path": "body-tables/Mercury.csv.gz",
+      "uncompressedBytes": 7695259,
+      "compressedBytes": 2425009,
+      "sha256": "9e82e8f684a3a343ecd8c3145e7f0fcd06368830652600f0129721cb214f39c6"
+    },
+    {
+      "path": "body-tables/Moon.csv.gz",
+      "uncompressedBytes": 80079590,
+      "compressedBytes": 20824888,
+      "sha256": "c307ecf195bcf77144513a66d62bda0aa1c36559c4c3c087894859b461a4e48a"
+    },
+    {
+      "path": "body-tables/Neptune.csv.gz",
+      "uncompressedBytes": 1188198,
+      "compressedBytes": 399415,
+      "sha256": "ae0c6f8e07fe7908b7eefa00b82af2f98fae9330da1a70a315bfef793323d649"
+    },
+    {
+      "path": "body-tables/NorthNode.csv.gz",
+      "uncompressedBytes": 3543477,
+      "compressedBytes": 1269836,
+      "sha256": "fc9aa99521d575ca369a55973873b4ccaad72275e21da1a79f48e4fe37aa00d1"
+    },
+    {
+      "path": "body-tables/Pluto.csv.gz",
+      "uncompressedBytes": 924319,
+      "compressedBytes": 310337,
+      "sha256": "3a51987a93bcd392729641d52fcbc5cd19aa780bf2c5d96f489e9fb3b90d07f0"
+    },
+    {
+      "path": "body-tables/Saturn.csv.gz",
+      "uncompressedBytes": 4161308,
+      "compressedBytes": 1376100,
+      "sha256": "07690c3e60d2b552b2e1aedd95ed7002f26ad56f6b413d08277febda400ca3bf"
+    },
+    {
+      "path": "body-tables/Sun.csv.gz",
+      "uncompressedBytes": 5886611,
+      "compressedBytes": 1706966,
+      "sha256": "e989440da15e442e17ef655736b625aa4a177e1bf0ae2c9963c2606e5dcde463"
+    },
+    {
+      "path": "body-tables/Uranus.csv.gz",
+      "uncompressedBytes": 1882447,
+      "compressedBytes": 633292,
+      "sha256": "94b10d36e304342aaa133e5ddd3dae601c44260566c923bd40281250b63ece36"
+    },
+    {
+      "path": "body-tables/Venus.csv.gz",
+      "uncompressedBytes": 6573296,
+      "compressedBytes": 2083925,
+      "sha256": "0c4c5db23fba5a6bb8548941e8490d2006cccd584ad0023a092f22d3300006cd"
+    },
+    {
+      "path": "station-table.csv.gz",
+      "uncompressedBytes": 1645932,
+      "compressedBytes": 417580,
+      "sha256": "3585d65d4708f2fd64401396af1b3000f7f26261a60e82b74d3d000a4952939c"
+    },
+    {
+      "path": "retrograde-passages.csv.gz",
+      "uncompressedBytes": 977178,
+      "compressedBytes": 392954,
+      "sha256": "11ae455a68e94b05ff0c8406ae98dd7335f1a567cac204c5ec8f44d0655233d1"
+    },
+    {
+      "path": "retrograde-crossings.csv.gz",
+      "uncompressedBytes": 6822301,
+      "compressedBytes": 2447332,
+      "sha256": "a1d3a7466a4ebecf6b4c49d6b4c85c38f046a28e74d34068b9310765147736f3"
+    }
+  ],
+  "compressedBytesTotal": 37852747,
+  "uncompressedBytesTotal": 132720028
+}
