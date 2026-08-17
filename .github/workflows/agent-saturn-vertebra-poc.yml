@@ -1,0 +1,81 @@
+name: Agent Saturn Vertebra POC
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+    paths:
+      - "tools/pass5/CelestialWebPOC.swift"
+      - ".github/workflows/agent-saturn-vertebra-poc.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.2"
+
+      - name: Build pinned Swiss C
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch Swiss DE441 data
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Compile Swift learning harness
+        run: |
+          mkdir -p .forge
+          swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
+
+      - name: Run Saturnian slinky specimen
+        run: |
+          .forge/CelestialWebPOC \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output "$PWD/.forge/saturn-vertebra-poc.json"
+
+      - name: Read what the specimen teaches
+        run: |
+          jq '{
+            focus,
+            saturnVertebra,
+            bodyRevolutions: [.bodyRevolutions[] | {body, revolutionCount}],
+            mercury8AriesPassCountInsideSaturnVertebra: (.mercury8AriesWithinSaturnVertebra | length),
+            focalMercuryDegreeWithMostPasses,
+            focalMercuryRepeatedPasses: [.focalMercuryRepeatedPasses[] | {
+              julianDay,
+              motion,
+              differsFromOtherPassesBy,
+              Sun: .sky.Sun,
+              Venus: .sky.Venus,
+              Mars: .sky.Mars,
+              Jupiter: .sky.Jupiter,
+              Saturn: .sky.Saturn
+            }],
+            learning
+          }' .forge/saturn-vertebra-poc.json
