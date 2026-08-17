@@ -1,0 +1,203 @@
+{
+  "span": "P22 Pluto Zeitgeist",
+  "bodies": [
+    {
+      "body": "Jupiter",
+      "focalResolution": 0.1,
+      "records": 118545,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBits": 18,
+      "minimumUniqueSunMarker": null,
+      "sunAt001RepeatedKeys": 693
+    },
+    {
+      "body": "Mars",
+      "focalResolution": 1,
+      "records": 50512,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBits": 18,
+      "minimumUniqueSunMarker": null,
+      "sunAt001RepeatedKeys": 37
+    },
+    {
+      "body": "Mercury",
+      "focalResolution": 1,
+      "records": 108604,
+      "currentMarkers": [
+        "Sun",
+        "Pluto",
+        "Moon"
+      ],
+      "currentMarkerBits": 27,
+      "minimumUniqueSunMarker": null,
+      "sunAt001RepeatedKeys": 2734
+    },
+    {
+      "body": "Moon",
+      "focalResolution": 1,
+      "records": 1175112,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBits": 18,
+      "minimumUniqueSunMarker": null,
+      "sunAt001RepeatedKeys": 36942
+    },
+    {
+      "body": "Neptune",
+      "focalResolution": 0.1,
+      "records": 18933,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBits": 9,
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "sunAt001RepeatedKeys": 0
+    },
+    {
+      "body": "NorthNode",
+      "focalResolution": 0.1,
+      "records": 52867,
+      "currentMarkers": [
+        "Sun",
+        "Moon"
+      ],
+      "currentMarkerBits": 18,
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 0.02,
+        "markerBits": 15,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "sunAt001RepeatedKeys": 0
+    },
+    {
+      "body": "Pluto",
+      "focalResolution": 0.1,
+      "records": 14712,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBits": 9,
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "sunAt001RepeatedKeys": 0
+    },
+    {
+      "body": "Saturn",
+      "focalResolution": 0.1,
+      "records": 62000,
+      "currentMarkers": [
+        "Sun",
+        "Jupiter"
+      ],
+      "currentMarkerBits": 18,
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 0.5,
+        "markerBits": 10,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "sunAt001RepeatedKeys": 0
+    },
+    {
+      "body": "Sun",
+      "focalResolution": 1,
+      "records": 87901,
+      "currentMarkers": [
+        "Pluto",
+        "Neptune"
+      ],
+      "currentMarkerBits": 18,
+      "bestSingleMarker": {
+        "marker": "Pluto",
+        "resolutionDegrees": 0.5,
+        "markerBits": 10,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "candidateMinimums": {
+        "Pluto": {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        "Neptune": {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        "Uranus": {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        "Saturn": {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        "Jupiter": null
+      }
+    },
+    {
+      "body": "Uranus",
+      "focalResolution": 0.1,
+      "records": 29923,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBits": 9,
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      },
+      "sunAt001RepeatedKeys": 0
+    },
+    {
+      "body": "Venus",
+      "focalResolution": 1,
+      "records": 92858,
+      "currentMarkers": [
+        "Sun",
+        "Pluto",
+        "Mercury"
+      ],
+      "currentMarkerBits": 27,
+      "minimumUniqueSunMarker": null,
+      "sunAt001RepeatedKeys": 832
+    }
+  ]
+}
