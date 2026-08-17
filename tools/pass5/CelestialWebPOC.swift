@@ -39,6 +39,16 @@ enum Body: Int32, CaseIterable, Codable {
         case .saturn: return "Saturn"
         }
     }
+
+    var revolutionGuardDays: Double {
+        switch self {
+        case .moon: return 40
+        case .sun, .mercury, .venus: return 450
+        case .mars: return 900
+        case .jupiter: return 4_800
+        case .saturn: return 11_500
+        }
+    }
 }
 
 struct State: Codable {
@@ -88,12 +98,10 @@ final class Swiss {
         let localSetPath: SweSetEphePath = try symbol("swe_set_ephe_path", as: SweSetEphePath.self)
         let localCalcUT: SweCalcUT = try symbol("swe_calc_ut", as: SweCalcUT.self)
         let localVersionFn: SweVersion = try symbol("swe_version", as: SweVersion.self)
-
         var vbuf = [CChar](repeating: 0, count: 256)
         _ = vbuf.withUnsafeMutableBufferPointer { localVersionFn($0.baseAddress) }
         let localVersion = String(cString: vbuf)
         epheDir.withCString { localSetPath($0) }
-
         setPath = localSetPath
         calcUT = localCalcUT
         versionFn = localVersionFn
@@ -111,9 +119,7 @@ final class Swiss {
                 calcUT(jd, body.rawValue, flags, xp.baseAddress, ep.baseAddress)
             }
         }
-        if returned < 0 {
-            throw POCError.swiss("swe_calc_ut failed for \(body.name) @ \(jd): \(String(cString: err))")
-        }
+        if returned < 0 { throw POCError.swiss("swe_calc_ut failed for \(body.name) @ \(jd): \(String(cString: err))") }
         if (returned & Swiss.SEFLG_SWIEPH) == 0 || (returned & Swiss.SEFLG_MOSEPH) != 0 {
             throw POCError.swiss("Swiss-file mode required for \(body.name) @ \(jd); flags=\(returned)")
         }
@@ -171,13 +177,18 @@ struct POCOutput: Codable {
         let revolutionCount: Int
         let revolutions: [Revolution]
     }
+    struct FocalRevolutionView: Codable {
+        let body: String
+        let revolutionsTouchingFocalSolarLoop: [Revolution]
+    }
     let status: String
     let governingIdea: String
     let astronomicalSource: String
     let swissVersion: String
     let focus: Focus
     let saturnVertebra: SaturnVertebra
-    let bodyRevolutions: [BodyRevolutions]
+    let bodyRevolutionsAcrossSaturnVertebra: [BodyRevolutions]
+    let focalRevolutions: [FocalRevolutionView]
     let mercury8AriesWithinSaturnVertebra: [PassSnapshot]
     let focalMercuryDegreeWithMostPasses: Int
     let focalMercuryRepeatedPasses: [PassSnapshot]
@@ -282,8 +293,7 @@ func crossingJDs(body: Body, degree: Int, samples: [Sample], swiss: Swiss, withi
         let center = Int(floor(a.unwrapped / 360.0))
         for k in (center - 2)...(center + 2) {
             let target = Double(degree + k * 360)
-            if target < low - 1e-10 || target > high + 1e-10 { continue }
-            if abs(b.unwrapped - a.unwrapped) < 1e-12 { continue }
+            if target < low - 1e-10 || target > high + 1e-10 || abs(b.unwrapped - a.unwrapped) < 1e-12 { continue }
             var lo = a.jd
             var hi = b.jd
             let increasing = b.unwrapped > a.unwrapped
@@ -299,43 +309,32 @@ func crossingJDs(body: Body, degree: Int, samples: [Sample], swiss: Swiss, withi
             }
             let hit = (lo + hi) / 2
             if hit >= range.lowerBound - 1e-8 && hit <= range.upperBound + 1e-8,
-               !hits.contains(where: { abs($0 - hit) < 1e-7 }) {
-                hits.append(hit)
-            }
+               !hits.contains(where: { abs($0 - hit) < 1e-7 }) { hits.append(hit) }
         }
     }
     return hits.sorted()
 }
 
-func rawSnapshots(body: Body, degree: Int, hitJDs: [Double], swiss: Swiss) throws -> [(jd: Double, motion: String, sky: [Body: State])] {
-    var result: [(Double, String, [Body: State])] = []
+func passSnapshots(body: Body, degree: Int, hitJDs: [Double], swiss: Swiss) throws -> [PassSnapshot] {
+    var raw: [(jd: Double, motion: String, sky: [Body: State])] = []
     for jd in hitJDs {
         var sky: [Body: State] = [:]
         for b in Body.allCases { sky[b] = try swiss.state(b, jd: jd) }
-        let motion = sky[body]!.motion
-        result.append((jd, motion, sky))
+        raw.append((jd, sky[body]!.motion, sky))
     }
-    return result
-}
-
-func passSnapshots(body: Body, degree: Int, hitJDs: [Double], swiss: Swiss) throws -> [PassSnapshot] {
-    let raw = try rawSnapshots(body: body, degree: degree, hitJDs: hitJDs, swiss: swiss)
-    var output: [PassSnapshot] = []
-    for (index, item) in raw.enumerated() {
+    return raw.enumerated().map { index, item in
         var skyOut: [String: PassSnapshot.BodySnapshot] = [:]
         for b in Body.allCases {
             let s = item.sky[b]!
             skyOut[b.name] = .init(longitude: s.longitude, degreeCell: s.degreeCell, motion: s.motion, excludedDegreeCells: 359)
         }
-        var differing: [String] = []
-        for b in Body.allCases where b != body {
+        let differing = Body.allCases.filter { b in
+            guard b != body else { return false }
             let here = item.sky[b]!.degreeCell
-            let differsFromEveryOther = raw.enumerated().filter { $0.offset != index }.allSatisfy { $0.element.sky[b]!.degreeCell != here }
-            if differsFromEveryOther { differing.append(b.name) }
-        }
-        output.append(.init(body: body.name, zodiacDegree: degree, julianDay: item.jd, motion: item.motion, sky: skyOut, differsFromOtherPassesBy: differing))
+            return raw.enumerated().filter { $0.offset != index }.allSatisfy { $0.element.sky[b]!.degreeCell != here }
+        }.map(\.name)
+        return .init(body: body.name, zodiacDegree: degree, julianDay: item.jd, motion: item.motion, sky: skyOut, differsFromOtherPassesBy: differing)
     }
-    return output
 }
 
 func parseArgs() throws -> (library: String, epheDir: String, output: String) {
@@ -364,29 +363,29 @@ func main() throws {
     let swiss = try Swiss(library: args.library, epheDir: args.epheDir)
     let focus = try findSolarFocus(year: 1985, swiss: swiss)
 
-    let wideStart = gregorianJD(year: 1955, month: 1, day: 1)
-    let wideEnd = gregorianJD(year: 2005, month: 1, day: 1)
-    let saturnSamplesWide = try sampleBody(.saturn, from: wideStart, to: wideEnd, step: 1.0, swiss: swiss)
-    let saturnBounds = try revolutionBoundaries(samples: saturnSamplesWide, body: .saturn, swiss: swiss)
-    let saturnRevs = revolutions(from: saturnBounds)
+    let saturnWideStart = gregorianJD(year: 1955, month: 1, day: 1)
+    let saturnWideEnd = gregorianJD(year: 2005, month: 1, day: 1)
+    let saturnSamplesWide = try sampleBody(.saturn, from: saturnWideStart, to: saturnWideEnd, step: 1.0, swiss: swiss)
+    let saturnRevs = revolutions(from: try revolutionBoundaries(samples: saturnSamplesWide, body: .saturn, swiss: swiss))
     guard let vertebra = saturnRevs.first(where: { $0.startJulianDay <= focus.0 && $0.endJulianDay >= focus.1 }) else {
         throw POCError.solve("No Saturn 0-Aries-to-0-Aries vertebra contains the 1985 solar revolution")
     }
 
-    let guardDays = 40.0
-    let analysisStart = vertebra.startJulianDay - guardDays
-    let analysisEnd = vertebra.endJulianDay + guardDays
-
     var samplesByBody: [Body: [Sample]] = [:]
     var bodyRevs: [POCOutput.BodyRevolutions] = []
+    var focalViews: [POCOutput.FocalRevolutionView] = []
     for body in Body.allCases {
+        let guardDays = body.revolutionGuardDays
+        let start = vertebra.startJulianDay - guardDays
+        let end = vertebra.endJulianDay + guardDays
         let step = body == .moon ? 0.125 : 0.5
-        let samples = try sampleBody(body, from: analysisStart, to: analysisEnd, step: step, swiss: swiss)
+        let samples = try sampleBody(body, from: start, to: end, step: step, swiss: swiss)
         samplesByBody[body] = samples
-        let bounds = try revolutionBoundaries(samples: samples, body: body, swiss: swiss)
-        let all = revolutions(from: bounds)
-        let overlapping = all.filter { $0.endJulianDay > vertebra.startJulianDay && $0.startJulianDay < vertebra.endJulianDay }
-        bodyRevs.append(.init(body: body.name, revolutionCount: overlapping.count, revolutions: overlapping))
+        let all = revolutions(from: try revolutionBoundaries(samples: samples, body: body, swiss: swiss))
+        let acrossSaturn = all.filter { $0.endJulianDay > vertebra.startJulianDay && $0.startJulianDay < vertebra.endJulianDay }
+        let touchingFocus = all.filter { $0.endJulianDay > focus.0 && $0.startJulianDay < focus.1 }
+        bodyRevs.append(.init(body: body.name, revolutionCount: acrossSaturn.count, revolutions: acrossSaturn))
+        focalViews.append(.init(body: body.name, revolutionsTouchingFocalSolarLoop: touchingFocus))
     }
 
     let mercurySamples = samplesByBody[.mercury]!
@@ -397,25 +396,24 @@ func main() throws {
     var bestHits: [Double] = []
     for degree in 0..<360 {
         let hits = try crossingJDs(body: .mercury, degree: degree, samples: mercurySamples, swiss: swiss, within: focus.0...focus.1)
-        if hits.count > bestHits.count {
-            bestDegree = degree
-            bestHits = hits
-        }
+        if hits.count > bestHits.count { bestDegree = degree; bestHits = hits }
     }
     let focalRepeated = try passSnapshots(body: .mercury, degree: bestDegree, hitJDs: bestHits, swiss: swiss)
 
     let output = POCOutput(
         status: "learning specimen; no production ownership or representation canonized",
-        governingIdea: "A Saturn 0-Aries-to-0-Aries revolution is a vertebra. Inner-body revolutions are overlapping flat slinky loops through the same nonrepeating whole-sky chronology. Positive location implies 359 absent degree-cells per body without storing explicit negatives.",
+        governingIdea: "A Saturn 0-Aries-to-0-Aries revolution is a vertebra. Sun-through-Saturn revolutions are overlapping flat slinky loops through one nonrepeating whole-sky chronology. A body's occupied coordinate also defines its absent coordinates without explicit negative storage.",
         astronomicalSource: "Swiss Ephemeris; geocentric tropical apparent longitude with signed speed",
         swissVersion: swiss.version,
         focus: .init(sunStartJulianDay: focus.0, sunEndJulianDay: focus.1),
         saturnVertebra: .init(startJulianDay: vertebra.startJulianDay, endJulianDay: vertebra.endJulianDay, durationDays: vertebra.endJulianDay - vertebra.startJulianDay),
-        bodyRevolutions: bodyRevs,
+        bodyRevolutionsAcrossSaturnVertebra: bodyRevs,
+        focalRevolutions: focalViews,
         mercury8AriesWithinSaturnVertebra: mercury8,
         focalMercuryDegreeWithMostPasses: bestDegree,
         focalMercuryRepeatedPasses: focalRepeated,
         learning: [
+            "The Saturn revolution is the vertebral scale; degree passes are internal query coordinates, not vertebrae.",
             "A repeated Mercury degree is a repeated coordinate, not a repeated celestial state.",
             "Every occurrence is identified by the simultaneous Sun-through-Saturn coordinates.",
             "Where a body is implicitly specifies where it is not: one occupied degree-cell excludes the other 359.",
@@ -433,15 +431,12 @@ func main() throws {
     print("Swift Saturn-vertebra POC")
     print("Swiss \(swiss.version)")
     print(String(format: "Saturn vertebra %.9f -> %.9f (%.2f days)", vertebra.startJulianDay, vertebra.endJulianDay, vertebra.endJulianDay - vertebra.startJulianDay))
-    for b in bodyRevs { print("\(b.body): \(b.revolutionCount) overlapping revolutions") }
+    for b in bodyRevs { print("\(b.body): \(b.revolutionCount) revolutions touching Saturn vertebra") }
+    for view in focalViews { print("FOCAL \(view.body): \(view.revolutionsTouchingFocalSolarLoop.count) revolution(s) touch 1985 Sun loop") }
     print("Mercury 8 Aries passes inside Saturn vertebra: \(mercury8.count)")
     print("Most-repeated Mercury integer degree inside focal solar loop: \(bestDegree) with \(bestHits.count) passes")
     for (i, pass) in focalRepeated.enumerated() {
-        let sun = pass.sky["Sun"]!
-        let venus = pass.sky["Venus"]!
-        let mars = pass.sky["Mars"]!
-        let jupiter = pass.sky["Jupiter"]!
-        let saturn = pass.sky["Saturn"]!
+        let sun = pass.sky["Sun"]!, venus = pass.sky["Venus"]!, mars = pass.sky["Mars"]!, jupiter = pass.sky["Jupiter"]!, saturn = pass.sky["Saturn"]!
         print(String(format: "  pass %d JD %.9f Mercury %@ | Sun %.3f Venus %.3f Mars %.3f Jupiter %.3f Saturn %.3f", i + 1, pass.julianDay, pass.motion, sun.longitude, venus.longitude, mars.longitude, jupiter.longitude, saturn.longitude))
     }
 }
