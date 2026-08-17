@@ -49,6 +49,7 @@ jobs:
       - name: Compile Swift learning harnesses
         run: |
           mkdir -p .forge
+          sed -i '' 's/\\"%.3f\\"/"%.3f"/g; s/\\"%.2f%%\\"/"%.2f%%"/g' tools/pass5/TimespineResolutionPOC.swift
           swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
           swiftc tools/pass5/TimespineResolutionPOC.swift -o .forge/TimespineResolutionPOC
 
