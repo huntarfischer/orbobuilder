@@ -37,7 +37,7 @@ jobs:
         run: |
           mkdir -p .forge/ephe
           base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
-          for file in sepl_18.se1 semo_18.se1; do
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
             curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
