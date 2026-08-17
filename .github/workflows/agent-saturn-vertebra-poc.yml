@@ -7,6 +7,7 @@ on:
     paths:
       - "tools/pass5/CelestialWebPOC.swift"
       - "tools/pass5/TimespineResolutionFastPOC.swift"
+      - "tools/pass5/StationTablePOC.swift"
       - "tools/pass5/build_body_oriented_timespine.py"
       - ".github/workflows/agent-saturn-vertebra-poc.yml"
   workflow_dispatch:
@@ -52,6 +53,7 @@ jobs:
           mkdir -p .forge
           swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
           swiftc tools/pass5/TimespineResolutionFastPOC.swift -o .forge/TimespineResolutionPOC
+          swiftc tools/pass5/StationTablePOC.swift -o .forge/StationTablePOC
 
       - name: Run Saturnian slinky specimen
         run: |
@@ -72,6 +74,13 @@ jobs:
           python3 tools/pass5/build_body_oriented_timespine.py \
             --input-dir "$PWD/.forge/timespine-resolution/low-1deg" \
             --output-dir "$PWD/.forge/body-oriented-timespine"
+
+      - name: Build station table
+        run: |
+          .forge/StationTablePOC \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output "$PWD/.forge/station-table.json"
 
       - name: Compress binary tables for shipping-size comparison
         run: |
@@ -94,6 +103,9 @@ jobs:
       - name: Read seven body table results
         run: cat .forge/body-oriented-timespine/summary.json
 
+      - name: Read station table results
+        run: cat .forge/station-table.json
+
       - name: Upload Timespine learning specimens
         uses: actions/upload-artifact@v4
         with:
@@ -104,6 +116,7 @@ jobs:
             .forge/timespine-resolution/**/*.bin.gz
             .forge/body-oriented-timespine/summary.json
             .forge/body-oriented-timespine/*.csv
+            .forge/station-table.json
           if-no-files-found: error
           compression-level: 0
 
