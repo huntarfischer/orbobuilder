@@ -9,6 +9,10 @@ on:
       - ".github/workflows/agent-p22-inner-marker-pairs.yml"
   workflow_dispatch:
 
+concurrency:
+  group: p22-inner-marker-pair-audit
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
