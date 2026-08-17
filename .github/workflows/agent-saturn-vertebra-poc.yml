@@ -6,6 +6,7 @@ on:
       - agent/timespine-celestial-time-build
     paths:
       - "tools/pass5/CelestialWebPOC.swift"
+      - "tools/pass5/TimespineResolutionPOC.swift"
       - ".github/workflows/agent-saturn-vertebra-poc.yml"
   workflow_dispatch:
 
@@ -18,7 +19,7 @@ env:
 jobs:
   learn:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
@@ -45,10 +46,11 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
-      - name: Compile Swift learning harness
+      - name: Compile Swift learning harnesses
         run: |
           mkdir -p .forge
           swiftc tools/pass5/CelestialWebPOC.swift -o .forge/CelestialWebPOC
+          swiftc tools/pass5/TimespineResolutionPOC.swift -o .forge/TimespineResolutionPOC
 
       - name: Run Saturnian slinky specimen
         run: |
@@ -57,7 +59,50 @@ jobs:
             --ephe-dir "$PWD/.forge/ephe" \
             --output "$PWD/.forge/saturn-vertebra-poc.json"
 
-      - name: Read what the specimen teaches
+      - name: Build low medium high degree-time tables
+        run: |
+          .forge/TimespineResolutionPOC \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir "$PWD/.forge/timespine-resolution"
+
+      - name: Compress binary tables for shipping-size comparison
+        run: |
+          find .forge/timespine-resolution -name '*.bin' -print0 | while IFS= read -r -d '' file; do
+            gzip -9 -k "$file"
+          done
+
+      - name: Read resolution results
+        run: |
+          jq '{
+            status,
+            saturnStartJulianDay,
+            saturnEndJulianDay,
+            durationDays,
+            samplingStepDays,
+            timingMethod,
+            relativeRecordLayout,
+            directRecordLayout,
+            resolutions: [.resolutions[] | {
+              label,
+              degrees,
+              records,
+              relativeSecondsBytes,
+              directJulianDayBytes,
+              moonRecordShare,
+              byBody
+            }]
+          }' .forge/timespine-resolution/summary.json
+          echo "--- raw and gzip totals ---"
+          for dir in .forge/timespine-resolution/low-1deg .forge/timespine-resolution/medium-0_5deg .forge/timespine-resolution/high-0_1deg; do
+            echo "$dir"
+            find "$dir" -name '*.relative.bin' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "relative raw bytes=" s}'
+            find "$dir" -name '*.relative.bin.gz' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "relative gzip bytes=" s}'
+            find "$dir" -name '*.direct-jd.bin' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "direct raw bytes=" s}'
+            find "$dir" -name '*.direct-jd.bin.gz' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "direct gzip bytes=" s}'
+          done
+
+      - name: Read what the celestial specimen teaches
         run: |
           jq '{
             focus,
@@ -66,17 +111,19 @@ jobs:
             focalRevolutions: [.focalRevolutions[] | {body, count:(.revolutionsTouchingFocalSolarLoop|length), revolutionsTouchingFocalSolarLoop}],
             mercury8AriesPassCountInsideSaturnVertebra: (.mercury8AriesWithinSaturnVertebra | length),
             focalMercuryDegreeWithMostPasses,
-            focalMercuryRepeatedPasses: [.focalMercuryRepeatedPasses[] | {
-              julianDay,
-              motion,
-              differsFromOtherPassesBy,
-              Sun: .sky.Sun,
-              Venus: .sky.Venus,
-              Mars: .sky.Mars,
-              Jupiter: .sky.Jupiter,
-              Saturn: .sky.Saturn
-            }],
             learning
           }' .forge/saturn-vertebra-poc.json
+
+      - name: Upload resolution specimen
+        uses: actions/upload-artifact@v4
+        with:
+          name: timespine-resolution-specimen
+          path: |
+            .forge/timespine-resolution/summary.json
+            .forge/timespine-resolution/**/*.bin
+            .forge/timespine-resolution/**/*.bin.gz
+            .forge/timespine-resolution/samples/*.csv
+          if-no-files-found: error
+          compression-level: 0
 
 # Learning branch only. No production ownership implied.
