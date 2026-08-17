@@ -1,0 +1,84 @@
+name: Pass 5 Celestial Timespine Specimen
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pass5-celestial-timespine-specimen.yml"
+      - "tools/pass5/forge_celestial_timespine_specimen.py"
+      - "tools/pass5/generate_swiss_samples.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  forge-specimen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build pinned official Swiss C library
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned qualified Swiss DE441 files
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Forge Sun-0-Aries to Sun-0-Aries anatomy specimen
+        run: |
+          python -m py_compile tools/pass5/forge_celestial_timespine_specimen.py
+          python tools/pass5/forge_celestial_timespine_specimen.py \
+            --library .forge/swisseph/libswe.so \
+            --ephe-dir .forge/ephe \
+            --start-selector-year 1985 \
+            --end-selector-year 1986 \
+            --output .forge/celestial-timespine-1985-1986.json \
+            | tee .forge/celestial-timespine-1985-1986-summary.json
+
+      - name: Prove specimen anatomy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('.forge/celestial-timespine-1985-1986.json')
+          d = json.loads(p.read_text())
+          assert d['celestialBounds']['start']['condition'] == {'body':'Sun','longitude':0.0,'motion':'direct'}
+          assert d['celestialBounds']['end']['condition'] == {'body':'Sun','longitude':0.0,'motion':'direct'}
+          assert d['celestialBounds']['start']['resolvedAddress']['julianDay'] < d['celestialBounds']['end']['resolvedAddress']['julianDay']
+          assert d['proof']['allVertebraeReferenceAllBodies'] is True
+          assert d['counts']['vertebrae'] > 0
+          assert d['proof']['mercury8AriesBoundaryHits'] > 0
+          print(f"vertebrae={d['counts']['vertebrae']}")
+          print(f"bytes={p.stat().st_size}")
+          PY
+
+      - name: Upload qualified specimen
+        uses: actions/upload-artifact@v4
+        with:
+          name: celestial-timespine-1985-1986
+          retention-days: 14
+          path: |
+            .forge/celestial-timespine-1985-1986.json
+            .forge/celestial-timespine-1985-1986-summary.json
