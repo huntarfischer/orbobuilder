@@ -1,0 +1,28 @@
+name: Agent P22 Marker Audit Summary
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+    paths:
+      - "tools/pass5/summarize_p22_marker_resolution.py"
+      - ".github/workflows/agent-p22-marker-summary.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/pass5/summarize_p22_marker_resolution.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/p22-results/marker-resolution-audit-compact.json
+          if ! git diff --cached --quiet; then
+            git commit -m "record compact P22 marker audit"
+            git push origin HEAD:agent/timespine-celestial-time-build
+          fi
