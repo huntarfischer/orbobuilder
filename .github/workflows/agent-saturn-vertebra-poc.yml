@@ -62,7 +62,8 @@ jobs:
           jq '{
             focus,
             saturnVertebra,
-            bodyRevolutions: [.bodyRevolutions[] | {body, revolutionCount}],
+            bodyRevolutionsAcrossSaturnVertebra: [.bodyRevolutionsAcrossSaturnVertebra[] | {body, revolutionCount}],
+            focalRevolutions: [.focalRevolutions[] | {body, count:(.revolutionsTouchingFocalSolarLoop|length), revolutionsTouchingFocalSolarLoop}],
             mercury8AriesPassCountInsideSaturnVertebra: (.mercury8AriesWithinSaturnVertebra | length),
             focalMercuryDegreeWithMostPasses,
             focalMercuryRepeatedPasses: [.focalMercuryRepeatedPasses[] | {
