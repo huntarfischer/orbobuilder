@@ -52,7 +52,11 @@ def crosses(sw,b,a,z,step):
   for k in ks:
    tick=k%3600;target=tick/10;r=refine(lambda x:dlt(target,sw.st(b,x)[0]),t,q);out.append((tick,r,1 if du>0 else -1))
   t,l,u=q,nl,nu
- out.sort(key=lambda x:x[1]);return out
+ out.sort(key=lambda x:x[1]);ded=[]
+ for x in out:
+  if ded and x[0]==ded[-1][0] and abs(x[1]-ded[-1][1])<1e-5:continue
+  ded.append(x)
+ return ded
 def stations(sw,b,a,z,step):
  o=[];t=a;sp=sw.st(b,t)[1]
  while t<z:
