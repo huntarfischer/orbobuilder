@@ -7,6 +7,7 @@ on:
     paths:
       - "tools/pass5/CelestialWebPOC.swift"
       - "tools/pass5/TimespineResolutionFastPOC.swift"
+      - "tools/pass5/build_body_oriented_timespine.py"
       - ".github/workflows/agent-saturn-vertebra-poc.yml"
   workflow_dispatch:
 
@@ -66,6 +67,12 @@ jobs:
             --ephe-dir "$PWD/.forge/ephe" \
             --output-dir "$PWD/.forge/timespine-resolution"
 
+      - name: Build seven body-oriented whole-degree tables
+        run: |
+          python3 tools/pass5/build_body_oriented_timespine.py \
+            --input-dir "$PWD/.forge/timespine-resolution/low-1deg" \
+            --output-dir "$PWD/.forge/body-oriented-timespine"
+
       - name: Compress binary tables for shipping-size comparison
         run: |
           find .forge/timespine-resolution -name '*.bin' -print0 | while IFS= read -r -d '' file; do
@@ -84,14 +91,19 @@ jobs:
             find "$dir" -name '*.direct-jd.bin.gz' -print0 | xargs -0 stat -f '%z' | awk '{s+=$1} END {print "direct gzip bytes=" s}'
           done
 
-      - name: Upload resolution specimen
+      - name: Read seven body table results
+        run: cat .forge/body-oriented-timespine/summary.json
+
+      - name: Upload Timespine learning specimens
         uses: actions/upload-artifact@v4
         with:
-          name: timespine-resolution-specimen
+          name: timespine-learning-specimen
           path: |
             .forge/timespine-resolution/summary.json
             .forge/timespine-resolution/**/*.bin
             .forge/timespine-resolution/**/*.bin.gz
+            .forge/body-oriented-timespine/summary.json
+            .forge/body-oriented-timespine/*.csv
           if-no-files-found: error
           compression-level: 0
 
