@@ -1,0 +1,974 @@
+{
+  "span": "P22 Pluto Zeitgeist",
+  "question": "Can higher-resolution Sun celestial time replace extra whole-degree companion bodies?",
+  "bodies": [
+    {
+      "body": "Jupiter",
+      "focalResolutionDegrees": 0.1,
+      "records": 118545,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 28956,
+          "repeatedRows": 66824,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 20339,
+          "repeatedRows": 44464,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 10380,
+          "repeatedRows": 21430,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 5694,
+          "repeatedRows": 11590,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 2988,
+          "repeatedRows": 6023,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 1371,
+          "repeatedRows": 2744,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 693,
+          "repeatedRows": 1386,
+          "unique": false
+        }
+      ],
+      "minimumUniqueSunMarker": null
+    },
+    {
+      "body": "Mars",
+      "focalResolutionDegrees": 1,
+      "records": 50512,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 3533,
+          "repeatedRows": 7066,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 1971,
+          "repeatedRows": 3942,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 726,
+          "repeatedRows": 1452,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 359,
+          "repeatedRows": 718,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 179,
+          "repeatedRows": 358,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 65,
+          "repeatedRows": 130,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 37,
+          "repeatedRows": 74,
+          "unique": false
+        }
+      ],
+      "minimumUniqueSunMarker": null
+    },
+    {
+      "body": "Mercury",
+      "focalResolutionDegrees": 1,
+      "records": 108604,
+      "currentMarkers": [
+        "Sun",
+        "Pluto",
+        "Moon"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 27,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 16554,
+          "repeatedRows": 108580,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 32099,
+          "repeatedRows": 107924,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 28051,
+          "repeatedRows": 68146,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 18818,
+          "repeatedRows": 42969,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 11608,
+          "repeatedRows": 25155,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 5097,
+          "repeatedRows": 10598,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 2734,
+          "repeatedRows": 5572,
+          "unique": false
+        }
+      ],
+      "minimumUniqueSunMarker": null
+    },
+    {
+      "body": "Moon",
+      "focalResolutionDegrees": 1,
+      "records": 1175112,
+      "currentMarkers": [
+        "Sun",
+        "Pluto"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 129600,
+          "repeatedRows": 1175112,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 258527,
+          "repeatedRows": 1174472,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 406189,
+          "repeatedRows": 997003,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 286263,
+          "repeatedRows": 622362,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 165479,
+          "repeatedRows": 343795,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 71854,
+          "repeatedRows": 145780,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 36942,
+          "repeatedRows": 74424,
+          "unique": false
+        }
+      ],
+      "minimumUniqueSunMarker": null
+    },
+    {
+      "body": "Neptune",
+      "focalResolutionDegrees": 0.1,
+      "records": 18933,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 9,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        }
+      ],
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "NorthNode",
+      "focalResolutionDegrees": 0.1,
+      "records": 52867,
+      "currentMarkers": [
+        "Sun",
+        "Moon"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 95,
+          "repeatedRows": 190,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 21,
+          "repeatedRows": 42,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 3,
+          "repeatedRows": 6,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 1,
+          "repeatedRows": 2,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 1,
+          "repeatedRows": 2,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        }
+      ],
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 0.02,
+        "markerBits": 15,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Pluto",
+      "focalResolutionDegrees": 0.1,
+      "records": 14712,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 9,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        }
+      ],
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Saturn",
+      "focalResolutionDegrees": 0.1,
+      "records": 62000,
+      "currentMarkers": [
+        "Sun",
+        "Jupiter"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 1,
+          "repeatedRows": 2,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        }
+      ],
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 0.5,
+        "markerBits": 10,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Sun",
+      "focalResolutionDegrees": 1,
+      "records": 87901,
+      "currentMarkers": [
+        "Pluto",
+        "Neptune"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 18,
+      "singleMarkerCandidates": [
+        {
+          "marker": "Pluto",
+          "tests": [
+            {
+              "resolutionDegrees": 1.0,
+              "markerBits": 9,
+              "repeatedKeys": 888,
+              "repeatedRows": 1776,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.5,
+              "markerBits": 10,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.2,
+              "markerBits": 11,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.1,
+              "markerBits": 12,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.05,
+              "markerBits": 13,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.02,
+              "markerBits": 15,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.01,
+              "markerBits": 16,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            }
+          ],
+          "minimumUnique": {
+            "resolutionDegrees": 0.5,
+            "markerBits": 10,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "marker": "Neptune",
+          "tests": [
+            {
+              "resolutionDegrees": 1.0,
+              "markerBits": 9,
+              "repeatedKeys": 13249,
+              "repeatedRows": 26498,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.5,
+              "markerBits": 10,
+              "repeatedKeys": 1,
+              "repeatedRows": 2,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.2,
+              "markerBits": 11,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.1,
+              "markerBits": 12,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.05,
+              "markerBits": 13,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.02,
+              "markerBits": 15,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.01,
+              "markerBits": 16,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            }
+          ],
+          "minimumUnique": {
+            "resolutionDegrees": 0.2,
+            "markerBits": 11,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "marker": "Uranus",
+          "tests": [
+            {
+              "resolutionDegrees": 1.0,
+              "markerBits": 9,
+              "repeatedKeys": 2,
+              "repeatedRows": 4,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.5,
+              "markerBits": 10,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.2,
+              "markerBits": 11,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.1,
+              "markerBits": 12,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.05,
+              "markerBits": 13,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.02,
+              "markerBits": 15,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.01,
+              "markerBits": 16,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            }
+          ],
+          "minimumUnique": {
+            "resolutionDegrees": 0.5,
+            "markerBits": 10,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "marker": "Saturn",
+          "tests": [
+            {
+              "resolutionDegrees": 1.0,
+              "markerBits": 9,
+              "repeatedKeys": 8534,
+              "repeatedRows": 17068,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.5,
+              "markerBits": 10,
+              "repeatedKeys": 689,
+              "repeatedRows": 1378,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.2,
+              "markerBits": 11,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.1,
+              "markerBits": 12,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.05,
+              "markerBits": 13,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.02,
+              "markerBits": 15,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            },
+            {
+              "resolutionDegrees": 0.01,
+              "markerBits": 16,
+              "repeatedKeys": 0,
+              "repeatedRows": 0,
+              "unique": true
+            }
+          ],
+          "minimumUnique": {
+            "resolutionDegrees": 0.2,
+            "markerBits": 11,
+            "repeatedKeys": 0,
+            "repeatedRows": 0,
+            "unique": true
+          }
+        },
+        {
+          "marker": "Jupiter",
+          "tests": [
+            {
+              "resolutionDegrees": 1.0,
+              "markerBits": 9,
+              "repeatedKeys": 29388,
+              "repeatedRows": 80625,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.5,
+              "markerBits": 10,
+              "repeatedKeys": 28572,
+              "repeatedRows": 73099,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.2,
+              "markerBits": 11,
+              "repeatedKeys": 23624,
+              "repeatedRows": 54793,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.1,
+              "markerBits": 12,
+              "repeatedKeys": 16604,
+              "repeatedRows": 36429,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.05,
+              "markerBits": 13,
+              "repeatedKeys": 10221,
+              "repeatedRows": 21430,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.02,
+              "markerBits": 15,
+              "repeatedKeys": 4680,
+              "repeatedRows": 9481,
+              "unique": false
+            },
+            {
+              "resolutionDegrees": 0.01,
+              "markerBits": 16,
+              "repeatedKeys": 2201,
+              "repeatedRows": 4439,
+              "unique": false
+            }
+          ],
+          "minimumUnique": null
+        }
+      ],
+      "bestSingleMarker": {
+        "marker": "Pluto",
+        "resolutionDegrees": 0.5,
+        "markerBits": 10,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Uranus",
+      "focalResolutionDegrees": 0.1,
+      "records": 29923,
+      "currentMarkers": [
+        "Sun"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 9,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 0,
+          "repeatedRows": 0,
+          "unique": true
+        }
+      ],
+      "minimumUniqueSunMarker": {
+        "resolutionDegrees": 1.0,
+        "markerBits": 9,
+        "repeatedKeys": 0,
+        "repeatedRows": 0,
+        "unique": true
+      }
+    },
+    {
+      "body": "Venus",
+      "focalResolutionDegrees": 1,
+      "records": 92858,
+      "currentMarkers": [
+        "Sun",
+        "Pluto",
+        "Mercury"
+      ],
+      "currentMarkerBitsAssumingWholeDegree": 27,
+      "singleSunMarkerTests": [
+        {
+          "resolutionDegrees": 1.0,
+          "markerBits": 9,
+          "repeatedKeys": 32732,
+          "repeatedRows": 91929,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.5,
+          "markerBits": 10,
+          "repeatedKeys": 16834,
+          "repeatedRows": 43861,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.2,
+          "markerBits": 11,
+          "repeatedKeys": 7708,
+          "repeatedRows": 18487,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.1,
+          "markerBits": 12,
+          "repeatedKeys": 5232,
+          "repeatedRows": 11628,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.05,
+          "markerBits": 13,
+          "repeatedKeys": 3307,
+          "repeatedRows": 6966,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.02,
+          "markerBits": 15,
+          "repeatedKeys": 1601,
+          "repeatedRows": 3204,
+          "unique": false
+        },
+        {
+          "resolutionDegrees": 0.01,
+          "markerBits": 16,
+          "repeatedKeys": 832,
+          "repeatedRows": 1664,
+          "unique": false
+        }
+      ],
+      "minimumUniqueSunMarker": null
+    }
+  ]
+}
