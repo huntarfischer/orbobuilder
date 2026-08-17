@@ -1,0 +1,30 @@
+name: Agent P22 Substrate Audit
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+    paths:
+      - "tools/pass5/audit_p22_substrate.py"
+      - ".github/workflows/agent-p22-substrate-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit persisted P22 substrate
+        run: python3 tools/pass5/audit_p22_substrate.py
+      - name: Persist compact audit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/p22-results/substrate-audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m "record P22 substrate audit"
+            git push origin HEAD:agent/timespine-celestial-time-build
+          fi
