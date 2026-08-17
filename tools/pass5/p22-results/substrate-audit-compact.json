@@ -1,0 +1,359 @@
+{
+  "span": "P22 Pluto Zeitgeist",
+  "bodies": [
+    {
+      "body": "Jupiter",
+      "resolution": 0.1,
+      "records": 118545,
+      "markers": [
+        "Sun",
+        "Pluto"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 28956,
+      "gapMedianHours": 12.816,
+      "gapP90Hours": 27.201,
+      "gapP99Hours": 83.179,
+      "gapMaxHours": 386.5,
+      "packedBytes": 933542,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 59264,
+          "markerUnique": true,
+          "sunRepeatedKeys": 14478,
+          "gapMedianHours": 25.628,
+          "gapP99Hours": 170.129,
+          "gapMaxHours": 549.481
+        },
+        {
+          "resolution": 0.5,
+          "records": 23713,
+          "markerUnique": true,
+          "sunRepeatedKeys": 5811,
+          "gapMedianHours": 64.121,
+          "gapP99Hours": 568.166,
+          "gapMaxHours": 873.741
+        },
+        {
+          "resolution": 1.0,
+          "records": 11851,
+          "markerUnique": true,
+          "sunRepeatedKeys": 2912,
+          "gapMedianHours": 128.114,
+          "gapP99Hours": 1009.237,
+          "gapMaxHours": 1231.23
+        }
+      ]
+    },
+    {
+      "body": "Mars",
+      "resolution": 1.0,
+      "records": 50512,
+      "markers": [
+        "Sun",
+        "Pluto"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 3533,
+      "gapMedianHours": 36.402,
+      "gapP90Hours": 53.59,
+      "gapP99Hours": 146.542,
+      "gapMaxHours": 611.213,
+      "packedBytes": 378840,
+      "coarsening": []
+    },
+    {
+      "body": "Mercury",
+      "resolution": 1.0,
+      "records": 108604,
+      "markers": [
+        "Sun",
+        "Pluto",
+        "Moon"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 16554,
+      "gapMedianHours": 15.262,
+      "gapP90Hours": 29.131,
+      "gapP99Hours": 105.826,
+      "gapMaxHours": 251.637,
+      "packedBytes": 936710,
+      "coarsening": []
+    },
+    {
+      "body": "Moon",
+      "resolution": 1.0,
+      "records": 1175112,
+      "markers": [
+        "Sun",
+        "Pluto"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 129600,
+      "gapMedianHours": 1.816,
+      "gapP90Hours": 2.018,
+      "gapP99Hours": 2.035,
+      "gapMaxHours": 2.041,
+      "packedBytes": 8813340,
+      "coarsening": []
+    },
+    {
+      "body": "Neptune",
+      "resolution": 0.1,
+      "records": 18933,
+      "markers": [
+        "Sun"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 0,
+      "gapMedianHours": 88.177,
+      "gapP90Hours": 166.951,
+      "gapP99Hours": 736.655,
+      "gapMaxHours": 924.979,
+      "packedBytes": 127798,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 9457,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 176.464,
+          "gapP99Hours": 1207.248,
+          "gapMaxHours": 1314.713
+        },
+        {
+          "resolution": 0.5,
+          "records": 3773,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 442.693,
+          "gapP99Hours": 2004.532,
+          "gapMaxHours": 2111.325
+        },
+        {
+          "resolution": 1.0,
+          "records": 1884,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 898.415,
+          "gapP99Hours": 2981.177,
+          "gapMaxHours": 3077.605
+        }
+      ]
+    },
+    {
+      "body": "NorthNode",
+      "resolution": 0.1,
+      "records": 52867,
+      "markers": [
+        "Sun",
+        "Moon"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 95,
+      "gapMedianHours": 18.939,
+      "gapP90Hours": 110.811,
+      "gapP99Hours": 296.431,
+      "gapMaxHours": 850.501,
+      "packedBytes": 416328,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 26392,
+          "markerUnique": true,
+          "sunRepeatedKeys": 39,
+          "gapMedianHours": 38.248,
+          "gapP99Hours": 870.238,
+          "gapMaxHours": 1151.123
+        },
+        {
+          "resolution": 0.5,
+          "records": 10637,
+          "markerUnique": true,
+          "sunRepeatedKeys": 22,
+          "gapMedianHours": 108.885,
+          "gapP99Hours": 1279.507,
+          "gapMaxHours": 1511.606
+        },
+        {
+          "resolution": 1.0,
+          "records": 5315,
+          "markerUnique": true,
+          "sunRepeatedKeys": 12,
+          "gapMedianHours": 289.623,
+          "gapP99Hours": 1834.17,
+          "gapMaxHours": 1860.209
+        }
+      ]
+    },
+    {
+      "body": "Pluto",
+      "resolution": 0.1,
+      "records": 14712,
+      "markers": [
+        "Sun"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 0,
+      "gapMedianHours": 113.154,
+      "gapP90Hours": 219.801,
+      "gapP99Hours": 856.98,
+      "gapMaxHours": 1142.15,
+      "packedBytes": 99306,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 7346,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 226.656,
+          "gapP99Hours": 1372.41,
+          "gapMaxHours": 1630.96
+        },
+        {
+          "resolution": 0.5,
+          "records": 2952,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 569.509,
+          "gapP99Hours": 2419.132,
+          "gapMaxHours": 2661.491
+        },
+        {
+          "resolution": 1.0,
+          "records": 1486,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 1158.764,
+          "gapP99Hours": 3754.887,
+          "gapMaxHours": 3945.263
+        }
+      ]
+    },
+    {
+      "body": "Saturn",
+      "resolution": 0.1,
+      "records": 62000,
+      "markers": [
+        "Sun",
+        "Jupiter"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 1,
+      "gapMedianHours": 25.655,
+      "gapP90Hours": 52.021,
+      "gapP99Hours": 166.367,
+      "gapMaxHours": 530.31,
+      "packedBytes": 488250,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 30982,
+          "markerUnique": true,
+          "sunRepeatedKeys": 1,
+          "gapMedianHours": 51.299,
+          "gapP99Hours": 443.829,
+          "gapMaxHours": 751.317
+        },
+        {
+          "resolution": 0.5,
+          "records": 12404,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 128.139,
+          "gapP99Hours": 973.841,
+          "gapMaxHours": 1198.563
+        },
+        {
+          "resolution": 1.0,
+          "records": 6210,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 257.121,
+          "gapP99Hours": 1514.068,
+          "gapMaxHours": 1697.748
+        }
+      ]
+    },
+    {
+      "body": "Sun",
+      "resolution": 1.0,
+      "records": 87901,
+      "markers": [
+        "Pluto",
+        "Neptune"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": null,
+      "gapMedianHours": 24.34,
+      "gapP90Hours": 25.132,
+      "gapP99Hours": 25.179,
+      "gapMaxHours": 25.188,
+      "packedBytes": 659258,
+      "coarsening": []
+    },
+    {
+      "body": "Uranus",
+      "resolution": 0.1,
+      "records": 29923,
+      "markers": [
+        "Sun"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 0,
+      "gapMedianHours": 56.32,
+      "gapP90Hours": 106.269,
+      "gapP99Hours": 466.869,
+      "gapMaxHours": 756.511,
+      "packedBytes": 201981,
+      "coarsening": [
+        {
+          "resolution": 0.2,
+          "records": 14946,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 112.588,
+          "gapP99Hours": 878.663,
+          "gapMaxHours": 1070.59
+        },
+        {
+          "resolution": 0.5,
+          "records": 6001,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 281.814,
+          "gapP99Hours": 1554.015,
+          "gapMaxHours": 1702.293
+        },
+        {
+          "resolution": 1.0,
+          "records": 3009,
+          "markerUnique": true,
+          "sunRepeatedKeys": 0,
+          "gapMedianHours": 572.919,
+          "gapP99Hours": 2240.094,
+          "gapMaxHours": 2382.332
+        }
+      ]
+    },
+    {
+      "body": "Venus",
+      "resolution": 1.0,
+      "records": 92858,
+      "markers": [
+        "Sun",
+        "Pluto",
+        "Mercury"
+      ],
+      "markerUnique": true,
+      "sunRepeatedKeys": 32732,
+      "gapMedianHours": 19.77,
+      "gapP90Hours": 26.509,
+      "gapP99Hours": 71.751,
+      "gapMaxHours": 348.605,
+      "packedBytes": 800901,
+      "coarsening": []
+    }
+  ]
+}
