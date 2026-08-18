@@ -65,6 +65,14 @@ public struct Dioscuri: Sendable {
             divergences.append(contentsOf: report.divergences)
         }
 
+        for question in pollux.makeMotionTopologyQuestions(storage: storage) {
+            let firstAnswer = try castor.answer(question.handoff)
+            let first = pollux.confirm(question, answer: firstAnswer)
+            let second = try secondStrikeIfNeeded(question: question, first: first)
+            accumulator.record(first.checks)
+            if let second { divergences.append(contentsOf: divergenceEvidence(first: first, second: second)) }
+        }
+
         for question in try pollux.makeStationQuestions(storage: storage) {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
@@ -107,6 +115,23 @@ public struct Dioscuri: Sendable {
             scopeTallies: tallies,
             divergences: divergences
         ))
+    }
+
+    private func secondStrikeIfNeeded(
+        question: PolluxMotionTopologyQuestion,
+        first: PolluxConfirmation
+    ) throws -> PolluxConfirmation? {
+        guard !first.isResonant else { return nil }
+        let freshPollux = try Pollux(candidate: candidate)
+        let freshCastor = try Castor(candidate: candidate)
+        let freshQuestions = freshPollux.makeMotionTopologyQuestions(storage: storage)
+        guard let freshQuestion = freshQuestions.first(where: { $0.address == question.address }) else {
+            return nondeterministicFallback(first)
+        }
+        return freshPollux.confirm(
+            freshQuestion,
+            answer: try freshCastor.answer(freshQuestion.handoff)
+        )
     }
 
     private func secondStrikeIfNeeded(
