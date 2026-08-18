@@ -231,7 +231,7 @@ private struct FoundationLabView: View {
                 readout("P22 recipe", MundaneTimespineP22ForgeRecipe.recipeIdentifier)
                 readout("P22 recipe ver", "\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
                 readout("P22 candidate", "awaiting full assembly")
-                readout("Dioscuri", "Pollux built / Castor pending")
+                readout("Dioscuri", "twins built / handshake pending")
 
                 Divider()
 
@@ -247,8 +247,26 @@ private struct FoundationLabView: View {
                 readout("ephemeris", Pollux.ephemerisRole)
                 readout("civic time", Pollux.civicTimeRole)
                 readout("ambiguity", Pollux.ambiguityPolicy)
-                readout("Castor", "not built yet")
-                readout("Dioscuri", "incomplete")
+                readout("Castor", "built")
+                readout("Dioscuri", "handshake pending")
+
+                Divider()
+
+                sectionTitle("CASTOR / DIOSCURI II")
+                readout("role", Castor.role)
+                readout("nature", Castor.nature)
+                readout("order", Castor.order)
+                readout("input", Castor.inputLaw)
+                readout("axis", Castor.axis)
+                readout("candidate", "independently verified")
+                readout("Reader", Castor.readerRole)
+                readout("Forge", Castor.forgeRole)
+                readout("ephemeris", Castor.ephemerisRole)
+                readout("expectations", Castor.expectationRole)
+                readout("answer", Castor.answerLaw)
+                readout("comparison", Castor.comparisonRole)
+                readout("Pollux", "built")
+                readout("Dioscuri", "handshake pending")
 
                 Divider()
 
@@ -302,7 +320,7 @@ private struct FoundationLabView: View {
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
                 readout("shipping P22", "not installed yet")
-                readout("Dioscuri", "Pollux built / Castor pending")
+                readout("Dioscuri", "twins built / handshake pending")
                 readout("proof authority", "OrboCoreTests")
 
                 Divider()
