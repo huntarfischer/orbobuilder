@@ -265,7 +265,6 @@ private struct QuarantineReport: Codable {
     }
 }
 
-@main
 private struct OrboForgeTool {
     static func main() throws {
         let raw = Array(CommandLine.arguments.dropFirst())
@@ -389,3 +388,5 @@ private struct OrboForgeTool {
         try data.write(to: url, options: .atomic)
     }
 }
+
+try OrboForgeTool.main()
