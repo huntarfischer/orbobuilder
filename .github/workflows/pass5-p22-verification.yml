@@ -17,7 +17,7 @@ on:
       - "native/OrboLab/OrboLabApp.swift"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   repository-substrate:
@@ -42,3 +42,42 @@ jobs:
 
       - name: Build OrboCore on Apple Swift
         run: swift build --package-path native/OrboCore
+
+  record-proof:
+    if: always()
+    needs:
+      - repository-substrate
+      - native-proof
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Record verification result
+        env:
+          SUBSTRATE_RESULT: ${{ needs.repository-substrate.result }}
+          NATIVE_RESULT: ${{ needs.native-proof.result }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          result = {
+              "sourceCommit": os.environ["GITHUB_SHA"],
+              "repositorySubstrate": os.environ["SUBSTRATE_RESULT"],
+              "nativeProof": os.environ["NATIVE_RESULT"],
+          }
+          result["status"] = "success" if result["repositorySubstrate"] == "success" and result["nativeProof"] == "success" else "failure"
+          with open("tools/pass5/p22-verification-status.json", "w", encoding="utf-8") as handle:
+              json.dump(result, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+
+      - name: Persist proof result on learning branch
+        if: github.ref_name == 'agent/timespine-celestial-time-build'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/p22-verification-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "record Pass 5 P22 verification result"
+            git push origin HEAD:agent/timespine-celestial-time-build
+          fi
