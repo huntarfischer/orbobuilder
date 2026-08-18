@@ -28,8 +28,8 @@ final class MundaneTimespineForgeTests: XCTestCase {
         }
     }
 
-    func testForgeP22PlanRestoresNativeOwnerAroundCelestialTimeLaw() {
-        let plan = MundaneTimespineForge.p22Plan(astronomicalSourceVersion: "test")
+    func testP22RecipeOwnsP22PlanAndCelestialBoundaryLaw() {
+        let plan = MundaneTimespineP22ForgeRecipe.plan(astronomicalSourceVersion: "test")
 
         XCTAssertEqual(plan.spanName, MundaneTimespineP22.spanName)
         XCTAssertEqual(plan.supportedStart, MundaneTimespineP22.startJulianDay)
@@ -39,13 +39,13 @@ final class MundaneTimespineForgeTests: XCTestCase {
             plan.bodyPlans.map { $0.contract.celestialResolutionDegrees },
             MundaneTimespineP22.profiles.map(\.celestialResolutionDegrees)
         )
-        XCTAssertTrue(plan.validatesP22Boundaries)
         XCTAssertTrue(plan.verifiesConstructionRecordCounts)
         XCTAssertTrue(plan.verifiesMarkerUniqueness)
+        XCTAssertFalse(MundaneTimespineP22ForgeRecipe.astronomicalSource.contains("DE441"))
         XCTAssertEqual(AstroDNA.codec, 4)
     }
 
-    func testForgeManufacturesDirectCelestialOccurrencesBoundToCivicUT() throws {
+    func testGenericForgeManufacturesArbitraryDirectCelestialSpanBoundToCivicUT() throws {
         let start = JulianDay(1_000)!
         let end = JulianDay(1_010)!
         let contract = MundaneTimespineBodyContract(
@@ -72,6 +72,7 @@ final class MundaneTimespineForgeTests: XCTestCase {
         )
         let body = try XCTUnwrap(product.body(.sun))
 
+        XCTAssertEqual(product.spanName, "Forge linear fixture")
         XCTAssertEqual(product.totalOccurrenceCount, 10)
         XCTAssertEqual(body.occurrences.map(\.focalCelestialTick), Array(0..<10))
         XCTAssertTrue(body.occurrences.allSatisfy { $0.sequenceDirection == .increasing })
@@ -120,7 +121,7 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertEqual(body.retrogradeCrossingCount, 5)
     }
 
-    func testForgeRejectsFalseP22BoundaryBeforeManufacture() {
+    func testP22RecipeRejectsFalsePlutoZeroAriesBoundaryBeforeManufacture() {
         let reference = LinearReference(
             origin: MundaneTimespineP22.startJulianDay.value,
             baseLongitude: 20,
@@ -128,12 +129,12 @@ final class MundaneTimespineForgeTests: XCTestCase {
         )
 
         XCTAssertThrowsError(
-            try MundaneTimespineForge.manufactureP22(
+            try MundaneTimespineP22ForgeRecipe.manufacture(
                 astronomicalSourceVersion: "test",
                 reference: reference
             )
         ) { error in
-            XCTAssertEqual(error as? MundaneTimespineForgeError, .p22BoundaryMismatch)
+            XCTAssertEqual(error as? MundaneTimespineP22ForgeRecipeError, .boundaryMismatch)
         }
     }
 }
