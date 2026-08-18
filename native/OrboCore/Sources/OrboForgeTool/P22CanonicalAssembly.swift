@@ -271,6 +271,11 @@ struct P22CanonicalAssembler {
             let residual = header.contains("exactAspectResidualArcSeconds")
                 ? try double(row, "exactAspectResidualArcSeconds", rowNumber)
                 : 0
+            guard residual >= 0 else {
+                throw P22CanonicalAssemblyError.invalidValue(
+                    "\(input.relativePath) row \(rowNumber) exact aspect residual"
+                )
+            }
             guard let julianDay = JulianDay(jd),
                   let event = MundaneTimespineRelationshipEvent(
                     bodyA: bodyA,
@@ -280,7 +285,7 @@ struct P22CanonicalAssembler {
                     bodyACelestialTimeDegrees: aDegrees,
                     bodyBCelestialTimeDegrees: bDegrees,
                     julianDay: julianDay,
-                    exactAspectResidualArcSeconds: max(0, residual)
+                    exactAspectResidualArcSeconds: residual
                   ) else {
                 throw P22CanonicalAssemblyError.invalidValue("\(input.relativePath) row \(rowNumber)")
             }
@@ -547,6 +552,11 @@ private final class GzipCSVLineReader {
         } catch {
             throw P22CanonicalAssemblyError.gzip("\(url.lastPathComponent): \(error)")
         }
+    }
+
+    deinit {
+        if process.isRunning { process.terminate() }
+        try? handle.close()
     }
 
     func readLine() throws -> String? {
