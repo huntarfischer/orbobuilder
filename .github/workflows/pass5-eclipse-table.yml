@@ -30,7 +30,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p tools/pass5/p22-results
-          printf '{\n  "workflowStatus": "started",\n  "sourceCommit": "%s"\n}\n' "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
+          echo start > tools/pass5/p22-results/eclipse-workflow-stage.txt
+          printf '{\n  "workflowStatus": "started",\n  "stage": "start",\n  "sourceCommit": "%s"\n}\n' "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git add tools/pass5/p22-results/eclipse-workflow-status.json
@@ -41,6 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo verify-repo-de441 > tools/pass5/p22-results/eclipse-workflow-stage.txt
           test -f tools/pass5/sepl_18.se1
           test -f tools/pass5/semo_18.se1
           head -c 512 tools/pass5/sepl_18.se1 | strings | grep -q DE441
@@ -50,6 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo build-swiss-engine > tools/pass5/p22-results/eclipse-workflow-stage.txt
           SWISS="$RUNNER_TEMP/swisseph"
           git clone https://github.com/aloistr/swisseph.git "$SWISS"
           cd "$SWISS"
@@ -62,12 +65,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo compile-swift-forge > tools/pass5/p22-results/eclipse-workflow-stage.txt
           swiftc tools/pass5/eclipse-forge/main.swift -o "$RUNNER_TEMP/orbo-eclipse-forge"
 
       - name: Manufacture degree-oriented P22 eclipse table
         shell: bash
         run: |
           set -euo pipefail
+          echo manufacture-p22-eclipses > tools/pass5/p22-results/eclipse-workflow-stage.txt
           "$RUNNER_TEMP/orbo-eclipse-forge" \
             --library "$RUNNER_TEMP/swisseph/libswe.dylib" \
             --ephe "$GITHUB_WORKSPACE/tools/pass5" \
@@ -77,6 +82,7 @@ jobs:
           test -s tools/pass5/p22-data/eclipse-table.csv
           test -s tools/pass5/p22-data/eclipse-table-summary.json
           grep -q 'Swiss Ephemeris DE441 repository files' tools/pass5/p22-data/eclipse-table-summary.json
+          echo manufactured > tools/pass5/p22-results/eclipse-workflow-stage.txt
 
       - name: Preserve generated eclipse artifact
         if: success()
@@ -92,6 +98,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo commit-artifact > tools/pass5/p22-results/eclipse-workflow-stage.txt
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git pull --rebase origin agent/timespine-celestial-time-build
@@ -100,15 +107,18 @@ jobs:
             git commit -m "Forge P22 eclipse table [skip ci]"
             git push origin HEAD:agent/timespine-celestial-time-build
           fi
+          echo complete > tools/pass5/p22-results/eclipse-workflow-stage.txt
 
       - name: Record eclipse Forge result
         if: always()
         shell: bash
         run: |
           set -euo pipefail
+          stage="$(cat tools/pass5/p22-results/eclipse-workflow-stage.txt 2>/dev/null || echo unknown)"
           git pull --rebase origin agent/timespine-celestial-time-build
           mkdir -p tools/pass5/p22-results
-          printf '{\n  "workflowStatus": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
+          printf '{\n  "workflowStatus": "%s",\n  "stage": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$stage" "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
+          rm -f tools/pass5/p22-results/eclipse-workflow-stage.txt
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git add tools/pass5/p22-results/eclipse-workflow-status.json
