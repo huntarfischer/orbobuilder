@@ -24,7 +24,16 @@ jobs:
           ref: agent/timespine-celestial-time-build
           fetch-depth: 0
 
-      - name: Checkout pinned official Swiss Ephemeris
+      - name: Verify Orbo's committed Swiss ephemeris files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tools/pass5/sepl_18.se1
+          test -f tools/pass5/semo_18.se1
+          head -c 512 tools/pass5/sepl_18.se1 | strings | grep -q DE441
+          head -c 512 tools/pass5/semo_18.se1 | strings | grep -q DE441
+
+      - name: Build pinned Swiss computation engine
         shell: bash
         run: |
           set -euo pipefail
@@ -33,8 +42,6 @@ jobs:
           cd "$SWISS"
           git checkout 3fd0f956d73898b91cc4f67cf18b21af656d1342
           test "$(git rev-parse HEAD)" = "3fd0f956d73898b91cc4f67cf18b21af656d1342"
-          test -f ephe/sepl_18.se1
-          test -f ephe/semo_18.se1
           make swetest
           test -x swetest
 
@@ -50,7 +57,7 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/orbo-eclipse-forge" \
             --swetest "$RUNNER_TEMP/swisseph/swetest" \
-            --ephe "$RUNNER_TEMP/swisseph/ephe" \
+            --ephe "$GITHUB_WORKSPACE/tools/pass5" \
             --source-sha 3fd0f956d73898b91cc4f67cf18b21af656d1342 \
             --csv tools/pass5/p22-data/eclipse-table.csv \
             --summary tools/pass5/p22-data/eclipse-table-summary.json
