@@ -19,6 +19,9 @@ jobs:
       - name: OrboCore build
         run: swift build --package-path native/OrboCore
 
+      - name: Native Forge tool build
+        run: swift build --package-path native/OrboCore --product OrboForgeTool
+
       - name: OrboLab Xcode build
         run: |
           xcodebuild \
