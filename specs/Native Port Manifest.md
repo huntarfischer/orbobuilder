@@ -3659,7 +3659,7 @@ Pass 1    Geoplacement + terrestrial vocabulary    NATIVE CANONICAL / COMPLETE
 Pass 2    Civil Time and timezone history          NATIVE CANONICAL / COMPLETE
 Pass 3    AstroDNA contract                         NATIVE CANONICAL / COMPLETE
 Pass 4    Ephemeris + Forge qualification           QUALIFIED / COMPLETE
-Pass 5    Forge + Mundane Timespine v1              READY
+Pass 5    Mundane Timespine P22 body substrate      PROVEN / RUNTIME READER PENDING
 Pass 6    Horizon + AstroDNA Encoder + Resolver     NOT STARTED
 Pass 7    Loom                                      NOT STARTED
 Pass 8    Resonator + Lab + seal Ovum               NOT STARTED
@@ -3669,7 +3669,7 @@ Pass 4 is complete at the ownership and astronomical-reference gate.
 
 The qualified v1 astronomical reference is official Swiss Ephemeris `v2.10.3bfinal`, with its 2026 Swiss planetary-data rebuild based on JPL DE441. Ephemeris and Forge are separate Ovum organs. Forge is the sole sanctioned production client of Ephemeris.
 
-Pass 5 may now measure candidate chronology representations and implement Forge's first manufacturing path. The result must be one immutable, versioned Mundane Timespine whose same version/checksum represents the same celestial chronology for every Orbo carrying it.
+Pass 5 has now proven the P22 eleven-body construction substrate and its native body contract. The next Pass 5 work is to earn the final Swift storage serialization and bidirectional runtime reader against that substrate before the complete Mundane Timespine can be sealed.
 
 Swiss Ephemeris code/data must not be distributed inside Orbo until the project's AGPL-versus-Professional-License path is resolved. That is a release gate, not permission to substitute a weaker astronomical source silently.
 
