@@ -13,6 +13,10 @@ MANIFEST_PATH = ROOT / "specs/Native Port Manifest.md"
 
 LEDGER_OLD = "| Mundane Timespine | PENDING | PENDING | OrboCore / MundaneTimespine | PASS 5 READY |"
 LEDGER_NEW = "| Mundane Timespine | REPRODUCE | STRUCTURAL | OrboCore / MundaneTimespine | P22 BODY SUBSTRATE PROVEN / RUNTIME READER PENDING |"
+CHECKPOINT_OLD = "Pass 5    Forge + Mundane Timespine v1              READY"
+CHECKPOINT_NEW = "Pass 5    Mundane Timespine P22 body substrate      PROVEN / RUNTIME READER PENDING"
+NEXT_OLD = "Pass 5 may now measure candidate chronology representations and implement Forge's first manufacturing path. The result must be one immutable, versioned Mundane Timespine whose same version/checksum represents the same celestial chronology for every Orbo carrying it."
+NEXT_NEW = "Pass 5 has now proven the P22 eleven-body construction substrate and its native body contract. The next Pass 5 work is to earn the final Swift storage serialization and bidirectional runtime reader against that substrate before the complete Mundane Timespine can be sealed."
 CARD_MARKER = "# Pass 5 Component: Mundane Timespine (P22)"
 
 CARD = r'''
@@ -220,6 +224,16 @@ def main() -> None:
         text = text.replace(LEDGER_OLD, LEDGER_NEW, 1)
     elif LEDGER_NEW not in text:
         raise SystemExit("Mundane Timespine ledger row is not in an expected state")
+
+    if CHECKPOINT_OLD in text:
+        text = text.replace(CHECKPOINT_OLD, CHECKPOINT_NEW, 1)
+    elif CHECKPOINT_NEW not in text:
+        raise SystemExit("Pass 5 checkpoint is not in an expected state")
+
+    if NEXT_OLD in text:
+        text = text.replace(NEXT_OLD, NEXT_NEW, 1)
+    elif NEXT_NEW not in text:
+        raise SystemExit("Pass 5 next-step paragraph is not in an expected state")
 
     if CARD_MARKER not in text:
         text += CARD
