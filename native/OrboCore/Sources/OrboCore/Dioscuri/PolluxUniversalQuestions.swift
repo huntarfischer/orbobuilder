@@ -39,20 +39,6 @@ struct PolluxEclipseQuestion: Hashable, Sendable {
     let handoff: PolluxCivicHandoff
 }
 
-extension PolluxError {
-    static func ambiguousStation(_ body: MundaneBody, _ microdegrees: UInt32) -> PolluxError {
-        .candidateContractMismatch
-    }
-
-    static func ambiguousRelationship() -> PolluxError {
-        .candidateContractMismatch
-    }
-
-    static func ambiguousEclipse() -> PolluxError {
-        .candidateContractMismatch
-    }
-}
-
 extension Pollux {
     func makeStationQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxStationQuestion] {
         var seen = Set<PolluxStationAddress>()
@@ -66,7 +52,10 @@ extension Pollux {
                     motionAfter: station.motionAfter
                 )
                 guard seen.insert(address).inserted else {
-                    throw PolluxError.ambiguousStation(body.body, station.celestialMicrodegrees)
+                    throw PolluxError.ambiguousStationIdentity(
+                        body: body.body,
+                        celestialMicrodegrees: station.celestialMicrodegrees
+                    )
                 }
                 result.append(PolluxStationQuestion(
                     address: address,
@@ -104,7 +93,7 @@ extension Pollux {
                 bodyBMicrodegrees: Self.microdegrees(event.bodyBCelestialTimeDegrees)
             )
             guard seen.insert(address).inserted else {
-                throw PolluxError.ambiguousRelationship()
+                throw PolluxError.ambiguousRelationshipIdentity
             }
             let offset = Int64(((event.julianDay.value - storage.supportedStart.value) * 86_400).rounded())
             result.append(PolluxRelationshipQuestion(
@@ -145,7 +134,7 @@ extension Pollux {
                 secondaryMagnitudeBits: event.secondaryMagnitude?.bitPattern
             )
             guard seen.insert(address).inserted else {
-                throw PolluxError.ambiguousEclipse()
+                throw PolluxError.ambiguousEclipseIdentity
             }
             let offset = Int64(((event.julianDay.value - storage.supportedStart.value) * 86_400).rounded())
             result.append(PolluxEclipseQuestion(
