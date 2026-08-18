@@ -17,6 +17,7 @@
 		B30000000000000000000004 /* FixtureInfrastructureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* FixtureInfrastructureTests.swift */; };
 		B30000000000000000000005 /* FixtureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000005 /* FixtureLoader.swift */; };
 		B30000000000000000000006 /* FoundationIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000006 /* FoundationIntegrationTests.swift */; };
+		B30000000000000000000010 /* HephaestusCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000010 /* HephaestusCompletionTests.swift */; };
 		B30000000000000000000007 /* GeoplacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000007 /* GeoplacementTests.swift */; };
 		B30000000000000000000008 /* MaterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000008 /* MaterTests.swift */; };
 		B30000000000000000000009 /* MundaneTimespineForgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000009 /* MundaneTimespineForgeTests.swift */; };
@@ -49,6 +50,7 @@
 		B20000000000000000000004 /* FixtureInfrastructureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureInfrastructureTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000005 /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureSupport/FixtureLoader.swift; sourceTree = "<group>"; };
 		B20000000000000000000006 /* FoundationIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationIntegrationTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000010 /* HephaestusCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HephaestusCompletionTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000007 /* GeoplacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoplacementTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000008 /* MaterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000009 /* MundaneTimespineForgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MundaneTimespineForgeTests.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				B20000000000000000000004 /* FixtureInfrastructureTests.swift */,
 				B20000000000000000000005 /* FixtureLoader.swift */,
 				B20000000000000000000006 /* FoundationIntegrationTests.swift */,
+				B20000000000000000000010 /* HephaestusCompletionTests.swift */,
 				B20000000000000000000007 /* GeoplacementTests.swift */,
 				B20000000000000000000008 /* MaterTests.swift */,
 				B20000000000000000000009 /* MundaneTimespineForgeTests.swift */,
@@ -306,6 +309,7 @@
 				B30000000000000000000004 /* FixtureInfrastructureTests.swift in Sources */,
 				B30000000000000000000005 /* FixtureLoader.swift in Sources */,
 				B30000000000000000000006 /* FoundationIntegrationTests.swift in Sources */,
+				B30000000000000000000010 /* HephaestusCompletionTests.swift in Sources */,
 				B30000000000000000000007 /* GeoplacementTests.swift in Sources */,
 				B30000000000000000000008 /* MaterTests.swift in Sources */,
 				B30000000000000000000009 /* MundaneTimespineForgeTests.swift in Sources */,
