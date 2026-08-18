@@ -314,4 +314,274 @@ final class MundaneTimespineForgeTests: XCTestCase {
             XCTAssertEqual(error as? MundaneTimespineP22ForgeRecipeError, .boundaryMismatch)
         }
     }
+
+    func testDioscuriCertifiesAllFiveScopesCelestialFirst() throws {
+        let candidate = try makeDioscuriCandidate(
+            bodies: try cleanDioscuriBodies(),
+            relationships: [try cleanRelationship()],
+            eclipses: [try cleanSolarEclipse()]
+        )
+        let dioscuri = try Dioscuri(candidate: candidate)
+
+        XCTAssertEqual(Dioscuri.role, "Timespine integrity gate")
+        XCTAssertEqual(Dioscuri.order, "Pollux -> Castor -> Pollux")
+        XCTAssertEqual(Dioscuri.origin, "celestial")
+        XCTAssertEqual(Dioscuri.oracleRole, "none")
+        XCTAssertEqual(Dioscuri.forgeRole, "none")
+        XCTAssertEqual(Dioscuri.correctionRole, "none")
+        XCTAssertEqual(Dioscuri.averagingRole, "none")
+        XCTAssertEqual(Dioscuri.verdictTarget, "Hephaestus")
+        XCTAssertEqual(Dioscuri.sealAuthority, "Hephaestus")
+
+        switch try dioscuri.certify() {
+        case let .certificate(certificate):
+            XCTAssertEqual(certificate.contractVersion, 1)
+            XCTAssertEqual(certificate.candidateSHA256, candidate.identity.sha256)
+            XCTAssertEqual(certificate.recipeIdentifier, "xctest-dioscuri")
+            XCTAssertEqual(certificate.storageVersion, 1)
+            XCTAssertEqual(certificate.scopeTallies.count, DioscuriScope.allCases.count)
+            XCTAssertEqual(tally(.bodyOccurrence, in: certificate.scopeTallies)?.questions, 12)
+            XCTAssertEqual(tally(.marker, in: certificate.scopeTallies)?.questions, 3)
+            XCTAssertEqual(tally(.motion, in: certificate.scopeTallies)?.questions, 13)
+            XCTAssertEqual(tally(.exactRelationship, in: certificate.scopeTallies)?.questions, 1)
+            XCTAssertEqual(tally(.eclipse, in: certificate.scopeTallies)?.questions, 1)
+            XCTAssertEqual(certificate.quantizedCoincidences, 0)
+        case .rejection:
+            XCTFail("clean Dioscuri fixture should certify")
+        }
+    }
+
+    func testDioscuriAdmitsKnownIntegerSecondMarkerQuantizationAtTenthDegreeResolution() throws {
+        let candidate = try makeDioscuriCandidate(bodies: try quantizedMarkerBodies())
+        let pollux = try Pollux(candidate: candidate)
+        let address = try XCTUnwrap(PolluxCelestialAddress(
+            body: .mercury,
+            celestialTick: 170,
+            ticksPerDegree: 10,
+            markerFingerprint: [PolluxMarkerCell(body: .sun, wholeDegree: 243)!]
+        ))
+        let report = try Dioscuri(candidate: candidate).strike(try pollux.ask(address))
+        let marker = try XCTUnwrap(report.first.checks.first { $0.scope == .marker })
+
+        XCTAssertTrue(report.isResonant)
+        XCTAssertNil(report.second)
+        XCTAssertEqual(marker.outcome, .quantizedCoincidence)
+        XCTAssertTrue(report.divergences.isEmpty)
+    }
+
+    func testDioscuriConfirmsDivergenceOnSecondStrikeAndFailsClosed() throws {
+        let candidate = try makeDioscuriCandidate(bodies: try divergentMarkerBodies())
+        let pollux = try Pollux(candidate: candidate)
+        let address = try XCTUnwrap(PolluxCelestialAddress(
+            body: .mercury,
+            celestialTick: 170,
+            ticksPerDegree: 10,
+            markerFingerprint: [PolluxMarkerCell(body: .sun, wholeDegree: 243)!]
+        ))
+        let report = try Dioscuri(candidate: candidate).strike(try pollux.ask(address))
+        let divergence = try XCTUnwrap(report.divergences.first)
+
+        XCTAssertFalse(report.isResonant)
+        XCTAssertNotNil(report.second)
+        XCTAssertEqual(divergence.scope, .marker)
+        XCTAssertEqual(divergence.kind, .marker)
+        XCTAssertTrue(divergence.deterministic)
+        XCTAssertEqual(divergence.firstObserved, divergence.secondObserved)
+    }
+
+    func testDioscuriRejectsRepeatedRelationshipCelestialIdentityRatherThanUsingCivicOrdinal() throws {
+        let first = try cleanRelationship(offsetSeconds: 1_000)
+        let second = try cleanRelationship(offsetSeconds: 1_500)
+        let candidate = try makeDioscuriCandidate(
+            bodies: try cleanDioscuriBodies(),
+            relationships: [first, second]
+        )
+        let dioscuri = try Dioscuri(candidate: candidate)
+
+        XCTAssertThrowsError(try dioscuri.certify()) { error in
+            XCTAssertEqual(error as? PolluxError, .ambiguousRelationshipIdentity)
+        }
+    }
+
+    private func tally(
+        _ scope: DioscuriScope,
+        in tallies: [DioscuriScopeTally]
+    ) -> DioscuriScopeTally? {
+        tallies.first { $0.scope == scope }
+    }
+
+    private func cleanDioscuriBodies() throws -> [MundaneTimespineStoredBody] {
+        let sun = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 1_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 12, civicOffsetSeconds: 2_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let moon = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .moon,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 1_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 12, civicOffsetSeconds: 2_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let mercury = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 1,
+            markerBodies: [.sun],
+            occurrences: [
+                .init(celestialTick: 20, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: [10]),
+                .init(celestialTick: 21, civicOffsetSeconds: 500, sequenceDirection: .increasing, markerWholeDegrees: [10]),
+                .init(celestialTick: 19, civicOffsetSeconds: 1_500, sequenceDirection: .decreasing, markerWholeDegrees: [11]),
+            ],
+            stations: [
+                .init(
+                    celestialMicrodegrees: 21_500_000,
+                    civicOffsetSeconds: 1_000,
+                    motionAfter: .retrograde
+                ),
+            ],
+            retrogradePassages: []
+        ))
+        let venus = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .venus,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 130, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 131, civicOffsetSeconds: 1_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 132, civicOffsetSeconds: 2_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        return [venus, mercury, moon, sun]
+    }
+
+    private func quantizedMarkerBodies() throws -> [MundaneTimespineStoredBody] {
+        let sun = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 10,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 2_439, civicOffsetSeconds: 4_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 2_440, civicOffsetSeconds: 4_321, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 2_441, civicOffsetSeconds: 5_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let mercury = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 10,
+            markerBodies: [.sun],
+            occurrences: [
+                .init(celestialTick: 171, civicOffsetSeconds: 4_000, sequenceDirection: .decreasing, markerWholeDegrees: [243]),
+                .init(celestialTick: 170, civicOffsetSeconds: 4_321, sequenceDirection: .decreasing, markerWholeDegrees: [243]),
+                .init(celestialTick: 169, civicOffsetSeconds: 5_000, sequenceDirection: .decreasing, markerWholeDegrees: [244]),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        return [mercury, sun]
+    }
+
+    private func divergentMarkerBodies() throws -> [MundaneTimespineStoredBody] {
+        let sun = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 10,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 2_440, civicOffsetSeconds: 4_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 2_441, civicOffsetSeconds: 5_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let mercury = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 10,
+            markerBodies: [.sun],
+            occurrences: [
+                .init(celestialTick: 171, civicOffsetSeconds: 4_000, sequenceDirection: .decreasing, markerWholeDegrees: [244]),
+                .init(celestialTick: 170, civicOffsetSeconds: 4_321, sequenceDirection: .decreasing, markerWholeDegrees: [243]),
+                .init(celestialTick: 169, civicOffsetSeconds: 5_000, sequenceDirection: .decreasing, markerWholeDegrees: [244]),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        return [mercury, sun]
+    }
+
+    private func cleanRelationship(offsetSeconds: Int64 = 1_000) throws -> MundaneTimespineRelationshipEvent {
+        try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .sun,
+            bodyB: .venus,
+            mark: .trine,
+            orientation: .bodyBAhead,
+            bodyACelestialTimeDegrees: 11,
+            bodyBCelestialTimeDegrees: 131,
+            julianDay: JulianDay(1_000 + Double(offsetSeconds) / 86_400)!,
+            exactAspectResidualArcSeconds: 0
+        ))
+    }
+
+    private func cleanSolarEclipse() throws -> MundaneTimespineEclipseEvent {
+        try XCTUnwrap(MundaneTimespineEclipseEvent(
+            kind: .solar,
+            type: .total,
+            eclipseDegree: 11,
+            julianDay: JulianDay(1_000 + 1_000.0 / 86_400)!,
+            centrality: "central"
+        ))
+    }
+
+    private func makeDioscuriCandidate(
+        bodies: [MundaneTimespineStoredBody],
+        relationships: [MundaneTimespineRelationshipEvent] = [],
+        eclipses: [MundaneTimespineEclipseEvent] = []
+    ) throws -> TimespineCandidate {
+        let image = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "Dioscuri XCTest fixture",
+            astronomicalSource: "deterministic XCTest sky",
+            astronomicalSourceVersion: "1",
+            supportedStart: JulianDay(1_000)!,
+            supportedEnd: JulianDay(1_001)!,
+            bodies: bodies,
+            relationships: relationships,
+            eclipses: eclipses
+        ))
+        let data = try image.encodedArtifact()
+        let artifact = try MundaneTimespineArtifact(data: data)
+        let identity = TimespineCandidateIdentity.hash(artifactData: data)
+        let record = TimespineForgeRecord(
+            recipeIdentifier: "xctest-dioscuri",
+            recipeVersion: 1,
+            spanName: image.spanName,
+            astronomicalSource: image.astronomicalSource,
+            astronomicalSourceVersion: image.astronomicalSourceVersion,
+            storageFamily: MundaneTimespineStorageFormat.identifier,
+            storageVersion: MundaneTimespineStorageFormat.version,
+            celestialTimeFirst: MundaneTimespineStorageFormat.celestialTimeFirst,
+            bodyCount: bodies.count,
+            bodyOccurrenceCount: bodies.reduce(0) { $0 + $1.occurrences.count },
+            stationCount: bodies.reduce(0) { $0 + $1.stations.count },
+            retrogradePassageCount: bodies.reduce(0) { $0 + $1.retrogradePassages.count },
+            relationshipCount: relationships.count,
+            eclipseCount: eclipses.count,
+            artifactByteCount: data.count,
+            candidateSHA256: identity.sha256
+        )
+        return TimespineCandidate(identity: identity, artifact: artifact, forgeRecord: record)
+    }
 }
