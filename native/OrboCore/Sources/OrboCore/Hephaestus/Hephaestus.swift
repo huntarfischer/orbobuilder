@@ -26,15 +26,18 @@ public enum HephaestusError: Error, Equatable, CustomStringConvertible {
     }
 }
 
-/// Native manufacturing authority for Timespine candidates.
+/// Native fabrication authority for canonical Orbo artifacts.
 ///
-/// Hephaestus supervises recipe preflight, generic Forge manufacture, final storage assembly,
-/// deterministic ORBOTS packaging, structural round-trip verification, and candidate identity.
-/// Hephaestus does not certify celestial/civic agreement; that belongs to the Dioscuri.
+/// The current implementation knows how to execute Timespine recipes through generic Forge,
+/// deterministic ORBOTS packaging, structural round-trip verification, and immutable identity.
+/// Completion is the second half of this same engine: Dioscuri testimony returns to Hephaestus,
+/// which seals or quarantines the exact candidate without interpreting the resonance itself.
 public enum Hephaestus {
     public static let celestialTimeFirst = true
     public static let candidateIdentityAlgorithm = "SHA-256"
-    public static let runtimeRole = "none"
+    public static let runtimeRole = "fabrication/completion events only"
+    public static let queryRole = "none"
+    public static let interpretationRole = "none"
 
     public static func manufactureCandidate<R: HephaestusTimespineRecipe>(
         recipe: R.Type,
@@ -103,6 +106,7 @@ public enum Hephaestus {
         let record = TimespineForgeRecord(
             recipeIdentifier: R.recipeIdentifier,
             recipeVersion: R.recipeVersion,
+            resonanceContract: R.resonanceContract,
             spanName: product.spanName,
             astronomicalSource: product.astronomicalSource,
             astronomicalSourceVersion: product.astronomicalSourceVersion,
