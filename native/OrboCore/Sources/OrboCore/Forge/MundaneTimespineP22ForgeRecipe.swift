@@ -15,10 +15,13 @@ public enum MundaneTimespineP22ForgeRecipeError: Error, Equatable, CustomStringC
 ///
 /// Generic Forge manufactures the plan it receives. This recipe alone owns why P22 begins
 /// and ends where it does: the two half-open boundaries are direct Pluto 0 Aries crossings.
-/// The recipe also owns P22's proven discovery cadences and construction-count checks.
+/// The recipe also owns P22's proven discovery cadences and complete artifact anatomy.
 public enum MundaneTimespineP22ForgeRecipe: HephaestusTimespineRecipe {
     public static let astronomicalSource =
-        "Swiss Ephemeris; geocentric tropical apparent ecliptic longitude; UT"
+        "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT"
+    public static let canonicalAstronomicalSourceVersion = "2.10.03"
+    public static let canonicalStationCount = 17_535
+    public static let canonicalRetrogradePassageCount = 8_770
 
     public static var recipeIdentifier: String { "p22-pluto-zeitgeist" }
     public static var recipeVersion: UInt16 { 1 }
@@ -33,6 +36,8 @@ public enum MundaneTimespineP22ForgeRecipe: HephaestusTimespineRecipe {
         return HephaestusTimespineArtifactContract(
             bodyCount: MundaneTimespineP22.profiles.count,
             bodyOccurrenceCount: MundaneTimespineP22.totalConstructionRecords,
+            stationCount: canonicalStationCount,
+            retrogradePassageCount: canonicalRetrogradePassageCount,
             relationshipCount: MundaneTimespineP22.totalUniversalEventRecords - eclipseCount,
             eclipseCount: eclipseCount
         )!
