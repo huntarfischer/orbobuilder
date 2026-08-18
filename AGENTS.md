@@ -46,6 +46,27 @@ Do not design the eclipse table as a timestamp list with a degree attached after
 
 When a native storage or indexing design conflicts with this priority, the design must change rather than demoting celestial time to metadata.
 
+## 0a. Repository first
+
+Before searching externally, downloading a dependency, inventing a new calculator, or recreating a solved capability, inspect the current Orbo repository and governing specifications for an existing canonical source, integration, artifact, fixture, or dependency.
+
+The repository is construction memory. Do not rely on conversational recall when the repository can answer the question.
+
+The required order is:
+
+```text
+current Orbo repository
+    -> governing native specifications
+    -> existing canonical native owner / dependency / artifact
+    -> external research only when something remains genuinely unresolved
+```
+
+Do not replace or bypass an already-qualified Orbo dependency merely because an external copy is easier to find.
+
+For current Pass 5 astronomical manufacture, **use the Swiss Ephemeris already established inside the Orbo repository and its existing Forge/Ephemeris construction path**. Do not fetch a separate Swiss copy, substitute another ephemeris, or build a parallel eclipse astronomy engine when the repository source can perform the work.
+
+When a repository capability exists but its exact location or mating surface is unclear, locate it inside the repository first. External search is not a substitute for repository archaeology.
+
 ## 1. Native construction is Swift
 
 Production native Orbo is built in Swift.
@@ -182,6 +203,8 @@ Before saying a pass is complete, answer all of these:
 
 ```text
 Celestial-time-first law preserved?          YES / NO
+Repository inspected before external search? YES / NO
+Existing canonical dependency reused?        YES / NO
 Swift implementation present?                YES / NO
 Correct native owner preserved?               YES / NO
 New/changed XCTest present?                    YES / NO
