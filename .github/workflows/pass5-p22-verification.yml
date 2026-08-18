@@ -1,0 +1,44 @@
+name: Pass 5 P22 Mundane Timespine Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - agent/timespine-celestial-time-build
+    paths:
+      - ".github/workflows/pass5-p22-verification.yml"
+      - "tools/pass5/p22-data/**"
+      - "tools/pass5/p22-results/**"
+      - "tools/pass5/verify_p22_substrate.py"
+      - "native/OrboCore/Package.swift"
+      - "native/OrboCore/Sources/OrboCore/MundaneTimespine/**"
+      - "native/OrboCore/Tests/OrboCoreTests/MundaneTimespineTests.swift"
+      - "native/OrboLab/OrboLabApp.swift"
+
+permissions:
+  contents: read
+
+jobs:
+  repository-substrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Verify committed P22 substrate directly
+        run: python3 tools/pass5/verify_p22_substrate.py
+
+  native-proof:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Run accumulated OrboCore tests on Apple Swift
+        run: swift test --package-path native/OrboCore
+
+      - name: Build OrboCore on Apple Swift
+        run: swift build --package-path native/OrboCore
