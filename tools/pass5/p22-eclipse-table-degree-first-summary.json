@@ -1,0 +1,26 @@
+{
+  "endJDUTExclusive" : 2475819.1417904524,
+  "executionEphemerisMode" : "Swiss Ephemeris Moshier mode",
+  "firstChronologicalPhaseUTC" : "1822-08-03T00:23:08Z",
+  "lastChronologicalPhaseUTC" : "2066-01-11T15:07:50Z",
+  "lunar" : 572,
+  "lunarCelestialLaw" : "Moon opposite Sun",
+  "primaryOrientation" : "eclipse degree at exact syzygy",
+  "rows" : 1133,
+  "secondaryBinding" : "civic UT \/ Julian Day",
+  "solar" : 561,
+  "solarCelestialLaw" : "Sun conjunct Moon",
+  "sort" : "eclipse_degree ascending, then phase_jd_ut ascending",
+  "span" : "P22 Pluto Zeitgeist",
+  "startJDUT" : 2386637.079399706,
+  "swissVersion" : "2.10.03",
+  "typeCounts" : {
+    "lunar.partial" : 178,
+    "lunar.penumbral" : 205,
+    "lunar.total" : 189,
+    "solar.annular" : 175,
+    "solar.hybrid" : 28,
+    "solar.partial" : 195,
+    "solar.total" : 163
+  }
+}
