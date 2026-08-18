@@ -189,14 +189,14 @@ extension Pollux {
             )
         }
 
-        let outcomeA = celestialCellOutcome(
+        let outcomeA = exactCelestialOutcome(
             body: address.bodyA,
             expectedMicrodegrees: address.bodyAMicrodegrees,
             observedDegrees: stateA.celestialTimeDegrees,
             civicOffsetSeconds: question.handoff.civicOffsetSeconds,
             storage: storage
         )
-        let outcomeB = celestialCellOutcome(
+        let outcomeB = exactCelestialOutcome(
             body: address.bodyB,
             expectedMicrodegrees: address.bodyBMicrodegrees,
             observedDegrees: stateB.celestialTimeDegrees,
@@ -250,14 +250,14 @@ extension Pollux {
             )
         }
 
-        let sunOutcome = celestialCellOutcome(
+        let sunOutcome = exactCelestialOutcome(
             body: .sun,
             expectedMicrodegrees: sunExpected,
             observedDegrees: sun.celestialTimeDegrees,
             civicOffsetSeconds: question.handoff.civicOffsetSeconds,
             storage: storage
         )
-        let moonOutcome = celestialCellOutcome(
+        let moonOutcome = exactCelestialOutcome(
             body: .moon,
             expectedMicrodegrees: moonExpected,
             observedDegrees: moon.celestialTimeDegrees,
@@ -307,7 +307,12 @@ extension Pollux {
         return UInt16(Int(floor(normalized)) % 360)
     }
 
-    private func celestialCellOutcome(
+    /// Exact relationship/eclipses carry an exact celestial coordinate, not merely a marker cell.
+    /// If Reader lands in the adjacent lattice cell at the same stored second, admit quantization
+    /// only when linear travel between the stored lattice crossings places that exact coordinate
+    /// in the same rounded civic second. This prevents a distant exact coordinate from borrowing
+    /// a boundary crossing as false evidence.
+    private func exactCelestialOutcome(
         body: MundaneBody,
         expectedMicrodegrees: UInt32,
         observedDegrees: Double,
@@ -316,19 +321,18 @@ extension Pollux {
     ) -> DioscuriInvariantOutcome {
         guard let stored = storage.bodies.first(where: { $0.body == body }) else { return .divergence }
         let ticks = stored.ticksPerDegree
-        let expectedCell = Int(
-            (UInt64(expectedMicrodegrees) * UInt64(ticks))
-                / MundaneTimespineStorageFormat.microdegreesPerDegree
-        ) % (360 * ticks)
-        let observedMicro = MundaneTimespineStorageImage.microdegrees(observedDegrees)
-        let observedCell = Int(
-            (UInt64(observedMicro) * UInt64(ticks))
-                / MundaneTimespineStorageFormat.microdegreesPerDegree
-        ) % (360 * ticks)
+        let circle = 360 * ticks
+        let expectedCoordinate = Double(expectedMicrodegrees)
+            * Double(ticks)
+            / Double(MundaneTimespineStorageFormat.microdegreesPerDegree)
+        let observedCoordinate = normalizedDegrees(observedDegrees) * Double(ticks)
+        let expectedCell = Int(floor(expectedCoordinate)) % circle
+        let observedCell = Int(floor(observedCoordinate)) % circle
 
         if expectedCell == observedCell { return .resonance }
-        if isQuantizedTickTransition(
+        if isExactQuantizedTickTransition(
             storedBody: stored,
+            expectedCoordinate: expectedCoordinate,
             expectedCell: expectedCell,
             observedCell: observedCell,
             civicOffsetSeconds: civicOffsetSeconds
@@ -357,8 +361,9 @@ extension Pollux {
         }
     }
 
-    private func isQuantizedTickTransition(
+    private func isExactQuantizedTickTransition(
         storedBody: MundaneTimespineStoredBody,
+        expectedCoordinate: Double,
         expectedCell: Int,
         observedCell: Int,
         civicOffsetSeconds: Int64
@@ -369,9 +374,104 @@ extension Pollux {
         guard forward == 1 || backward == 1 else { return false }
 
         let boundaryTick = forward == 1 ? observedCell : expectedCell
-        return storedBody.occurrences.contains {
+        guard let boundaryIndex = storedBody.occurrences.firstIndex(where: {
             $0.celestialTick == boundaryTick && $0.civicOffsetSeconds == civicOffsetSeconds
+        }) else { return false }
+
+        let boundary = storedBody.occurrences[boundaryIndex]
+        let direction = boundary.sequenceDirection
+        let boundaryCoordinate = Double(boundaryTick)
+        let distanceBefore = motionDistance(
+            from: expectedCoordinate,
+            to: boundaryCoordinate,
+            direction: direction,
+            circle: Double(circle)
+        )
+        let distanceAfter = motionDistance(
+            from: boundaryCoordinate,
+            to: expectedCoordinate,
+            direction: direction,
+            circle: Double(circle)
+        )
+        let epsilon = 1e-12
+
+        if distanceBefore <= 1 + epsilon,
+           let previous = adjacentOccurrence(
+               to: boundary,
+               before: true,
+               in: storedBody,
+               circle: circle
+           ) {
+            let span = Double(boundary.civicOffsetSeconds - previous.civicOffsetSeconds)
+            guard span > 0 else { return false }
+            let estimatedOffset = Double(boundary.civicOffsetSeconds) - distanceBefore * span
+            return Int64(estimatedOffset.rounded()) == civicOffsetSeconds
         }
+
+        if distanceAfter <= 1 + epsilon,
+           let next = adjacentOccurrence(
+               to: boundary,
+               before: false,
+               in: storedBody,
+               circle: circle
+           ) {
+            let span = Double(next.civicOffsetSeconds - boundary.civicOffsetSeconds)
+            guard span > 0 else { return false }
+            let estimatedOffset = Double(boundary.civicOffsetSeconds) + distanceAfter * span
+            return Int64(estimatedOffset.rounded()) == civicOffsetSeconds
+        }
+
+        return false
+    }
+
+    private func adjacentOccurrence(
+        to boundary: MundaneTimespineStoredOccurrence,
+        before: Bool,
+        in storedBody: MundaneTimespineStoredBody,
+        circle: Int
+    ) -> MundaneTimespineStoredOccurrence? {
+        let step = boundary.sequenceDirection == .increasing ? 1 : -1
+        let targetTick = ((boundary.celestialTick + (before ? -step : step)) % circle + circle) % circle
+
+        if before {
+            return storedBody.occurrences
+                .filter {
+                    $0.sequenceDirection == boundary.sequenceDirection
+                        && $0.celestialTick == targetTick
+                        && $0.civicOffsetSeconds < boundary.civicOffsetSeconds
+                }
+                .max { $0.civicOffsetSeconds < $1.civicOffsetSeconds }
+        }
+
+        return storedBody.occurrences
+            .filter {
+                $0.sequenceDirection == boundary.sequenceDirection
+                    && $0.celestialTick == targetTick
+                    && $0.civicOffsetSeconds > boundary.civicOffsetSeconds
+            }
+            .min { $0.civicOffsetSeconds < $1.civicOffsetSeconds }
+    }
+
+    private func motionDistance(
+        from start: Double,
+        to end: Double,
+        direction: MundaneCelestialSequenceDirection,
+        circle: Double
+    ) -> Double {
+        let raw: Double
+        switch direction {
+        case .increasing:
+            raw = end - start
+        case .decreasing:
+            raw = start - end
+        }
+        let result = raw.truncatingRemainder(dividingBy: circle)
+        return result >= 0 ? result : result + circle
+    }
+
+    private func normalizedDegrees(_ value: Double) -> Double {
+        let result = value.truncatingRemainder(dividingBy: 360)
+        return result >= 0 ? result : result + 360
     }
 
     private func expectedBodyBMicrodegrees(
