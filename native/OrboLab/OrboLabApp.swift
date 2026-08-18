@@ -205,13 +205,33 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("FORGE")
-                readout("generic owner", "MundaneTimespineForge")
-                readout("manufacturer", "native Swift")
+                readout("role", "generic apparatus")
+                readout("owner", "MundaneTimespineForge")
+                readout("language", "native Swift")
                 readout("deep source", "Ephemeris -> Forge only")
                 readout("P22 recipe", "MundaneTimespineP22ForgeRecipe")
                 readout("P22 boundary", "direct Pluto 0 Aries -> direct Pluto 0 Aries")
                 readout("law", "celestial occurrence <-> civic UT")
                 readout("runtime oracle", "no")
+
+                Divider()
+
+                sectionTitle("HEPHAESTUS")
+                readout("role", "Timespine manufacturer")
+                readout("owner", "OrboCore / Hephaestus")
+                readout("Forge", "generic apparatus")
+                readout("recipe contract", "native Swift")
+                readout("candidate", "immutable ORBOTS artifact")
+                readout("identity", Hephaestus.candidateIdentityAlgorithm)
+                readout("artifact family", MundaneTimespineStorageFormat.identifier)
+                readout("storage version", "\(MundaneTimespineStorageFormat.version)")
+                readout("law", Hephaestus.celestialTimeFirst ? "celestial-time-first" : "INVALID")
+                readout("mutation", "new bytes -> new identity")
+                readout("runtime role", Hephaestus.runtimeRole)
+                readout("P22 recipe", MundaneTimespineP22ForgeRecipe.recipeIdentifier)
+                readout("P22 recipe ver", "\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
+                readout("P22 candidate", "awaiting full assembly")
+                readout("Dioscuri", "not built yet")
 
                 Divider()
 
@@ -254,7 +274,7 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("TIMESPINE STORAGE / READER")
-                readout("artifact family", "ORBOTS01")
+                readout("artifact family", MundaneTimespineStorageFormat.identifier)
                 readout("storage version", "\(MundaneTimespineStorageFormat.version)")
                 readout("storage law", MundaneTimespineStorageFormat.celestialTimeFirst ? "celestial-time-first" : "INVALID")
                 readout("exact degrees", "integer microdegrees")
@@ -265,7 +285,7 @@ private struct FoundationLabView: View {
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
                 readout("shipping P22", "not installed yet")
-                readout("Resonator", "not built yet")
+                readout("Dioscuri", "not built yet")
                 readout("proof authority", "OrboCoreTests")
 
                 Divider()
