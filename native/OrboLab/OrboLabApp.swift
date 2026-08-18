@@ -231,7 +231,24 @@ private struct FoundationLabView: View {
                 readout("P22 recipe", MundaneTimespineP22ForgeRecipe.recipeIdentifier)
                 readout("P22 recipe ver", "\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
                 readout("P22 candidate", "awaiting full assembly")
-                readout("Dioscuri", "not built yet")
+                readout("Dioscuri", "Pollux built / Castor pending")
+
+                Divider()
+
+                sectionTitle("POLLUX / DIOSCURI I")
+                readout("role", Pollux.role)
+                readout("nature", Pollux.nature)
+                readout("order", Pollux.order)
+                readout("input", "Hephaestus candidate")
+                readout("axis", Pollux.axis)
+                readout("identity", Pollux.identityLaw)
+                readout("ordering", Pollux.orderingLaw)
+                readout("Reader", Pollux.readerRole)
+                readout("ephemeris", Pollux.ephemerisRole)
+                readout("civic time", Pollux.civicTimeRole)
+                readout("ambiguity", Pollux.ambiguityPolicy)
+                readout("Castor", "not built yet")
+                readout("Dioscuri", "incomplete")
 
                 Divider()
 
@@ -285,7 +302,7 @@ private struct FoundationLabView: View {
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
                 readout("shipping P22", "not installed yet")
-                readout("Dioscuri", "not built yet")
+                readout("Dioscuri", "Pollux built / Castor pending")
                 readout("proof authority", "OrboCoreTests")
 
                 Divider()
