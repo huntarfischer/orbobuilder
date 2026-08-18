@@ -103,7 +103,10 @@ final class MundaneTimespineForgeTests: XCTestCase {
         )
         XCTAssertTrue(plan.verifiesConstructionRecordCounts)
         XCTAssertTrue(plan.verifiesMarkerUniqueness)
-        XCTAssertFalse(MundaneTimespineP22ForgeRecipe.astronomicalSource.contains("DE441"))
+        XCTAssertEqual(plan.astronomicalSource, MundaneTimespineP22ForgeRecipe.astronomicalSource)
+        XCTAssertEqual(plan.astronomicalSourceVersion, "test")
+        XCTAssertTrue(MundaneTimespineP22ForgeRecipe.astronomicalSource.contains("DE441"))
+        XCTAssertEqual(MundaneTimespineP22ForgeRecipe.canonicalAstronomicalSourceVersion, "2.10.03")
         XCTAssertEqual(AstroDNA.codec, 4)
     }
 
@@ -114,6 +117,8 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertEqual(MundaneTimespineP22ForgeRecipe.recipeVersion, 1)
         XCTAssertEqual(contract.bodyCount, 11)
         XCTAssertEqual(contract.bodyOccurrenceCount, 1_811_967)
+        XCTAssertEqual(contract.stationCount, 17_535)
+        XCTAssertEqual(contract.retrogradePassageCount, 8_770)
         XCTAssertEqual(contract.relationshipCount, 770_298)
         XCTAssertEqual(contract.eclipseCount, 1_133)
     }
