@@ -1,5 +1,25 @@
 import Foundation
 
+public enum DioscuriCertificationPhase: String, CaseIterable, Sendable {
+    case bodyOccurrence = "body-occurrence"
+    case motionTopology = "motion-topology"
+    case station
+    case exactRelationship = "exact-relationship"
+    case eclipse
+}
+
+public struct DioscuriCertificationProgress: Hashable, Sendable {
+    public let phase: DioscuriCertificationPhase
+    public let completed: Int
+    public let total: Int
+
+    public init(phase: DioscuriCertificationPhase, completed: Int, total: Int) {
+        self.phase = phase
+        self.completed = completed
+        self.total = total
+    }
+}
+
 /// Dual-resonator integrity gate for one immutable Hephaestus Timespine candidate.
 ///
 /// Pollux always originates the challenge in celestial time. Castor receives only the civic
@@ -19,6 +39,7 @@ public struct Dioscuri: Sendable {
     public static let divergencePolicy = "fail closed"
     public static let verdictTarget = "Hephaestus"
     public static let sealAuthority = "Hephaestus"
+    public static let exhaustiveExecutionLaw = "streamed / bounded working set"
 
     public let candidateSHA256: String
 
@@ -52,49 +73,89 @@ public struct Dioscuri: Sendable {
         return DioscuriStrikeReport(first: first, second: second, divergences: divergences)
     }
 
-    /// Exhaustive celestial-first certification of the scopes implemented by Dioscuri v1.
-    /// Certification continues after a divergence so Hephaestus receives the full wound map.
-    public func certify() throws -> DioscuriVerdict {
+    /// Exhaustive celestial-first certification of the scopes implemented by the current
+    /// Timespine resonance dialect. Large scopes stream their questions instead of creating a
+    /// second full P22-sized question array. Certification continues after divergence so
+    /// Hephaestus receives the complete wound map.
+    public func certify(
+        progress: ((DioscuriCertificationProgress) -> Void)? = nil
+    ) throws -> DioscuriVerdict {
         var accumulator = TallyAccumulator()
         var divergences: [DioscuriDivergence] = []
 
+        let bodyTotal = pollux.questionCount
+        emit(progress, phase: .bodyOccurrence, completed: 0, total: bodyTotal)
+        var bodyCompleted = 0
         var bodyCursor = pollux.makeQuestionCursor()
         while let question = bodyCursor.next() {
             let report = try strike(question)
             accumulator.record(report.first.checks)
             divergences.append(contentsOf: report.divergences)
+            bodyCompleted += 1
+            emitPeriodic(progress, phase: .bodyOccurrence, completed: bodyCompleted, total: bodyTotal)
         }
 
-        for question in pollux.makeMotionTopologyQuestions(storage: storage) {
+        let motionTotal = pollux.motionTopologyQuestionCount(storage: storage)
+        emit(progress, phase: .motionTopology, completed: 0, total: motionTotal)
+        var motionCompleted = 0
+        var motionCursor = pollux.makeMotionTopologyCursor(storage: storage)
+        while let question = motionCursor.next() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer)
             let second = try secondStrikeIfNeeded(question: question, first: first)
             accumulator.record(first.checks)
-            if let second { divergences.append(contentsOf: divergenceEvidence(first: first, second: second)) }
+            if let second {
+                divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
+            }
+            motionCompleted += 1
+            emitPeriodic(progress, phase: .motionTopology, completed: motionCompleted, total: motionTotal)
         }
 
-        for question in try pollux.makeStationQuestions(storage: storage) {
+        let stationQuestions = try pollux.makeStationQuestions(storage: storage)
+        emit(progress, phase: .station, completed: 0, total: stationQuestions.count)
+        for (index, question) in stationQuestions.enumerated() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
             let second = try secondStrikeIfNeeded(question: question, first: first)
             accumulator.record(first.checks)
-            if let second { divergences.append(contentsOf: divergenceEvidence(first: first, second: second)) }
+            if let second {
+                divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
+            }
+            emitPeriodic(progress, phase: .station, completed: index + 1, total: stationQuestions.count)
         }
 
-        for question in try pollux.makeRelationshipQuestions(storage: storage) {
+        let relationshipTotal = storage.relationships.count
+        emit(progress, phase: .exactRelationship, completed: 0, total: relationshipTotal)
+        var relationshipCompleted = 0
+        var relationshipCursor = pollux.makeRelationshipQuestionCursor(storage: storage)
+        while let question = try relationshipCursor.next() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
             let second = try secondStrikeIfNeeded(question: question, first: first)
             accumulator.record(first.checks)
-            if let second { divergences.append(contentsOf: divergenceEvidence(first: first, second: second)) }
+            if let second {
+                divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
+            }
+            relationshipCompleted += 1
+            emitPeriodic(
+                progress,
+                phase: .exactRelationship,
+                completed: relationshipCompleted,
+                total: relationshipTotal
+            )
         }
 
-        for question in try pollux.makeEclipseQuestions(storage: storage) {
+        let eclipseQuestions = try pollux.makeEclipseQuestions(storage: storage)
+        emit(progress, phase: .eclipse, completed: 0, total: eclipseQuestions.count)
+        for (index, question) in eclipseQuestions.enumerated() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
             let second = try secondStrikeIfNeeded(question: question, first: first)
             accumulator.record(first.checks)
-            if let second { divergences.append(contentsOf: divergenceEvidence(first: first, second: second)) }
+            if let second {
+                divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
+            }
+            emitPeriodic(progress, phase: .eclipse, completed: index + 1, total: eclipseQuestions.count)
         }
 
         let tallies = accumulator.finalized()
@@ -124,14 +185,16 @@ public struct Dioscuri: Sendable {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        let freshQuestions = freshPollux.makeMotionTopologyQuestions(storage: storage)
-        guard let freshQuestion = freshQuestions.first(where: { $0.address == question.address }) else {
-            return nondeterministicFallback(first)
+        var cursor = freshPollux.makeMotionTopologyCursor(storage: storage)
+        while let freshQuestion = cursor.next() {
+            if freshQuestion.address == question.address {
+                return freshPollux.confirm(
+                    freshQuestion,
+                    answer: try freshCastor.answer(freshQuestion.handoff)
+                )
+            }
         }
-        return freshPollux.confirm(
-            freshQuestion,
-            answer: try freshCastor.answer(freshQuestion.handoff)
-        )
+        return nondeterministicFallback(first)
     }
 
     private func secondStrikeIfNeeded(
@@ -159,15 +222,17 @@ public struct Dioscuri: Sendable {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        let freshQuestions = try freshPollux.makeRelationshipQuestions(storage: storage)
-        guard let freshQuestion = freshQuestions.first(where: { $0.address == question.address }) else {
-            return nondeterministicFallback(first)
+        var cursor = freshPollux.makeRelationshipQuestionCursor(storage: storage)
+        while let freshQuestion = try cursor.next() {
+            if freshQuestion.address == question.address {
+                return freshPollux.confirm(
+                    freshQuestion,
+                    answer: try freshCastor.answer(freshQuestion.handoff),
+                    storage: storage
+                )
+            }
         }
-        return freshPollux.confirm(
-            freshQuestion,
-            answer: try freshCastor.answer(freshQuestion.handoff),
-            storage: storage
-        )
+        return nondeterministicFallback(first)
     }
 
     private func secondStrikeIfNeeded(
@@ -186,6 +251,30 @@ public struct Dioscuri: Sendable {
             answer: try freshCastor.answer(freshQuestion.handoff),
             storage: storage
         )
+    }
+
+    private func emitPeriodic(
+        _ progress: ((DioscuriCertificationProgress) -> Void)?,
+        phase: DioscuriCertificationPhase,
+        completed: Int,
+        total: Int
+    ) {
+        if completed == total || completed % 10_000 == 0 {
+            emit(progress, phase: phase, completed: completed, total: total)
+        }
+    }
+
+    private func emit(
+        _ progress: ((DioscuriCertificationProgress) -> Void)?,
+        phase: DioscuriCertificationPhase,
+        completed: Int,
+        total: Int
+    ) {
+        progress?(DioscuriCertificationProgress(
+            phase: phase,
+            completed: completed,
+            total: total
+        ))
     }
 
     private func nondeterministicFallback(_ first: PolluxConfirmation) -> PolluxConfirmation {
