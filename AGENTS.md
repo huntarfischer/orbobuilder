@@ -6,6 +6,46 @@ Read this before any native write.
 
 The governing native plan remains `specs/Orbo 1.0 Native Construction Plan.md`. This file makes the user's non-negotiable construction constraints explicit so they do not depend on conversational memory.
 
+## 0. Celestial time comes first
+
+**Orbo works in celestial time first. This is the first priority of native construction.**
+
+Do not begin by organizing a temporal object around civil clocks, timestamps, Julian Day, storage convenience, or the shape of an external ephemeris API when the object has a celestial coordinate.
+
+For a body:
+
+```text
+planetary celestial time = that body's zodiacal position
+planetary celestial time <-> civic UT occurrence
+```
+
+The zodiacal degree is the primary temporal orientation. Civic UT is the shared coordinate that identifies which occurrence of that repeating celestial time happened in civil chronology.
+
+```text
+CELESTIAL TIME                 CIVIC BINDING
+body / event zodiacal degree <-> UT / Julian Day occurrence
+```
+
+UT is not celestial time.
+
+At one civic instant, all body-specific celestial clocks are simultaneous. The shared civic coordinate lets Orbo connect them, but it does not become the conceptual center of the system.
+
+This law applies beyond the eleven body tables. **Any universal celestial event with a meaningful zodiacal degree must be oriented by that celestial coordinate first.**
+
+For eclipse tables specifically:
+
+```text
+eclipse degree
+    = primary table orientation
+
+civic UT / Julian Day
+    = occurrence identity and chronological binding
+```
+
+Do not design the eclipse table as a timestamp list with a degree attached afterward. The degree is how the eclipse is situated in celestial time; the civic time tells Orbo which occurrence it is.
+
+When a native storage or indexing design conflicts with this priority, the design must change rather than demoting celestial time to metadata.
+
 ## 1. Native construction is Swift
 
 Production native Orbo is built in Swift.
@@ -141,20 +181,21 @@ agent/timespine-celestial-time-build
 Before saying a pass is complete, answer all of these:
 
 ```text
-Swift implementation present?              YES / NO
-Correct native owner preserved?             YES / NO
-New/changed XCTest present?                  YES / NO
-Component tests green?                       YES / NO
-Entire accumulated Xcode suite green?        YES / NO
-Zero failures?                               YES / NO
-OrboLab live readout checked, if applicable? YES / NO
-Affected native build checked?               YES / NO
-Native Port Manifest updated?                YES / NO
-Dated gate record updated/created?           YES / NO
-Active pass specification updated?           YES / NO
-Pending work stated explicitly?              YES / NO
-Any deletion performed?                      MUST BE NO unless user explicitly authorized it
-Any non-Swift native dependency introduced?  MUST BE NO unless user explicitly authorized it
+Celestial-time-first law preserved?          YES / NO
+Swift implementation present?                YES / NO
+Correct native owner preserved?               YES / NO
+New/changed XCTest present?                    YES / NO
+Component tests green?                         YES / NO
+Entire accumulated Xcode suite green?          YES / NO
+Zero failures?                                 YES / NO
+OrboLab live readout checked, if applicable?   YES / NO
+Affected native build checked?                 YES / NO
+Native Port Manifest updated?                  YES / NO
+Dated gate record updated/created?             YES / NO
+Active pass specification updated?             YES / NO
+Pending work stated explicitly?                YES / NO
+Any deletion performed?                        MUST BE NO unless user explicitly authorized it
+Any non-Swift native dependency introduced?    MUST BE NO unless user explicitly authorized it
 ```
 
 If any required answer is NO, the pass remains open.
