@@ -6,6 +6,9 @@ public enum PolluxError: Error, Equatable, CustomStringConvertible {
     case candidateContractMismatch
     case markerBodyMissing(focal: MundaneBody, marker: MundaneBody)
     case ambiguousCelestialIdentity(body: MundaneBody, celestialTick: Int)
+    case ambiguousStationIdentity(body: MundaneBody, celestialMicrodegrees: UInt32)
+    case ambiguousRelationshipIdentity
+    case ambiguousEclipseIdentity
     case celestialAddressShapeMismatch(body: MundaneBody)
     case celestialAddressNotFound(body: MundaneBody, celestialTick: Int)
 
@@ -21,6 +24,12 @@ public enum PolluxError: Error, Equatable, CustomStringConvertible {
             return "Pollux cannot address \(focal.displayName): marker body \(marker.displayName) is absent from the candidate."
         case let .ambiguousCelestialIdentity(body, celestialTick):
             return "Pollux found a repeated celestial identity for \(body.displayName) at tick \(celestialTick)."
+        case let .ambiguousStationIdentity(body, celestialMicrodegrees):
+            return "Pollux found a repeated station identity for \(body.displayName) at \(celestialMicrodegrees) microdegrees."
+        case .ambiguousRelationshipIdentity:
+            return "Pollux found a repeated exact-relationship celestial identity."
+        case .ambiguousEclipseIdentity:
+            return "Pollux found a repeated eclipse celestial identity."
         case let .celestialAddressShapeMismatch(body):
             return "Pollux celestial address shape does not match the stored tract for \(body.displayName)."
         case let .celestialAddressNotFound(body, celestialTick):
