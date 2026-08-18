@@ -25,6 +25,18 @@ jobs:
           ref: agent/timespine-celestial-time-build
           fetch-depth: 0
 
+      - name: Record eclipse Forge start
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tools/pass5/p22-results
+          printf '{\n  "workflowStatus": "started",\n  "sourceCommit": "%s"\n}\n' "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
+          git config user.name "Orbo Forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git add tools/pass5/p22-results/eclipse-workflow-status.json
+          git commit -m "Record P22 eclipse Forge start [skip ci]"
+          git push origin HEAD:agent/timespine-celestial-time-build
+
       - name: Verify Orbo's committed Swiss ephemeris files
         shell: bash
         run: |
@@ -67,6 +79,7 @@ jobs:
           grep -q 'Swiss Ephemeris DE441 repository files' tools/pass5/p22-data/eclipse-table-summary.json
 
       - name: Preserve generated eclipse artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: p22-eclipse-table
@@ -75,15 +88,31 @@ jobs:
             tools/pass5/p22-data/eclipse-table-summary.json
 
       - name: Commit manufactured table to construction branch
+        if: success()
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
+          git pull --rebase origin agent/timespine-celestial-time-build
           git add tools/pass5/p22-data/eclipse-table.csv tools/pass5/p22-data/eclipse-table-summary.json
-          if git diff --cached --quiet; then
-            echo "Eclipse table is already identical to the committed artifact."
-            exit 0
+          if ! git diff --cached --quiet; then
+            git commit -m "Forge P22 eclipse table [skip ci]"
+            git push origin HEAD:agent/timespine-celestial-time-build
           fi
-          git commit -m "Forge P22 eclipse table [skip ci]"
-          git push origin HEAD:agent/timespine-celestial-time-build
+
+      - name: Record eclipse Forge result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin agent/timespine-celestial-time-build
+          mkdir -p tools/pass5/p22-results
+          printf '{\n  "workflowStatus": "%s",\n  "sourceCommit": "%s"\n}\n' "${{ job.status }}" "$GITHUB_SHA" > tools/pass5/p22-results/eclipse-workflow-status.json
+          git config user.name "Orbo Forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git add tools/pass5/p22-results/eclipse-workflow-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record P22 eclipse Forge result [skip ci]"
+            git push origin HEAD:agent/timespine-celestial-time-build
+          fi
