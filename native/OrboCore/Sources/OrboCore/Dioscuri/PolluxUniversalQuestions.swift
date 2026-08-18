@@ -39,6 +39,48 @@ struct PolluxEclipseQuestion: Hashable, Sendable {
     let handoff: PolluxCivicHandoff
 }
 
+/// Streaming relationship cursor. It retains only the celestial identity set required to reject
+/// ambiguity; it does not duplicate all 770k P22 questions in another array during certification.
+struct PolluxRelationshipQuestionCursor: Sendable {
+    private let candidateSHA256: String
+    private let supportedStart: JulianDay
+    private let relationships: [MundaneTimespineRelationshipEvent]
+    private var position = 0
+    private var seen = Set<PolluxRelationshipAddress>()
+
+    init(candidateSHA256: String, storage: MundaneTimespineStorageImage) {
+        self.candidateSHA256 = candidateSHA256
+        self.supportedStart = storage.supportedStart
+        self.relationships = storage.relationships
+        self.seen.reserveCapacity(storage.relationships.count)
+    }
+
+    mutating func next() throws -> PolluxRelationshipQuestion? {
+        guard position < relationships.count else { return nil }
+        let event = relationships[position]
+        position += 1
+        let address = PolluxRelationshipAddress(
+            bodyA: event.bodyA,
+            bodyB: event.bodyB,
+            mark: event.mark,
+            orientation: event.orientation,
+            bodyAMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyACelestialTimeDegrees),
+            bodyBMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyBCelestialTimeDegrees)
+        )
+        guard seen.insert(address).inserted else {
+            throw PolluxError.ambiguousRelationshipIdentity
+        }
+        let offset = Int64(((event.julianDay.value - supportedStart.value) * 86_400).rounded())
+        return PolluxRelationshipQuestion(
+            address: address,
+            handoff: PolluxCivicHandoff(
+                candidateSHA256: candidateSHA256,
+                civicOffsetSeconds: offset
+            )
+        )
+    }
+}
+
 extension Pollux {
     func makeStationQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxStationQuestion] {
         var seen = Set<PolluxStationAddress>()
@@ -78,28 +120,20 @@ extension Pollux {
         }
     }
 
+    func makeRelationshipQuestionCursor(
+        storage: MundaneTimespineStorageImage
+    ) -> PolluxRelationshipQuestionCursor {
+        PolluxRelationshipQuestionCursor(candidateSHA256: candidateSHA256, storage: storage)
+    }
+
+    /// Retained for focused tests and second-strike reconstruction. Full certification consumes
+    /// the streaming cursor above instead of retaining a second copy of every relationship.
     func makeRelationshipQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxRelationshipQuestion] {
-        var seen = Set<PolluxRelationshipAddress>()
+        var cursor = makeRelationshipQuestionCursor(storage: storage)
         var result: [PolluxRelationshipQuestion] = []
         result.reserveCapacity(storage.relationships.count)
-
-        for event in storage.relationships {
-            let address = PolluxRelationshipAddress(
-                bodyA: event.bodyA,
-                bodyB: event.bodyB,
-                mark: event.mark,
-                orientation: event.orientation,
-                bodyAMicrodegrees: Self.microdegrees(event.bodyACelestialTimeDegrees),
-                bodyBMicrodegrees: Self.microdegrees(event.bodyBCelestialTimeDegrees)
-            )
-            guard seen.insert(address).inserted else {
-                throw PolluxError.ambiguousRelationshipIdentity
-            }
-            let offset = Int64(((event.julianDay.value - storage.supportedStart.value) * 86_400).rounded())
-            result.append(PolluxRelationshipQuestion(
-                address: address,
-                handoff: PolluxCivicHandoff(candidateSHA256: candidateSHA256, civicOffsetSeconds: offset)
-            ))
+        while let question = try cursor.next() {
+            result.append(question)
         }
 
         return result.sorted {
