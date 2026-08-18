@@ -7,7 +7,7 @@ import Foundation
 public struct TimespineCandidateIdentity: Hashable, Codable, Sendable, CustomStringConvertible {
     public let sha256: String
 
-    var description: String { sha256 }
+    public var description: String { sha256 }
 
     init(artifactData: Data) {
         self.sha256 = SHA256.hash(data: artifactData)
