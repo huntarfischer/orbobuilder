@@ -15,7 +15,7 @@ public enum HephaestusQuarantineReason: String, Codable, Hashable, Sendable {
 /// Deterministic sidecar proving Hephaestus completed one unchanged candidate.
 /// The seal never alters the artifact bytes the Dioscuri resonated.
 public struct HephaestusSeal: Hashable, Codable, Sendable {
-    public static let contractVersion: UInt16 = 1
+    public static let currentContractVersion: UInt16 = 1
     public static let identityAlgorithm = "SHA-256"
 
     public let contractVersion: UInt16
@@ -29,7 +29,7 @@ public struct HephaestusSeal: Hashable, Codable, Sendable {
     public let sealSHA256: String
 
     init(candidate: TimespineCandidate, testimony: DioscuriTestimony) {
-        self.contractVersion = Self.contractVersion
+        self.contractVersion = Self.currentContractVersion
         self.candidateSHA256 = candidate.identity.sha256
         self.artifactByteCount = candidate.artifactData.count
         self.recipeIdentifier = candidate.forgeRecord.recipeIdentifier
@@ -58,7 +58,7 @@ public struct HephaestusSeal: Hashable, Codable, Sendable {
         dioscuriEvidenceSHA256: String
     ) -> String {
         var writer = HephaestusSealWriter()
-        writer.u16(contractVersion)
+        writer.u16(currentContractVersion)
         writer.string(candidateSHA256)
         writer.i64(Int64(artifactByteCount))
         writer.string(recipeIdentifier)
