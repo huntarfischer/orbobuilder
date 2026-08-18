@@ -1,0 +1,30 @@
+name: Pass 5 Native Forge
+
+on:
+  push:
+    branches:
+      - agent/timespine-celestial-time-build
+  workflow_dispatch:
+
+jobs:
+  native-forge-proof:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OrboCore XCTest
+        run: swift test --package-path native/OrboCore
+
+      - name: OrboCore build
+        run: swift build --package-path native/OrboCore
+
+      - name: OrboLab Xcode build
+        run: |
+          xcodebuild \
+            -project native/Orbo.xcodeproj \
+            -scheme OrboLab \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
