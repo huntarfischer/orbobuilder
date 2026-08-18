@@ -1,0 +1,3 @@
+# Native P22 completion workspace. Candidate/seal output is preserved locally until
+# the sealed artifact is intentionally admitted into OrboCore shipping resources.
+p22-build/
