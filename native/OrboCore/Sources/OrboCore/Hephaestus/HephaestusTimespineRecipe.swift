@@ -5,21 +5,29 @@ import Foundation
 public struct HephaestusTimespineArtifactContract: Hashable, Sendable {
     public let bodyCount: Int
     public let bodyOccurrenceCount: Int
+    public let stationCount: Int?
+    public let retrogradePassageCount: Int?
     public let relationshipCount: Int
     public let eclipseCount: Int
 
     public init?(
         bodyCount: Int,
         bodyOccurrenceCount: Int,
+        stationCount: Int? = nil,
+        retrogradePassageCount: Int? = nil,
         relationshipCount: Int,
         eclipseCount: Int
     ) {
         guard bodyCount > 0,
               bodyOccurrenceCount > 0,
+              stationCount.map({ $0 >= 0 }) ?? true,
+              retrogradePassageCount.map({ $0 >= 0 }) ?? true,
               relationshipCount >= 0,
               eclipseCount >= 0 else { return nil }
         self.bodyCount = bodyCount
         self.bodyOccurrenceCount = bodyOccurrenceCount
+        self.stationCount = stationCount
+        self.retrogradePassageCount = retrogradePassageCount
         self.relationshipCount = relationshipCount
         self.eclipseCount = eclipseCount
     }
