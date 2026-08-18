@@ -342,7 +342,7 @@ final class MundaneTimespineForgeTests: XCTestCase {
             XCTAssertEqual(certificate.scopeTallies.count, DioscuriScope.allCases.count)
             XCTAssertEqual(tally(.bodyOccurrence, in: certificate.scopeTallies)?.questions, 12)
             XCTAssertEqual(tally(.marker, in: certificate.scopeTallies)?.questions, 3)
-            XCTAssertEqual(tally(.motion, in: certificate.scopeTallies)?.questions, 13)
+            XCTAssertEqual(tally(.motion, in: certificate.scopeTallies)?.questions, 21)
             XCTAssertEqual(tally(.exactRelationship, in: certificate.scopeTallies)?.questions, 1)
             XCTAssertEqual(tally(.eclipse, in: certificate.scopeTallies)?.questions, 1)
             XCTAssertEqual(certificate.quantizedCoincidences, 0)
@@ -387,6 +387,66 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertEqual(divergence.kind, .marker)
         XCTAssertTrue(divergence.deterministic)
         XCTAssertEqual(divergence.firstObserved, divergence.secondObserved)
+    }
+
+    func testDioscuriRejectsBrokenCelestialMotionTopology() throws {
+        let sun = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 12, civicOffsetSeconds: 1_000, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makeDioscuriCandidate(bodies: [sun])
+
+        switch try Dioscuri(candidate: candidate).certify() {
+        case .certificate:
+            XCTFail("skipped celestial lattice tick must not certify")
+        case let .rejection(report):
+            let divergence = try XCTUnwrap(report.divergences.first { $0.scope == .motion })
+            XCTAssertTrue(divergence.deterministic)
+            XCTAssertTrue(divergence.subject.contains("topology"))
+        }
+    }
+
+    func testDioscuriRejectsRelationshipWhoseCivicOccurrenceContradictsBodyTracts() throws {
+        let badRelationship = try cleanRelationship(offsetSeconds: 2_000)
+        let candidate = try makeDioscuriCandidate(
+            bodies: try cleanDioscuriBodies(),
+            relationships: [badRelationship]
+        )
+
+        switch try Dioscuri(candidate: candidate).certify() {
+        case .certificate:
+            XCTFail("relationship bound to the wrong civic occurrence must not certify")
+        case let .rejection(report):
+            XCTAssertNotNil(report.divergences.first { $0.scope == .exactRelationship })
+        }
+    }
+
+    func testDioscuriRejectsEclipseDegreeThatContradictsSunMoonTracts() throws {
+        let badEclipse = try XCTUnwrap(MundaneTimespineEclipseEvent(
+            kind: .solar,
+            type: .total,
+            eclipseDegree: 20,
+            julianDay: JulianDay(1_000 + 1_000.0 / 86_400)!,
+            centrality: "central"
+        ))
+        let candidate = try makeDioscuriCandidate(
+            bodies: try cleanDioscuriBodies(),
+            eclipses: [badEclipse]
+        )
+
+        switch try Dioscuri(candidate: candidate).certify() {
+        case .certificate:
+            XCTFail("eclipse degree contradicting the luminary tracts must not certify")
+        case let .rejection(report):
+            XCTAssertNotNil(report.divergences.first { $0.scope == .eclipse })
+        }
     }
 
     func testDioscuriRejectsRepeatedRelationshipCelestialIdentityRatherThanUsingCivicOrdinal() throws {
@@ -442,7 +502,7 @@ final class MundaneTimespineForgeTests: XCTestCase {
             occurrences: [
                 .init(celestialTick: 20, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: [10]),
                 .init(celestialTick: 21, civicOffsetSeconds: 500, sequenceDirection: .increasing, markerWholeDegrees: [10]),
-                .init(celestialTick: 19, civicOffsetSeconds: 1_500, sequenceDirection: .decreasing, markerWholeDegrees: [11]),
+                .init(celestialTick: 21, civicOffsetSeconds: 1_500, sequenceDirection: .decreasing, markerWholeDegrees: [11]),
             ],
             stations: [
                 .init(
