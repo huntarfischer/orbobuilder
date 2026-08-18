@@ -135,9 +135,13 @@ private struct OrboForgeTool {
             ephemerisDirectory: arguments.ephemerisDirectory
         )
 
+        let contract = MundaneTimespineP22ForgeRecipe.artifactContract
+
         print("ORBO FORGE")
-        print("manufacturer: native Swift")
+        print("manufacturing authority: Hephaestus")
+        print("apparatus: MundaneTimespineForge / native Swift")
         print("span: \(MundaneTimespineP22.spanName)")
+        print("recipe: \(MundaneTimespineP22ForgeRecipe.recipeIdentifier) v\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
         print("Swiss Ephemeris: \(reference.version)")
         print("body clocks: \(MundaneBody.canonicalOrder.count)")
         print("manufacturing law: celestial coordinate occurrence <-> civic UT")
@@ -150,6 +154,8 @@ private struct OrboForgeTool {
         print("forged occurrences: \(product.totalOccurrenceCount)")
         print("stations: \(product.totalStationCount)")
         print("retrograde passages: \(product.totalRetrogradePassageCount)")
-        print("status: P22 manufacture complete; final packed serialization remains a separate Pass 5 mating surface")
+        print("candidate requires relationships: \(contract.relationshipCount)")
+        print("candidate requires eclipses: \(contract.eclipseCount)")
+        print("status: body manufacture complete; Hephaestus will mint P22 only after full universal-event assembly")
     }
 }
