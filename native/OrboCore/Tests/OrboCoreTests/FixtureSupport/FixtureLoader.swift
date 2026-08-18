@@ -9,6 +9,8 @@ enum FixtureError: Error, Equatable {
     case missing(kind: FixtureKind, name: String, fileExtension: String)
 }
 
+private final class FixtureBundleToken {}
+
 enum FixtureLoader {
     static func data(
         named name: String,
@@ -17,7 +19,13 @@ enum FixtureLoader {
     ) throws -> Data {
         let subdirectory = "Fixtures/\(kind.rawValue)"
 
-        guard let url = Bundle.module.url(
+#if SWIFT_PACKAGE
+        let bundle = Bundle.module
+#else
+        let bundle = Bundle(for: FixtureBundleToken.self)
+#endif
+
+        guard let url = bundle.url(
             forResource: name,
             withExtension: fileExtension,
             subdirectory: subdirectory
