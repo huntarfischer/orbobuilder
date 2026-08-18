@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
 
+# Repository DE441 files are the ephemeris data source for this lane.
 jobs:
   forge-p22-eclipses:
     runs-on: macos-15
