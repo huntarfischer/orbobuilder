@@ -14,45 +14,115 @@ struct PolluxMotionTopologyQuestion: Hashable, Sendable {
     let handoff: PolluxCivicHandoff
 }
 
-extension Pollux {
-    func makeMotionTopologyQuestions(storage: MundaneTimespineStorageImage) -> [PolluxMotionTopologyQuestion] {
-        var questions: [PolluxMotionTopologyQuestion] = []
+/// Streaming adjacent-occurrence topology cursor. Full P22 contains nearly 1.8 million
+/// adjacency questions, so certification must not materialize them all at once. The cursor
+/// walks each stored tract once and advances through its station table monotonically.
+struct PolluxMotionTopologyCursor: Sendable {
+    private let candidateSHA256: String
+    private let bodies: [MundaneTimespineStoredBody]
+    private var bodyPosition = 0
+    private var occurrencePosition = 1
+    private var stationPosition = 0
 
-        for body in storage.bodies {
-            guard body.occurrences.count > 1 else { continue }
-            for index in 1..<body.occurrences.count {
-                let previous = body.occurrences[index - 1]
-                let current = body.occurrences[index]
-                let stations = body.stations
-                    .filter {
-                        $0.civicOffsetSeconds > previous.civicOffsetSeconds
-                            && $0.civicOffsetSeconds <= current.civicOffsetSeconds
-                    }
-                    .map {
-                        PolluxStationAddress(
-                            body: body.body,
-                            celestialMicrodegrees: $0.celestialMicrodegrees,
-                            motionAfter: $0.motionAfter
-                        )
-                    }
-                let address = PolluxMotionTopologyAddress(
-                    body: body.body,
-                    from: celestialAddress(storedBody: body, occurrence: previous),
-                    to: celestialAddress(storedBody: body, occurrence: current),
-                    fromDirection: previous.sequenceDirection,
-                    toDirection: current.sequenceDirection,
-                    stationsBetween: stations
-                )
-                questions.append(PolluxMotionTopologyQuestion(
-                    address: address,
-                    handoff: PolluxCivicHandoff(
-                        candidateSHA256: candidateSHA256,
-                        civicOffsetSeconds: current.civicOffsetSeconds
-                    )
-                ))
+    init(candidateSHA256: String, storage: MundaneTimespineStorageImage) {
+        self.candidateSHA256 = candidateSHA256
+        self.bodies = storage.bodies.sorted { $0.body.rawValue < $1.body.rawValue }
+    }
+
+    mutating func next() -> PolluxMotionTopologyQuestion? {
+        while bodyPosition < bodies.count {
+            let body = bodies[bodyPosition]
+            guard body.occurrences.count > 1 else {
+                advanceBody()
+                continue
             }
-        }
+            guard occurrencePosition < body.occurrences.count else {
+                advanceBody()
+                continue
+            }
 
+            let previous = body.occurrences[occurrencePosition - 1]
+            let current = body.occurrences[occurrencePosition]
+
+            while stationPosition < body.stations.count,
+                  body.stations[stationPosition].civicOffsetSeconds <= previous.civicOffsetSeconds {
+                stationPosition += 1
+            }
+
+            var stations: [PolluxStationAddress] = []
+            var scan = stationPosition
+            while scan < body.stations.count,
+                  body.stations[scan].civicOffsetSeconds <= current.civicOffsetSeconds {
+                let station = body.stations[scan]
+                stations.append(PolluxStationAddress(
+                    body: body.body,
+                    celestialMicrodegrees: station.celestialMicrodegrees,
+                    motionAfter: station.motionAfter
+                ))
+                scan += 1
+            }
+            stationPosition = scan
+            occurrencePosition += 1
+
+            let address = PolluxMotionTopologyAddress(
+                body: body.body,
+                from: Self.celestialAddress(storedBody: body, occurrence: previous),
+                to: Self.celestialAddress(storedBody: body, occurrence: current),
+                fromDirection: previous.sequenceDirection,
+                toDirection: current.sequenceDirection,
+                stationsBetween: stations
+            )
+            return PolluxMotionTopologyQuestion(
+                address: address,
+                handoff: PolluxCivicHandoff(
+                    candidateSHA256: candidateSHA256,
+                    civicOffsetSeconds: current.civicOffsetSeconds
+                )
+            )
+        }
+        return nil
+    }
+
+    private mutating func advanceBody() {
+        bodyPosition += 1
+        occurrencePosition = 1
+        stationPosition = 0
+    }
+
+    private static func celestialAddress(
+        storedBody: MundaneTimespineStoredBody,
+        occurrence: MundaneTimespineStoredOccurrence
+    ) -> PolluxCelestialAddress {
+        let markers = zip(storedBody.markerBodies, occurrence.markerWholeDegrees).map {
+            PolluxMarkerCell(body: $0.0, wholeDegree: $0.1)!
+        }
+        return PolluxCelestialAddress(
+            body: storedBody.body,
+            celestialTick: occurrence.celestialTick,
+            ticksPerDegree: storedBody.ticksPerDegree,
+            markerFingerprint: markers
+        )!
+    }
+}
+
+extension Pollux {
+    func makeMotionTopologyCursor(storage: MundaneTimespineStorageImage) -> PolluxMotionTopologyCursor {
+        PolluxMotionTopologyCursor(candidateSHA256: candidateSHA256, storage: storage)
+    }
+
+    func motionTopologyQuestionCount(storage: MundaneTimespineStorageImage) -> Int {
+        storage.bodies.reduce(0) { $0 + max(0, $1.occurrences.count - 1) }
+    }
+
+    /// Retained for focused tests and second-strike reconstruction. Production certification
+    /// consumes the streaming cursor above so full P22 does not allocate this entire array.
+    func makeMotionTopologyQuestions(storage: MundaneTimespineStorageImage) -> [PolluxMotionTopologyQuestion] {
+        var cursor = makeMotionTopologyCursor(storage: storage)
+        var questions: [PolluxMotionTopologyQuestion] = []
+        questions.reserveCapacity(motionTopologyQuestionCount(storage: storage))
+        while let question = cursor.next() {
+            questions.append(question)
+        }
         return questions.sorted {
             if $0.address.body.rawValue != $1.address.body.rawValue {
                 return $0.address.body.rawValue < $1.address.body.rawValue
@@ -114,21 +184,6 @@ extension Pollux {
             civicOffsetSeconds: question.handoff.civicOffsetSeconds,
             checks: [check]
         )
-    }
-
-    private func celestialAddress(
-        storedBody: MundaneTimespineStoredBody,
-        occurrence: MundaneTimespineStoredOccurrence
-    ) -> PolluxCelestialAddress {
-        let markers = zip(storedBody.markerBodies, occurrence.markerWholeDegrees).map {
-            PolluxMarkerCell(body: $0.0, wholeDegree: $0.1)!
-        }
-        return PolluxCelestialAddress(
-            body: storedBody.body,
-            celestialTick: occurrence.celestialTick,
-            ticksPerDegree: storedBody.ticksPerDegree,
-            markerFingerprint: markers
-        )!
     }
 
     private func markerKey(_ address: PolluxCelestialAddress) -> String {
