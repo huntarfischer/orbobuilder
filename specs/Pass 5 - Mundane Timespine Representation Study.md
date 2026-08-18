@@ -1,8 +1,12 @@
 # Pass 5: Mundane Timespine Representation Study
 
-**Status:** P22 eleven-body body substrate constructed and persisted. Native P22 contract, direct repository verifier, accumulated Swift proof, and OrboLab readout are being re-established against the corrected architecture. Major/minor aspect and eclipse tables remain intentionally outside this body-layer pass.
+**Status:** P22 eleven-body body substrate constructed and persisted. The corrected native Swift/Xcode body-substrate gate passed on 2026-08-17: 98 accumulated OrboCore XCTest passed with 0 failures and OrboLab displayed the live P22 contract. Eclipse and same-body relationship tables remain pending before final serialization and runtime-reader work.
 
 **Date:** 2026-08-17
+
+**Native construction contract:** `AGENTS.md`
+
+**Gate record:** `specs/gates/2026-08-17 Pass 5 P22 Body Substrate Gate.md`
 
 ---
 
@@ -83,9 +87,9 @@ The Timespine therefore stores celestial chronology as repeated body-specific ce
 
 ---
 
-# 4. P22 is the first Orbo 1.0 Timespine bound
+# 4. P22 is the first proven Orbo 1.0 Timespine span
 
-The first shipped construction span is the current Pluto Zeitgeist, P22.
+The first proven common construction span is the current Pluto Zeitgeist, P22.
 
 ```text
 P22 Pluto Zeitgeist
@@ -109,9 +113,11 @@ The supported interval is half-open:
 
 The 2066 Pluto 0 Aries boundary belongs to the next Zeitgeist and is not duplicated into P22.
 
-P22 is the common shipping span, not a claim that Pluto is the master celestial clock.
+P22 is the first proven common span, not a claim that Pluto is the master celestial clock and not a permanent size limit on Forge or the eventual Mundane Timespine.
 
 Other natural cycles occur inside or cross the Zeitgeist. Saturn Frames, Uranus Revolts, Neptune Waves, and all faster body cycles retain their own celestial-time behavior inside this common civic span.
+
+Forge must remain capable of manufacturing later spans or a larger final chronology without redesigning the organ.
 
 ---
 
@@ -331,7 +337,7 @@ OrboLab reads this live OrboCore contract so a pulled branch visibly reports the
 
 ---
 
-# 12. Retired Pass 5 representation
+# 12. Superseded Pass 5 representation
 
 An earlier Pass 5 implementation imposed a civic-time sampling model built from:
 
@@ -346,11 +352,15 @@ second-delta packed knot files
 edge/core sample-day profiles
 ```
 
-That representation is retired and has been removed from the corrected Pass 5 construction path.
+That representation is not part of the corrected Pass 5 construction path.
 
-Its implementation-specific Forge executable, knot codec, tests, fixture, and qualification workflow are not evidence for the P22 Timespine.
+Its knot codec, knot-specific tests, fixture, and qualification workflow are not evidence for the P22 Timespine.
 
-Useful general Orbo laws discovered around it survive only where independently justified, including:
+Forge itself remains a permanent native owner. A rejected Timespine manufacturing algorithm does not retire the Forge organ.
+
+Under the current construction contract, superseded material is preserved or quarantined rather than deleted unless the user explicitly authorizes deletion.
+
+Useful general Orbo laws discovered around the earlier work survive only where independently justified, including:
 
 ```text
 separate body ownership
@@ -366,7 +376,7 @@ no routine runtime Ephemeris access
 
 # 13. AstroDNA codec 4 is a separate contract
 
-Do not call the retired Timespine representation "codec 4."
+Do not call any Timespine representation "codec 4."
 
 In Orbo, **codec 4 refers to AstroDNA codec 4**, the canonical AstroDNA identity contract that uses the true/osculating North Node rather than the mean North Node.
 
@@ -384,44 +394,16 @@ The Mundane Timespine must ultimately satisfy AstroDNA codec 4. It does not shar
 
 # 14. Proof law
 
-The P22 body substrate has two proof layers.
-
-## Repository substrate proof
+The native Pass 5 proof authority is Swift/XCTest in the normal Xcode worksite.
 
 ```text
-tools/pass5/verify_p22_substrate.py
+native/Orbo.xcodeproj
+└── OrboCoreTests
 ```
-
-reads the committed artifact itself and verifies:
-
-```text
-P22 bounds
-11-body set
-per-body resolution
-per-body record count
-body-table schema
-strict civic ordering
-focal tick/degree agreement
-occurrence numbering
-sequence direction
-non-repeating marker keys
-marker range
-manifest file set
-compressed byte count
-SHA-256 identity
-station schema and count
-station direction turns
-user-facing station labels
-retrograde passage counts
-retrograde crossing counts
-retrograde crossings correspond to decreasing body-table occurrences
-```
-
-The verifier does not call Swiss Ephemeris. It verifies the shipped construction memory already committed to the repository.
-
-## Native proof
 
 `MundaneTimespineTests.swift` verifies the native P22 contract against the committed summary, marker audit, manifest, file sizes, and SHA-256 identities while the full OrboCore suite remains green.
+
+`MundaneTimespineForgeTests.swift` verifies the restored native Forge owner and the celestial-time manufacturing law.
 
 A specific guard keeps the unrelated canonical identity explicit:
 
@@ -430,6 +412,16 @@ AstroDNA.codec == 4
 North Node gene remains in canonical AstroDNA order
 ```
 
+Historical construction tooling remains preserved in the repository where useful for archaeology. In particular:
+
+```text
+tools/pass5/verify_p22_substrate.py
+```
+
+is retained as prior construction evidence only. It is **not** a native implementation dependency, verifier, acceptance gate, or required command. Do not use it to promote Pass 5 status.
+
+No JavaScript, HTML, or Python path may substitute for the native Swift/Xcode proof unless the user explicitly authorizes a separate prototype task.
+
 ---
 
 # 15. OrboLab
@@ -437,6 +429,7 @@ North Node gene remains in canonical AstroDNA order
 OrboLab exposes a plain live P22 readout from OrboCore:
 
 ```text
+Forge native owner and manufacturing law
 P22 span
 start / exclusive end
 11 bodies
@@ -450,36 +443,78 @@ per-body construction record count
 
 OrboLab is diagnostic readout, not proof authority.
 
+On 2026-08-17 the user launched OrboLab in the iPhone 17 Pro simulator and visibly confirmed the live P22 contract, including:
+
+```text
+P22 Pluto Zeitgeist
+1822-04-16T13:54:20.135Z
+2066-06-17T15:24:10.695Z exclusive
+11 bodies
+1,811,967 body records
+33-bit civic offset
+station / retrograde tables
+True North Node direct/retrograde terminology
+body resolution and marker rows
+```
+
+Result:
+
+```text
+OrboLab build/run/readout    PASS
+```
+
 ---
 
-# 16. Current completion gate
+# 16. P22 body-substrate gate: passed 2026-08-17
 
-The corrected P22 body-layer pass is complete only when:
+The corrected P22 body-layer gate was run from the normal `native/Orbo.xcodeproj` worksite.
 
-```text
-P22 repository substrate verifier              PASS
-native P22 contract tests                       PASS
-accumulated OrboCore tests                       PASS
-OrboCore build                                  PASS
-OrboLab builds and displays P22 contract         PASS on development Mac
-Native Port Manifest updated                     PASS
-```
-
-That closes only the body substrate.
-
-It does not yet seal the complete Mundane Timespine.
-
-Still intentionally ahead:
+Observed native proof:
 
 ```text
-final Swift storage serialization
-runtime bidirectional reader
-Resonator implementation
-exact minor aspect table
-eclipse table
-final artifact binding/version identity
-shipping-resource installation
-final astronomical conformance proof
+OrboCoreTests             98 tests
+failures                   0
+MundaneTimespineForgeTests 4 / 4 PASS
+MundaneTimespineTests      6 / 6 PASS
+OrboLab live readout       PASS
 ```
 
-Major/minor aspect and eclipse work attaches to this body substrate after the body-layer contract is proven.
+The complete evidence record is:
+
+```text
+specs/gates/2026-08-17 Pass 5 P22 Body Substrate Gate.md
+```
+
+This closes only the P22 body substrate and the first concrete native Forge manufacturing law.
+
+It does not seal the complete Mundane Timespine.
+
+---
+
+# 17. Remaining Pass 5 construction order
+
+The next work is not final packing yet.
+
+The universal temporal anatomy still needs its remaining admitted relationship/event tables before the final shipping representation is frozen.
+
+Current order:
+
+```text
+1. Eclipse table / eclipse index
+2. Same-body relationship tables: define and prove the admitted representation
+3. Remaining universal exact celestial relationship indexes
+4. Sand generic Forge so P22-specific validation lives in the P22 recipe, not the generic owner
+5. Final Swift storage serialization
+6. Bidirectional runtime reader
+      civic UT -> celestial state
+      celestial time -> civic occurrence(s)
+7. Resonator
+8. Final artifact binding/version identity
+9. Shipping-resource installation
+10. Final astronomical conformance proof
+11. Accumulated Xcode gate + OrboLab gate + documentation update
+```
+
+No final representation ruling for the same-body tables is made here. That work remains to be designed before implementation.
+
+The next construction discussion begins with the eclipse table.
