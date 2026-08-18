@@ -11,13 +11,53 @@
 		A30000000000000000000002 /* OrboLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OrboLabApp.swift */; };
 		A30000000000000000000003 /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = A60100000000000000000001 /* OrboCore */; };
 		A30000000000000000000004 /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = A60200000000000000000001 /* OrboCore */; };
+		B30000000000000000000001 /* AstroDNAContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AstroDNAContractTests.swift */; };
+		B30000000000000000000002 /* CivilTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* CivilTimeTests.swift */; };
+		B30000000000000000000003 /* DomainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000003 /* DomainTests.swift */; };
+		B30000000000000000000004 /* FixtureInfrastructureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000004 /* FixtureInfrastructureTests.swift */; };
+		B30000000000000000000005 /* FixtureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000005 /* FixtureLoader.swift */; };
+		B30000000000000000000006 /* FoundationIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000006 /* FoundationIntegrationTests.swift */; };
+		B30000000000000000000007 /* GeoplacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000007 /* GeoplacementTests.swift */; };
+		B30000000000000000000008 /* MaterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000008 /* MaterTests.swift */; };
+		B30000000000000000000009 /* MundaneTimespineForgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000009 /* MundaneTimespineForgeTests.swift */; };
+		B3000000000000000000000A /* MundaneTimespineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000A /* MundaneTimespineTests.swift */; };
+		B3000000000000000000000B /* OrboCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000B /* OrboCoreTests.swift */; };
+		B3000000000000000000000C /* RingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000C /* RingTests.swift */; };
+		B3000000000000000000000D /* TympanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000D /* TympanTests.swift */; };
+		B3000000000000000000000E /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = B60100000000000000000001 /* OrboCore */; };
+		B3000000000000000000000F /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000000F /* Fixtures */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B90000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000000000000000000001;
+			remoteInfo = Orbo;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A20000000000000000000001 /* OrboApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrboApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* OrboLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrboLabApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* Orbo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orbo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000004 /* OrboLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OrboLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000001 /* AstroDNAContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstroDNAContractTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* CivilTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CivilTimeTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000003 /* DomainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000004 /* FixtureInfrastructureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureInfrastructureTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000005 /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureSupport/FixtureLoader.swift; sourceTree = "<group>"; };
+		B20000000000000000000006 /* FoundationIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationIntegrationTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000007 /* GeoplacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoplacementTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000008 /* MaterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000009 /* MundaneTimespineForgeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MundaneTimespineForgeTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000000A /* MundaneTimespineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MundaneTimespineTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000000B /* OrboCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrboCoreTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000000C /* RingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000000D /* TympanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TympanTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000000E /* OrboCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrboCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2000000000000000000000F /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fixtures; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +77,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B40100000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3000000000000000000000E /* OrboCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -45,6 +93,7 @@
 			children = (
 				A10200000000000000000001 /* Orbo */,
 				A10300000000000000000001 /* OrboLab */,
+				B10000000000000000000001 /* OrboCoreTests */,
 				A10100000000000000000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +103,7 @@
 			children = (
 				A20000000000000000000003 /* Orbo.app */,
 				A20000000000000000000004 /* OrboLab.app */,
+				B2000000000000000000000E /* OrboCoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,6 +122,27 @@
 				A20000000000000000000002 /* OrboLabApp.swift */,
 			);
 			path = OrboLab;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000001 /* OrboCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000001 /* AstroDNAContractTests.swift */,
+				B20000000000000000000002 /* CivilTimeTests.swift */,
+				B20000000000000000000003 /* DomainTests.swift */,
+				B20000000000000000000004 /* FixtureInfrastructureTests.swift */,
+				B20000000000000000000005 /* FixtureLoader.swift */,
+				B20000000000000000000006 /* FoundationIntegrationTests.swift */,
+				B20000000000000000000007 /* GeoplacementTests.swift */,
+				B20000000000000000000008 /* MaterTests.swift */,
+				B20000000000000000000009 /* MundaneTimespineForgeTests.swift */,
+				B2000000000000000000000A /* MundaneTimespineTests.swift */,
+				B2000000000000000000000B /* OrboCoreTests.swift */,
+				B2000000000000000000000C /* RingTests.swift */,
+				B2000000000000000000000D /* TympanTests.swift */,
+				B2000000000000000000000F /* Fixtures */,
+			);
+			path = OrboCore/Tests/OrboCoreTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -117,6 +188,27 @@
 			productReference = A20000000000000000000004 /* OrboLab.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B50000000000000000000001 /* OrboCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B81000000000000000000001 /* Build configuration list for PBXNativeTarget "OrboCoreTests" */;
+			buildPhases = (
+				B40000000000000000000001 /* Sources */,
+				B40100000000000000000001 /* Frameworks */,
+				B40200000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B90100000000000000000001 /* PBXTargetDependency */,
+			);
+			name = OrboCoreTests;
+			packageProductDependencies = (
+				B60100000000000000000001 /* OrboCore */,
+			);
+			productName = OrboCoreTests;
+			productReference = B2000000000000000000000E /* OrboCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -132,6 +224,10 @@
 					};
 					A50100000000000000000001 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					B50000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A50000000000000000000001;
 					};
 				};
 			};
@@ -153,6 +249,7 @@
 			targets = (
 				A50000000000000000000001 /* Orbo */,
 				A50100000000000000000001 /* OrboLab */,
+				B50000000000000000000001 /* OrboCoreTests */,
 			);
 		};
 /* End PBXProject section */
@@ -169,6 +266,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B40200000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3000000000000000000000F /* Fixtures in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,7 +296,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B40000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B30000000000000000000001 /* AstroDNAContractTests.swift in Sources */,
+				B30000000000000000000002 /* CivilTimeTests.swift in Sources */,
+				B30000000000000000000003 /* DomainTests.swift in Sources */,
+				B30000000000000000000004 /* FixtureInfrastructureTests.swift in Sources */,
+				B30000000000000000000005 /* FixtureLoader.swift in Sources */,
+				B30000000000000000000006 /* FoundationIntegrationTests.swift in Sources */,
+				B30000000000000000000007 /* GeoplacementTests.swift in Sources */,
+				B30000000000000000000008 /* MaterTests.swift in Sources */,
+				B30000000000000000000009 /* MundaneTimespineForgeTests.swift in Sources */,
+				B3000000000000000000000A /* MundaneTimespineTests.swift in Sources */,
+				B3000000000000000000000B /* OrboCoreTests.swift in Sources */,
+				B3000000000000000000000C /* RingTests.swift in Sources */,
+				B3000000000000000000000D /* TympanTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B90100000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000000000000000000001 /* Orbo */;
+			targetProxy = B90000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A70000000000000000000001 /* Debug */ = {
@@ -310,6 +443,44 @@
 			};
 			name = Release;
 		};
+		B71000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Orbo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Orbo";
+			};
+			name = Debug;
+		};
+		B71100000000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Orbo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Orbo";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -340,6 +511,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		B81000000000000000000001 /* Build configuration list for PBXNativeTarget "OrboCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B71000000000000000000001 /* Debug */,
+				B71100000000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -356,6 +536,11 @@
 			productName = OrboCore;
 		};
 		A60200000000000000000001 /* OrboCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A60000000000000000000001 /* XCLocalSwiftPackageReference "OrboCore" */;
+			productName = OrboCore;
+		};
+		B60100000000000000000001 /* OrboCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A60000000000000000000001 /* XCLocalSwiftPackageReference "OrboCore" */;
 			productName = OrboCore;
