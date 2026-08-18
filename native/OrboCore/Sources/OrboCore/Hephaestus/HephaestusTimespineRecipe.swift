@@ -25,14 +25,15 @@ public struct HephaestusTimespineArtifactContract: Hashable, Sendable {
     }
 }
 
-/// A Timespine recipe tells Hephaestus what is being made while leaving generic
-/// celestial manufacture to MundaneTimespineForge.
+/// A Timespine recipe tells Hephaestus what is being made and which Dioscuri
+/// resonance contract must prove that work before Hephaestus may complete it.
 ///
-/// Recipes own span-specific preflight law. Hephaestus owns the manufacturing transaction.
+/// Recipes own product-specific law. Hephaestus owns the fabrication lifecycle.
 public protocol HephaestusTimespineRecipe: Sendable {
     static var recipeIdentifier: String { get }
     static var recipeVersion: UInt16 { get }
     static var artifactContract: HephaestusTimespineArtifactContract { get }
+    static var resonanceContract: HephaestusResonanceContractIdentity { get }
 
     static func forgePlan(
         astronomicalSourceVersion: String
@@ -44,5 +45,11 @@ public protocol HephaestusTimespineRecipe: Sendable {
 }
 
 public extension HephaestusTimespineRecipe {
+    /// The current house-dish contract. Future Timespine recipes may override this
+    /// without requiring any change to Hephaestus's manufacture/completion engine.
+    static var resonanceContract: HephaestusResonanceContractIdentity {
+        HephaestusResonanceContracts.timespineV1
+    }
+
     static func preflight(reference: any ForgeEphemerisReference) throws {}
 }
