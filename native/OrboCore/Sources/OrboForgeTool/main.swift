@@ -142,7 +142,7 @@ private struct OrboForgeTool {
         print("body clocks: \(MundaneBody.canonicalOrder.count)")
         print("manufacturing law: celestial coordinate occurrence <-> civic UT")
 
-        let product = try MundaneTimespineForge.manufactureP22(
+        let product = try MundaneTimespineP22ForgeRecipe.manufacture(
             astronomicalSourceVersion: reference.version,
             reference: reference
         )
