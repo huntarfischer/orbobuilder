@@ -35,7 +35,7 @@ public enum HephaestusError: Error, Equatable, CustomStringConvertible {
 public enum Hephaestus {
     public static let celestialTimeFirst = true
     public static let candidateIdentityAlgorithm = "SHA-256"
-    public static let runtimeRole = "fabrication/completion events only"
+    public static let runtimeRole = "none"
     public static let queryRole = "none"
     public static let interpretationRole = "none"
 
