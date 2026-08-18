@@ -111,8 +111,12 @@ public struct DioscuriTestimony: Sendable {
 public extension Dioscuri {
     /// Runs the candidate's bound resonance examination and returns testimony to Hephaestus.
     /// The recipe/contract binding comes from the immutable candidate, never from the caller.
-    static func testify(candidate: TimespineCandidate) throws -> DioscuriTestimony {
-        let verdict = try Dioscuri(candidate: candidate).certify()
+    /// Progress is observational only and cannot influence a verdict.
+    static func testify(
+        candidate: TimespineCandidate,
+        progress: ((DioscuriCertificationProgress) -> Void)? = nil
+    ) throws -> DioscuriTestimony {
+        let verdict = try Dioscuri(candidate: candidate).certify(progress: progress)
         return DioscuriTestimony(candidate: candidate, verdict: verdict)
     }
 }
