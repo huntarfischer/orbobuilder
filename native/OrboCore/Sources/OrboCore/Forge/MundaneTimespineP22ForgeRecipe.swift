@@ -22,6 +22,9 @@ public enum MundaneTimespineP22ForgeRecipe: HephaestusTimespineRecipe {
 
     public static var recipeIdentifier: String { "p22-pluto-zeitgeist" }
     public static var recipeVersion: UInt16 { 1 }
+    public static var resonanceContract: HephaestusResonanceContractIdentity {
+        HephaestusResonanceContracts.timespineV1
+    }
 
     public static var artifactContract: HephaestusTimespineArtifactContract {
         let eclipseCount = MundaneTimespineP22
