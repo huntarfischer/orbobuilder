@@ -20,8 +20,9 @@ public struct TimespineCandidateIdentity: Hashable, Codable, Sendable, CustomStr
     }
 }
 
-/// Immutable product of one completed Hephaestus manufacturing transaction.
-/// It is not yet a sealed Timespine. The Dioscuri will later decide whether it may be admitted.
+/// Immutable product of one Hephaestus fabrication transaction.
+/// A candidate is not admitted infrastructure until the Dioscuri resonate the exact work
+/// and Hephaestus receives that testimony and completes it by seal or quarantine.
 public struct TimespineCandidate: Sendable {
     public let identity: TimespineCandidateIdentity
     public let artifact: MundaneTimespineArtifact
