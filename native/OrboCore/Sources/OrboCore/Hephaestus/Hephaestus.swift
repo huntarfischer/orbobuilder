@@ -21,15 +21,17 @@ public enum HephaestusError: Error, Equatable, CustomStringConvertible {
         case .artifactRoundTripMismatch:
             return "Hephaestus ORBOTS encode/decode round trip changed artifact bytes."
         case .provenanceMismatch:
-            return "Hephaestus decoded artifact provenance does not match the Forge product."
+            return "Hephaestus artifact provenance does not match the bound recipe."
         }
     }
 }
 
 /// Native fabrication authority for canonical Orbo artifacts.
 ///
-/// The current implementation knows how to execute Timespine recipes through generic Forge,
-/// deterministic ORBOTS packaging, structural round-trip verification, and immutable identity.
+/// The current implementation knows two paths into the same Timespine minting machinery:
+/// Forge may manufacture fresh celestial chronology, or a recipe may present an already-proven
+/// storage image assembled from canonical construction matter. Both paths converge before
+/// deterministic ORBOTS packaging, structural round-trip proof, provenance, and immutable identity.
 /// Completion is the second half of this same engine: Dioscuri testimony returns to Hephaestus,
 /// which seals or quarantines the exact candidate without interpreting the resonance itself.
 public enum Hephaestus {
@@ -39,6 +41,7 @@ public enum Hephaestus {
     public static let queryRole = "none"
     public static let interpretationRole = "none"
 
+    /// Manufacture fresh Timespine chronology through Forge, then mint the immutable candidate.
     public static func manufactureCandidate<R: HephaestusTimespineRecipe>(
         recipe: R.Type,
         astronomicalSourceVersion: String,
@@ -46,12 +49,7 @@ public enum Hephaestus {
         relationships: [MundaneTimespineRelationshipEvent] = [],
         eclipses: [MundaneTimespineEclipseEvent] = []
     ) throws -> TimespineCandidate {
-        guard !R.recipeIdentifier.isEmpty, R.recipeVersion > 0 else {
-            throw HephaestusError.invalidRecipeIdentity
-        }
-        guard !astronomicalSourceVersion.isEmpty else {
-            throw HephaestusError.invalidAstronomicalSourceVersion
-        }
+        try validateRecipe(R.self, astronomicalSourceVersion: astronomicalSourceVersion)
         guard Self.celestialTimeFirst, MundaneTimespineStorageFormat.celestialTimeFirst else {
             throw MundaneTimespineStorageError.celestialTimeLawMissing
         }
@@ -59,14 +57,6 @@ public enum Hephaestus {
         try R.preflight(reference: reference)
         let plan = R.forgePlan(astronomicalSourceVersion: astronomicalSourceVersion)
         let product = try MundaneTimespineForge.manufacture(plan: plan, reference: reference)
-
-        try enforce(
-            R.artifactContract,
-            bodyCount: product.bodies.count,
-            bodyOccurrenceCount: product.totalOccurrenceCount,
-            relationshipCount: relationships.count,
-            eclipseCount: eclipses.count
-        )
 
         guard let image = MundaneTimespineStorageImage(
             forgeProduct: product,
@@ -76,26 +66,54 @@ public enum Hephaestus {
             throw HephaestusError.storageAssemblyFailed
         }
 
+        return try mintCandidate(recipe: R.self, image: image)
+    }
+
+    /// Mint a candidate from already-proven canonical construction matter without rerunning
+    /// Forge or an ephemeris. The recipe still owns the required span, source, anatomy, and
+    /// resonance contract; this is a second input route into the same Hephaestus engine.
+    public static func manufactureCandidate<R: HephaestusTimespineRecipe>(
+        recipe: R.Type,
+        assembledStorageImage image: MundaneTimespineStorageImage
+    ) throws -> TimespineCandidate {
+        try validateRecipe(R.self, astronomicalSourceVersion: image.astronomicalSourceVersion)
+        guard Self.celestialTimeFirst, MundaneTimespineStorageFormat.celestialTimeFirst else {
+            throw MundaneTimespineStorageError.celestialTimeLawMissing
+        }
+
+        let plan = R.forgePlan(astronomicalSourceVersion: image.astronomicalSourceVersion)
+        guard image.spanName == plan.spanName,
+              image.astronomicalSource == plan.astronomicalSource,
+              image.astronomicalSourceVersion == plan.astronomicalSourceVersion,
+              image.supportedStart == plan.supportedStart,
+              image.supportedEnd == plan.supportedEnd else {
+            throw HephaestusError.provenanceMismatch
+        }
+
+        return try mintCandidate(recipe: R.self, image: image)
+    }
+
+    private static func mintCandidate<R: HephaestusTimespineRecipe>(
+        recipe: R.Type,
+        image: MundaneTimespineStorageImage
+    ) throws -> TimespineCandidate {
+        let imageCounts = counts(in: image)
+        try enforce(R.artifactContract, counts: imageCounts)
+
         let artifactData = try image.encodedArtifact()
         let artifact = try MundaneTimespineArtifact(data: artifactData)
         let decoded = try artifact.storageImage()
 
-        guard decoded.spanName == product.spanName,
-              decoded.astronomicalSource == product.astronomicalSource,
-              decoded.astronomicalSourceVersion == product.astronomicalSourceVersion,
-              decoded.supportedStart == product.supportedStart,
-              decoded.supportedEnd == product.supportedEnd else {
+        guard decoded.spanName == image.spanName,
+              decoded.astronomicalSource == image.astronomicalSource,
+              decoded.astronomicalSourceVersion == image.astronomicalSourceVersion,
+              decoded.supportedStart == image.supportedStart,
+              decoded.supportedEnd == image.supportedEnd else {
             throw HephaestusError.provenanceMismatch
         }
 
-        let decodedOccurrenceCount = decoded.bodies.reduce(0) { $0 + $1.occurrences.count }
-        try enforce(
-            R.artifactContract,
-            bodyCount: decoded.bodies.count,
-            bodyOccurrenceCount: decodedOccurrenceCount,
-            relationshipCount: decoded.relationships.count,
-            eclipseCount: decoded.eclipses.count
-        )
+        let decodedCounts = counts(in: decoded)
+        try enforce(R.artifactContract, counts: decodedCounts)
 
         let reencoded = try decoded.encodedArtifact()
         guard reencoded == artifactData else {
@@ -107,18 +125,18 @@ public enum Hephaestus {
             recipeIdentifier: R.recipeIdentifier,
             recipeVersion: R.recipeVersion,
             resonanceContract: R.resonanceContract,
-            spanName: product.spanName,
-            astronomicalSource: product.astronomicalSource,
-            astronomicalSourceVersion: product.astronomicalSourceVersion,
+            spanName: decoded.spanName,
+            astronomicalSource: decoded.astronomicalSource,
+            astronomicalSourceVersion: decoded.astronomicalSourceVersion,
             storageFamily: MundaneTimespineStorageFormat.identifier,
             storageVersion: MundaneTimespineStorageFormat.version,
             celestialTimeFirst: MundaneTimespineStorageFormat.celestialTimeFirst,
-            bodyCount: decoded.bodies.count,
-            bodyOccurrenceCount: decodedOccurrenceCount,
-            stationCount: decoded.bodies.reduce(0) { $0 + $1.stations.count },
-            retrogradePassageCount: decoded.bodies.reduce(0) { $0 + $1.retrogradePassages.count },
-            relationshipCount: decoded.relationships.count,
-            eclipseCount: decoded.eclipses.count,
+            bodyCount: decodedCounts.bodyCount,
+            bodyOccurrenceCount: decodedCounts.bodyOccurrenceCount,
+            stationCount: decodedCounts.stationCount,
+            retrogradePassageCount: decodedCounts.retrogradePassageCount,
+            relationshipCount: decodedCounts.relationshipCount,
+            eclipseCount: decodedCounts.eclipseCount,
             artifactByteCount: artifactData.count,
             candidateSHA256: identity.sha256
         )
@@ -130,19 +148,55 @@ public enum Hephaestus {
         )
     }
 
+    private static func validateRecipe<R: HephaestusTimespineRecipe>(
+        _ recipe: R.Type,
+        astronomicalSourceVersion: String
+    ) throws {
+        guard !R.recipeIdentifier.isEmpty, R.recipeVersion > 0 else {
+            throw HephaestusError.invalidRecipeIdentity
+        }
+        guard !astronomicalSourceVersion.isEmpty else {
+            throw HephaestusError.invalidAstronomicalSourceVersion
+        }
+    }
+
+    private struct ArtifactCounts {
+        let bodyCount: Int
+        let bodyOccurrenceCount: Int
+        let stationCount: Int
+        let retrogradePassageCount: Int
+        let relationshipCount: Int
+        let eclipseCount: Int
+    }
+
+    private static func counts(in image: MundaneTimespineStorageImage) -> ArtifactCounts {
+        ArtifactCounts(
+            bodyCount: image.bodies.count,
+            bodyOccurrenceCount: image.bodies.reduce(0) { $0 + $1.occurrences.count },
+            stationCount: image.bodies.reduce(0) { $0 + $1.stations.count },
+            retrogradePassageCount: image.bodies.reduce(0) { $0 + $1.retrogradePassages.count },
+            relationshipCount: image.relationships.count,
+            eclipseCount: image.eclipses.count
+        )
+    }
+
     private static func enforce(
         _ contract: HephaestusTimespineArtifactContract,
-        bodyCount: Int,
-        bodyOccurrenceCount: Int,
-        relationshipCount: Int,
-        eclipseCount: Int
+        counts: ArtifactCounts
     ) throws {
-        let checks: [(String, Int, Int)] = [
-            ("bodies", contract.bodyCount, bodyCount),
-            ("body occurrences", contract.bodyOccurrenceCount, bodyOccurrenceCount),
-            ("relationships", contract.relationshipCount, relationshipCount),
-            ("eclipses", contract.eclipseCount, eclipseCount),
+        var checks: [(String, Int, Int)] = [
+            ("bodies", contract.bodyCount, counts.bodyCount),
+            ("body occurrences", contract.bodyOccurrenceCount, counts.bodyOccurrenceCount),
+            ("relationships", contract.relationshipCount, counts.relationshipCount),
+            ("eclipses", contract.eclipseCount, counts.eclipseCount),
         ]
+        if let expected = contract.stationCount {
+            checks.append(("stations", expected, counts.stationCount))
+        }
+        if let expected = contract.retrogradePassageCount {
+            checks.append(("retrograde passages", expected, counts.retrogradePassageCount))
+        }
+
         for (component, expected, actual) in checks where expected != actual {
             throw HephaestusError.artifactContractMismatch(
                 component: component,
