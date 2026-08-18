@@ -1,5 +1,5 @@
 {
-  "workflowStatus": "started",
-  "stage": "start",
+  "workflowStatus": "failure",
+  "stage": "verify-repo-de441",
   "sourceCommit": "27fe9ec5e46071cd5f18eb2bca54f457cc00fc96"
 }
