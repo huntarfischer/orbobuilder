@@ -43,8 +43,8 @@ jobs:
           cd "$SWISS"
           git checkout 3fd0f956d73898b91cc4f67cf18b21af656d1342
           test "$(git rev-parse HEAD)" = "3fd0f956d73898b91cc4f67cf18b21af656d1342"
-          make swetest
-          test -x swetest
+          make libswe.dylib
+          test -f libswe.dylib
 
       - name: Compile Swift eclipse Forge
         shell: bash
@@ -57,13 +57,14 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/orbo-eclipse-forge" \
-            --swetest "$RUNNER_TEMP/swisseph/swetest" \
+            --library "$RUNNER_TEMP/swisseph/libswe.dylib" \
             --ephe "$GITHUB_WORKSPACE/tools/pass5" \
             --source-sha 3fd0f956d73898b91cc4f67cf18b21af656d1342 \
             --csv tools/pass5/p22-data/eclipse-table.csv \
             --summary tools/pass5/p22-data/eclipse-table-summary.json
           test -s tools/pass5/p22-data/eclipse-table.csv
           test -s tools/pass5/p22-data/eclipse-table-summary.json
+          grep -q 'Swiss Ephemeris DE441 repository files' tools/pass5/p22-data/eclipse-table-summary.json
 
       - name: Preserve generated eclipse artifact
         uses: actions/upload-artifact@v4
