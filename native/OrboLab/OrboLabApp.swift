@@ -276,8 +276,9 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("DIOSCURI / INTEGRITY GATE")
-                readout("role", Dioscuri.role)
+                sectionTitle("DIOSCURI / RESONANCE")
+                readout("role", Dioscuri.authorityRole)
+                readout("dialect", Dioscuri.currentDialect)
                 readout("contract", "v\(Dioscuri.contractVersion)")
                 readout("twins", "Pollux + Castor")
                 readout("order", Dioscuri.order)
