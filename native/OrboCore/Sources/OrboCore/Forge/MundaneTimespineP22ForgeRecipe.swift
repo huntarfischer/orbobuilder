@@ -16,9 +16,24 @@ public enum MundaneTimespineP22ForgeRecipeError: Error, Equatable, CustomStringC
 /// Generic Forge manufactures the plan it receives. This recipe alone owns why P22 begins
 /// and ends where it does: the two half-open boundaries are direct Pluto 0 Aries crossings.
 /// The recipe also owns P22's proven discovery cadences and construction-count checks.
-public enum MundaneTimespineP22ForgeRecipe {
+public enum MundaneTimespineP22ForgeRecipe: HephaestusTimespineRecipe {
     public static let astronomicalSource =
         "Swiss Ephemeris; geocentric tropical apparent ecliptic longitude; UT"
+
+    public static var recipeIdentifier: String { "p22-pluto-zeitgeist" }
+    public static var recipeVersion: UInt16 { 1 }
+
+    public static var artifactContract: HephaestusTimespineArtifactContract {
+        let eclipseCount = MundaneTimespineP22
+            .universalEventTable(for: .eclipse)
+            .constructionRecordCount
+        return HephaestusTimespineArtifactContract(
+            bodyCount: MundaneTimespineP22.profiles.count,
+            bodyOccurrenceCount: MundaneTimespineP22.totalConstructionRecords,
+            relationshipCount: MundaneTimespineP22.totalUniversalEventRecords - eclipseCount,
+            eclipseCount: eclipseCount
+        )!
+    }
 
     public static let scanStepDays: [MundaneBody: Double] = [
         .sun: 0.20,
@@ -51,6 +66,18 @@ public enum MundaneTimespineP22ForgeRecipe {
             verifiesConstructionRecordCounts: true,
             verifiesMarkerUniqueness: true
         )!
+    }
+
+    public static func forgePlan(
+        astronomicalSourceVersion: String
+    ) -> MundaneTimespineForgePlan {
+        plan(astronomicalSourceVersion: astronomicalSourceVersion)
+    }
+
+    public static func preflight(
+        reference: any ForgeEphemerisReference
+    ) throws {
+        try validateBoundaries(reference: reference)
     }
 
     public static func validateBoundaries(
