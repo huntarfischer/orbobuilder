@@ -261,6 +261,244 @@ final class MundaneTimespineTests: XCTestCase {
         XCTAssertNoThrow(try artifact.runtimeImage())
     }
 
+    func testPolluxBeginsWithCelestialIdentityAndDiscoversCivicHandoff() throws {
+        let sun = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 243,
+                    civicOffsetSeconds: 1_000,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let mercury = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 10,
+            markerBodies: [.sun],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 170,
+                    civicOffsetSeconds: 4_321,
+                    sequenceDirection: .decreasing,
+                    markerWholeDegrees: [243]
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [mercury, sun])
+        let pollux = try Pollux(candidate: candidate)
+        let address = try XCTUnwrap(PolluxCelestialAddress(
+            body: .mercury,
+            celestialTick: 170,
+            ticksPerDegree: 10,
+            markerFingerprint: [PolluxMarkerCell(body: .sun, wholeDegree: 243)!]
+        ))
+
+        let question = try pollux.ask(address)
+
+        XCTAssertEqual(Pollux.role, "celestial resonator")
+        XCTAssertEqual(Pollux.nature, "immortal")
+        XCTAssertEqual(Pollux.order, "asks first")
+        XCTAssertEqual(Pollux.axis, "celestial")
+        XCTAssertEqual(Pollux.identityLaw, "tick + marker fingerprint")
+        XCTAssertEqual(Pollux.readerRole, "none")
+        XCTAssertEqual(Pollux.ephemerisRole, "none")
+        XCTAssertEqual(Pollux.civicTimeRole, "handoff only")
+        XCTAssertEqual(Pollux.ambiguityPolicy, "reject")
+        XCTAssertEqual(question.celestialAddress, address)
+        XCTAssertEqual(question.celestialAddress.celestialDegrees, 17, accuracy: 1e-12)
+        XCTAssertEqual(question.expectedSequenceDirection, .decreasing)
+        XCTAssertEqual(question.handoff.candidateSHA256, candidate.identity.sha256)
+        XCTAssertEqual(question.handoff.civicOffsetSeconds, 4_321)
+    }
+
+    func testPolluxRejectsCandidateWhoseBytesAndIdentityDoNotMatch() throws {
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 1,
+                    civicOffsetSeconds: 100,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [body])
+        let wrongIdentity = TimespineCandidateIdentity.hash(artifactData: Data([0x50, 0x4f, 0x4c, 0x4c, 0x55, 0x58]))
+        let mismatched = TimespineCandidate(
+            identity: wrongIdentity,
+            artifact: candidate.artifact,
+            forgeRecord: candidate.forgeRecord
+        )
+
+        XCTAssertThrowsError(try Pollux(candidate: mismatched)) { error in
+            XCTAssertEqual(error as? PolluxError, .candidateIdentityMismatch)
+        }
+    }
+
+    func testPolluxRejectsAmbiguousCelestialIdentityRatherThanUsingCivicOrdinal() throws {
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 10,
+                    civicOffsetSeconds: 100,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 10,
+                    civicOffsetSeconds: 200,
+                    sequenceDirection: .decreasing,
+                    markerWholeDegrees: []
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [body])
+
+        XCTAssertThrowsError(try Pollux(candidate: candidate)) { error in
+            XCTAssertEqual(
+                error as? PolluxError,
+                .ambiguousCelestialIdentity(body: .mercury, celestialTick: 10)
+            )
+        }
+    }
+
+    func testPolluxQuestionCursorOrdersByCelestialTimeNotCivicTime() throws {
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 2,
+                    civicOffsetSeconds: 100,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 0,
+                    civicOffsetSeconds: 200,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 1,
+                    civicOffsetSeconds: 300,
+                    sequenceDirection: .decreasing,
+                    markerWholeDegrees: []
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [body])
+        let pollux = try Pollux(candidate: candidate)
+        var firstCursor = pollux.makeQuestionCursor()
+        var secondCursor = pollux.makeQuestionCursor()
+        var first: [(Int, Int64, MundaneCelestialSequenceDirection)] = []
+        var second: [(Int, Int64, MundaneCelestialSequenceDirection)] = []
+
+        while let question = firstCursor.next() {
+            first.append((
+                question.celestialAddress.celestialTick,
+                question.handoff.civicOffsetSeconds,
+                question.expectedSequenceDirection
+            ))
+        }
+        while let question = secondCursor.next() {
+            second.append((
+                question.celestialAddress.celestialTick,
+                question.handoff.civicOffsetSeconds,
+                question.expectedSequenceDirection
+            ))
+        }
+
+        XCTAssertEqual(first.map(\.0), [0, 1, 2])
+        XCTAssertEqual(first.map(\.1), [200, 300, 100])
+        XCTAssertEqual(first.map(\.2), [.increasing, .decreasing, .increasing])
+        XCTAssertEqual(first.map(\.0), second.map(\.0))
+        XCTAssertEqual(first.map(\.1), second.map(\.1))
+        XCTAssertEqual(first.map(\.2), second.map(\.2))
+        XCTAssertEqual(pollux.questionCount, 3)
+    }
+
+    func testPolluxAllowsNoMarkerAddressWhenCelestialTicksAreUnique() throws {
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 20,
+                    civicOffsetSeconds: 100,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 21,
+                    civicOffsetSeconds: 200,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: []
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [body])
+        let pollux = try Pollux(candidate: candidate)
+        let address = try XCTUnwrap(PolluxCelestialAddress(
+            body: .sun,
+            celestialTick: 21,
+            ticksPerDegree: 1,
+            markerFingerprint: []
+        ))
+
+        XCTAssertEqual(try pollux.ask(address).handoff.civicOffsetSeconds, 200)
+    }
+
+    func testPolluxRejectsCandidateWhoseMarkerBodyIsAbsent() throws {
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 1,
+            markerBodies: [.sun],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(
+                    celestialTick: 10,
+                    civicOffsetSeconds: 100,
+                    sequenceDirection: .increasing,
+                    markerWholeDegrees: [20]
+                ),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let candidate = try makePolluxCandidate(bodies: [body])
+
+        XCTAssertThrowsError(try Pollux(candidate: candidate)) { error in
+            XCTAssertEqual(
+                error as? PolluxError,
+                .markerBodyMissing(focal: .mercury, marker: .sun)
+            )
+        }
+    }
+
     func testAstroDNACodecFourRemainsIndependentOfPassFiveRepresentation() {
         XCTAssertEqual(AstroDNA.codec, 4)
         XCTAssertEqual(AstroDNAGene.canonicalOrder.count, 12)
@@ -279,6 +517,49 @@ final class MundaneTimespineTests: XCTestCase {
 
     private var p22Results: URL {
         repositoryRoot.appendingPathComponent("tools/pass5/p22-results", isDirectory: true)
+    }
+
+    private func makePolluxCandidate(
+        bodies: [MundaneTimespineStoredBody]
+    ) throws -> TimespineCandidate {
+        let start = JulianDay(1_000)!
+        let end = JulianDay(1_001)!
+        let image = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "Pollux XCTest fixture",
+            astronomicalSource: "deterministic XCTest sky",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: end,
+            bodies: bodies,
+            relationships: [],
+            eclipses: []
+        ))
+        let data = try image.encodedArtifact()
+        let artifact = try MundaneTimespineArtifact(data: data)
+        let identity = TimespineCandidateIdentity.hash(artifactData: data)
+        let record = TimespineForgeRecord(
+            recipeIdentifier: "xctest-pollux",
+            recipeVersion: 1,
+            spanName: image.spanName,
+            astronomicalSource: image.astronomicalSource,
+            astronomicalSourceVersion: image.astronomicalSourceVersion,
+            storageFamily: MundaneTimespineStorageFormat.identifier,
+            storageVersion: MundaneTimespineStorageFormat.version,
+            celestialTimeFirst: MundaneTimespineStorageFormat.celestialTimeFirst,
+            bodyCount: bodies.count,
+            bodyOccurrenceCount: bodies.reduce(0) { $0 + $1.occurrences.count },
+            stationCount: bodies.reduce(0) { $0 + $1.stations.count },
+            retrogradePassageCount: bodies.reduce(0) { $0 + $1.retrogradePassages.count },
+            relationshipCount: 0,
+            eclipseCount: 0,
+            artifactByteCount: data.count,
+            candidateSHA256: identity.sha256
+        )
+        return TimespineCandidate(
+            identity: identity,
+            artifact: artifact,
+            forgeRecord: record
+        )
     }
 
     private func decode<T: Decodable>(_ type: T.Type, at url: URL) throws -> T {
