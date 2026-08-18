@@ -36,7 +36,8 @@ The closure sequence is cumulative:
 6. build and run OrboLab when the component has a useful live readout
 7. inspect the live OrboCore readout
 8. build the affected native targets
-9. only then promote status or move to the next construction piece
+9. update the Native Port Manifest and the active pass/gate documentation
+10. only then promote status or move to the next construction piece
 
 Every later pass must keep every earlier native test green.
 
@@ -44,14 +45,17 @@ Every later pass must keep every earlier native test green.
 
 A meaningful native pass is not complete until its construction record is updated.
 
-Before moving to the next piece:
+Before moving to the next piece, all applicable records must be updated:
 
-- update `specs/Native Port Manifest.md` or its explicit gate record for the pass
+- update `specs/Native Port Manifest.md`
+- update or create the explicit dated gate record for the pass
 - update the active component/pass specification when the earned law, boundary, proof, or pending work changed
 - record the actual Xcode test count and failure count
 - record the OrboLab/build result when that gate applies
 - record what remains pending
 - do not promote a component beyond the proof actually completed
+
+A gate record supplements the Native Port Manifest. It does not replace the Manifest update.
 
 The user must not have to remind the agent to run accumulated tests or continue the documentation trail.
 
@@ -145,7 +149,8 @@ Entire accumulated Xcode suite green?        YES / NO
 Zero failures?                               YES / NO
 OrboLab live readout checked, if applicable? YES / NO
 Affected native build checked?               YES / NO
-Native Port Manifest/gate record updated?    YES / NO
+Native Port Manifest updated?                YES / NO
+Dated gate record updated/created?           YES / NO
 Active pass specification updated?           YES / NO
 Pending work stated explicitly?              YES / NO
 Any deletion performed?                      MUST BE NO unless user explicitly authorized it
