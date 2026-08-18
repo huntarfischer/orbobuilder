@@ -59,4 +59,45 @@ public struct TimespineForgeRecord: Hashable, Codable, Sendable {
         self.artifactByteCount = artifactByteCount
         self.candidateSHA256 = candidateSHA256
     }
+
+    /// Compatibility initializer for existing native fixtures. Production candidates are minted
+    /// by Hephaestus and receive the recipe's explicit bound contract at manufacture time.
+    init(
+        recipeIdentifier: String,
+        recipeVersion: UInt16,
+        spanName: String,
+        astronomicalSource: String,
+        astronomicalSourceVersion: String,
+        storageFamily: String,
+        storageVersion: UInt16,
+        celestialTimeFirst: Bool,
+        bodyCount: Int,
+        bodyOccurrenceCount: Int,
+        stationCount: Int,
+        retrogradePassageCount: Int,
+        relationshipCount: Int,
+        eclipseCount: Int,
+        artifactByteCount: Int,
+        candidateSHA256: String
+    ) {
+        self.init(
+            recipeIdentifier: recipeIdentifier,
+            recipeVersion: recipeVersion,
+            resonanceContract: HephaestusResonanceContracts.timespineV1,
+            spanName: spanName,
+            astronomicalSource: astronomicalSource,
+            astronomicalSourceVersion: astronomicalSourceVersion,
+            storageFamily: storageFamily,
+            storageVersion: storageVersion,
+            celestialTimeFirst: celestialTimeFirst,
+            bodyCount: bodyCount,
+            bodyOccurrenceCount: bodyOccurrenceCount,
+            stationCount: stationCount,
+            retrogradePassageCount: retrogradePassageCount,
+            relationshipCount: relationshipCount,
+            eclipseCount: eclipseCount,
+            artifactByteCount: artifactByteCount,
+            candidateSHA256: candidateSHA256
+        )
+    }
 }
