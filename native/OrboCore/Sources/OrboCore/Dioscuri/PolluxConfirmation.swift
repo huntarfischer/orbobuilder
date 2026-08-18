@@ -346,14 +346,15 @@ extension Pollux {
         storage: MundaneTimespineStorageImage
     ) -> Bool {
         guard let stored = storage.bodies.first(where: { $0.body == body }) else { return false }
-        let expectedTick = expectedCell * stored.ticksPerDegree
-        let observedTick = observedCell * stored.ticksPerDegree
-        return isQuantizedTickTransition(
-            storedBody: stored,
-            expectedCell: expectedTick,
-            observedCell: observedTick,
-            civicOffsetSeconds: civicOffsetSeconds
-        )
+        let forward = (observedCell - expectedCell + 360) % 360
+        let backward = (expectedCell - observedCell + 360) % 360
+        guard forward == 1 || backward == 1 else { return false }
+
+        let boundaryDegree = forward == 1 ? observedCell : expectedCell
+        let boundaryTick = (boundaryDegree % 360) * stored.ticksPerDegree
+        return stored.occurrences.contains {
+            $0.celestialTick == boundaryTick && $0.civicOffsetSeconds == civicOffsetSeconds
+        }
     }
 
     private func isQuantizedTickTransition(
