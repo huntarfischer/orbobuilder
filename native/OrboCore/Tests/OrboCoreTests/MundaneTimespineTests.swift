@@ -51,6 +51,22 @@ final class MundaneTimespineTests: XCTestCase {
         let bodies: [Body]
     }
 
+    private struct UniversalEventManifest: Decodable {
+        struct FileRecord: Decodable {
+            let family: String
+            let path: String
+            let rows: Int
+            let gzipBytes: Int
+            let sha256: String
+            let ringDegrees: [Int]?
+        }
+        let span: String
+        let celestialTimeFirst: Bool
+        let bodyCount: Int
+        let totalRows: Int
+        let files: [FileRecord]
+    }
+
     func testP22NativeContractIsElevenBodiesAndHalfOpen() {
         XCTAssertEqual(MundaneBody.canonicalOrder.count, 11)
         XCTAssertEqual(MundaneTimespineP22.profiles.map(\.body), MundaneBody.canonicalOrder)
@@ -147,6 +163,102 @@ final class MundaneTimespineTests: XCTestCase {
             XCTAssertGreaterThan(record.uncompressedBytes, 0)
             XCTAssertEqual(sha256Hex(data), record.sha256, "SHA-256 changed for \(record.path)")
         }
+    }
+
+    func testP22UniversalEventLayerIsCelestialFirstAndByteBound() throws {
+        let manifest = try decode(
+            UniversalEventManifest.self,
+            at: p22Data.appendingPathComponent(MundaneTimespineP22.universalEventManifestFileName)
+        )
+        XCTAssertEqual(manifest.span, MundaneTimespineP22.spanName)
+        XCTAssertTrue(manifest.celestialTimeFirst)
+        XCTAssertEqual(manifest.bodyCount, 11)
+        XCTAssertEqual(manifest.totalRows, 771_431)
+        XCTAssertEqual(manifest.files.count, 3)
+        XCTAssertEqual(MundaneTimespineP22.totalUniversalEventRecords, 771_431)
+        XCTAssertEqual(
+            Set(MundaneTimespineP22.majorRelationshipMarks + MundaneTimespineP22.minorRelationshipMarks),
+            Set(RingMark.allCases)
+        )
+
+        for contract in MundaneTimespineP22.universalEventTables {
+            let record = try XCTUnwrap(manifest.files.first { $0.family == contract.family.rawValue })
+            XCTAssertEqual(record.path, contract.constructionFileName)
+            XCTAssertEqual(record.rows, contract.constructionRecordCount)
+            XCTAssertEqual(record.gzipBytes, contract.compressedBytes)
+            XCTAssertEqual(record.sha256, contract.sha256)
+            XCTAssertEqual(record.ringDegrees ?? [], contract.ringMarks.map(\.rawValue))
+            let bytes = try Data(contentsOf: p22Data.appendingPathComponent(record.path))
+            XCTAssertEqual(bytes.count, contract.compressedBytes)
+            XCTAssertEqual(sha256Hex(bytes), contract.sha256)
+        }
+    }
+
+    func testNativeStorageRoundTripIsCelestialFirstInsideXcodeGate() throws {
+        let start = JulianDay(1_000)!
+        let end = JulianDay(1_001)!
+        let body = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .mercury,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                MundaneTimespineStoredOccurrence(celestialTick: 100, civicOffsetSeconds: 0, sequenceDirection: .increasing, markerWholeDegrees: []),
+                MundaneTimespineStoredOccurrence(celestialTick: 101, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let major = try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .mercury,
+            bodyB: .venus,
+            mark: .trine,
+            orientation: .bodyBAhead,
+            bodyACelestialTimeDegrees: 100.1234564,
+            bodyBCelestialTimeDegrees: 220.1234564,
+            julianDay: JulianDay(start.value + 1_234.4 / 86_400)!,
+            exactAspectResidualArcSeconds: 0
+        ))
+        let minor = try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .mars,
+            bodyB: .jupiter,
+            mark: .semisquare,
+            orientation: .bodyAAhead,
+            bodyACelestialTimeDegrees: 10.9876546,
+            bodyBCelestialTimeDegrees: 325.9876546,
+            julianDay: JulianDay(start.value + 2_345.6 / 86_400)!,
+            exactAspectResidualArcSeconds: 0
+        ))
+        let eclipse = try XCTUnwrap(MundaneTimespineEclipseEvent(
+            kind: .solar,
+            type: .total,
+            eclipseDegree: 44.1234566,
+            julianDay: JulianDay(start.value + 3_456.2 / 86_400)!,
+            centrality: "central"
+        ))
+        let image = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "Xcode storage fixture",
+            astronomicalSource: "deterministic XCTest sky",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: end,
+            bodies: [body],
+            relationships: [major, minor],
+            eclipses: [eclipse]
+        ))
+
+        let first = try image.encodedArtifact()
+        let second = try image.encodedArtifact()
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(Array(first.prefix(8)), Array("ORBOTS01".utf8))
+        XCTAssertEqual(MundaneTimespineStorageFormat.version, 1)
+        XCTAssertTrue(MundaneTimespineStorageFormat.celestialTimeFirst)
+
+        let artifact = try MundaneTimespineArtifact(data: first)
+        let decoded = try artifact.storageImage()
+        XCTAssertEqual(decoded.relationships.map(\.mark), [.trine, .semisquare])
+        XCTAssertEqual(decoded.relationships[0].bodyBCelestialTimeDegrees, 220.123456, accuracy: 0.000001)
+        XCTAssertEqual(decoded.eclipses[0].eclipseDegree, 44.123457, accuracy: 0.000001)
+        XCTAssertNoThrow(try artifact.runtimeImage())
     }
 
     func testAstroDNACodecFourRemainsIndependentOfPassFiveRepresentation() {
