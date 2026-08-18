@@ -1,199 +1,179 @@
+import CryptoKit
 import Foundation
 import XCTest
 @testable import OrboCore
 
 final class MundaneTimespineTests: XCTestCase {
-    private struct CandidateFixture: Decodable {
-        struct Profile: Decodable {
+    private struct Summary: Decodable {
+        struct MarkerAudit: Decodable {
+            let selectedMarkers: [String]
+            let selectedRepeatedKeys: Int
+        }
+        struct Body: Decodable {
             let body: String
-            let edgeSampleDays: Double
-            let coreSampleDays: Double
+            let selectedResolutionDegrees: Double
+            let selectedRecords: Int
+            let stationCount: Int
+            let retrogradePassages: Int
+            let retrogradeSelectedCrossings: Int
+            let selectedResolutionMarkerAudit: MarkerAudit
         }
-        let status: String
-        let codec: Int
-        let astroDNACodec: Int
-        let representation: String
-        let positionUnitsPerDegree: Int
-        let supportedStartJulianDay: Double
-        let denseStartJulianDay: Double
-        let denseEndJulianDay: Double
-        let supportedEndJulianDay: Double
-        let estimatedPositionPayloadBytes: Int
-        let profiles: [Profile]
+        let spanName: String
+        let startJulianDayUT: Double
+        let endJulianDayUT: Double
+        let civicOffsetBitsRequired: Int
+        let bodyTables: [Body]
+        let totalSelectedBodyRecords: Int
     }
 
-    private struct AnalyticReference: ForgeEphemerisReference {
-        let epoch = 2_451_545.0
-        func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState {
-            let t = julianDay.value - epoch
-            let ordinal = Double(body.rawValue + 1)
-            let base = 358.7 + ordinal * 0.07
-            let linear = body == .trueNorthNode ? -0.32 : 0.35 + ordinal * 0.013
-            let quadratic = (ordinal.truncatingRemainder(dividingBy: 3) - 1) * 0.0008
-            let cubic = (ordinal.truncatingRemainder(dividingBy: 2) == 0 ? 1 : -1) * 0.00001
-            return MundaneCelestialState(
-                longitude: CelestialLongitude(base + linear * t + quadratic * t * t + cubic * t * t * t)!,
-                longitudinalSpeedDegreesPerDay: linear + 2 * quadratic * t + 3 * cubic * t * t
-            )!
+    private struct Manifest: Decodable {
+        struct FileRecord: Decodable {
+            let path: String
+            let compressedBytes: Int
+            let uncompressedBytes: Int
+            let sha256: String
         }
+        let span: String
+        let bodyTableCount: Int
+        let sharedTables: [String]
+        let files: [FileRecord]
     }
 
-    private func fixture() throws -> CandidateFixture {
-        try FixtureLoader.decode(CandidateFixture.self, named: "mundane-timespine-candidate-v1", kind: .golden)
+    private struct CompactAudit: Decodable {
+        struct Body: Decodable {
+            let body: String
+            let resolution: Double
+            let records: Int
+            let markers: [String]
+            let markerUnique: Bool
+        }
+        let span: String
+        let bodies: [Body]
     }
 
-    private func shortPlan(
-        motionChronologies: [MundaneBody: MundaneMotionChronology] = [:]
-    ) -> MundaneTimespineForgePlan {
-        MundaneTimespineForgePlan(
-            version: "v1-construction-fixture",
-            astronomicalSource: "analytic-test-reference",
-            astronomicalSourceVersion: "1",
-            supportedStart: JulianDay(2_451_545.0)!,
-            supportedEnd: JulianDay(2_451_553.0)!,
-            profiles: MundaneTimespineForge.candidateProfiles,
-            motionChronologies: motionChronologies
-        )!
+    func testP22NativeContractIsElevenBodiesAndHalfOpen() {
+        XCTAssertEqual(MundaneBody.canonicalOrder.count, 11)
+        XCTAssertEqual(MundaneTimespineP22.profiles.map(\.body), MundaneBody.canonicalOrder)
+        XCTAssertEqual(MundaneTimespineP22.spanName, "P22 Pluto Zeitgeist")
+        XCTAssertEqual(MundaneTimespineP22.startJulianDay.value, 2_386_637.079399706, accuracy: 1e-9)
+        XCTAssertEqual(MundaneTimespineP22.endJulianDay.value, 2_475_819.1417904524, accuracy: 1e-9)
+        XCTAssertEqual(MundaneTimespineP22.civicOffsetBitsRequired, 33)
+        XCTAssertTrue(MundaneTimespineP22.contains(MundaneTimespineP22.startJulianDay))
+        XCTAssertFalse(MundaneTimespineP22.contains(MundaneTimespineP22.endJulianDay))
+        XCTAssertEqual(MundaneTimespineP22.totalConstructionRecords, 1_811_967)
     }
 
-    func testCandidateFixturePinsPositionFirstSeparateBodyProfile() throws {
-        let f = try fixture()
-        XCTAssertEqual(f.status, "position-first-packed-candidate")
-        XCTAssertEqual(f.codec, MundaneTimespine.codec)
-        XCTAssertEqual(f.astroDNACodec, AstroDNA.codec)
-        XCTAssertEqual(f.representation, MundaneTimespine.representation)
-        XCTAssertEqual(f.positionUnitsPerDegree, MundaneTimespine.positionUnitsPerDegree)
-        XCTAssertEqual(f.profiles.map(\.body), MundaneBody.canonicalOrder.map(\.displayName))
-        XCTAssertEqual(f.profiles.map(\.edgeSampleDays), MundaneTimespineForge.candidateProfiles.map(\.edgeSampleDays))
-        XCTAssertEqual(f.profiles.map(\.coreSampleDays), MundaneTimespineForge.candidateProfiles.map(\.coreSampleDays))
-        XCTAssertEqual(f.profiles[2].body, "Mercury")
-        XCTAssertEqual(f.profiles[2].edgeSampleDays, 1.0 / 12.0, accuracy: 1e-15)
-        XCTAssertEqual(f.profiles[2].coreSampleDays, 1.0 / 48.0, accuracy: 1e-15)
-    }
+    func testP22ResolutionAndMarkerLawIsExplicit() {
+        let expected: [(MundaneBody, Double, [MundaneBody])] = [
+            (.sun, 1, [.pluto, .neptune]),
+            (.moon, 1, [.sun, .pluto]),
+            (.mercury, 1, [.sun, .pluto, .moon]),
+            (.venus, 1, [.sun, .pluto, .mercury]),
+            (.mars, 1, [.sun, .pluto]),
+            (.jupiter, 0.1, [.sun, .pluto]),
+            (.saturn, 0.1, [.sun, .jupiter]),
+            (.uranus, 0.1, [.sun]),
+            (.neptune, 0.1, [.sun]),
+            (.pluto, 0.1, [.sun]),
+            (.trueNorthNode, 0.1, [.sun, .moon]),
+        ]
 
-    func testFullRangePositionPayloadEstimateMatchesGoldenMeasurement() throws {
-        let f = try fixture()
-        let plan = MundaneTimespineForgePlan(
-            version: "v1-candidate",
-            astronomicalSource: "qualified-reference-required",
-            astronomicalSourceVersion: "pending",
-            supportedStart: JulianDay(f.supportedStartJulianDay)!,
-            supportedEnd: JulianDay(f.supportedEndJulianDay)!,
-            profiles: MundaneTimespineForge.candidateProfiles
-        )!
-        XCTAssertEqual(MundaneTimespineForge.estimatedPositionPayloadBytes(for: plan), f.estimatedPositionPayloadBytes)
-        XCTAssertEqual(f.denseStartJulianDay, MundaneTimespineForge.v1DenseStart.value)
-        XCTAssertEqual(f.denseEndJulianDay, MundaneTimespineForge.v1DenseEnd.value)
-        XCTAssertLessThan(f.estimatedPositionPayloadBytes, 50 * 1_024 * 1_024)
-    }
-
-    func testLocalCubicReadReconstructsCubicReferenceFromStampedPositions() throws {
-        let reference = AnalyticReference()
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: reference)
-        for body in MundaneBody.canonicalOrder {
-            for offset in [0.05, 0.5, 1.75, 3.5, 6.25, 7.95] {
-                let jd = JulianDay(2_451_545.0 + offset)!
-                let expected = try reference.state(of: body, at: jd)
-                let actual = try timespine.state(of: body, at: jd)
-                XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_002)
-                XCTAssertEqual(abs(actual.longitudinalSpeedDegreesPerDay), abs(expected.longitudinalSpeedDegreesPerDay), accuracy: 0.000_02)
+        XCTAssertEqual(MundaneTimespineP22.profiles.count, expected.count)
+        for (body, resolution, markers) in expected {
+            let profile = MundaneTimespineP22.profile(for: body)
+            XCTAssertEqual(profile.body, body)
+            XCTAssertEqual(profile.celestialResolutionDegrees, resolution, accuracy: 1e-12)
+            XCTAssertEqual(profile.markerBodies, markers)
+            if body != .sun {
+                XCTAssertEqual(markers.first, .sun, "Sun must remain the first companion marker for every non-Sun body")
             }
         }
     }
 
-    func testStationChronologyOwnsMotionTransition() throws {
-        var chronologies: [MundaneBody: MundaneMotionChronology] = [:]
-        for body in MundaneBody.canonicalOrder {
-            let initial: Motion = body == .trueNorthNode ? .retrograde : .direct
-            chronologies[body] = MundaneMotionChronology(initialMotion: initial, stations: [])!
+    func testCommittedP22SummaryMatchesNativeContract() throws {
+        let summary = try decode(Summary.self, at: p22Data.appendingPathComponent("summary.json"))
+        XCTAssertEqual(summary.spanName, MundaneTimespineP22.spanName)
+        XCTAssertEqual(summary.startJulianDayUT, MundaneTimespineP22.startJulianDay.value, accuracy: 1e-9)
+        XCTAssertEqual(summary.endJulianDayUT, MundaneTimespineP22.endJulianDay.value, accuracy: 1e-9)
+        XCTAssertEqual(summary.civicOffsetBitsRequired, MundaneTimespineP22.civicOffsetBitsRequired)
+        XCTAssertEqual(summary.totalSelectedBodyRecords, MundaneTimespineP22.totalConstructionRecords)
+        XCTAssertEqual(summary.bodyTables.count, MundaneBody.canonicalOrder.count)
+
+        for profile in MundaneTimespineP22.profiles {
+            let body = try XCTUnwrap(summary.bodyTables.first { $0.body == profile.body.constructionDataName })
+            XCTAssertEqual(body.selectedResolutionDegrees, profile.celestialResolutionDegrees, accuracy: 1e-12)
+            XCTAssertEqual(body.selectedRecords, profile.constructionRecordCount)
+            XCTAssertEqual(body.selectedResolutionMarkerAudit.selectedRepeatedKeys, 0)
+            XCTAssertEqual(
+                body.selectedResolutionMarkerAudit.selectedMarkers,
+                profile.markerBodies.map(\.constructionDataName)
+            )
         }
-        chronologies[.trueNorthNode] = MundaneMotionChronology(
-            initialMotion: .retrograde,
-            stations: [MundaneStation(julianDay: JulianDay(2_451_549.0)!, motionAfter: .direct)]
-        )!
-        let timespine = try MundaneTimespineForge.manufacture(
-            plan: shortPlan(motionChronologies: chronologies),
-            reference: AnalyticReference()
+    }
+
+    func testCommittedAuditProvesEverySelectedMarkerKeyUnique() throws {
+        let audit = try decode(
+            CompactAudit.self,
+            at: p22Results.appendingPathComponent("substrate-audit-compact.json")
         )
-        XCTAssertEqual(try timespine.state(of: .trueNorthNode, at: JulianDay(2_451_548.9)!).motion, .retrograde)
-        XCTAssertEqual(try timespine.state(of: .trueNorthNode, at: JulianDay(2_451_549.1)!).motion, .direct)
-    }
+        XCTAssertEqual(audit.span, MundaneTimespineP22.spanName)
+        XCTAssertEqual(audit.bodies.count, MundaneBody.canonicalOrder.count)
 
-    func testArtifactSetContainsIndependentBodyFilesAndStationCounts() throws {
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
-        let artifacts = timespine.encodedArtifacts()
-        XCTAssertEqual(artifacts.bodyArtifacts.count, 11)
-        let text = try XCTUnwrap(String(data: artifacts.manifest, encoding: .utf8))
-        XCTAssertTrue(text.contains("\"codec\" : 4"))
-        XCTAssertTrue(text.contains("\"stationCount\""))
-        XCTAssertTrue(text.contains("\"knotCount\""))
-        XCTAssertTrue(text.contains("\"unpackedPositionBytes\""))
-        XCTAssertTrue(text.contains("true-north-node.orbbody"))
-    }
-
-    func testCodecRoundTripPreservesBodyReads() throws {
-        let original = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
-        let artifacts = original.encodedArtifacts()
-        let decoded = try MundaneTimespine.decodeArtifacts(manifest: artifacts.manifest, bodyArtifacts: artifacts.bodyArtifacts)
-        XCTAssertEqual(decoded.checksum, original.checksum)
-        for body in MundaneBody.canonicalOrder {
-            let jd = JulianDay(2_451_550.125)!
-            let a = try original.state(of: body, at: jd)
-            let b = try decoded.state(of: body, at: jd)
-            XCTAssertEqual(a.longitude.degrees, b.longitude.degrees, accuracy: 1e-12)
-            XCTAssertEqual(a.longitudinalSpeedDegreesPerDay, b.longitudinalSpeedDegreesPerDay, accuracy: 1e-12)
+        for profile in MundaneTimespineP22.profiles {
+            let body = try XCTUnwrap(audit.bodies.first { $0.body == profile.body.constructionDataName })
+            XCTAssertEqual(body.resolution, profile.celestialResolutionDegrees, accuracy: 1e-12)
+            XCTAssertEqual(body.records, profile.constructionRecordCount)
+            XCTAssertEqual(body.markers, profile.markerBodies.map(\.constructionDataName))
+            XCTAssertTrue(body.markerUnique, "\(body.body) marker key repeats inside P22")
         }
     }
 
-    func testBodyChecksumDetectsMutationWithoutPoisoningOtherBodies() throws {
-        let artifacts = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference()).encodedArtifacts()
-        var bodies = artifacts.bodyArtifacts
-        var mercury = try XCTUnwrap(bodies[.mercury])
-        mercury[mercury.count - 1] ^= 1
-        bodies[.mercury] = mercury
-        XCTAssertThrowsError(try MundaneTimespine.decodeArtifacts(manifest: artifacts.manifest, bodyArtifacts: bodies)) {
-            XCTAssertEqual($0 as? MundaneTimespineError, .checksumMismatch(.mercury))
-        }
-        XCTAssertEqual(bodies[.sun], artifacts.bodyArtifacts[.sun])
-    }
+    func testPersistedManifestBindsEveryCompressedP22FileBySizeAndSHA256() throws {
+        let manifest = try decode(Manifest.self, at: p22Data.appendingPathComponent("manifest.json"))
+        XCTAssertEqual(manifest.span, MundaneTimespineP22.spanName)
+        XCTAssertEqual(manifest.bodyTableCount, 11)
+        XCTAssertEqual(manifest.sharedTables, ["station-table", "retrograde-passages", "retrograde-crossings"])
 
-    func testLongitudeReadSurvivesZeroDegreeCrossing() throws {
-        let reference = AnalyticReference()
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: reference)
-        for offset in stride(from: 0.0, to: 8.0, by: 0.125) {
-            let jd = JulianDay(2_451_545.0 + offset)!
-            let expected = try reference.state(of: .sun, at: jd)
-            let actual = try timespine.state(of: .sun, at: jd)
-            XCTAssertLessThan(foldedDifference(actual.longitude.degrees, expected.longitude.degrees), 0.000_002)
-        }
-    }
-
-    func testResumableForgeProducesByteIdenticalArtifactSet() throws {
-        let plan = shortPlan()
-        let reference = AnalyticReference()
-        let oneShot = try MundaneTimespineForge.manufacture(plan: plan, reference: reference).encodedArtifacts()
-        var cursor = MundaneTimespineForge.makeCursor(plan: plan)
-        while !cursor.isComplete { _ = try cursor.step(reference: reference, sampleBudget: 7) }
-        let chunked = try cursor.product().encodedArtifacts()
-        XCTAssertEqual(chunked.manifest, oneShot.manifest)
-        XCTAssertEqual(chunked.bodyArtifacts, oneShot.bodyArtifacts)
-    }
-
-    func testRangeIsHalfOpenAndChecksumUsesKnownSHA256Vector() throws {
-        let timespine = try MundaneTimespineForge.manufacture(plan: shortPlan(), reference: AnalyticReference())
-        XCTAssertTrue(timespine.contains(JulianDay(2_451_545.0)!))
-        XCTAssertFalse(timespine.contains(JulianDay(2_451_553.0)!))
-        XCTAssertThrowsError(try timespine.state(of: .sun, at: JulianDay(2_451_553.0)!))
-        XCTAssertEqual(
-            MundaneTimespineCodec.sha256Hex(Data("abc".utf8)),
-            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        let expectedPaths = Set(
+            MundaneTimespineP22.profiles.map { "body-tables/\($0.body.constructionBodyFileName)" }
+            + MundaneTimespineP22.sharedMotionTables
         )
+        XCTAssertEqual(Set(manifest.files.map(\.path)), expectedPaths)
+
+        for record in manifest.files {
+            let url = p22Data.appendingPathComponent(record.path)
+            let data = try Data(contentsOf: url)
+            XCTAssertEqual(data.count, record.compressedBytes, "compressed byte count changed for \(record.path)")
+            XCTAssertGreaterThan(record.uncompressedBytes, 0)
+            XCTAssertEqual(sha256Hex(data), record.sha256, "SHA-256 changed for \(record.path)")
+        }
     }
 
-    private func foldedDifference(_ a: Double, _ b: Double) -> Double {
-        var delta = (a - b).truncatingRemainder(dividingBy: 360)
-        if delta > 180 { delta -= 360 }
-        if delta < -180 { delta += 360 }
-        return abs(delta)
+    func testAstroDNACodecFourRemainsIndependentOfPassFiveRepresentation() {
+        XCTAssertEqual(AstroDNA.codec, 4)
+        XCTAssertEqual(AstroDNAGene.canonicalOrder.count, 12)
+        XCTAssertEqual(AstroDNAGene.canonicalOrder[10], .northNode)
+    }
+
+    private var repositoryRoot: URL {
+        var url = URL(fileURLWithPath: #filePath)
+        for _ in 0..<5 { url.deleteLastPathComponent() }
+        return url
+    }
+
+    private var p22Data: URL {
+        repositoryRoot.appendingPathComponent("tools/pass5/p22-data", isDirectory: true)
+    }
+
+    private var p22Results: URL {
+        repositoryRoot.appendingPathComponent("tools/pass5/p22-results", isDirectory: true)
+    }
+
+    private func decode<T: Decodable>(_ type: T.Type, at url: URL) throws -> T {
+        try JSONDecoder().decode(type, from: Data(contentsOf: url))
+    }
+
+    private func sha256Hex(_ data: Data) -> String {
+        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
