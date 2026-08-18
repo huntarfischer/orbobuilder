@@ -1,7 +1,13 @@
 import Foundation
+#if canImport(Glibc)
+import Glibc
+#else
+import Darwin
+#endif
 
 private let p22StartJD = 2_386_637.079399706
 private let p22EndJD = 2_475_819.1417904524
+private let secondsPerDay = 86_400.0
 private let signNames = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
@@ -11,19 +17,32 @@ private enum EclipseKind: String, Codable, CaseIterable {
     case solar
     case lunar
 
-    var orientationBody: String { self == .solar ? "Sun" : "Moon" }
-    var swetestMode: String { self == .solar ? "-solecl" : "-lunecl" }
-    var planetSelector: String { self == .solar ? "-p0" : "-p1" }
+    var orientationBody: Body { self == .solar ? .sun : .moon }
+}
+
+private enum Body: Int32 {
+    case sun = 0
+    case moon = 1
+}
+
+private enum EclipseType: String, Codable {
+    case total
+    case annular
+    case partial
+    case hybrid
+    case penumbral
 }
 
 private struct RawEclipse {
     let kind: EclipseKind
-    let type: String
-    let julianDayUT: Double
-    let sarosSeries: Int
-    let sarosMember: Int
-    let magnitude: Double
-    let secondaryMagnitude: Double?
+    let type: EclipseType
+    let centrality: String?
+    let greatestJulianDayUT: Double
+}
+
+private struct State {
+    let longitude: Double
+    let speed: Double
 }
 
 private struct EclipseRow: Codable {
@@ -32,14 +51,13 @@ private struct EclipseRow: Codable {
     let degreeInSign: Double
     let orientationBody: String
     let kind: EclipseKind
-    let type: String
+    let type: EclipseType
+    let centrality: String?
     let civicOffsetSeconds: Int64
-    let julianDayUT: Double
-    let utc: String
-    let sarosSeries: Int
-    let sarosMember: Int
-    let magnitude: Double
-    let secondaryMagnitude: Double?
+    let phaseJulianDayUT: Double
+    let phaseUTC: String
+    let greatestEclipseJulianDayUT: Double
+    let greatestEclipseUTC: String
 }
 
 private struct Summary: Codable {
@@ -47,9 +65,11 @@ private struct Summary: Codable {
     let startJulianDayUT: Double
     let endJulianDayUTExclusive: Double
     let primaryOrientation: String
+    let celestialLaw: [String: String]
     let secondaryBinding: String
     let tableOrder: String
     let astronomicalSource: String
+    let swissVersion: String
     let sourceCommit: String
     let ephemerisFiles: [String]
     let rowCount: Int
@@ -62,20 +82,19 @@ private struct Summary: Codable {
 
 private enum ForgeFailure: Error, CustomStringConvertible {
     case usage(String)
-    case commandFailed(String)
-    case malformedOutput(String)
+    case swiss(String)
     case validation(String)
 
     var description: String {
         switch self {
-        case .usage(let message), .commandFailed(let message), .malformedOutput(let message), .validation(let message):
+        case .usage(let message), .swiss(let message), .validation(let message):
             return message
         }
     }
 }
 
 private struct Arguments {
-    let swetest: String
+    let library: String
     let ephe: String
     let sourceSHA: String
     let csv: String
@@ -87,12 +106,14 @@ private struct Arguments {
         while index < raw.count {
             let key = raw[index]
             guard key.hasPrefix("--"), index + 1 < raw.count else {
-                throw ForgeFailure.usage("Usage: main.swift --swetest PATH --ephe PATH --source-sha SHA --csv PATH --summary PATH")
+                throw ForgeFailure.usage(
+                    "Usage: eclipse-forge --library PATH --ephe PATH --source-sha SHA --csv PATH --summary PATH"
+                )
             }
             values[key] = raw[index + 1]
             index += 2
         }
-        guard let swetest = values["--swetest"],
+        guard let library = values["--library"],
               let ephe = values["--ephe"],
               let sourceSHA = values["--source-sha"],
               let csv = values["--csv"],
@@ -100,7 +121,7 @@ private struct Arguments {
               !sourceSHA.isEmpty else {
             throw ForgeFailure.usage("Missing required Forge argument.")
         }
-        self.swetest = swetest
+        self.library = library
         self.ephe = ephe
         self.sourceSHA = sourceSHA
         self.csv = csv
@@ -108,161 +129,210 @@ private struct Arguments {
     }
 }
 
-private func run(_ executable: String, _ arguments: [String]) throws -> String {
-    let process = Process()
-    process.executableURL = URL(fileURLWithPath: executable)
-    process.arguments = arguments
+private typealias SweSetEphePath = @convention(c) (UnsafePointer<CChar>?) -> Void
+private typealias SweCalcUT = @convention(c) (
+    Double,
+    Int32,
+    Int32,
+    UnsafeMutablePointer<Double>?,
+    UnsafeMutablePointer<CChar>?
+) -> Int32
+private typealias SweVersion = @convention(c) (UnsafeMutablePointer<CChar>?) -> UnsafePointer<CChar>?
+private typealias SweEclipseWhen = @convention(c) (
+    Double,
+    Int32,
+    Int32,
+    UnsafeMutablePointer<Double>?,
+    Int32,
+    UnsafeMutablePointer<CChar>?
+) -> Int32
 
-    let stdout = Pipe()
-    let stderr = Pipe()
-    process.standardOutput = stdout
-    process.standardError = stderr
+private final class Swiss {
+    static let SWIEPH: Int32 = 2
+    static let MOSEPH: Int32 = 4
+    static let SPEED: Int32 = 256
 
-    try process.run()
-    process.waitUntilExit()
+    static let ECL_CENTRAL: Int32 = 1
+    static let ECL_NONCENTRAL: Int32 = 2
+    static let ECL_TOTAL: Int32 = 4
+    static let ECL_ANNULAR: Int32 = 8
+    static let ECL_PARTIAL: Int32 = 16
+    static let ECL_ANNULAR_TOTAL: Int32 = 32
+    static let ECL_PENUMBRAL: Int32 = 64
 
-    let outData = stdout.fileHandleForReading.readDataToEndOfFile()
-    let errData = stderr.fileHandleForReading.readDataToEndOfFile()
-    let out = String(data: outData, encoding: .utf8) ?? ""
-    let err = String(data: errData, encoding: .utf8) ?? ""
+    private let handle: UnsafeMutableRawPointer
+    private let calcUT: SweCalcUT
+    private let solarWhen: SweEclipseWhen
+    private let lunarWhen: SweEclipseWhen
+    let version: String
 
-    guard process.terminationStatus == 0 else {
-        throw ForgeFailure.commandFailed("Command failed (\(process.terminationStatus)): \(executable) \(arguments.joined(separator: " "))\n\(err)\n\(out)")
-    }
-    let lower = (out + "\n" + err).lowercased()
-    if lower.contains("error") || lower.contains("file not found") {
-        throw ForgeFailure.commandFailed("Swiss Ephemeris reported an error:\n\(err)\n\(out)")
-    }
-    return out
-}
-
-private func eclipseType(from descriptor: String, kind: EclipseKind) throws -> String {
-    let lower = descriptor.lowercased()
-    switch kind {
-    case .solar:
-        if lower.hasPrefix("ann-tot") { return "hybrid" }
-        if lower.hasPrefix("total") { return "total" }
-        if lower.hasPrefix("annular") { return "annular" }
-        if lower.hasPrefix("partial") { return "partial" }
-    case .lunar:
-        if lower.hasPrefix("total") { return "total" }
-        if lower.hasPrefix("penumb.") { return "penumbral" }
-        if lower.hasPrefix("partial") { return "partial" }
-    }
-    throw ForgeFailure.malformedOutput("Unknown \(kind.rawValue) eclipse type: \(descriptor)")
-}
-
-private func parseSaros(_ field: String) throws -> (Int, Int) {
-    let text = field.replacingOccurrences(of: "saros", with: "", options: [.caseInsensitive]).trimmingCharacters(in: .whitespaces)
-    let parts = text.split(separator: "/")
-    guard parts.count == 2,
-          let series = Int(parts[0].trimmingCharacters(in: .whitespaces)),
-          let member = Int(parts[1].trimmingCharacters(in: .whitespaces)) else {
-        throw ForgeFailure.malformedOutput("Malformed Saros field: \(field)")
-    }
-    return (series, member)
-}
-
-private func parseMagnitudeField(_ field: String, kind: EclipseKind) throws -> (Double, Double?) {
-    let parts = field.split(separator: "/").map { $0.trimmingCharacters(in: .whitespaces) }
-    guard let first = parts.first, let magnitude = Double(first) else {
-        throw ForgeFailure.malformedOutput("Malformed magnitude field: \(field)")
-    }
-    switch kind {
-    case .solar:
-        return (magnitude, nil)
-    case .lunar:
-        let secondary = parts.count > 1 ? Double(parts[1]) : nil
-        return (magnitude, secondary)
-    }
-}
-
-private func parseEclipses(_ output: String, kind: EclipseKind) throws -> [RawEclipse] {
-    var rows: [RawEclipse] = []
-    for rawLine in output.split(whereSeparator: \.isNewline) {
-        let line = String(rawLine)
-        let lower = line.lowercased()
-        let isEventLine: Bool
-        switch kind {
-        case .solar: isEventLine = lower.contains(" solar\t")
-        case .lunar: isEventLine = lower.contains("lunar eclipse\t")
+    init(library: String, epheDir: String) throws {
+        guard let handle = dlopen(library, RTLD_NOW | RTLD_LOCAL) else {
+            throw ForgeFailure.swiss("Could not load Swiss Ephemeris library: \(String(cString: dlerror()))")
         }
-        guard isEventLine else { continue }
+        self.handle = handle
 
-        let fields = line.split(separator: "\t", omittingEmptySubsequences: false).map {
-            String($0).trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        guard fields.count >= 6,
-              let jdField = fields.last,
-              let jd = Double(jdField),
-              let sarosIndex = fields.firstIndex(where: { $0.lowercased().hasPrefix("saros ") }),
-              sarosIndex > 0 else {
-            throw ForgeFailure.malformedOutput("Malformed Swiss eclipse row: \(line)")
-        }
-
-        let type = try eclipseType(from: fields[0], kind: kind)
-        let (series, member) = try parseSaros(fields[sarosIndex])
-        let (magnitude, secondary) = try parseMagnitudeField(fields[sarosIndex - 1], kind: kind)
-        rows.append(RawEclipse(
-            kind: kind,
-            type: type,
-            julianDayUT: jd,
-            sarosSeries: series,
-            sarosMember: member,
-            magnitude: magnitude,
-            secondaryMagnitude: secondary
-        ))
-    }
-    guard !rows.isEmpty else {
-        throw ForgeFailure.malformedOutput("Swiss Ephemeris returned no \(kind.rawValue) eclipse event rows.")
-    }
-    return rows
-}
-
-private func enumerateEclipses(kind: EclipseKind, arguments: Arguments) throws -> [RawEclipse] {
-    let output = try run(arguments.swetest, [
-        "-bj\(String(format: "%.9f", p22StartJD))",
-        "-ut",
-        "-eswe",
-        "-edir\(arguments.ephe)",
-        kind.swetestMode,
-        "-n800",
-        "-head",
-    ])
-    let all = try parseEclipses(output, kind: kind)
-    guard all.contains(where: { $0.julianDayUT >= p22EndJD }) else {
-        throw ForgeFailure.validation("Swiss \(kind.rawValue) enumeration did not run beyond the P22 exclusive end; completeness is unproven.")
-    }
-    return all.filter { $0.julianDayUT >= p22StartJD && $0.julianDayUT < p22EndJD }
-}
-
-private func longitude(at jd: Double, kind: EclipseKind, arguments: Arguments) throws -> Double {
-    let output = try run(arguments.swetest, [
-        "-bj\(String(format: "%.9f", jd))",
-        "-ut",
-        "-eswe",
-        "-edir\(arguments.ephe)",
-        kind.planetSelector,
-        "-fl",
-        "-ep",
-        "-head",
-    ])
-    for rawLine in output.split(whereSeparator: \.isNewline) {
-        let text = rawLine.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let value = Double(text), value.isFinite {
-            var normalized = value.truncatingRemainder(dividingBy: 360)
-            if normalized < 0 { normalized += 360 }
-            guard normalized >= 0, normalized < 360 else {
-                throw ForgeFailure.malformedOutput("Swiss longitude outside zodiac: \(value)")
+        func symbol<T>(_ name: String, _ type: T.Type) throws -> T {
+            guard let pointer = dlsym(handle, name) else {
+                throw ForgeFailure.swiss("Swiss Ephemeris symbol not found: \(name)")
             }
-            return normalized
+            return unsafeBitCast(pointer, to: T.self)
+        }
+
+        let setPath: SweSetEphePath = try symbol("swe_set_ephe_path", SweSetEphePath.self)
+        calcUT = try symbol("swe_calc_ut", SweCalcUT.self)
+        solarWhen = try symbol("swe_sol_eclipse_when_glob", SweEclipseWhen.self)
+        lunarWhen = try symbol("swe_lun_eclipse_when", SweEclipseWhen.self)
+        let versionFn: SweVersion = try symbol("swe_version", SweVersion.self)
+
+        epheDir.withCString { setPath($0) }
+        var versionBuffer = [CChar](repeating: 0, count: 128)
+        _ = versionBuffer.withUnsafeMutableBufferPointer { versionFn($0.baseAddress) }
+        version = String(cString: versionBuffer)
+    }
+
+    deinit {
+        dlclose(handle)
+    }
+
+    func state(_ body: Body, jd: Double) throws -> State {
+        var values = [Double](repeating: 0.0, count: 6)
+        var error = [CChar](repeating: 0, count: 256)
+        let flags = Swiss.SWIEPH | Swiss.SPEED
+        let returned = values.withUnsafeMutableBufferPointer { valueBuffer in
+            error.withUnsafeMutableBufferPointer { errorBuffer in
+                calcUT(jd, body.rawValue, flags, valueBuffer.baseAddress, errorBuffer.baseAddress)
+            }
+        }
+        guard returned >= 0 else {
+            throw ForgeFailure.swiss("Swiss position failure at JD \(jd): \(String(cString: error))")
+        }
+        guard (returned & Swiss.SWIEPH) != 0, (returned & Swiss.MOSEPH) == 0 else {
+            throw ForgeFailure.validation(
+                "Swiss Ephemeris fallback detected at JD \(jd). P22 eclipse manufacture requires the repository DE441 files."
+            )
+        }
+        return State(longitude: normalize(values[0]), speed: values[3])
+    }
+
+    func nextEclipse(kind: EclipseKind, after startJD: Double) throws -> RawEclipse {
+        var times = [Double](repeating: 0.0, count: 10)
+        var error = [CChar](repeating: 0, count: 256)
+        let function = kind == .solar ? solarWhen : lunarWhen
+        let returned = times.withUnsafeMutableBufferPointer { timeBuffer in
+            error.withUnsafeMutableBufferPointer { errorBuffer in
+                function(
+                    startJD,
+                    Swiss.SWIEPH,
+                    0,
+                    timeBuffer.baseAddress,
+                    0,
+                    errorBuffer.baseAddress
+                )
+            }
+        }
+        guard returned >= 0 else {
+            throw ForgeFailure.swiss("Swiss eclipse search failure after JD \(startJD): \(String(cString: error))")
+        }
+        guard times[0].isFinite, times[0] > startJD else {
+            throw ForgeFailure.validation("Swiss eclipse search did not advance after JD \(startJD).")
+        }
+        return RawEclipse(
+            kind: kind,
+            type: try classify(returned, kind: kind),
+            centrality: kind == .solar ? classifyCentrality(returned) : nil,
+            greatestJulianDayUT: times[0]
+        )
+    }
+}
+
+private func normalize(_ value: Double) -> Double {
+    var result = value.truncatingRemainder(dividingBy: 360.0)
+    if result < 0 { result += 360.0 }
+    return result
+}
+
+private func signedAngle(_ value: Double) -> Double {
+    var result = normalize(value)
+    if result > 180.0 { result -= 360.0 }
+    return result
+}
+
+private func classify(_ flags: Int32, kind: EclipseKind) throws -> EclipseType {
+    switch kind {
+    case .solar:
+        if (flags & Swiss.ECL_ANNULAR_TOTAL) != 0 { return .hybrid }
+        if (flags & Swiss.ECL_TOTAL) != 0 { return .total }
+        if (flags & Swiss.ECL_ANNULAR) != 0 { return .annular }
+        if (flags & Swiss.ECL_PARTIAL) != 0 { return .partial }
+    case .lunar:
+        if (flags & Swiss.ECL_TOTAL) != 0 { return .total }
+        if (flags & Swiss.ECL_PARTIAL) != 0 { return .partial }
+        if (flags & Swiss.ECL_PENUMBRAL) != 0 { return .penumbral }
+    }
+    throw ForgeFailure.validation("Unknown Swiss eclipse type flags \(flags) for \(kind.rawValue).")
+}
+
+private func classifyCentrality(_ flags: Int32) -> String? {
+    if (flags & Swiss.ECL_CENTRAL) != 0 { return "central" }
+    if (flags & Swiss.ECL_NONCENTRAL) != 0 { return "noncentral" }
+    return nil
+}
+
+private func enumerateEclipses(kind: EclipseKind, swiss: Swiss) throws -> [RawEclipse] {
+    var result: [RawEclipse] = []
+    var cursor = p22StartJD - 2.0
+    while true {
+        let eclipse = try swiss.nextEclipse(kind: kind, after: cursor)
+        if eclipse.greatestJulianDayUT >= p22EndJD + 2.0 { break }
+        if eclipse.greatestJulianDayUT >= p22StartJD - 2.0 {
+            result.append(eclipse)
+        }
+        cursor = eclipse.greatestJulianDayUT + 1.0
+        guard result.count < 2_000 else {
+            throw ForgeFailure.validation("Eclipse enumeration exceeded the P22 safety bound.")
         }
     }
-    throw ForgeFailure.malformedOutput("Could not parse \(kind.orientationBody) longitude at JD \(jd):\n\(output)")
+    return result
+}
+
+private func phaseResidual(kind: EclipseKind, sun: State, moon: State) -> Double {
+    let separation = normalize(moon.longitude - sun.longitude)
+    switch kind {
+    case .solar:
+        return signedAngle(separation)
+    case .lunar:
+        return signedAngle(separation - 180.0)
+    }
+}
+
+private func refineSyzygy(kind: EclipseKind, near greatestJD: Double, swiss: Swiss) throws -> Double {
+    var jd = greatestJD
+    for _ in 0..<12 {
+        let sun = try swiss.state(.sun, jd: jd)
+        let moon = try swiss.state(.moon, jd: jd)
+        let residual = phaseResidual(kind: kind, sun: sun, moon: moon)
+        if abs(residual) < 1e-11 { return jd }
+        let relativeSpeed = moon.speed - sun.speed
+        guard abs(relativeSpeed) > 1e-8 else {
+            throw ForgeFailure.validation("Syzygy relative speed collapsed near JD \(jd).")
+        }
+        var correction = residual / relativeSpeed
+        correction = max(-0.75, min(0.75, correction))
+        jd -= correction
+    }
+
+    let sun = try swiss.state(.sun, jd: jd)
+    let moon = try swiss.state(.moon, jd: jd)
+    let residual = phaseResidual(kind: kind, sun: sun, moon: moon)
+    guard abs(residual) < 1e-8 else {
+        throw ForgeFailure.validation("Syzygy did not converge near greatest eclipse JD \(greatestJD); residual \(residual) degrees.")
+    }
+    return jd
 }
 
 private func utcString(for jd: Double) -> String {
-    let unixSeconds = (jd - 2_440_587.5) * 86_400
+    let unixSeconds = (jd - 2_440_587.5) * secondsPerDay
     let date = Date(timeIntervalSince1970: unixSeconds)
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -272,42 +342,54 @@ private func utcString(for jd: Double) -> String {
     return formatter.string(from: date)
 }
 
-private func makeRows(raw: [RawEclipse], arguments: Arguments) throws -> [EclipseRow] {
+private func makeRows(raw: [RawEclipse], swiss: Swiss) throws -> [EclipseRow] {
     var seen: Set<String> = []
     var rows: [EclipseRow] = []
     rows.reserveCapacity(raw.count)
 
     for event in raw {
-        let identity = "\(event.kind.rawValue)|\(String(format: "%.6f", event.julianDayUT))"
+        let phaseJD = try refineSyzygy(kind: event.kind, near: event.greatestJulianDayUT, swiss: swiss)
+        guard phaseJD >= p22StartJD, phaseJD < p22EndJD else { continue }
+
+        let sun = try swiss.state(.sun, jd: phaseJD)
+        let moon = try swiss.state(.moon, jd: phaseJD)
+        let residual = phaseResidual(kind: event.kind, sun: sun, moon: moon)
+        guard abs(residual) < 1e-8 else {
+            throw ForgeFailure.validation("Celestial eclipse law failed at JD \(phaseJD): residual \(residual) degrees.")
+        }
+
+        let eclipseDegree = event.kind == .solar ? sun.longitude : moon.longitude
+        let signIndex = Int(floor(eclipseDegree / 30.0))
+        guard signNames.indices.contains(signIndex) else {
+            throw ForgeFailure.validation("Could not orient eclipse degree \(eclipseDegree) on zodiac.")
+        }
+
+        let identity = "\(event.kind.rawValue)|\(String(format: "%.9f", phaseJD))"
         guard seen.insert(identity).inserted else {
             throw ForgeFailure.validation("Duplicate eclipse occurrence: \(identity)")
         }
-        let degree = try longitude(at: event.julianDayUT, kind: event.kind, arguments: arguments)
-        let signIndex = Int(floor(degree / 30.0))
-        guard signNames.indices.contains(signIndex) else {
-            throw ForgeFailure.validation("Could not orient eclipse degree \(degree) on zodiac.")
-        }
-        let offset = Int64(((event.julianDayUT - p22StartJD) * 86_400).rounded())
+
         rows.append(EclipseRow(
-            eclipseDegree: degree,
+            eclipseDegree: eclipseDegree,
             sign: signNames[signIndex],
-            degreeInSign: degree - Double(signIndex * 30),
-            orientationBody: event.kind.orientationBody,
+            degreeInSign: eclipseDegree - Double(signIndex * 30),
+            orientationBody: event.kind.orientationBody == .sun ? "Sun" : "Moon",
             kind: event.kind,
             type: event.type,
-            civicOffsetSeconds: offset,
-            julianDayUT: event.julianDayUT,
-            utc: utcString(for: event.julianDayUT),
-            sarosSeries: event.sarosSeries,
-            sarosMember: event.sarosMember,
-            magnitude: event.magnitude,
-            secondaryMagnitude: event.secondaryMagnitude
+            centrality: event.centrality,
+            civicOffsetSeconds: Int64(((phaseJD - p22StartJD) * secondsPerDay).rounded()),
+            phaseJulianDayUT: phaseJD,
+            phaseUTC: utcString(for: phaseJD),
+            greatestEclipseJulianDayUT: event.greatestJulianDayUT,
+            greatestEclipseUTC: utcString(for: event.greatestJulianDayUT)
         ))
     }
 
     rows.sort {
-        if abs($0.eclipseDegree - $1.eclipseDegree) > 1e-12 { return $0.eclipseDegree < $1.eclipseDegree }
-        return $0.julianDayUT < $1.julianDayUT
+        if abs($0.eclipseDegree - $1.eclipseDegree) > 1e-12 {
+            return $0.eclipseDegree < $1.eclipseDegree
+        }
+        return $0.phaseJulianDayUT < $1.phaseJulianDayUT
     }
     return rows
 }
@@ -320,8 +402,11 @@ private func csvEscaped(_ value: String) -> String {
 }
 
 private func writeCSV(_ rows: [EclipseRow], to path: String) throws {
-    var lines = ["eclipse_degree,sign,degree_in_sign,orientation_body,eclipse_kind,eclipse_type,civic_offset_seconds,julian_day_ut,utc,saros_series,saros_member,magnitude,secondary_magnitude"]
+    var lines = [
+        "eclipse_degree,sign,degree_in_sign,orientation_body,eclipse_kind,eclipse_type,centrality,civic_offset_seconds,phase_julian_day_ut,phase_utc,greatest_eclipse_julian_day_ut,greatest_eclipse_utc"
+    ]
     lines.reserveCapacity(rows.count + 1)
+
     for row in rows {
         let fields = [
             String(format: "%.11f", row.eclipseDegree),
@@ -329,39 +414,48 @@ private func writeCSV(_ rows: [EclipseRow], to path: String) throws {
             String(format: "%.11f", row.degreeInSign),
             row.orientationBody,
             row.kind.rawValue,
-            row.type,
+            row.type.rawValue,
+            row.centrality ?? "",
             String(row.civicOffsetSeconds),
-            String(format: "%.6f", row.julianDayUT),
-            row.utc,
-            String(row.sarosSeries),
-            String(row.sarosMember),
-            String(format: "%.6f", row.magnitude),
-            row.secondaryMagnitude.map { String(format: "%.6f", $0) } ?? "",
+            String(format: "%.9f", row.phaseJulianDayUT),
+            row.phaseUTC,
+            String(format: "%.9f", row.greatestEclipseJulianDayUT),
+            row.greatestEclipseUTC,
         ].map(csvEscaped)
         lines.append(fields.joined(separator: ","))
     }
+
     let url = URL(fileURLWithPath: path)
     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try (lines.joined(separator: "\n") + "\n").write(to: url, atomically: true, encoding: .utf8)
 }
 
-private func writeSummary(_ rows: [EclipseRow], arguments: Arguments) throws {
-    guard let minDegree = rows.map(\.eclipseDegree).min(), let maxDegree = rows.map(\.eclipseDegree).max() else {
+private func writeSummary(_ rows: [EclipseRow], swiss: Swiss, arguments: Arguments) throws {
+    guard let minDegree = rows.map(\.eclipseDegree).min(),
+          let maxDegree = rows.map(\.eclipseDegree).max() else {
         throw ForgeFailure.validation("Cannot summarize an empty eclipse table.")
     }
+
     let solar = rows.filter { $0.kind == .solar }.count
     let lunar = rows.filter { $0.kind == .lunar }.count
     var counts: [String: Int] = [:]
-    for row in rows { counts["\(row.kind.rawValue).\(row.type)", default: 0] += 1 }
+    for row in rows {
+        counts["\(row.kind.rawValue).\(row.type.rawValue)", default: 0] += 1
+    }
 
     let summary = Summary(
         spanName: "P22 Pluto Zeitgeist",
         startJulianDayUT: p22StartJD,
         endJulianDayUTExclusive: p22EndJD,
-        primaryOrientation: "eclipse zodiacal degree (Sun for solar eclipses; Moon for lunar eclipses)",
-        secondaryBinding: "civic UT / Julian Day occurrence",
-        tableOrder: "eclipse_degree ascending, then julian_day_ut ascending",
-        astronomicalSource: "Swiss Ephemeris; geocentric tropical apparent ecliptic longitude; UT",
+        primaryOrientation: "eclipse zodiacal degree at exact syzygy; Sun degree for solar eclipses, Moon degree for lunar eclipses",
+        celestialLaw: [
+            "solar": "Sun conjunct Moon",
+            "lunar": "Moon opposite Sun",
+        ],
+        secondaryBinding: "exact syzygy civic UT / Julian Day; greatest eclipse retained as event metadata",
+        tableOrder: "eclipse_degree ascending, then phase_julian_day_ut ascending",
+        astronomicalSource: "Swiss Ephemeris DE441 repository files; geocentric tropical ecliptic longitude; UT",
+        swissVersion: swiss.version,
         sourceCommit: arguments.sourceSHA,
         ephemerisFiles: ["sepl_18.se1", "semo_18.se1"],
         rowCount: rows.count,
@@ -371,75 +465,51 @@ private func writeSummary(_ rows: [EclipseRow], arguments: Arguments) throws {
         minimumEclipseDegree: minDegree,
         maximumEclipseDegree: maxDegree
     )
+
     let encoder = JSONEncoder()
-    encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
-    var data = try encoder.encode(summary)
-    data.append(0x0A)
+    encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+    let data = try encoder.encode(summary)
     let url = URL(fileURLWithPath: arguments.summary)
     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
     try data.write(to: url, options: .atomic)
+    try FileHandle(forWritingTo: url).seekToEnd()
 }
 
 private func validate(_ rows: [EclipseRow]) throws {
-    guard rows.count > 800 else { throw ForgeFailure.validation("P22 eclipse table unexpectedly sparse: \(rows.count) rows") }
-    let solar = rows.filter { $0.kind == .solar }
-    let lunar = rows.filter { $0.kind == .lunar }
-    guard solar.count > 400, lunar.count > 400 else {
-        throw ForgeFailure.validation("P22 eclipse populations unexpectedly sparse: solar \(solar.count), lunar \(lunar.count)")
+    guard !rows.isEmpty else { throw ForgeFailure.validation("P22 eclipse table is empty.") }
+    guard rows.allSatisfy({ $0.eclipseDegree >= 0 && $0.eclipseDegree < 360 }) else {
+        throw ForgeFailure.validation("P22 eclipse table contains an invalid zodiac degree.")
     }
-    let solarTypes = Set(["total", "annular", "hybrid", "partial"])
-    let lunarTypes = Set(["total", "partial", "penumbral"])
-    for (index, row) in rows.enumerated() {
-        guard row.julianDayUT >= p22StartJD, row.julianDayUT < p22EndJD else {
-            throw ForgeFailure.validation("Eclipse outside P22 at row \(index)")
-        }
-        guard row.eclipseDegree >= 0, row.eclipseDegree < 360 else {
-            throw ForgeFailure.validation("Eclipse degree outside zodiac at row \(index)")
-        }
-        guard row.civicOffsetSeconds >= 0 else {
-            throw ForgeFailure.validation("Negative P22 civic offset at row \(index)")
-        }
-        switch row.kind {
-        case .solar:
-            guard row.orientationBody == "Sun", solarTypes.contains(row.type) else {
-                throw ForgeFailure.validation("Malformed solar row at \(index)")
-            }
-        case .lunar:
-            guard row.orientationBody == "Moon", lunarTypes.contains(row.type) else {
-                throw ForgeFailure.validation("Malformed lunar row at \(index)")
-            }
-        }
-        if index > 0 {
-            let prior = rows[index - 1]
-            guard prior.eclipseDegree < row.eclipseDegree ||
-                    (abs(prior.eclipseDegree - row.eclipseDegree) <= 1e-12 && prior.julianDayUT <= row.julianDayUT) else {
-                throw ForgeFailure.validation("Eclipse table is not celestial-degree first at row \(index)")
-            }
+    guard rows.allSatisfy({ $0.phaseJulianDayUT >= p22StartJD && $0.phaseJulianDayUT < p22EndJD }) else {
+        throw ForgeFailure.validation("P22 eclipse table contains an occurrence outside the half-open P22 span.")
+    }
+    for index in 1..<rows.count {
+        let previous = rows[index - 1]
+        let current = rows[index]
+        guard previous.eclipseDegree < current.eclipseDegree ||
+              (abs(previous.eclipseDegree - current.eclipseDegree) <= 1e-12 && previous.phaseJulianDayUT <= current.phaseJulianDayUT) else {
+            throw ForgeFailure.validation("P22 eclipse table is not celestial-degree-first.")
         }
     }
 }
 
-do {
-    let arguments = try Arguments(Array(CommandLine.arguments.dropFirst()))
-    for file in ["sepl_18.se1", "semo_18.se1"] {
-        let path = URL(fileURLWithPath: arguments.ephe).appendingPathComponent(file).path
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw ForgeFailure.validation("Required Swiss ephemeris file missing: \(path)")
+@main
+private enum EclipseForgeMain {
+    static func main() {
+        do {
+            let arguments = try Arguments(Array(CommandLine.arguments.dropFirst()))
+            let swiss = try Swiss(library: arguments.library, epheDir: arguments.ephe)
+            let solar = try enumerateEclipses(kind: .solar, swiss: swiss)
+            let lunar = try enumerateEclipses(kind: .lunar, swiss: swiss)
+            let rows = try makeRows(raw: solar + lunar, swiss: swiss)
+            try validate(rows)
+            try writeCSV(rows, to: arguments.csv)
+            try writeSummary(rows, swiss: swiss, arguments: arguments)
+            print("Forged \(rows.count) P22 eclipse occurrences: \(rows.filter { $0.kind == .solar }.count) solar, \(rows.filter { $0.kind == .lunar }.count) lunar.")
+            print("Primary orientation: celestial eclipse degree. Civic UT binds each occurrence.")
+        } catch {
+            fputs("Eclipse Forge failed: \(error)\n", stderr)
+            exit(1)
         }
     }
-
-    let solar = try enumerateEclipses(kind: .solar, arguments: arguments)
-    let lunar = try enumerateEclipses(kind: .lunar, arguments: arguments)
-    let rows = try makeRows(raw: solar + lunar, arguments: arguments)
-    try validate(rows)
-    try writeCSV(rows, to: arguments.csv)
-    try writeSummary(rows, arguments: arguments)
-
-    let counts = Dictionary(grouping: rows, by: { $0.kind }).mapValues(\.count)
-    print("Forged P22 eclipse table: \(rows.count) rows")
-    print("Solar: \(counts[.solar, default: 0])  Lunar: \(counts[.lunar, default: 0])")
-    print("Primary order: eclipse degree, then civic occurrence")
-} catch {
-    fputs("Eclipse Forge failed: \(error)\n", stderr)
-    exit(1)
 }
