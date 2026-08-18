@@ -218,6 +218,90 @@ final class HephaestusCompletionTests: XCTestCase {
         XCTAssertEqual(Hephaestus.interpretationRole, "none")
     }
 
+    func testAssembledStorageImageUsesTheSameHephaestusMintAsForge() throws {
+        let forged = try makeCandidate(recipe: RecipeA.self)
+        let image = try forged.artifact.storageImage()
+        let assembled = try Hephaestus.manufactureCandidate(
+            recipe: RecipeA.self,
+            assembledStorageImage: image
+        )
+
+        XCTAssertEqual(assembled.artifactData, forged.artifactData)
+        XCTAssertEqual(assembled.identity, forged.identity)
+        XCTAssertEqual(assembled.forgeRecord.recipeIdentifier, forged.forgeRecord.recipeIdentifier)
+        XCTAssertEqual(assembled.forgeRecord.bodyOccurrenceCount, forged.forgeRecord.bodyOccurrenceCount)
+    }
+
+    func testAssembledStorageImageRejectsRecipeProvenanceMismatch() throws {
+        let forged = try makeCandidate(recipe: RecipeA.self)
+        let decoded = try forged.artifact.storageImage()
+        let wrong = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "not the recipe span",
+            astronomicalSource: decoded.astronomicalSource,
+            astronomicalSourceVersion: decoded.astronomicalSourceVersion,
+            supportedStart: decoded.supportedStart,
+            supportedEnd: decoded.supportedEnd,
+            bodies: decoded.bodies,
+            relationships: decoded.relationships,
+            eclipses: decoded.eclipses
+        ))
+
+        XCTAssertThrowsError(try Hephaestus.manufactureCandidate(
+            recipe: RecipeA.self,
+            assembledStorageImage: wrong
+        )) { error in
+            XCTAssertEqual(error as? HephaestusError, .provenanceMismatch)
+        }
+    }
+
+    func testP22RecipeBindsCompleteCanonicalArtifactAnatomy() {
+        let contract = MundaneTimespineP22ForgeRecipe.artifactContract
+        XCTAssertEqual(contract.bodyCount, 11)
+        XCTAssertEqual(contract.bodyOccurrenceCount, 1_811_967)
+        XCTAssertEqual(contract.stationCount, 17_535)
+        XCTAssertEqual(contract.retrogradePassageCount, 8_770)
+        XCTAssertEqual(contract.relationshipCount, 770_298)
+        XCTAssertEqual(contract.eclipseCount, 1_133)
+        XCTAssertEqual(
+            MundaneTimespineP22ForgeRecipe.astronomicalSource,
+            "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT"
+        )
+        XCTAssertEqual(MundaneTimespineP22ForgeRecipe.canonicalAstronomicalSourceVersion, "2.10.03")
+    }
+
+    func testP22CanonicalInputContractFreezesEveryAdmittedIngredient() {
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.bodyInputs.count, 11)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.sharedMotionInputs.count, 3)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.universalEventInputs.count, 3)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.all.count, 17)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows, 770_298)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.expectedEclipseRows, 1_133)
+        XCTAssertTrue(MundaneTimespineP22CanonicalInputs.all.allSatisfy {
+            $0.compressedBytes > 0 && $0.sha256.count == 64
+        })
+        XCTAssertEqual(
+            Set(MundaneTimespineP22CanonicalInputs.bodyInputs.compactMap(\.expectedRows)).count,
+            11
+        )
+    }
+
+    func testDioscuriCertificationProgressCoversEveryTimespinePhase() throws {
+        let candidate = try makeCandidate(recipe: RecipeA.self)
+        var updates: [DioscuriCertificationProgress] = []
+        let verdict = try Dioscuri(candidate: candidate).certify { updates.append($0) }
+
+        guard case .certificate = verdict else {
+            return XCTFail("clean fixture should certify")
+        }
+        XCTAssertEqual(Set(updates.map(\.phase)), Set(DioscuriCertificationPhase.allCases))
+        XCTAssertEqual(updates.first { $0.phase == .bodyOccurrence }?.total, 2)
+        XCTAssertEqual(updates.first { $0.phase == .motionTopology }?.total, 1)
+        XCTAssertEqual(updates.first { $0.phase == .station }?.total, 0)
+        XCTAssertEqual(updates.first { $0.phase == .exactRelationship }?.total, 0)
+        XCTAssertEqual(updates.first { $0.phase == .eclipse }?.total, 0)
+        XCTAssertEqual(Dioscuri.exhaustiveExecutionLaw, "streamed / bounded working set")
+    }
+
     private func makeCandidate<R: HephaestusTimespineRecipe>(
         recipe: R.Type,
         baseLongitude: Double = 0
