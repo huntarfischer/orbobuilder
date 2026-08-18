@@ -231,7 +231,8 @@ private struct FoundationLabView: View {
                 readout("P22 recipe", MundaneTimespineP22ForgeRecipe.recipeIdentifier)
                 readout("P22 recipe ver", "\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
                 readout("P22 candidate", "awaiting full assembly")
-                readout("Dioscuri", "twins built / handshake pending")
+                readout("Dioscuri", "built / verdict returns here")
+                readout("closing pass", "Hephaestus V2 pending")
 
                 Divider()
 
@@ -248,7 +249,7 @@ private struct FoundationLabView: View {
                 readout("civic time", Pollux.civicTimeRole)
                 readout("ambiguity", Pollux.ambiguityPolicy)
                 readout("Castor", "built")
-                readout("Dioscuri", "handshake pending")
+                readout("Dioscuri", "built")
 
                 Divider()
 
@@ -266,7 +267,32 @@ private struct FoundationLabView: View {
                 readout("answer", Castor.answerLaw)
                 readout("comparison", Castor.comparisonRole)
                 readout("Pollux", "built")
-                readout("Dioscuri", "handshake pending")
+                readout("Dioscuri", "built")
+
+                Divider()
+
+                sectionTitle("DIOSCURI / INTEGRITY GATE")
+                readout("role", Dioscuri.role)
+                readout("contract", "v\(Dioscuri.contractVersion)")
+                readout("twins", "Pollux + Castor")
+                readout("order", Dioscuri.order)
+                readout("origin", Dioscuri.origin)
+                readout("oracle", Dioscuri.oracleRole)
+                readout("Forge", Dioscuri.forgeRole)
+                readout("correction", Dioscuri.correctionRole)
+                readout("averaging", Dioscuri.averagingRole)
+                readout("body", "implemented")
+                readout("markers", "implemented")
+                readout("motion", "implemented")
+                readout("relationships", "implemented")
+                readout("eclipses", "implemented")
+                readout("quantization", Dioscuri.quantizationPolicy)
+                readout("second strike", Dioscuri.secondStrikePolicy)
+                readout("divergence", Dioscuri.divergencePolicy)
+                readout("verdict target", Dioscuri.verdictTarget)
+                readout("seal authority", Dioscuri.sealAuthority)
+                readout("P22 certification", "awaiting full candidate")
+                readout("P22 seal", "unavailable / Hephaestus V2 pending")
 
                 Divider()
 
@@ -320,7 +346,7 @@ private struct FoundationLabView: View {
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
                 readout("shipping P22", "not installed yet")
-                readout("Dioscuri", "twins built / handshake pending")
+                readout("Dioscuri", "built / P22 certification pending")
                 readout("proof authority", "OrboCoreTests")
 
                 Divider()
