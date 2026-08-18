@@ -62,6 +62,25 @@ private struct FoundationLabView: View {
         )
     }
 
+    private var eclipseContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .eclipse)
+    }
+
+    private var majorRelationshipContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .exactMajorRelationships)
+    }
+
+    private var minorRelationshipContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .exactMinorRelationships)
+    }
+
+    private var admittedRingMarkCount: Int {
+        Set(
+            MundaneTimespineP22.majorRelationshipMarks
+            + MundaneTimespineP22.minorRelationshipMarks
+        ).count
+    }
+
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 18) {
@@ -186,17 +205,18 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("FORGE")
-                readout("owner", "OrboCore / Forge")
+                readout("generic owner", "MundaneTimespineForge")
                 readout("manufacturer", "native Swift")
                 readout("deep source", "Ephemeris -> Forge only")
-                readout("first recipe", MundaneTimespineP22.spanName)
+                readout("P22 recipe", "MundaneTimespineP22ForgeRecipe")
+                readout("P22 boundary", "direct Pluto 0 Aries -> direct Pluto 0 Aries")
                 readout("law", "celestial occurrence <-> civic UT")
                 readout("runtime oracle", "no")
 
                 Divider()
 
                 sectionTitle("MUNDANE TIMESPINE / P22")
-                readout("status", "Pass 5 body substrate")
+                readout("status", "Pass 5 native assembly")
                 readout("span", MundaneTimespineP22.spanName)
                 readout("start", MundaneTimespineP22.startUTC)
                 readout("end exclusive", MundaneTimespineP22.endUTC)
@@ -217,8 +237,36 @@ private struct FoundationLabView: View {
                     )
                 }
 
-                readout("runtime reader", "not built yet")
-                readout("proof", "OrboCoreTests / 98 native XCTest")
+                Divider()
+
+                sectionTitle("UNIVERSAL CELESTIAL EVENTS / P22")
+                readout("law", MundaneTimespineP22.universalEventsAreCelestialTimeFirst ? "celestial-time-first" : "INVALID")
+                readout("eclipses", "\(eclipseContract.constructionRecordCount)")
+                readout("exact major", "\(majorRelationshipContract.constructionRecordCount)")
+                readout("exact minor", "\(minorRelationshipContract.constructionRecordCount)")
+                readout("all events", "\(MundaneTimespineP22.totalUniversalEventRecords)")
+                readout("Ring coverage", "\(admittedRingMarkCount) / \(RingMark.allCases.count) marks")
+                readout("orb stored", "none / exact relationships only")
+                readout("major gzip", byteCount(majorRelationshipContract.compressedBytes))
+                readout("minor gzip", byteCount(minorRelationshipContract.compressedBytes))
+                readout("eclipse gzip", byteCount(eclipseContract.compressedBytes))
+
+                Divider()
+
+                sectionTitle("TIMESPINE STORAGE / READER")
+                readout("artifact family", "ORBOTS01")
+                readout("storage version", "\(MundaneTimespineStorageFormat.version)")
+                readout("storage law", MundaneTimespineStorageFormat.celestialTimeFirst ? "celestial-time-first" : "INVALID")
+                readout("exact degrees", "integer microdegrees")
+                readout("runtime reader", "native / ephemeris-free")
+                readout("UT -> celestial", "implemented")
+                readout("celestial -> UT", "implemented")
+                readout("relationships", "implemented / read-time filters")
+                readout("eclipses", "implemented / read-time filters")
+                readout("event union", "implemented")
+                readout("shipping P22", "not installed yet")
+                readout("Resonator", "not built yet")
+                readout("proof authority", "OrboCoreTests")
 
                 Divider()
 
@@ -248,6 +296,10 @@ private struct FoundationLabView: View {
 
     private func houseList(_ houses: [House]) -> String {
         houses.map { String($0.rawValue) }.joined(separator: ", ")
+    }
+
+    private func byteCount(_ bytes: Int) -> String {
+        ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
     }
 
     @ViewBuilder
