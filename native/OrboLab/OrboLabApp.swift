@@ -185,6 +185,16 @@ private struct FoundationLabView: View {
 
                 Divider()
 
+                sectionTitle("FORGE")
+                readout("owner", "OrboCore / Forge")
+                readout("manufacturer", "native Swift")
+                readout("deep source", "Ephemeris -> Forge only")
+                readout("first recipe", MundaneTimespineP22.spanName)
+                readout("law", "celestial occurrence <-> civic UT")
+                readout("runtime oracle", "no")
+
+                Divider()
+
                 sectionTitle("MUNDANE TIMESPINE / P22")
                 readout("status", "Pass 5 body substrate")
                 readout("span", MundaneTimespineP22.spanName)
@@ -208,7 +218,7 @@ private struct FoundationLabView: View {
                 }
 
                 readout("runtime reader", "not built yet")
-                readout("proof", "OrboCore tests + P22 repository verifier")
+                readout("proof", "OrboCoreTests / 98 native XCTest")
 
                 Divider()
 
