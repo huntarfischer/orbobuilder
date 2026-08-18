@@ -152,7 +152,7 @@ final class MundaneTimespineTests: XCTestCase {
     func testAstroDNACodecFourRemainsIndependentOfPassFiveRepresentation() {
         XCTAssertEqual(AstroDNA.codec, 4)
         XCTAssertEqual(AstroDNAGene.canonicalOrder.count, 12)
-        XCTAssertEqual(AstroDNAGene.canonicalOrder[10], .northNode)
+        XCTAssertEqual(AstroDNAGene.canonicalOrder[11], .northNode)
     }
 
     private var repositoryRoot: URL {
