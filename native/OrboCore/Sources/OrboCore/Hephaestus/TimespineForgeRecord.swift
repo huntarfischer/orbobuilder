@@ -1,10 +1,12 @@
 import Foundation
 
 /// Structured provenance for one Timespine candidate manufacture.
-/// It records how the candidate was made without claiming Dioscuri certification.
+/// It records how the candidate was made and which Dioscuri resonance contract
+/// must prove that exact candidate before Hephaestus may complete it.
 public struct TimespineForgeRecord: Hashable, Codable, Sendable {
     public let recipeIdentifier: String
     public let recipeVersion: UInt16
+    public let resonanceContract: HephaestusResonanceContractIdentity
     public let spanName: String
     public let astronomicalSource: String
     public let astronomicalSourceVersion: String
@@ -23,6 +25,7 @@ public struct TimespineForgeRecord: Hashable, Codable, Sendable {
     init(
         recipeIdentifier: String,
         recipeVersion: UInt16,
+        resonanceContract: HephaestusResonanceContractIdentity,
         spanName: String,
         astronomicalSource: String,
         astronomicalSourceVersion: String,
@@ -40,6 +43,7 @@ public struct TimespineForgeRecord: Hashable, Codable, Sendable {
     ) {
         self.recipeIdentifier = recipeIdentifier
         self.recipeVersion = recipeVersion
+        self.resonanceContract = resonanceContract
         self.spanName = spanName
         self.astronomicalSource = astronomicalSource
         self.astronomicalSourceVersion = astronomicalSourceVersion
