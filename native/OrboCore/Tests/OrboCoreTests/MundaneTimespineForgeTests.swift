@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 @testable import OrboCore
 
@@ -28,6 +29,67 @@ final class MundaneTimespineForgeTests: XCTestCase {
         }
     }
 
+    private enum LinearHephaestusRecipe: HephaestusTimespineRecipe {
+        static var start: JulianDay { JulianDay(1_000)! }
+        static var end: JulianDay { JulianDay(1_010)! }
+        static var recipeIdentifier: String { "xctest-linear-timespine" }
+        static var recipeVersion: UInt16 { 1 }
+        static var artifactContract: HephaestusTimespineArtifactContract {
+            HephaestusTimespineArtifactContract(
+                bodyCount: 1,
+                bodyOccurrenceCount: 10,
+                relationshipCount: 0,
+                eclipseCount: 0
+            )!
+        }
+
+        static func forgePlan(
+            astronomicalSourceVersion: String
+        ) -> MundaneTimespineForgePlan {
+            let contract = MundaneTimespineBodyContract(
+                body: .sun,
+                celestialResolutionDegrees: 1,
+                markerBodies: [],
+                constructionRecordCount: 10
+            )!
+            let bodyPlan = MundaneTimespineForgeBodyPlan(
+                contract: contract,
+                scanStepDays: 0.5
+            )!
+            return MundaneTimespineForgePlan(
+                spanName: "Hephaestus linear fixture",
+                astronomicalSource: "deterministic XCTest sky",
+                astronomicalSourceVersion: astronomicalSourceVersion,
+                supportedStart: start,
+                supportedEnd: end,
+                bodyPlans: [bodyPlan],
+                verifiesConstructionRecordCounts: true,
+                verifiesMarkerUniqueness: true
+            )!
+        }
+    }
+
+    private enum MissingRelationshipHephaestusRecipe: HephaestusTimespineRecipe {
+        static var recipeIdentifier: String { "xctest-incomplete-timespine" }
+        static var recipeVersion: UInt16 { 1 }
+        static var artifactContract: HephaestusTimespineArtifactContract {
+            HephaestusTimespineArtifactContract(
+                bodyCount: 1,
+                bodyOccurrenceCount: 10,
+                relationshipCount: 1,
+                eclipseCount: 0
+            )!
+        }
+
+        static func forgePlan(
+            astronomicalSourceVersion: String
+        ) -> MundaneTimespineForgePlan {
+            LinearHephaestusRecipe.forgePlan(
+                astronomicalSourceVersion: astronomicalSourceVersion
+            )
+        }
+    }
+
     func testP22RecipeOwnsP22PlanAndCelestialBoundaryLaw() {
         let plan = MundaneTimespineP22ForgeRecipe.plan(astronomicalSourceVersion: "test")
 
@@ -43,6 +105,17 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertTrue(plan.verifiesMarkerUniqueness)
         XCTAssertFalse(MundaneTimespineP22ForgeRecipe.astronomicalSource.contains("DE441"))
         XCTAssertEqual(AstroDNA.codec, 4)
+    }
+
+    func testP22RecipeDeclaresCompleteHephaestusCandidateContract() {
+        let contract = MundaneTimespineP22ForgeRecipe.artifactContract
+
+        XCTAssertEqual(MundaneTimespineP22ForgeRecipe.recipeIdentifier, "p22-pluto-zeitgeist")
+        XCTAssertEqual(MundaneTimespineP22ForgeRecipe.recipeVersion, 1)
+        XCTAssertEqual(contract.bodyCount, 11)
+        XCTAssertEqual(contract.bodyOccurrenceCount, 1_811_967)
+        XCTAssertEqual(contract.relationshipCount, 770_298)
+        XCTAssertEqual(contract.eclipseCount, 1_133)
     }
 
     func testGenericForgeManufacturesArbitraryDirectCelestialSpanBoundToCivicUT() throws {
@@ -131,6 +204,110 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertThrowsError(
             try MundaneTimespineP22ForgeRecipe.manufacture(
                 astronomicalSourceVersion: "test",
+                reference: reference
+            )
+        ) { error in
+            XCTAssertEqual(error as? MundaneTimespineP22ForgeRecipeError, .boundaryMismatch)
+        }
+    }
+
+    func testHephaestusMintsDeterministicCelestialFirstCandidateForArbitraryRecipe() throws {
+        let reference = LinearReference(
+            origin: LinearHephaestusRecipe.start.value,
+            baseLongitude: 0,
+            speed: 1
+        )
+
+        let first = try Hephaestus.manufactureCandidate(
+            recipe: LinearHephaestusRecipe.self,
+            astronomicalSourceVersion: "fixture-1",
+            reference: reference
+        )
+        let second = try Hephaestus.manufactureCandidate(
+            recipe: LinearHephaestusRecipe.self,
+            astronomicalSourceVersion: "fixture-1",
+            reference: reference
+        )
+
+        XCTAssertTrue(Hephaestus.celestialTimeFirst)
+        XCTAssertEqual(Hephaestus.candidateIdentityAlgorithm, "SHA-256")
+        XCTAssertEqual(Hephaestus.runtimeRole, "none")
+        XCTAssertEqual(MundaneTimespineStorageFormat.identifier, "ORBOTS01")
+        XCTAssertEqual(first.artifactData, second.artifactData)
+        XCTAssertEqual(first.identity, second.identity)
+        XCTAssertEqual(first.identity.sha256.count, 64)
+        XCTAssertEqual(first.forgeRecord.candidateSHA256, first.identity.sha256)
+        XCTAssertEqual(first.forgeRecord.recipeIdentifier, LinearHephaestusRecipe.recipeIdentifier)
+        XCTAssertEqual(first.forgeRecord.recipeVersion, LinearHephaestusRecipe.recipeVersion)
+        XCTAssertEqual(first.forgeRecord.storageFamily, "ORBOTS01")
+        XCTAssertEqual(first.forgeRecord.storageVersion, 1)
+        XCTAssertTrue(first.forgeRecord.celestialTimeFirst)
+        XCTAssertEqual(first.forgeRecord.bodyCount, 1)
+        XCTAssertEqual(first.forgeRecord.bodyOccurrenceCount, 10)
+        XCTAssertEqual(first.forgeRecord.relationshipCount, 0)
+        XCTAssertEqual(first.forgeRecord.eclipseCount, 0)
+        XCTAssertEqual(first.forgeRecord.artifactByteCount, first.artifactData.count)
+
+        let decoded = try first.artifact.storageImage()
+        XCTAssertEqual(decoded.spanName, "Hephaestus linear fixture")
+        XCTAssertEqual(decoded.astronomicalSource, "deterministic XCTest sky")
+        XCTAssertEqual(decoded.astronomicalSourceVersion, "fixture-1")
+        XCTAssertEqual(decoded.bodies.count, 1)
+        XCTAssertEqual(decoded.bodies[0].occurrences.count, 10)
+    }
+
+    func testHephaestusCandidateIdentityChangesWhenArtifactBytesChange() throws {
+        let reference = LinearReference(
+            origin: LinearHephaestusRecipe.start.value,
+            baseLongitude: 0,
+            speed: 1
+        )
+        let candidate = try Hephaestus.manufactureCandidate(
+            recipe: LinearHephaestusRecipe.self,
+            astronomicalSourceVersion: "fixture-1",
+            reference: reference
+        )
+
+        var mutated = candidate.artifactData
+        let index = mutated.index(before: mutated.endIndex)
+        mutated[index] = mutated[index] ^ 0x01
+        let mutatedIdentity = TimespineCandidateIdentity.hash(artifactData: mutated)
+
+        XCTAssertNotEqual(mutatedIdentity, candidate.identity)
+    }
+
+    func testHephaestusRefusesIncompleteRecipePayload() {
+        let reference = LinearReference(
+            origin: LinearHephaestusRecipe.start.value,
+            baseLongitude: 0,
+            speed: 1
+        )
+
+        XCTAssertThrowsError(
+            try Hephaestus.manufactureCandidate(
+                recipe: MissingRelationshipHephaestusRecipe.self,
+                astronomicalSourceVersion: "fixture-1",
+                reference: reference
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? HephaestusError,
+                .artifactContractMismatch(component: "relationships", expected: 1, actual: 0)
+            )
+        }
+    }
+
+    func testHephaestusRunsP22PreflightBeforeCandidateMinting() {
+        let reference = LinearReference(
+            origin: MundaneTimespineP22.startJulianDay.value,
+            baseLongitude: 20,
+            speed: 1
+        )
+
+        XCTAssertThrowsError(
+            try Hephaestus.manufactureCandidate(
+                recipe: MundaneTimespineP22ForgeRecipe.self,
+                astronomicalSourceVersion: "fixture-1",
                 reference: reference
             )
         ) { error in
