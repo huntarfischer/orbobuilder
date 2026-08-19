@@ -105,13 +105,15 @@ jobs:
       - name: Freeze verified tables on staging branch
         if: success()
         run: |
+          rm -rf /tmp/zeitgeist-body-data
+          cp -R tools/pass5/zeitgeist-body-data /tmp/zeitgeist-body-data
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin agent/p22-duplicate-cleanup-staging
           git checkout -B freeze-body-data origin/agent/p22-duplicate-cleanup-staging
           rm -rf tools/pass5/zeitgeist-body-data
-          git checkout "$GITHUB_SHA" -- tools/pass5/generate_zeitgeist_body_tables.py || true
-          cp -R "$GITHUB_WORKSPACE/tools/pass5/zeitgeist-body-data" tools/pass5/zeitgeist-body-data
+          mkdir -p tools/pass5
+          cp -R /tmp/zeitgeist-body-data tools/pass5/zeitgeist-body-data
           git add tools/pass5/zeitgeist-body-data
           git commit -m "freeze Z21 Z23 celestial body occurrence tables"
           git push origin HEAD:agent/p22-duplicate-cleanup-staging
