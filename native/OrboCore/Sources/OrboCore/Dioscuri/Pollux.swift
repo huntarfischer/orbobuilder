@@ -27,7 +27,7 @@ public enum PolluxError: Error, Equatable, CustomStringConvertible {
         case let .ambiguousStationIdentity(body, celestialMicrodegrees):
             return "Pollux found a repeated station identity for \(body.displayName) at \(celestialMicrodegrees) microdegrees."
         case .ambiguousRelationshipIdentity:
-            return "Pollux found a repeated exact-relationship celestial identity."
+            return "Pollux found duplicate exact-relationship records for the same qualified celestial recurrence and stored civic occurrence."
         case .ambiguousEclipseIdentity:
             return "Pollux found a repeated eclipse celestial identity."
         case let .celestialAddressShapeMismatch(body):
@@ -53,7 +53,7 @@ public struct Pollux: Sendable {
     public static let readerRole = "none"
     public static let ephemerisRole = "none"
     public static let civicTimeRole = "handoff only"
-    public static let ambiguityPolicy = "reject"
+    public static let ambiguityPolicy = "reject unresolved ambiguity / qualify lawful recurrences"
 
     public let candidateSHA256: String
     public let bodyCount: Int
