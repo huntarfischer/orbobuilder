@@ -310,7 +310,20 @@ private struct OrboForgeTool {
 
         print("Dioscuri: exhaustive resonance begins")
         let testimony = try Dioscuri.testify(candidate: candidate) { update in
-            print("resonance \(update.phase.rawValue): \(update.completed)/\(update.total)")
+            switch update.activity {
+            case .phaseProgress:
+                print("resonance \(update.phase.rawValue): \(update.completed)/\(update.total)")
+            case .secondStrikeStarted:
+                print(
+                    "resonance SECOND STRIKE START \(update.phase.rawValue) "
+                    + "question \(update.completed)/\(update.total): \(update.detail ?? "divergence")"
+                )
+            case .secondStrikeCompleted:
+                print(
+                    "resonance SECOND STRIKE END \(update.phase.rawValue) "
+                    + "question \(update.completed)/\(update.total): \(update.detail ?? "complete")"
+                )
+            }
         }
         print("Dioscuri result: \(testimony.result.rawValue)")
         print("Dioscuri evidence SHA-256: \(testimony.evidenceSHA256)")
