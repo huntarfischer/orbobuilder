@@ -139,6 +139,17 @@ public struct Pollux: Sendable {
             bodyIndexes: bodyIndexes
         )
     }
+
+    /// Resume that same deterministic order after `completed` fully testified questions.
+    /// Seeking touches only the compact celestial index; no Castor read and no prior strike repeats.
+    func makeQuestionCursor(startingAt completed: Int) -> PolluxQuestionCursor? {
+        guard (0...questionCount).contains(completed) else { return nil }
+        return PolluxQuestionCursor(
+            candidateSHA256: candidateSHA256,
+            bodyIndexes: bodyIndexes,
+            startingAt: completed
+        )
+    }
 }
 
 public struct PolluxQuestionCursor: Sendable {
@@ -148,9 +159,14 @@ public struct PolluxQuestionCursor: Sendable {
     private var celestialTick = 0
     private var bucketPosition = 0
 
-    init(candidateSHA256: String, bodyIndexes: [PolluxBodyIndex]) {
+    init(
+        candidateSHA256: String,
+        bodyIndexes: [PolluxBodyIndex],
+        startingAt completed: Int = 0
+    ) {
         self.candidateSHA256 = candidateSHA256
         self.bodyIndexes = bodyIndexes
+        seek(to: completed)
     }
 
     public mutating func next() -> PolluxQuestion? {
@@ -177,5 +193,36 @@ public struct PolluxQuestionCursor: Sendable {
         }
 
         return nil
+    }
+
+    private mutating func seek(to completed: Int) {
+        guard completed > 0 else { return }
+        var remaining = completed
+
+        for bodyIndex in bodyIndexes.indices {
+            let index = bodyIndexes[bodyIndex]
+            if remaining >= index.occurrences.count {
+                remaining -= index.occurrences.count
+                continue
+            }
+
+            bodyPosition = bodyIndex
+            celestialTick = 0
+            bucketPosition = 0
+            while celestialTick < index.occurrenceIndicesByTick.count {
+                let bucketCount = index.occurrenceIndicesByTick[celestialTick].count
+                if remaining < bucketCount {
+                    bucketPosition = remaining
+                    return
+                }
+                remaining -= bucketCount
+                celestialTick += 1
+            }
+            return
+        }
+
+        bodyPosition = bodyIndexes.count
+        celestialTick = 0
+        bucketPosition = 0
     }
 }
