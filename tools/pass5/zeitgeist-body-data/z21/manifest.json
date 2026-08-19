@@ -1,0 +1,109 @@
+{
+  "artifactFamily": "Orbo celestial-first body occurrence tables",
+  "astronomicalSource": "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT",
+  "audit": "PASS celestial bounds + recurrence + schema",
+  "bodyTableCount": 11,
+  "endJulianDayUT": 2386637.0793997087,
+  "endUTC": "1822-04-16T13:54:20.135Z",
+  "files": [
+    {
+      "body": "Jupiter",
+      "bytes": 2505979,
+      "path": "body-tables/Jupiter.csv.gz",
+      "rows": 118989,
+      "sha256": "ed337b7a64408176a3eb277616a2637f75bf47baee08062b938c0ab2ce818eba"
+    },
+    {
+      "body": "Mars",
+      "bytes": 1101909,
+      "path": "body-tables/Mars.csv.gz",
+      "rows": 50654,
+      "sha256": "4c9693bd0db104566607e8794d6e742924bc209742c9273447eccf865deee8bf"
+    },
+    {
+      "body": "Mercury",
+      "bytes": 2439016,
+      "path": "body-tables/Mercury.csv.gz",
+      "rows": 108909,
+      "sha256": "4ff70b127e52e169086d60dec456ee1811c9ac9eb01a2b754e77730ccb6370e5"
+    },
+    {
+      "body": "Moon",
+      "bytes": 21128773,
+      "path": "body-tables/Moon.csv.gz",
+      "rows": 1178828,
+      "sha256": "aec174f9125c731bec67d493fc6688d0c3ba32b5b2c3e64f6f9701d7376e49af"
+    },
+    {
+      "body": "Neptune",
+      "bytes": 401100,
+      "path": "body-tables/Neptune.csv.gz",
+      "rows": 18956,
+      "sha256": "01052910fc7ac18357a1b7bae2865920cfd90bac297dabfbd2fa10d9cb36e020"
+    },
+    {
+      "body": "NorthNode",
+      "bytes": 1274944,
+      "path": "body-tables/NorthNode.csv.gz",
+      "rows": 52967,
+      "sha256": "7516403dd4a9ebba6ba4ab35ef38febce391d4a8582c92bbb119814a84dca847"
+    },
+    {
+      "body": "Pluto",
+      "bytes": 311625,
+      "path": "body-tables/Pluto.csv.gz",
+      "rows": 14785,
+      "sha256": "c44fda42e42fc5cd39e95fc8829782b0d0afd81d62692539cb445fef9b366bfe"
+    },
+    {
+      "body": "Saturn",
+      "bytes": 1368644,
+      "path": "body-tables/Saturn.csv.gz",
+      "rows": 61987,
+      "sha256": "96761203ac48d80ca456377b4917c692ec6d16dfd517296c8d66311834b2f02f"
+    },
+    {
+      "body": "Sun",
+      "bytes": 1741540,
+      "path": "body-tables/Sun.csv.gz",
+      "rows": 88181,
+      "sha256": "25b6a74042b6e658fd68f1d53cf7502c19f9ee5a9816a465c147fc4fb1f50037"
+    },
+    {
+      "body": "Uranus",
+      "bytes": 636127,
+      "path": "body-tables/Uranus.csv.gz",
+      "rows": 30058,
+      "sha256": "953dfa4845a29eb2a4c081ba5baedf296a637cec83a2c0093bd1c7e89a57f271"
+    },
+    {
+      "body": "Venus",
+      "bytes": 1972809,
+      "path": "body-tables/Venus.csv.gz",
+      "rows": 93042,
+      "sha256": "1e86cf4eb709df553b70cc847a1d55cab8fbe1e76cbd08751b2af4d462713aee"
+    }
+  ],
+  "identityLaw": "celestial tick + recurrence occurrence; civic UT identifies occurrence and does not define celestial identity",
+  "ownershipLaw": "Z21 first Pluto Aries ingress inclusive to Z22 first Pluto Aries ingress exclusive",
+  "resolutionLaw": {
+    "Jupiter": 0.1,
+    "Mars": 1.0,
+    "Mercury": 1.0,
+    "Moon": 1.0,
+    "Neptune": 0.1,
+    "NorthNode": 0.1,
+    "Pluto": 0.1,
+    "Saturn": 0.1,
+    "Sun": 1.0,
+    "Uranus": 0.1,
+    "Venus": 1.0
+  },
+  "startJulianDayUT": 2297171.740867775,
+  "startUTC": "1577-05-05T05:46:50.976Z",
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissVersion": "2.10.03",
+  "totalRows": 1817356,
+  "zeitgeist": "Z21"
+}
