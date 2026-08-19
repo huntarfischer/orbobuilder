@@ -55,6 +55,23 @@ struct PolluxRelationshipQuestionCursor: Sendable {
         self.seen.reserveCapacity(storage.relationships.count)
     }
 
+    mutating func seek(to completed: Int) throws {
+        guard (0...relationships.count).contains(completed) else {
+            throw PolluxError.candidateContractMismatch
+        }
+        position = 0
+        seen.removeAll(keepingCapacity: true)
+        if completed > 0 {
+            for index in 0..<completed {
+                let address = PolluxRelationshipDirectLookup.address(for: relationships[index])
+                guard seen.insert(address).inserted else {
+                    throw PolluxError.ambiguousRelationshipIdentity
+                }
+            }
+        }
+        position = completed
+    }
+
     mutating func next() throws -> PolluxRelationshipQuestion? {
         guard position < relationships.count else { return nil }
         let event = relationships[position]
@@ -196,6 +213,18 @@ extension Pollux {
         storage: MundaneTimespineStorageImage
     ) -> PolluxRelationshipQuestionCursor {
         PolluxRelationshipQuestionCursor(candidateSHA256: candidateSHA256, storage: storage)
+    }
+
+    func makeRelationshipQuestionCursor(
+        storage: MundaneTimespineStorageImage,
+        startingAt completed: Int
+    ) throws -> PolluxRelationshipQuestionCursor {
+        var cursor = PolluxRelationshipQuestionCursor(
+            candidateSHA256: candidateSHA256,
+            storage: storage
+        )
+        try cursor.seek(to: completed)
+        return cursor
     }
 
     func makeRelationshipDirectLookup(
