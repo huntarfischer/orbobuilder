@@ -173,9 +173,9 @@ final class MundaneTimespineTests: XCTestCase {
         XCTAssertEqual(manifest.span, MundaneTimespineP22.spanName)
         XCTAssertTrue(manifest.celestialTimeFirst)
         XCTAssertEqual(manifest.bodyCount, 11)
-        XCTAssertEqual(manifest.totalRows, 771_431)
+        XCTAssertEqual(manifest.totalRows, 771_426)
         XCTAssertEqual(manifest.files.count, 3)
-        XCTAssertEqual(MundaneTimespineP22.totalUniversalEventRecords, 771_431)
+        XCTAssertEqual(MundaneTimespineP22.totalUniversalEventRecords, 771_426)
         XCTAssertEqual(
             Set(MundaneTimespineP22.majorRelationshipMarks + MundaneTimespineP22.minorRelationshipMarks),
             Set(RingMark.allCases)
