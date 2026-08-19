@@ -91,9 +91,9 @@ public enum MundaneTimespineP22CanonicalInputs {
         .init(
             family: .exactMinorRelationships,
             relativePath: "exact-minor-mundane-transits.csv.gz",
-            compressedBytes: 17_090_967,
-            sha256: "3acbafa92a0a091f125337ab0898c32f1b02be0d88bf0d78415af79ef179ff46",
-            expectedRows: 461_824
+            compressedBytes: 17_090_897,
+            sha256: "b1d3f3dbb5a78654b713dc03b7869241312f9e08ca88357c59446ba529000552",
+            expectedRows: 461_819
         ),
         .init(
             family: .eclipses,
