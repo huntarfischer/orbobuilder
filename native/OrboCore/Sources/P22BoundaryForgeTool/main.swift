@@ -129,11 +129,33 @@ private struct Arguments {
             values[key] = raw[index + 1]
             index += 2
         }
-        guard let library = values["--library"], !library.isEmpty else {
-            throw BoundaryForgeError.missingArgument("--library")
+
+        let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+        let defaultLibraryCandidates = [
+            cwd.appendingPathComponent(".forge/swisseph/libswe.dylib").path,
+            cwd.appendingPathComponent(".forge/swisseph/libswe.so").path,
+            cwd.appendingPathComponent(".forge/swisseph/libswe.bundle").path,
+        ]
+        let defaultEphemeris = cwd.appendingPathComponent(".forge/ephe", isDirectory: true).path
+
+        let explicitLibrary = values["--library"]
+        let detectedLibrary = defaultLibraryCandidates.first {
+            FileManager.default.fileExists(atPath: $0)
         }
-        guard let ephemeris = values["--ephe-dir"], !ephemeris.isEmpty else {
-            throw BoundaryForgeError.missingArgument("--ephe-dir")
+        guard let library = explicitLibrary ?? detectedLibrary, !library.isEmpty else {
+            throw BoundaryForgeError.missingArgument(
+                "--library (no .forge/swisseph/libswe.dylib or libswe.so found)"
+            )
+        }
+
+        let explicitEphemeris = values["--ephe-dir"]
+        let detectedEphemeris = FileManager.default.fileExists(atPath: defaultEphemeris)
+            ? defaultEphemeris
+            : nil
+        guard let ephemeris = explicitEphemeris ?? detectedEphemeris, !ephemeris.isEmpty else {
+            throw BoundaryForgeError.missingArgument(
+                "--ephe-dir (no .forge/ephe directory found)"
+            )
         }
         guard let output = values["--output"], !output.isEmpty else {
             throw BoundaryForgeError.missingArgument("--output")
