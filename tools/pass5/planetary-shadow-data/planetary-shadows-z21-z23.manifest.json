@@ -1,0 +1,20 @@
+{
+  "artifactFamily": "Orbo planetary retrograde shadow table Z21-Z23",
+  "rows": 6691,
+  "astronomicalSource": "Swiss Ephemeris DE441",
+  "astronomicalSourceVersion": "2.10.03",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "spanStartUTC": "1577-05-05T05:46:50.976Z",
+  "spanEndUTC": "2311-06-10T14:16:12.881Z",
+  "inclusionLaw": "include every complete retrograde-shadow episode whose [pre-shadow start, post-shadow end] intersects the half-open Z21-Z24 ownership span",
+  "shadowLaw": "pre-shadow begins at the first direct crossing of the later direct-station degree; retrograde begins at the retrograde station; direct motion resumes at the direct station; post-shadow ends at the next direct crossing of the earlier retrograde-station degree",
+  "bodies": ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"],
+  "trueNodePolicy": "excluded pending separate motion-topology decision",
+  "counts": {"Mercury":2315,"Venus":460,"Mars":344,"Jupiter":673,"Saturn":710,"Uranus":726,"Neptune":731,"Pluto":732},
+  "jsonBytes": 4792614,
+  "jsonSha256": "e834b139e4a01650d59e33d54667dfd0c50d790bcb4a46db0c00a6a6ee59fa09",
+  "csvBytes": 1754184,
+  "csvSha256": "efe37424e8479f4e5ef6339342bfd9452ddfdf0af6e815baf5f5c6d6d9552457",
+  "topologyAudit": "PASS 6691/6691"
+}
