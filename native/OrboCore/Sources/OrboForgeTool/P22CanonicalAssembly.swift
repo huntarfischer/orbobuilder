@@ -42,6 +42,12 @@ struct P22CanonicalAssemblyProgress {
 struct P22CanonicalAssembler {
     let dataDirectory: URL
 
+    private static let decimalLocale = Locale(identifier: "en_US_POSIX")
+    private static let p22StartJulianDayDecimal = Decimal(
+        string: "2386637.079399706",
+        locale: decimalLocale
+    )!
+
     func assemble(
         progress: ((P22CanonicalAssemblyProgress) -> Void)? = nil
     ) throws -> MundaneTimespineStorageImage {
@@ -260,14 +266,30 @@ struct P22CanonicalAssembler {
             let orientation = try relationshipOrientation(required(row, "orientation", rowNumber))
             let aDegrees = try double(row, "bodyACelestialTimeDegrees", rowNumber)
             let bDegrees = try double(row, "bodyBCelestialTimeDegrees", rowNumber)
-            let jd = try double(row, "civicTimeJulianDayUT", rowNumber)
+            let jdText = try required(row, "civicTimeJulianDayUT", rowNumber)
+            guard let sourceJD = Double(jdText), sourceJD.isFinite else {
+                throw P22CanonicalAssemblyError.invalidValue(
+                    "\(input.relativePath) row \(rowNumber) civicTimeJulianDayUT"
+                )
+            }
+
+            var storageJD = sourceJD
             if header.contains("civicTimeOffsetSeconds") {
                 let storedOffset = try int64(row, "civicTimeOffsetSeconds", rowNumber)
-                let derivedOffset = Int64(((jd - MundaneTimespineP22.startJulianDay.value) * 86_400).rounded())
-                guard storedOffset == derivedOffset else {
+                let derivedOffset = try decimalRoundedP22Offset(
+                    julianDayText: jdText,
+                    rowNumber: rowNumber
+                )
+                guard storedOffset >= 0, storedOffset == derivedOffset else {
                     throw P22CanonicalAssemblyError.invalidValue("\(input.relativePath) row \(rowNumber) civic offset")
                 }
+
+                // The gzip keeps the sub-second astronomical JD for audit. ORBOTS civic time is the
+                // admitted integer-second P22 coordinate. Normalize the storage event to that exact
+                // persisted coordinate so later Double subtraction cannot move a half-second edge.
+                storageJD = MundaneTimespineP22.startJulianDay.value + Double(storedOffset) / 86_400
             }
+
             let residual = header.contains("exactAspectResidualArcSeconds")
                 ? try double(row, "exactAspectResidualArcSeconds", rowNumber)
                 : 0
@@ -276,7 +298,7 @@ struct P22CanonicalAssembler {
                     "\(input.relativePath) row \(rowNumber) exact aspect residual"
                 )
             }
-            guard let julianDay = JulianDay(jd),
+            guard let julianDay = JulianDay(storageJD),
                   let event = MundaneTimespineRelationshipEvent(
                     bodyA: bodyA,
                     bodyB: bodyB,
@@ -468,6 +490,30 @@ struct P22CanonicalAssembler {
             throw P22CanonicalAssemblyError.invalidValue(text)
         }
         return value
+    }
+
+    private func decimalRoundedP22Offset(
+        julianDayText: String,
+        rowNumber: Int
+    ) throws -> Int64 {
+        guard let julianDay = Decimal(
+            string: julianDayText,
+            locale: Self.decimalLocale
+        ) else {
+            throw P22CanonicalAssemblyError.invalidValue(
+                "row \(rowNumber) civicTimeJulianDayUT decimal"
+            )
+        }
+        var seconds = (julianDay - Self.p22StartJulianDayDecimal) * Decimal(86_400)
+        var rounded = Decimal()
+        NSDecimalRound(&rounded, &seconds, 0, .plain)
+        let text = NSDecimalNumber(decimal: rounded).stringValue
+        guard let offset = Int64(text) else {
+            throw P22CanonicalAssemblyError.invalidValue(
+                "row \(rowNumber) civicTimeOffsetSeconds decimal overflow"
+            )
+        }
+        return offset
     }
 
     private func nilIfEmpty(_ text: String?) -> String? {
