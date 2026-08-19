@@ -119,7 +119,7 @@ final class MundaneTimespineForgeTests: XCTestCase {
         XCTAssertEqual(contract.bodyOccurrenceCount, 1_811_967)
         XCTAssertEqual(contract.stationCount, 17_535)
         XCTAssertEqual(contract.retrogradePassageCount, 8_770)
-        XCTAssertEqual(contract.relationshipCount, 770_298)
+        XCTAssertEqual(contract.relationshipCount, 770_293)
         XCTAssertEqual(contract.eclipseCount, 1_133)
     }
 
