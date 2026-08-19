@@ -1,13 +1,16 @@
 import Foundation
 
 /// Native shipping representation identifier for the Mundane Timespine.
-/// This owns its own storage version and does not reuse AstroDNA's identity version.
+/// ORBOTS02 adds exact non-occurrence boundary states while preserving ORBOTS01 as a readable
+/// historical representation.
 public enum MundaneTimespineStorageFormat {
-    public static let version: UInt16 = 1
+    public static let version: UInt16 = 2
+    public static let legacyVersion: UInt16 = 1
     public static let celestialTimeFirst = true
     public static let microdegreesPerDegree: UInt64 = 1_000_000
     public static let circleMicrodegrees: UInt64 = 360 * microdegreesPerDegree
-    static let magic = Array("ORBOTS01".utf8)
+    static let magic = Array("ORBOTS02".utf8)
+    static let legacyMagic = Array("ORBOTS01".utf8)
 }
 
 public enum MundaneTimespineStorageError: Error, Equatable, CustomStringConvertible {
@@ -39,7 +42,7 @@ public enum MundaneTimespineStorageError: Error, Equatable, CustomStringConverti
         case let .invalidOrientation(raw): return "Mundane Timespine artifact contains invalid relationship orientation \(raw)."
         case let .invalidEclipseKind(raw): return "Mundane Timespine artifact contains invalid eclipse kind \(raw)."
         case let .invalidEclipseType(raw): return "Mundane Timespine artifact contains invalid eclipse type \(raw)."
-        case let .invalidCentrality(raw): return "Mundane Timespine artifact contains invalid eclipse centrality \(raw)."
+        case let .invalidCentrality(raw): return "Mundane Timespine artifact contains invalid centrality code \(raw)."
         case .integerOverflow: return "Mundane Timespine artifact integer exceeds native storage bounds."
         case .truncated: return "Mundane Timespine artifact ends before a declared field or section."
         }
@@ -64,6 +67,33 @@ public struct MundaneTimespineStoredRetrogradePassage: Hashable, Sendable {
     public let endCelestialMicrodegrees: UInt32
     public let startCivicOffsetSeconds: Int64
     public let endCivicOffsetSeconds: Int64
+}
+
+/// Exact celestial state at both span boundaries. These values are reconstruction knowledge,
+/// never occurrences. The terminal state may therefore sit exactly at supportedEnd while the
+/// occurrence chronology remains half-open.
+public struct MundaneTimespineStoredBoundaryState: Hashable, Sendable {
+    public let body: MundaneBody
+    public let startCelestialMicrodegrees: UInt32
+    public let startMotion: Motion
+    public let endCelestialMicrodegrees: UInt32
+    public let endMotion: Motion
+
+    public init?(
+        body: MundaneBody,
+        startCelestialMicrodegrees: UInt32,
+        startMotion: Motion,
+        endCelestialMicrodegrees: UInt32,
+        endMotion: Motion
+    ) {
+        guard startCelestialMicrodegrees < MundaneTimespineStorageFormat.circleMicrodegrees,
+              endCelestialMicrodegrees < MundaneTimespineStorageFormat.circleMicrodegrees else { return nil }
+        self.body = body
+        self.startCelestialMicrodegrees = startCelestialMicrodegrees
+        self.startMotion = startMotion
+        self.endCelestialMicrodegrees = endCelestialMicrodegrees
+        self.endMotion = endMotion
+    }
 }
 
 public struct MundaneTimespineStoredBody: Sendable {
@@ -108,8 +138,8 @@ public struct MundaneTimespineStoredBody: Sendable {
     public var celestialResolutionDegrees: Double { 1 / Double(ticksPerDegree) }
 }
 
-/// Rich decoded storage image. This keeps construction-integrity material that the ordinary
-/// runtime reader does not need, including companion marker cells and retrograde passages.
+/// Rich decoded storage image. ORBOTS02 adds exact boundary states while keeping them separate
+/// from occurrence matter and all occurrence-derived counts.
 public struct MundaneTimespineStorageImage: Sendable {
     public let spanName: String
     public let astronomicalSource: String
@@ -117,6 +147,7 @@ public struct MundaneTimespineStorageImage: Sendable {
     public let supportedStart: JulianDay
     public let supportedEnd: JulianDay
     public let bodies: [MundaneTimespineStoredBody]
+    public let boundaryStates: [MundaneTimespineStoredBoundaryState]
     public let relationships: [MundaneTimespineRelationshipEvent]
     public let eclipses: [MundaneTimespineEclipseEvent]
 
@@ -127,6 +158,7 @@ public struct MundaneTimespineStorageImage: Sendable {
         supportedStart: JulianDay,
         supportedEnd: JulianDay,
         bodies: [MundaneTimespineStoredBody],
+        boundaryStates: [MundaneTimespineStoredBoundaryState] = [],
         relationships: [MundaneTimespineRelationshipEvent] = [],
         eclipses: [MundaneTimespineEclipseEvent] = []
     ) {
@@ -135,7 +167,9 @@ public struct MundaneTimespineStorageImage: Sendable {
               !astronomicalSourceVersion.isEmpty,
               supportedStart.value < supportedEnd.value,
               !bodies.isEmpty,
-              Set(bodies.map(\.body)).count == bodies.count else { return nil }
+              Set(bodies.map(\.body)).count == bodies.count,
+              Set(boundaryStates.map(\.body)).count == boundaryStates.count,
+              boundaryStates.allSatisfy({ state in bodies.contains { $0.body == state.body } }) else { return nil }
         let spanSeconds = Int64(((supportedEnd.value - supportedStart.value) * 86_400).rounded())
         guard bodies.allSatisfy({ body in
             body.occurrences.allSatisfy { (0..<spanSeconds).contains($0.civicOffsetSeconds) }
@@ -161,6 +195,7 @@ public struct MundaneTimespineStorageImage: Sendable {
         self.supportedStart = supportedStart
         self.supportedEnd = supportedEnd
         self.bodies = bodies.sorted { $0.body.rawValue < $1.body.rawValue }
+        self.boundaryStates = boundaryStates.sorted { $0.body.rawValue < $1.body.rawValue }
         self.relationships = relationships.sorted { $0.julianDay.value < $1.julianDay.value }
         self.eclipses = eclipses.sorted { $0.julianDay.value < $1.julianDay.value }
     }
@@ -171,6 +206,7 @@ extension MundaneTimespineStorageImage {
     /// supplied by their own Forge/import mating surface and remain universal, natal-free facts.
     public init?(
         forgeProduct: MundaneTimespineForgeProduct,
+        boundaryStates: [MundaneTimespineStoredBoundaryState] = [],
         relationships: [MundaneTimespineRelationshipEvent] = [],
         eclipses: [MundaneTimespineEclipseEvent] = []
     ) {
@@ -217,12 +253,14 @@ extension MundaneTimespineStorageImage {
             supportedStart: forgeProduct.supportedStart,
             supportedEnd: forgeProduct.supportedEnd,
             bodies: bodies,
+            boundaryStates: boundaryStates,
             relationships: relationships,
             eclipses: eclipses
         )
     }
 
     public func runtimeImage() -> MundaneTimespineRuntimeImage? {
+        let boundaries = Dictionary(uniqueKeysWithValues: boundaryStates.map { ($0.body, $0) })
         let bodySeries = bodies.compactMap { stored -> MundaneTimespineBodySeries? in
             let anchors = stored.occurrences.compactMap { row in
                 let jd = JulianDay(supportedStart.value + Double(row.civicOffsetSeconds) / 86_400)!
@@ -242,11 +280,28 @@ extension MundaneTimespineStorageImage {
                     motionAfter: row.motionAfter
                 )
             }
+            let boundary = boundaries[stored.body]
+            let initial = boundary.flatMap {
+                MundaneTimespineBoundaryAnchor(
+                    celestialTimeDegrees: Double($0.startCelestialMicrodegrees) / Double(MundaneTimespineStorageFormat.microdegreesPerDegree),
+                    julianDay: supportedStart,
+                    motion: $0.startMotion
+                )
+            }
+            let terminal = boundary.flatMap {
+                MundaneTimespineBoundaryAnchor(
+                    celestialTimeDegrees: Double($0.endCelestialMicrodegrees) / Double(MundaneTimespineStorageFormat.microdegreesPerDegree),
+                    julianDay: supportedEnd,
+                    motion: $0.endMotion
+                )
+            }
             return MundaneTimespineBodySeries(
                 body: stored.body,
                 celestialResolutionDegrees: stored.celestialResolutionDegrees,
                 anchors: anchors,
-                stations: stations
+                stations: stations,
+                initialBoundary: initial,
+                terminalBoundary: terminal
             )
         }
         guard bodySeries.count == bodies.count else { return nil }
