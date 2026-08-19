@@ -24,19 +24,19 @@ jobs:
       - name: Checkout Orbo
         uses: actions/checkout@v4
 
-      - name: Build pinned official Swiss C library
+      - name: Build pinned Swiss C library from Huntarfischer fork
         run: |
           mkdir -p .forge/swisseph .forge/ephe
           git -C .forge/swisseph init
-          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
           git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
           git -C .forge/swisseph checkout --detach FETCH_HEAD
           make -C .forge/swisseph libswe.so
           test -f .forge/swisseph/libswe.so
 
-      - name: Fetch pinned long-range Swiss DE441 planetary files
+      - name: Fetch pinned long-range Swiss DE441 planetary files from Huntarfischer fork
         run: |
-          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
           files=(
             seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1
             sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1 sepl_30.se1
