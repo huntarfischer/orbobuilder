@@ -320,7 +320,7 @@ private struct FoundationLabView: View {
                 readout("relationships", "\(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows)")
                 readout("eclipses", "\(MundaneTimespineP22CanonicalInputs.expectedEclipseRows)")
                 readout("civic offset", "\(MundaneTimespineP22.civicOffsetBitsRequired) bits from P22 start")
-                readout("civic authority", "integer seconds / decimal-exact JD audit")
+                readout("civic authority", "integer seconds / \(MundaneTimespineP22CivicSerialization.auditLaw)")
                 readout("motion tables", "stations · retrograde passages · retrograde crossings")
                 readout("Node", "True North Node / direct-retrograde user terminology")
 
@@ -345,7 +345,7 @@ private struct FoundationLabView: View {
                 readout("all events", "\(MundaneTimespineP22.totalUniversalEventRecords)")
                 readout("Ring coverage", "\(admittedRingMarkCount) / \(RingMark.allCases.count) marks")
                 readout("orb stored", "none / exact relationships only")
-                readout("relationship UT", "canonical integer second / source JD in gzip")
+                readout("relationship UT", "canonical integer second / lexical JD quantization cell")
                 readout("major gzip", byteCount(majorRelationshipContract.compressedBytes))
                 readout("minor gzip", byteCount(minorRelationshipContract.compressedBytes))
                 readout("eclipse gzip", byteCount(eclipseContract.compressedBytes))
