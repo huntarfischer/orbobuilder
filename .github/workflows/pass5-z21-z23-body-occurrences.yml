@@ -1,0 +1,117 @@
+name: Pass 5 Z21 Z23 Body Occurrences
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z21-z23-body-occurrences.yml"
+      - "tools/pass5/generate_zeitgeist_body_tables.py"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  manufacture-body-occurrences:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library from Huntarfischer fork
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned DE441 files from Huntarfischer fork
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          files=(
+            sepl_12.se1 sepl_18.se1 sepl_24.se1
+            semo_12.se1 semo_18.se1 semo_24.se1
+          )
+          for file in "${files[@]}"; do
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$base/$file" --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Manufacture celestial-first Z21 and Z23 body tables
+        run: |
+          rm -rf tools/pass5/zeitgeist-body-data
+          python3 tools/pass5/generate_zeitgeist_body_tables.py \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-root "$PWD/tools/pass5/zeitgeist-body-data" \
+            | tee /tmp/z-body-manufacture.txt
+          grep -q '^PASS Z21/Z23 celestial-first body occurrence manufacture$' /tmp/z-body-manufacture.txt
+          test "$(find tools/pass5/zeitgeist-body-data/z21/body-tables -name '*.csv.gz' | wc -l)" -eq 11
+          test "$(find tools/pass5/zeitgeist-body-data/z23/body-tables -name '*.csv.gz' | wc -l)" -eq 11
+
+      - name: Audit celestial ownership bounds and recurrence identity
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,json,glob
+          root='tools/pass5/zeitgeist-body-data'
+          for zid in ('z21','z23'):
+              m=json.load(open(f'{root}/{zid}/manifest.json'))
+              start,end=m['startJulianDayUT'],m['endJulianDayUT']
+              assert m['bodyTableCount']==11
+              for p in glob.glob(f'{root}/{zid}/body-tables/*.csv.gz'):
+                  with gzip.open(p,'rt',newline='') as f:
+                      rows=csv.DictReader(f); counts={}; n=0
+                      for r in rows:
+                          jd=float(r['utJulianDay']); tick=int(r['focalCelestialTick']); occ=int(r['occurrence'])
+                          assert start-1e-9 <= jd < end-1e-9, (p,jd,start,end)
+                          counts[tick]=counts.get(tick,0)+1
+                          assert occ==counts[tick], (p,tick,occ,counts[tick])
+                          n+=1
+                      assert n>0,p
+          print('PASS celestial bounds + recurrence occurrence audit')
+          PY
+
+      - name: Record artifact hashes
+        run: |
+          find tools/pass5/zeitgeist-body-data -type f -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > /tmp/z-body-sha256.txt
+          du -sh tools/pass5/zeitgeist-body-data
+          cat /tmp/z-body-sha256.txt
+
+      - name: Upload manufactured tables for audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: z21-z23-body-occurrences
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            tools/pass5/zeitgeist-body-data/
+            /tmp/z-body-manufacture.txt
+            /tmp/z-body-sha256.txt
+
+      - name: Freeze verified tables on staging branch
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-body-data origin/agent/p22-duplicate-cleanup-staging
+          rm -rf tools/pass5/zeitgeist-body-data
+          git checkout "$GITHUB_SHA" -- tools/pass5/generate_zeitgeist_body_tables.py || true
+          cp -R "$GITHUB_WORKSPACE/tools/pass5/zeitgeist-body-data" tools/pass5/zeitgeist-body-data
+          git add tools/pass5/zeitgeist-body-data
+          git commit -m "freeze Z21 Z23 celestial body occurrence tables"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
