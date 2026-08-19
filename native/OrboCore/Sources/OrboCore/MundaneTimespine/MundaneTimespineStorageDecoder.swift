@@ -12,6 +12,15 @@ public struct MundaneTimespineArtifact: Sendable {
         self.data = data
     }
 
+    public var storageVersion: UInt16 {
+        (try? Self.readHeaderAndDirectory(data).version) ?? 0
+    }
+
+    public var storageIdentifier: String {
+        guard let decoded = try? Self.readHeaderAndDirectory(data) else { return "" }
+        return decoded.version == MundaneTimespineStorageFormat.legacyVersion ? "ORBOTS01" : "ORBOTS02"
+    }
+
     public func storageImage() throws -> MundaneTimespineStorageImage {
         let decoded = try Self.readHeaderAndDirectory(data)
         let metadataSection = try Self.uniqueSection(.metadata, body: nil, in: decoded.sections)
@@ -30,6 +39,14 @@ public struct MundaneTimespineArtifact: Sendable {
             bodies.append(try Self.decodeBody(body, section: section, data: data))
         }
         guard !bodies.isEmpty else { throw MundaneTimespineStorageError.sectionMissing("body chronology") }
+
+        let boundaryStates: [MundaneTimespineStoredBoundaryState]
+        if decoded.version == MundaneTimespineStorageFormat.version {
+            let boundarySection = try Self.uniqueSection(.boundaries, body: nil, in: decoded.sections)
+            boundaryStates = try Self.decodeBoundaries(section: boundarySection, data: data)
+        } else {
+            boundaryStates = []
+        }
 
         let relationshipSection = try Self.uniqueSection(.relationships, body: nil, in: decoded.sections)
         let relationships = try Self.decodeRelationships(
@@ -51,6 +68,7 @@ public struct MundaneTimespineArtifact: Sendable {
             supportedStart: decoded.start,
             supportedEnd: decoded.end,
             bodies: bodies,
+            boundaryStates: boundaryStates,
             relationships: relationships,
             eclipses: eclipses
         ) else { throw MundaneTimespineStorageError.malformedArtifact }
@@ -65,6 +83,7 @@ public struct MundaneTimespineArtifact: Sendable {
     }
 
     private struct DecodedHeader {
+        let version: UInt16
         let start: JulianDay
         let end: JulianDay
         let sections: [MundaneTimespineStorageSection]
@@ -72,12 +91,17 @@ public struct MundaneTimespineArtifact: Sendable {
 
     private static func readHeaderAndDirectory(_ data: Data) throws -> DecodedHeader {
         var reader = MundaneTimespineBinaryReader(data: data)
-        guard try reader.bytes(MundaneTimespineStorageFormat.magic.count) == MundaneTimespineStorageFormat.magic else {
-            throw MundaneTimespineStorageError.malformedArtifact
-        }
+        let magic = try reader.bytes(MundaneTimespineStorageFormat.magic.count)
         let version = try reader.u16()
-        guard version == MundaneTimespineStorageFormat.version else {
-            throw MundaneTimespineStorageError.unsupportedVersion(version)
+        let isCurrent = magic == MundaneTimespineStorageFormat.magic
+            && version == MundaneTimespineStorageFormat.version
+        let isLegacy = magic == MundaneTimespineStorageFormat.legacyMagic
+            && version == MundaneTimespineStorageFormat.legacyVersion
+        guard isCurrent || isLegacy else {
+            if magic == MundaneTimespineStorageFormat.magic || magic == MundaneTimespineStorageFormat.legacyMagic {
+                throw MundaneTimespineStorageError.unsupportedVersion(version)
+            }
+            throw MundaneTimespineStorageError.malformedArtifact
         }
         let flags = try reader.u16()
         guard flags & 1 == 1 else { throw MundaneTimespineStorageError.celestialTimeLawMissing }
@@ -94,6 +118,7 @@ public struct MundaneTimespineArtifact: Sendable {
             guard let kind = MundaneTimespineStorageSectionKind(rawValue: kindRaw) else {
                 throw MundaneTimespineStorageError.malformedArtifact
             }
+            if isLegacy && kind == .boundaries { throw MundaneTimespineStorageError.malformedArtifact }
             let bodyRaw = try reader.byte()
             let body: MundaneBody?
             if bodyRaw == 0xff {
@@ -117,7 +142,13 @@ public struct MundaneTimespineArtifact: Sendable {
             if kind != .body, body != nil { throw MundaneTimespineStorageError.malformedArtifact }
             let identity = "\(kind.rawValue):\(bodyRaw)"
             guard identities.insert(identity).inserted else { throw MundaneTimespineStorageError.duplicateSection }
-            sections.append(MundaneTimespineStorageSection(kind: kind, body: body, offset: offset, length: length, recordCount: count))
+            sections.append(MundaneTimespineStorageSection(
+                kind: kind,
+                body: body,
+                offset: offset,
+                length: length,
+                recordCount: count
+            ))
         }
         let ordered = sections.sorted { $0.offset < $1.offset }
         for i in 1..<ordered.count {
@@ -125,7 +156,7 @@ public struct MundaneTimespineArtifact: Sendable {
                 throw MundaneTimespineStorageError.malformedArtifact
             }
         }
-        return DecodedHeader(start: start, end: end, sections: sections)
+        return DecodedHeader(version: version, start: start, end: end, sections: sections)
     }
 
     private static func uniqueSection(
@@ -139,6 +170,42 @@ public struct MundaneTimespineArtifact: Sendable {
             throw MundaneTimespineStorageError.duplicateSection
         }
         return matches[0]
+    }
+
+    private static func decodeBoundaries(
+        section: MundaneTimespineStorageSection,
+        data: Data
+    ) throws -> [MundaneTimespineStoredBoundaryState] {
+        var reader = try MundaneTimespineBinaryReader(
+            data: data,
+            range: section.offset..<(section.offset + section.length)
+        )
+        var result: [MundaneTimespineStoredBoundaryState] = []
+        result.reserveCapacity(section.recordCount)
+        var seen = Set<MundaneBody>()
+        for _ in 0..<section.recordCount {
+            let rawBody = try reader.byte()
+            guard let body = MundaneBody(rawValue: rawBody), seen.insert(body).inserted else {
+                if MundaneBody(rawValue: rawBody) == nil { throw MundaneTimespineStorageError.invalidBody(rawBody) }
+                throw MundaneTimespineStorageError.malformedArtifact
+            }
+            let startMicro = try reader.varUInt()
+            let startMotion = try decodeMotion(try reader.byte())
+            let endMicro = try reader.varUInt()
+            let endMotion = try decodeMotion(try reader.byte())
+            guard startMicro < MundaneTimespineStorageFormat.circleMicrodegrees,
+                  endMicro < MundaneTimespineStorageFormat.circleMicrodegrees,
+                  let state = MundaneTimespineStoredBoundaryState(
+                    body: body,
+                    startCelestialMicrodegrees: UInt32(startMicro),
+                    startMotion: startMotion,
+                    endCelestialMicrodegrees: UInt32(endMicro),
+                    endMotion: endMotion
+                  ) else { throw MundaneTimespineStorageError.malformedArtifact }
+            result.append(state)
+        }
+        guard reader.isAtEnd else { throw MundaneTimespineStorageError.malformedArtifact }
+        return result
     }
 
     private static func decodeBody(
@@ -197,17 +264,10 @@ public struct MundaneTimespineArtifact: Sendable {
             let civic = try reader.varUInt()
             guard micro < MundaneTimespineStorageFormat.circleMicrodegrees,
                   civic <= UInt64(Int64.max) else { throw MundaneTimespineStorageError.integerOverflow }
-            let motionRaw = try reader.byte()
-            let motion: Motion
-            switch motionRaw {
-            case 0: motion = .direct
-            case 1: motion = .retrograde
-            default: throw MundaneTimespineStorageError.malformedArtifact
-            }
             stations.append(MundaneTimespineStoredStation(
                 celestialMicrodegrees: UInt32(micro),
                 civicOffsetSeconds: Int64(civic),
-                motionAfter: motion
+                motionAfter: try decodeMotion(try reader.byte())
             ))
         }
 
@@ -299,7 +359,11 @@ public struct MundaneTimespineArtifact: Sendable {
             guard micro < MundaneTimespineStorageFormat.circleMicrodegrees else { throw MundaneTimespineStorageError.malformedArtifact }
             let kindRaw = try reader.byte()
             let kind: MundaneTimespineEclipseKind
-            switch kindRaw { case 0: kind = .solar; case 1: kind = .lunar; default: throw MundaneTimespineStorageError.invalidEclipseKind(kindRaw) }
+            switch kindRaw {
+            case 0: kind = .solar
+            case 1: kind = .lunar
+            default: throw MundaneTimespineStorageError.invalidEclipseKind(kindRaw)
+            }
             let type = try decodeEclipseType(try reader.byte())
             let centrality = try decodeCentrality(try reader.byte())
             let options = try reader.byte()
@@ -311,7 +375,9 @@ public struct MundaneTimespineArtifact: Sendable {
             let greatest: JulianDay?
             if options & 1 != 0 {
                 greatest = JulianDay(jd.value + Double(try reader.varInt()) / 86_400)!
-            } else { greatest = nil }
+            } else {
+                greatest = nil
+            }
             let magnitude = options & 2 != 0 ? try reader.f64() : nil
             let secondary = options & 4 != 0 ? try reader.f64() : nil
             guard let event = MundaneTimespineEclipseEvent(
@@ -328,6 +394,14 @@ public struct MundaneTimespineArtifact: Sendable {
         }
         guard reader.isAtEnd else { throw MundaneTimespineStorageError.malformedArtifact }
         return result
+    }
+
+    private static func decodeMotion(_ raw: UInt8) throws -> Motion {
+        switch raw {
+        case 0: return .direct
+        case 1: return .retrograde
+        default: throw MundaneTimespineStorageError.malformedArtifact
+        }
     }
 
     private static func decodeOrientation(_ raw: UInt8) throws -> MundaneTimespineRelationshipOrientation {
