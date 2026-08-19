@@ -1,0 +1,32 @@
+{
+  "artifact": "tools/pass5/zeitgeist-data/zeitgeist-z0-z30.csv",
+  "artifactFamily": "Orbo Pluto Zeitgeist Z0-Z30 canonical boundary table",
+  "bytes": 6604,
+  "rows": 31,
+  "sha256": "a49a40854b046392293ac02e959c96b4399916a91f0a41c3b26a0e555ec80bef",
+  "astronomicalSource": "Swiss Ephemeris DE441",
+  "astronomicalSourceVersion": "2.10.03",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "manufactureWorkflowRun": 32302530704,
+  "manufactureArtifactId": 9383586747,
+  "manufacturedJsonSha256": "58e0122112ec1c192d93c27ebdd4e471c42651890cb688481eb0a8f2d6fcb290",
+  "manufacturedJsonBytes": 41186,
+  "calendar": "proleptic Gregorian UTC",
+  "yearNumbering": "astronomical year numbering; year 0 = 1 BCE",
+  "laws": {
+    "ownership": "A Zeitgeist begins and takes ownership at Pluto's first direct ingress into Aries. Ownership transfers at the next Zeitgeist's first direct Aries ingress.",
+    "shadow": "If Pluto returns to Pisces after a new Zeitgeist begins, the previous Zeitgeist remains as Shadow until Pluto's final direct egress from Pisces into Aries.",
+    "preShadow": "Pre-shadow begins at Pluto's earlier direct crossing of the degree of the later direct station in Pisces to which Pluto falls back after the first Aries ingress."
+  },
+  "audits": {
+    "Z0FirstAriesIngressUTC": "-3532-05-24T02:38:40.271Z",
+    "Z22FirstAriesIngressUTC": "1822-04-16T13:54:20.135Z",
+    "Z22CanonicalStartDeltaSeconds": 0.0,
+    "Z23FirstAriesIngressUTC": "2066-06-17T15:24:10.695Z",
+    "Z23CanonicalBoundaryDeltaSeconds": 0.0,
+    "Z23FinalPiscesEgressUTC": "2068-02-23T13:40:18.371Z",
+    "continuousNextOwnerLinks": 30,
+    "maximumNextOwnerLinkDeltaSeconds": 0.0
+  }
+}
