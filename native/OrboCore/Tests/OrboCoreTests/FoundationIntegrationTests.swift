@@ -16,10 +16,12 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(condition.dignities, [.face])
         XCTAssertFalse(condition.isPeregrine)
 
-        let bodyState = Ring.state(of: body, motion: .direct)
-        let ascendantState = Ring.state(of: ascendant, motion: .retrograde)
+        let bodyState = Ring.state(of: bodyLongitude(body), motion: .direct)
+        let ascendantState = Ring.state(of: bodyLongitude(ascendant), motion: .retrograde)
         XCTAssertEqual(Ring.relation(between: bodyState, and: ascendantState), .quincunx)
     }
+
+    private func bodyLongitude(_ value: CelestialLongitude) -> CelestialLongitude { value }
 
     func testTympanConsumesCanonicalMaterWithoutModernContamination() {
         for rising in Sign.canonicalOrder {
@@ -130,5 +132,54 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(reconstructed.address.toDirection, .increasing)
         XCTAssertTrue(reconstructed.address.stationsBetween.isEmpty)
         XCTAssertEqual(reconstructed.handoff.civicOffsetSeconds, 300)
+    }
+
+    func testRelationshipSecondStrikeUsesCompactCelestialIndex() throws {
+        let storedBody = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 200, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let start = try XCTUnwrap(JulianDay(1_000))
+        let event = try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .sun,
+            bodyB: .moon,
+            mark: .conjunction,
+            orientation: .sameDegree,
+            bodyACelestialTimeDegrees: 42.5,
+            bodyBCelestialTimeDegrees: 42.5,
+            julianDay: try XCTUnwrap(JulianDay(start.value + 500.0 / 86_400.0)),
+            exactAspectResidualArcSeconds: 0
+        ))
+        let storage = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "relationship-second-strike fixture",
+            astronomicalSource: "deterministic XCTest matter",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: try XCTUnwrap(JulianDay(1_001)),
+            bodies: [storedBody],
+            relationships: [event],
+            eclipses: []
+        ))
+        let address = PolluxRelationshipDirectLookup.address(for: event)
+        let lookup = try PolluxRelationshipDirectLookup(
+            candidateSHA256: "fixture",
+            storage: storage
+        )
+        let question = try XCTUnwrap(lookup.question(for: address))
+
+        XCTAssertEqual(
+            Pollux.relationshipSecondStrikeLookupLaw,
+            "celestial relationship identity -> compact candidate index -> civic occurrence"
+        )
+        XCTAssertEqual(question.address, address)
+        XCTAssertEqual(question.handoff.candidateSHA256, "fixture")
+        XCTAssertEqual(question.handoff.civicOffsetSeconds, 500)
     }
 }
