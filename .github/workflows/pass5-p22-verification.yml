@@ -14,6 +14,7 @@ on:
       - "tools/pass5/audit_p22_canonical_duplicates.py"
       - "tools/pass5/verify_p22_substrate.py"
       - "tools/pass5/record_p22_verification.py"
+      - "tools/pass5/record_p22_cleanup_verification.py"
       - "native/OrboCore/Package.swift"
       - "native/OrboCore/Sources/OrboCore/Dioscuri/**"
       - "native/OrboCore/Sources/OrboCore/Forge/**"
@@ -71,12 +72,24 @@ jobs:
       - name: Checkout Orbo
         uses: actions/checkout@v4
 
-      - name: Record verification result and earned manifest status
+      - name: Record ordinary P22 verification result
+        if: github.ref_name != 'agent/p22-duplicate-cleanup-staging'
         env:
           SUBSTRATE_RESULT: ${{ needs.repository-substrate.result }}
           NATIVE_RESULT: ${{ needs.native-proof.result }}
         run: |
           python3 tools/pass5/record_p22_verification.py \
+            --substrate-result "$SUBSTRATE_RESULT" \
+            --native-result "$NATIVE_RESULT" \
+            --source-commit "$GITHUB_SHA"
+
+      - name: Record P22 cleanup verification result
+        if: github.ref_name == 'agent/p22-duplicate-cleanup-staging'
+        env:
+          SUBSTRATE_RESULT: ${{ needs.repository-substrate.result }}
+          NATIVE_RESULT: ${{ needs.native-proof.result }}
+        run: |
+          python3 tools/pass5/record_p22_cleanup_verification.py \
             --substrate-result "$SUBSTRATE_RESULT" \
             --native-result "$NATIVE_RESULT" \
             --source-commit "$GITHUB_SHA"
@@ -90,4 +103,15 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "record Pass 5 P22 verification result"
             git push origin HEAD:agent/timespine-celestial-time-build
+          fi
+
+      - name: Persist cleanup proof on staging branch
+        if: github.ref_name == 'agent/p22-duplicate-cleanup-staging'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/p22-verification-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "record P22 duplicate-cleanup verification"
+            git push origin HEAD:agent/p22-duplicate-cleanup-staging
           fi
