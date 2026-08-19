@@ -105,7 +105,116 @@ struct PolluxMotionTopologyCursor: Sendable {
     }
 }
 
+/// Direct second-strike reconstruction. The fresh Pollux first resolves a celestial endpoint to
+/// its mortal occurrence; this helper then derives only that occurrence's adjacent topology from
+/// the immutable tract. No exhaustive cursor replay is involved.
+struct PolluxMotionTopologyDirectLookup {
+    static let law = "celestial endpoint -> indexed civic occurrence -> adjacent topology"
+
+    static func reconstruct(
+        endpoint: PolluxQuestion,
+        storage: MundaneTimespineStorageImage
+    ) -> PolluxMotionTopologyQuestion? {
+        guard let body = storage.bodies.first(where: { $0.body == endpoint.celestialAddress.body }),
+              let currentIndex = occurrenceIndex(
+                civicOffsetSeconds: endpoint.handoff.civicOffsetSeconds,
+                in: body.occurrences
+              ),
+              currentIndex > 0 else {
+            return nil
+        }
+
+        let previous = body.occurrences[currentIndex - 1]
+        let current = body.occurrences[currentIndex]
+        let currentAddress = celestialAddress(storedBody: body, occurrence: current)
+        guard currentAddress == endpoint.celestialAddress else { return nil }
+
+        var stations: [PolluxStationAddress] = []
+        var stationIndex = firstStationIndex(
+            after: previous.civicOffsetSeconds,
+            in: body.stations
+        )
+        while stationIndex < body.stations.count,
+              body.stations[stationIndex].civicOffsetSeconds <= current.civicOffsetSeconds {
+            let station = body.stations[stationIndex]
+            stations.append(PolluxStationAddress(
+                body: body.body,
+                celestialMicrodegrees: station.celestialMicrodegrees,
+                motionAfter: station.motionAfter
+            ))
+            stationIndex += 1
+        }
+
+        return PolluxMotionTopologyQuestion(
+            address: PolluxMotionTopologyAddress(
+                body: body.body,
+                from: celestialAddress(storedBody: body, occurrence: previous),
+                to: currentAddress,
+                fromDirection: previous.sequenceDirection,
+                toDirection: current.sequenceDirection,
+                stationsBetween: stations
+            ),
+            handoff: endpoint.handoff
+        )
+    }
+
+    private static func occurrenceIndex(
+        civicOffsetSeconds: Int64,
+        in occurrences: [MundaneTimespineStoredOccurrence]
+    ) -> Int? {
+        var lower = 0
+        var upper = occurrences.count
+        while lower < upper {
+            let midpoint = lower + (upper - lower) / 2
+            if occurrences[midpoint].civicOffsetSeconds < civicOffsetSeconds {
+                lower = midpoint + 1
+            } else {
+                upper = midpoint
+            }
+        }
+        guard lower < occurrences.count,
+              occurrences[lower].civicOffsetSeconds == civicOffsetSeconds else {
+            return nil
+        }
+        return lower
+    }
+
+    private static func firstStationIndex(
+        after civicOffsetSeconds: Int64,
+        in stations: [MundaneTimespineStoredStation]
+    ) -> Int {
+        var lower = 0
+        var upper = stations.count
+        while lower < upper {
+            let midpoint = lower + (upper - lower) / 2
+            if stations[midpoint].civicOffsetSeconds <= civicOffsetSeconds {
+                lower = midpoint + 1
+            } else {
+                upper = midpoint
+            }
+        }
+        return lower
+    }
+
+    private static func celestialAddress(
+        storedBody: MundaneTimespineStoredBody,
+        occurrence: MundaneTimespineStoredOccurrence
+    ) -> PolluxCelestialAddress {
+        let markers = zip(storedBody.markerBodies, occurrence.markerWholeDegrees).map {
+            PolluxMarkerCell(body: $0.0, wholeDegree: $0.1)!
+        }
+        return PolluxCelestialAddress(
+            body: storedBody.body,
+            celestialTick: occurrence.celestialTick,
+            ticksPerDegree: storedBody.ticksPerDegree,
+            markerFingerprint: markers
+        )!
+    }
+}
+
 extension Pollux {
+    public static let motionTopologySecondStrikeLookupLaw = PolluxMotionTopologyDirectLookup.law
+
     func makeMotionTopologyCursor(storage: MundaneTimespineStorageImage) -> PolluxMotionTopologyCursor {
         PolluxMotionTopologyCursor(candidateSHA256: candidateSHA256, storage: storage)
     }
@@ -114,8 +223,18 @@ extension Pollux {
         storage.bodies.reduce(0) { $0 + max(0, $1.occurrences.count - 1) }
     }
 
-    /// Retained for focused tests and second-strike reconstruction. Production certification
-    /// consumes the streaming cursor above so full P22 does not allocate this entire array.
+    /// Reconstruct one disputed adjacency from a celestial endpoint without replaying earlier
+    /// topology questions. `ask` remains the celestial-first authority for the endpoint handoff.
+    func reconstructMotionTopologyQuestion(
+        endingAt endpointAddress: PolluxCelestialAddress,
+        storage: MundaneTimespineStorageImage
+    ) throws -> PolluxMotionTopologyQuestion? {
+        let endpoint = try ask(endpointAddress)
+        return PolluxMotionTopologyDirectLookup.reconstruct(endpoint: endpoint, storage: storage)
+    }
+
+    /// Retained for focused tests. Production certification consumes the streaming cursor above,
+    /// and second strikes use direct celestial reconstruction rather than replaying this cursor.
     func makeMotionTopologyQuestions(storage: MundaneTimespineStorageImage) -> [PolluxMotionTopologyQuestion] {
         var cursor = makeMotionTopologyCursor(storage: storage)
         var questions: [PolluxMotionTopologyQuestion] = []
