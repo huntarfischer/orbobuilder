@@ -2,14 +2,14 @@
   "candidateBytes": 22729389,
   "candidateSHA256": "813dde4dd5fa1b3a189570a1beda8ec1cfa37cc8c7be3eb6010865902040ea78",
   "canonicalDuplicateAudit": "17 canonical inputs / literal duplicates 0 / relationship native duplicate occurrences 0 / success",
-  "certificationCheckpointing": "built / native proof pending",
-  "checkpointValidation": "exact scope-count shape + divergence parity / native proof pending",
-  "lastNativeRun": "cleanup native proof failure; inspect workflow job before candidate manufacture",
-  "nativeProof": "failure",
-  "preservedCandidateRestart": "built / native proof pending",
-  "relationshipRecurrenceIdentity": "exact celestial geometry + recurrence ordinal / civic UT excluded / native proof failure",
+  "certificationCheckpointing": "built / native proof success",
+  "checkpointValidation": "exact scope-count shape + divergence parity / native proof success",
+  "lastNativeRun": "accumulated OrboCore tests + OrboCore build + OrboLab build successful; corrected P22 candidate manufacture and exhaustive Dioscuri certification still pending",
+  "nativeProof": "success",
+  "preservedCandidateRestart": "built / native proof success",
+  "relationshipRecurrenceIdentity": "exact celestial geometry + recurrence ordinal / civic UT excluded / native proof success",
   "repositorySubstrate": "success",
-  "smallEventSecondStrikeLookup": "station + eclipse direct celestial identity / native proof pending",
-  "sourceCommit": "b4f1a6058b6f2e57c5914bad5d179be83b6f830c",
-  "status": "failure"
+  "smallEventSecondStrikeLookup": "station + eclipse direct celestial identity / native proof success",
+  "sourceCommit": "4642f36b1da0161bc9df2cd42450571c582dec8f",
+  "status": "success"
 }
