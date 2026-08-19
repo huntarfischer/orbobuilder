@@ -2,7 +2,7 @@ name: Pass 5 Zeitgeist Z0-Z30 Table
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - agent/p22-duplicate-cleanup-staging
     paths:
@@ -11,7 +11,7 @@ on:
       - "native/OrboCore/Sources/ZeitgeistTableForgeTool/**"
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
@@ -64,17 +64,20 @@ jobs:
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.json
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.csv
           grep -q '^rows=31$' /tmp/zeitgeist-table-manufacture.txt
-          sha256sum tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv
-          wc -c tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv
+          sha256sum tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
+            | tee /tmp/zeitgeist-table-sha256.txt
+          wc -c tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
+            | tee /tmp/zeitgeist-table-bytes.txt
 
-      - name: Persist frozen Zeitgeist table on staging branch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            tools/pass5/p22-data/zeitgeist-z0-z30.json \
+      - name: Upload manufactured table for audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeitgeist-z0-z30
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            tools/pass5/p22-data/zeitgeist-z0-z30.json
             tools/pass5/p22-data/zeitgeist-z0-z30.csv
-          if ! git diff --cached --quiet; then
-            git commit -m "freeze canonical Z0-Z30 Zeitgeist table"
-            git push origin HEAD:agent/p22-duplicate-cleanup-staging
-          fi
+            /tmp/zeitgeist-table-manufacture.txt
+            /tmp/zeitgeist-table-sha256.txt
+            /tmp/zeitgeist-table-bytes.txt
