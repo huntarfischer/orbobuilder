@@ -7,19 +7,18 @@ on:
       - agent/p22-duplicate-cleanup-staging
     paths:
       - ".github/workflows/pass5-z23-motion.yml"
+      - "tools/pass5/generate_z23_motion_tables.py"
 
 permissions:
   contents: write
 
 env:
   SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
-  Z23_START_JD: 2475819.1417904533
-  Z24_START_JD: 2565295.0945935287
 
 jobs:
   manufacture-z23-motion:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - name: Checkout Orbo
         uses: actions/checkout@v4
@@ -44,116 +43,19 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
-      - name: Prepare proven Z22 manufacturer for Z23 owner bounds
+      - name: Manufacture and certify Z23 motion tables
         run: |
-          cp tools/pass5/P22TimespinePOC.swift /tmp/Z23TimespinePOC.swift
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('/tmp/Z23TimespinePOC.swift')
-          s=p.read_text()
-          old_a='let p22StartJD = 2386637.079399706'
-          old_b='let p23StartJD = 2475819.1417904524'
-          assert old_a in s and old_b in s
-          s=s.replace(old_a, 'let p22StartJD = 2475819.1417904533', 1)
-          s=s.replace(old_b, 'let p23StartJD = 2565295.0945935287', 1)
-          p.write_text(s)
-          PY
-
-      - name: Manufacture Z23 motion substrate
-        run: |
-          rm -rf /tmp/z23-motion-build /tmp/z23-motion-frozen
-          mkdir -p /tmp/z23-motion-build /tmp/z23-motion-frozen
-          swift /tmp/Z23TimespinePOC.swift \
+          rm -rf /tmp/z23-motion-frozen
+          python3 tools/pass5/generate_z23_motion_tables.py \
             --library "$PWD/.forge/swisseph/libswe.so" \
             --ephe-dir "$PWD/.forge/ephe" \
-            --output-dir /tmp/z23-motion-build \
+            --shadow-csv "$PWD/tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv" \
+            --output-dir /tmp/z23-motion-frozen \
             | tee /tmp/z23-motion-manufacture.txt
-          test -s /tmp/z23-motion-build/station-table.csv
-          test -s /tmp/z23-motion-build/retrograde-passages.csv
-          cp /tmp/z23-motion-build/station-table.csv /tmp/z23-motion-frozen/station-table.csv
-          cp /tmp/z23-motion-build/retrograde-passages.csv /tmp/z23-motion-frozen/retrograde-passages.csv
-
-      - name: Audit Z23 motion tables and shadow agreement
-        run: |
-          python3 - <<'PY'
-          import csv, os, re, json, hashlib
-          start=float(os.environ['Z23_START_JD']); end=float(os.environ['Z24_START_JD'])
-          station='/tmp/z23-motion-frozen/station-table.csv'
-          retro='/tmp/z23-motion-frozen/retrograde-passages.csv'
-          shadow='tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv'
-
-          with open(station,newline='') as f:
-              sr=list(csv.DictReader(f)); sh=f'{len(sr)}'
-          with open(retro,newline='') as f:
-              rr=list(csv.DictReader(f))
-          assert sr and rr
-          for r in sr:
-              jd=float(r['utJulianDay']); assert start-1e-9 <= jd < end+1e-9
-          for r in rr:
-              a=float(r['startJulianDay']); b=float(r['endJulianDay'])
-              assert start-1e-9 <= a < b <= end+1e-9
-              assert r['userFacingMotion']=='retrograde'
-
-          def norm(s): return re.sub(r'[^a-z0-9]','',s.lower())
-          with open(shadow,newline='') as f:
-              dr=csv.DictReader(f); headers=dr.fieldnames or []; shadows=list(dr)
-          hm={norm(h):h for h in headers}
-          def pick(*cands):
-              for c in cands:
-                  if norm(c) in hm: return hm[norm(c)]
-              raise AssertionError((cands,headers))
-          bodyc=pick('body')
-          rc=pick('retrograde_station_jd_ut','retrogradeStationJDUT','retrogradeStationJulianDayUT','retrograde_station_jd')
-          dc=pick('direct_station_jd_ut','directStationJDUT','directStationJulianDayUT','direct_station_jd')
-          wanted={'Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'}
-          index={b:[] for b in wanted}
-          for s in shadows:
-              b=s[bodyc]
-              if b in wanted:
-                  index[b].append((float(s[rc]),float(s[dc])))
-          compared=0
-          maxerr=0.0
-          for r in rr:
-              b=r['body']
-              if b not in wanted: continue
-              a=float(r['startJulianDay']); d=float(r['endJulianDay'])
-              # Only full station-to-station passages are expected to equal a shadow episode exactly.
-              if abs(a-start)<1e-8 or abs(d-end)<1e-8: continue
-              candidates=index[b]
-              assert candidates, b
-              best=min(candidates,key=lambda x:abs(x[0]-a)+abs(x[1]-d))
-              e=max(abs(best[0]-a),abs(best[1]-d))*86400.0
-              maxerr=max(maxerr,e)
-              assert e <= 1.0,(b,a,d,best,e)
-              compared+=1
-          assert compared>0
-          manifest={
-            'zeitgeist':'Z23',
-            'artifactFamily':'Orbo motion tables',
-            'ownershipLaw':'Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive',
-            'startJulianDayUT':start,
-            'startUTC':'2066-06-17T15:24:10.695Z',
-            'endJulianDayUT':end,
-            'endUTC':'2311-06-10T14:16:12.881Z',
-            'astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude and speed; UT',
-            'swissVersion':'2.10.03',
-            'swissRepository':'huntarfischer/swisseph',
-            'swissCommit':os.environ['SWISS_COMMIT'],
-            'stationRows':len(sr),
-            'retrogradePassageRows':len(rr),
-            'shadowCrossCheckBodies':sorted(wanted),
-            'shadowCrossCheckCompletePassages':compared,
-            'shadowCrossCheckMaxErrorSeconds':maxerr,
-            'shadowCrossCheckLaw':'Mercury through Pluto complete retrograde passages equal retrograde-station to direct-station intervals in the frozen planetary shadow table; boundary-clipped passages excluded',
-            'files':[]
-          }
-          for p in (station,retro):
-              data=open(p,'rb').read()
-              manifest['files'].append({'path':os.path.basename(p),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
-          with open('/tmp/z23-motion-frozen/manifest.json','w') as f: json.dump(manifest,f,indent=2,sort_keys=True); f.write('\n')
-          print('PASS Z23 motion + shadow agreement')
-          print(json.dumps({'stations':len(sr),'retrogradePassages':len(rr),'shadowCompared':compared,'maxErrorSeconds':maxerr},sort_keys=True))
-          PY
+          grep -q '^PASS Z23 focused motion manufacture$' /tmp/z23-motion-manufacture.txt
+          test -s /tmp/z23-motion-frozen/station-table.csv
+          test -s /tmp/z23-motion-frozen/retrograde-passages.csv
+          test -s /tmp/z23-motion-frozen/manifest.json
           sha256sum /tmp/z23-motion-frozen/* | tee /tmp/z23-motion-sha256.txt
 
       - name: Upload Z23 motion artifact
