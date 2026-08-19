@@ -13,7 +13,8 @@
   "manufacturedJsonSha256": "58e0122112ec1c192d93c27ebdd4e471c42651890cb688481eb0a8f2d6fcb290",
   "manufacturedJsonBytes": 41186,
   "calendar": "proleptic Gregorian UTC",
-  "yearNumbering": "astronomical year numbering; year 0 = 1 BCE",
+  "yearNumbering": "astronomical year numbering; year 0 = 1 BCE; negative year -3532 = 3533 BCE",
+  "numberingAnchor": "Z0 begins at astronomical year -3532-05-24T02:38:40.271Z (May 24, 3533 BCE). This numbering is validated forward by exact agreement with Z22 in 1822 and Z23 in 2066.",
   "laws": {
     "ownership": "A Zeitgeist begins and takes ownership at Pluto's first direct ingress into Aries. Ownership transfers at the next Zeitgeist's first direct Aries ingress.",
     "shadow": "If Pluto returns to Pisces after a new Zeitgeist begins, the previous Zeitgeist remains as Shadow until Pluto's final direct egress from Pisces into Aries.",
@@ -21,6 +22,7 @@
   },
   "audits": {
     "Z0FirstAriesIngressUTC": "-3532-05-24T02:38:40.271Z",
+    "Z0ConventionalEraDate": "May 24, 3533 BCE",
     "Z22FirstAriesIngressUTC": "1822-04-16T13:54:20.135Z",
     "Z22CanonicalStartDeltaSeconds": 0.0,
     "Z23FirstAriesIngressUTC": "2066-06-17T15:24:10.695Z",
