@@ -59,14 +59,7 @@ struct PolluxRelationshipQuestionCursor: Sendable {
         guard position < relationships.count else { return nil }
         let event = relationships[position]
         position += 1
-        let address = PolluxRelationshipAddress(
-            bodyA: event.bodyA,
-            bodyB: event.bodyB,
-            mark: event.mark,
-            orientation: event.orientation,
-            bodyAMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyACelestialTimeDegrees),
-            bodyBMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyBCelestialTimeDegrees)
-        )
+        let address = PolluxRelationshipDirectLookup.address(for: event)
         guard seen.insert(address).inserted else {
             throw PolluxError.ambiguousRelationshipIdentity
         }
@@ -81,7 +74,86 @@ struct PolluxRelationshipQuestionCursor: Sendable {
     }
 }
 
+/// Alternate relationship path used only after a first-strike divergence. It builds a compact
+/// celestial-key index lazily, once, and thereafter resolves the disputed relationship directly.
+/// The first strike still streams independently through PolluxRelationshipQuestionCursor.
+struct PolluxRelationshipDirectLookup: Sendable {
+    static let law = "celestial relationship identity -> compact candidate index -> civic occurrence"
+
+    struct CelestialKey: Hashable, Sendable {
+        let high: UInt64
+        let low: UInt64
+    }
+
+    let candidateSHA256: String
+    private let supportedStart: JulianDay
+    private let relationships: [MundaneTimespineRelationshipEvent]
+    private let eventIndexByKey: [CelestialKey: Int]
+
+    init(candidateSHA256: String, storage: MundaneTimespineStorageImage) throws {
+        self.candidateSHA256 = candidateSHA256
+        self.supportedStart = storage.supportedStart
+        self.relationships = storage.relationships
+
+        var index: [CelestialKey: Int] = [:]
+        index.reserveCapacity(storage.relationships.count)
+        for eventIndex in storage.relationships.indices {
+            let address = Self.address(for: storage.relationships[eventIndex])
+            let key = Self.key(for: address)
+            guard index.updateValue(eventIndex, forKey: key) == nil else {
+                throw PolluxError.ambiguousRelationshipIdentity
+            }
+        }
+        self.eventIndexByKey = index
+    }
+
+    func question(for address: PolluxRelationshipAddress) -> PolluxRelationshipQuestion? {
+        guard let eventIndex = eventIndexByKey[Self.key(for: address)] else { return nil }
+        let event = relationships[eventIndex]
+        guard Self.address(for: event) == address else { return nil }
+        let offset = Int64(((event.julianDay.value - supportedStart.value) * 86_400).rounded())
+        return PolluxRelationshipQuestion(
+            address: address,
+            handoff: PolluxCivicHandoff(
+                candidateSHA256: candidateSHA256,
+                civicOffsetSeconds: offset
+            )
+        )
+    }
+
+    static func address(for event: MundaneTimespineRelationshipEvent) -> PolluxRelationshipAddress {
+        PolluxRelationshipAddress(
+            bodyA: event.bodyA,
+            bodyB: event.bodyB,
+            mark: event.mark,
+            orientation: event.orientation,
+            bodyAMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyACelestialTimeDegrees),
+            bodyBMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyBCelestialTimeDegrees)
+        )
+    }
+
+    private static func key(for address: PolluxRelationshipAddress) -> CelestialKey {
+        let orientation: UInt64
+        switch address.orientation {
+        case .sameDegree: orientation = 0
+        case .oppositeDegree: orientation = 1
+        case .bodyAAhead: orientation = 2
+        case .bodyBAhead: orientation = 3
+        }
+
+        let high = UInt64(address.bodyA.rawValue)
+            | (UInt64(address.bodyB.rawValue) << 4)
+            | (UInt64(address.mark.rawValue) << 8)
+            | (orientation << 16)
+        let low = UInt64(address.bodyAMicrodegrees)
+            | (UInt64(address.bodyBMicrodegrees) << 32)
+        return CelestialKey(high: high, low: low)
+    }
+}
+
 extension Pollux {
+    public static let relationshipSecondStrikeLookupLaw = PolluxRelationshipDirectLookup.law
+
     func makeStationQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxStationQuestion] {
         var seen = Set<PolluxStationAddress>()
         var result: [PolluxStationQuestion] = []
@@ -126,8 +198,22 @@ extension Pollux {
         PolluxRelationshipQuestionCursor(candidateSHA256: candidateSHA256, storage: storage)
     }
 
-    /// Retained for focused tests and second-strike reconstruction. Full certification consumes
-    /// the streaming cursor above instead of retaining a second copy of every relationship.
+    func makeRelationshipDirectLookup(
+        storage: MundaneTimespineStorageImage
+    ) throws -> PolluxRelationshipDirectLookup {
+        try PolluxRelationshipDirectLookup(candidateSHA256: candidateSHA256, storage: storage)
+    }
+
+    func reconstructRelationshipQuestion(
+        _ address: PolluxRelationshipAddress,
+        using lookup: PolluxRelationshipDirectLookup
+    ) -> PolluxRelationshipQuestion? {
+        guard lookup.candidateSHA256 == candidateSHA256 else { return nil }
+        return lookup.question(for: address)
+    }
+
+    /// Retained for focused tests. Full certification consumes the streaming cursor above instead
+    /// of retaining a second copy of every relationship question.
     func makeRelationshipQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxRelationshipQuestion] {
         var cursor = makeRelationshipQuestionCursor(storage: storage)
         var result: [PolluxRelationshipQuestion] = []
