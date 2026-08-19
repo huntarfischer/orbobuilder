@@ -28,15 +28,14 @@ public enum HephaestusError: Error, Equatable, CustomStringConvertible {
 
 /// Native fabrication authority for canonical Orbo artifacts.
 ///
-/// The current implementation knows two paths into the same Timespine minting machinery:
-/// Forge may manufacture fresh celestial chronology, or a recipe may present an already-proven
-/// storage image assembled from canonical construction matter. Both paths converge before
-/// deterministic ORBOTS packaging, structural round-trip proof, provenance, and immutable identity.
-/// Completion is the second half of this same engine: Dioscuri testimony returns to Hephaestus,
-/// which seals or quarantines the exact candidate without interpreting the resonance itself.
+/// Fresh Forge manufacture, canonical persisted assembly, and preserved-candidate rehydration
+/// all converge on the same recipe/provenance/anatomy checks. Rehydration never manufactures
+/// astronomical matter and never creates a new candidate identity: it restores Hephaestus custody
+/// of the exact preserved ORBOTS bytes so Dioscuri may continue examining that immutable work.
 public enum Hephaestus {
     public static let celestialTimeFirst = true
     public static let candidateIdentityAlgorithm = "SHA-256"
+    public static let candidateRehydrationLaw = "exact ORBOTS bytes + bound recipe -> same candidate identity"
     public static let runtimeRole = "none"
     public static let queryRole = "none"
     public static let interpretationRole = "none"
@@ -80,17 +79,39 @@ public enum Hephaestus {
         guard Self.celestialTimeFirst, MundaneTimespineStorageFormat.celestialTimeFirst else {
             throw MundaneTimespineStorageError.celestialTimeLawMissing
         }
+        try validateProvenance(R.self, image: image)
+        return try mintCandidate(recipe: R.self, image: image)
+    }
 
-        let plan = R.forgePlan(astronomicalSourceVersion: image.astronomicalSourceVersion)
-        guard image.spanName == plan.spanName,
-              image.astronomicalSource == plan.astronomicalSource,
-              image.astronomicalSourceVersion == plan.astronomicalSourceVersion,
-              image.supportedStart == plan.supportedStart,
-              image.supportedEnd == plan.supportedEnd else {
-            throw HephaestusError.provenanceMismatch
+    /// Restore an already-minted immutable candidate from its exact preserved ORBOTS bytes.
+    /// This performs no Forge work and no astronomical assembly. The artifact is decoded,
+    /// checked against the bound recipe, re-encoded byte-for-byte, and given the SHA-256 identity
+    /// inherent in those bytes. A different byte sequence is therefore a different candidate.
+    public static func rehydrateCandidate<R: HephaestusTimespineRecipe>(
+        recipe: R.Type,
+        artifactData: Data
+    ) throws -> TimespineCandidate {
+        guard Self.celestialTimeFirst, MundaneTimespineStorageFormat.celestialTimeFirst else {
+            throw MundaneTimespineStorageError.celestialTimeLawMissing
         }
 
-        return try mintCandidate(recipe: R.self, image: image)
+        let artifact = try MundaneTimespineArtifact(data: artifactData)
+        let decoded = try artifact.storageImage()
+        try validateRecipe(R.self, astronomicalSourceVersion: decoded.astronomicalSourceVersion)
+        try validateProvenance(R.self, image: decoded)
+        try enforce(R.artifactContract, counts: counts(in: decoded))
+
+        let reencoded = try decoded.encodedArtifact()
+        guard reencoded == artifactData else {
+            throw HephaestusError.artifactRoundTripMismatch
+        }
+
+        return makeCandidate(
+            recipe: R.self,
+            artifactData: artifactData,
+            artifact: artifact,
+            decoded: decoded
+        )
     }
 
     private static func mintCandidate<R: HephaestusTimespineRecipe>(
@@ -120,6 +141,21 @@ public enum Hephaestus {
             throw HephaestusError.artifactRoundTripMismatch
         }
 
+        return makeCandidate(
+            recipe: R.self,
+            artifactData: artifactData,
+            artifact: artifact,
+            decoded: decoded
+        )
+    }
+
+    private static func makeCandidate<R: HephaestusTimespineRecipe>(
+        recipe: R.Type,
+        artifactData: Data,
+        artifact: MundaneTimespineArtifact,
+        decoded: MundaneTimespineStorageImage
+    ) -> TimespineCandidate {
+        let decodedCounts = counts(in: decoded)
         let identity = TimespineCandidateIdentity.hash(artifactData: artifactData)
         let record = TimespineForgeRecord(
             recipeIdentifier: R.recipeIdentifier,
@@ -157,6 +193,20 @@ public enum Hephaestus {
         }
         guard !astronomicalSourceVersion.isEmpty else {
             throw HephaestusError.invalidAstronomicalSourceVersion
+        }
+    }
+
+    private static func validateProvenance<R: HephaestusTimespineRecipe>(
+        _ recipe: R.Type,
+        image: MundaneTimespineStorageImage
+    ) throws {
+        let plan = R.forgePlan(astronomicalSourceVersion: image.astronomicalSourceVersion)
+        guard image.spanName == plan.spanName,
+              image.astronomicalSource == plan.astronomicalSource,
+              image.astronomicalSourceVersion == plan.astronomicalSourceVersion,
+              image.supportedStart == plan.supportedStart,
+              image.supportedEnd == plan.supportedEnd else {
+            throw HephaestusError.provenanceMismatch
         }
     }
 
