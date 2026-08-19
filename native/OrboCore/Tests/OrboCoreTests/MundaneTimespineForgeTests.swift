@@ -454,16 +454,49 @@ final class MundaneTimespineForgeTests: XCTestCase {
         }
     }
 
-    func testDioscuriRejectsRepeatedRelationshipCelestialIdentityRatherThanUsingCivicOrdinal() throws {
-        let first = try cleanRelationship(offsetSeconds: 1_000)
-        let second = try cleanRelationship(offsetSeconds: 1_500)
+    func testPolluxQualifiesRepeatedRelationshipCelestialIdentityByRecurrenceOrdinal() throws {
         let candidate = try makeDioscuriCandidate(
             bodies: try cleanDioscuriBodies(),
-            relationships: [first, second]
+            relationships: [
+                try cleanRelationship(offsetSeconds: 1_000),
+                try cleanRelationship(offsetSeconds: 1_500),
+            ]
         )
-        let dioscuri = try Dioscuri(candidate: candidate)
+        let storage = try candidate.artifact.storageImage()
+        let pollux = try Pollux(candidate: candidate)
+        var cursor = pollux.makeRelationshipQuestionCursor(storage: storage)
 
-        XCTAssertThrowsError(try dioscuri.certify()) { error in
+        let first = try XCTUnwrap(cursor.next())
+        let second = try XCTUnwrap(cursor.next())
+
+        XCTAssertEqual(Pollux.relationshipRecurrenceIdentityLaw, "exact celestial geometry + recurrence ordinal / civic UT excluded")
+        XCTAssertEqual(first.address.bodyA, second.address.bodyA)
+        XCTAssertEqual(first.address.bodyB, second.address.bodyB)
+        XCTAssertEqual(first.address.mark, second.address.mark)
+        XCTAssertEqual(first.address.orientation, second.address.orientation)
+        XCTAssertEqual(first.address.bodyAMicrodegrees, second.address.bodyAMicrodegrees)
+        XCTAssertEqual(first.address.bodyBMicrodegrees, second.address.bodyBMicrodegrees)
+        XCTAssertEqual(first.address.recurrenceOrdinal, 0)
+        XCTAssertEqual(second.address.recurrenceOrdinal, 1)
+        XCTAssertEqual(first.handoff.civicOffsetSeconds, 1_000)
+        XCTAssertEqual(second.handoff.civicOffsetSeconds, 1_500)
+        XCTAssertNil(try cursor.next())
+    }
+
+    func testPolluxRejectsDuplicateRelationshipAtSameStoredSecond() throws {
+        let candidate = try makeDioscuriCandidate(
+            bodies: try cleanDioscuriBodies(),
+            relationships: [
+                try cleanRelationship(offsetSeconds: 1_000),
+                try cleanRelationship(offsetSeconds: 1_000),
+            ]
+        )
+        let storage = try candidate.artifact.storageImage()
+        let pollux = try Pollux(candidate: candidate)
+        var cursor = pollux.makeRelationshipQuestionCursor(storage: storage)
+
+        XCTAssertNoThrow(try cursor.next())
+        XCTAssertThrowsError(try cursor.next()) { error in
             XCTAssertEqual(error as? PolluxError, .ambiguousRelationshipIdentity)
         }
     }
