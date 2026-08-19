@@ -53,7 +53,7 @@ public struct Pollux: Sendable {
     public static let readerRole = "none"
     public static let ephemerisRole = "none"
     public static let civicTimeRole = "handoff only"
-    public static let ambiguityPolicy = "reject unresolved ambiguity / qualify lawful recurrences"
+    public static let ambiguityPolicy = "reject"
 
     public let candidateSHA256: String
     public let bodyCount: Int
