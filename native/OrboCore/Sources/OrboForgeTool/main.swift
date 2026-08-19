@@ -389,4 +389,10 @@ private struct OrboForgeTool {
     }
 }
 
-try OrboForgeTool.main()
+do {
+    try OrboForgeTool.main()
+} catch {
+    let message = "OrboForgeTool error: \(error)\n"
+    FileHandle.standardError.write(Data(message.utf8))
+    exit(EXIT_FAILURE)
+}
