@@ -71,7 +71,7 @@ public struct PolluxConfirmation: Hashable, Sendable {
     }
 }
 
-public struct DioscuriDivergence: Hashable, Sendable {
+public struct DioscuriDivergence: Hashable, Codable, Sendable {
     public let candidateSHA256: String
     public let scope: DioscuriScope
     public let kind: DioscuriDivergenceKind
@@ -105,7 +105,7 @@ public struct DioscuriDivergence: Hashable, Sendable {
     }
 }
 
-public struct DioscuriScopeTally: Hashable, Sendable {
+public struct DioscuriScopeTally: Hashable, Codable, Sendable {
     public let scope: DioscuriScope
     public let questions: Int
     public let resonant: Int
@@ -124,6 +124,127 @@ public struct DioscuriScopeTally: Hashable, Sendable {
         self.resonant = resonant
         self.quantizedCoincidences = quantizedCoincidences
         self.divergent = divergent
+    }
+}
+
+/// Counts fully testified questions in each deterministic certification phase. A checkpoint is
+/// always taken after a whole question, including any required second strike, never mid-strike.
+public struct DioscuriCertificationOffsets: Hashable, Codable, Sendable {
+    public var bodyOccurrence: Int
+    public var motionTopology: Int
+    public var station: Int
+    public var exactRelationship: Int
+    public var eclipse: Int
+
+    public init(
+        bodyOccurrence: Int = 0,
+        motionTopology: Int = 0,
+        station: Int = 0,
+        exactRelationship: Int = 0,
+        eclipse: Int = 0
+    ) {
+        self.bodyOccurrence = bodyOccurrence
+        self.motionTopology = motionTopology
+        self.station = station
+        self.exactRelationship = exactRelationship
+        self.eclipse = eclipse
+    }
+
+    func value(for phase: DioscuriCertificationPhase) -> Int {
+        switch phase {
+        case .bodyOccurrence: return bodyOccurrence
+        case .motionTopology: return motionTopology
+        case .station: return station
+        case .exactRelationship: return exactRelationship
+        case .eclipse: return eclipse
+        }
+    }
+
+    mutating func set(_ value: Int, for phase: DioscuriCertificationPhase) {
+        switch phase {
+        case .bodyOccurrence: bodyOccurrence = value
+        case .motionTopology: motionTopology = value
+        case .station: station = value
+        case .exactRelationship: exactRelationship = value
+        case .eclipse: eclipse = value
+        }
+    }
+}
+
+/// Persisted partial testimony state. It is not a verdict, certificate, seal, or quarantine.
+/// Resume is allowed only when every binding field still matches the exact candidate and the
+/// current Dioscuri certification implementation. Hephaestus never accepts this type as testimony.
+public struct DioscuriCertificationCheckpoint: Hashable, Codable, Sendable {
+    public static let formatVersion: UInt16 = 1
+
+    public let checkpointFormatVersion: UInt16
+    public let candidateSHA256: String
+    public let recipeIdentifier: String
+    public let recipeVersion: UInt16
+    public let resonanceContract: HephaestusResonanceContractIdentity
+    public let dioscuriContractVersion: UInt16
+    public let certificationImplementationVersion: UInt16
+    public let storageVersion: UInt16
+    public let completed: DioscuriCertificationOffsets
+    public let scopeTallies: [DioscuriScopeTally]
+    public let divergences: [DioscuriDivergence]
+
+    init(
+        candidate: TimespineCandidate,
+        certificationImplementationVersion: UInt16,
+        completed: DioscuriCertificationOffsets,
+        scopeTallies: [DioscuriScopeTally],
+        divergences: [DioscuriDivergence]
+    ) {
+        self.checkpointFormatVersion = Self.formatVersion
+        self.candidateSHA256 = candidate.identity.sha256
+        self.recipeIdentifier = candidate.forgeRecord.recipeIdentifier
+        self.recipeVersion = candidate.forgeRecord.recipeVersion
+        self.resonanceContract = candidate.forgeRecord.resonanceContract
+        self.dioscuriContractVersion = Dioscuri.contractVersion
+        self.certificationImplementationVersion = certificationImplementationVersion
+        self.storageVersion = candidate.forgeRecord.storageVersion
+        self.completed = completed
+        self.scopeTallies = scopeTallies
+        self.divergences = divergences
+    }
+}
+
+public enum DioscuriCheckpointError: Error, Equatable, CustomStringConvertible {
+    case unsupportedFormat(UInt16)
+    case candidateMismatch
+    case recipeMismatch
+    case resonanceContractMismatch
+    case dioscuriContractMismatch
+    case implementationMismatch
+    case storageVersionMismatch
+    case invalidProgress
+    case invalidTallies
+    case invalidDivergenceBinding
+
+    public var description: String {
+        switch self {
+        case let .unsupportedFormat(version):
+            return "Unsupported Dioscuri checkpoint format version \(version)."
+        case .candidateMismatch:
+            return "Dioscuri checkpoint belongs to a different candidate SHA-256."
+        case .recipeMismatch:
+            return "Dioscuri checkpoint recipe binding does not match the candidate."
+        case .resonanceContractMismatch:
+            return "Dioscuri checkpoint resonance contract does not match the candidate."
+        case .dioscuriContractMismatch:
+            return "Dioscuri checkpoint was made under a different Dioscuri contract version."
+        case .implementationMismatch:
+            return "Dioscuri checkpoint was made by a different certification implementation version."
+        case .storageVersionMismatch:
+            return "Dioscuri checkpoint storage version does not match the candidate."
+        case .invalidProgress:
+            return "Dioscuri checkpoint phase progress is not a valid deterministic prefix."
+        case .invalidTallies:
+            return "Dioscuri checkpoint tally state is internally inconsistent."
+        case .invalidDivergenceBinding:
+            return "Dioscuri checkpoint contains divergence evidence for another candidate."
+        }
     }
 }
 
