@@ -16,12 +16,10 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(condition.dignities, [.face])
         XCTAssertFalse(condition.isPeregrine)
 
-        let bodyState = Ring.state(of: bodyLongitude(body), motion: .direct)
-        let ascendantState = Ring.state(of: bodyLongitude(ascendant), motion: .retrograde)
+        let bodyState = Ring.state(of: body, motion: .direct)
+        let ascendantState = Ring.state(of: ascendant, motion: .retrograde)
         XCTAssertEqual(Ring.relation(between: bodyState, and: ascendantState), .quincunx)
     }
-
-    private func bodyLongitude(_ value: CelestialLongitude) -> CelestialLongitude { value }
 
     func testTympanConsumesCanonicalMaterWithoutModernContamination() {
         for rising in Sign.canonicalOrder {
@@ -181,5 +179,33 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(question.address, address)
         XCTAssertEqual(question.handoff.candidateSHA256, "fixture")
         XCTAssertEqual(question.handoff.civicOffsetSeconds, 500)
+    }
+
+    func testDioscuriSecondStrikeProgressContractIsExplicit() {
+        let started = DioscuriCertificationProgress(
+            phase: .exactRelationship,
+            completed: 123,
+            total: 456,
+            activity: .secondStrikeStarted,
+            detail: "Sun / Moon conjunction"
+        )
+        let completed = DioscuriCertificationProgress(
+            phase: .exactRelationship,
+            completed: 123,
+            total: 456,
+            activity: .secondStrikeCompleted,
+            detail: "reproduced divergence / Sun / Moon conjunction"
+        )
+
+        XCTAssertEqual(
+            Dioscuri.secondStrikeVisibilityLaw,
+            "start / finish progress events with phase and question position"
+        )
+        XCTAssertEqual(started.activity, .secondStrikeStarted)
+        XCTAssertEqual(completed.activity, .secondStrikeCompleted)
+        XCTAssertEqual(started.completed, completed.completed)
+        XCTAssertEqual(started.total, completed.total)
+        XCTAssertNotNil(started.detail)
+        XCTAssertNotNil(completed.detail)
     }
 }
