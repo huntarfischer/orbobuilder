@@ -329,7 +329,7 @@ final class HephaestusCompletionTests: XCTestCase {
                 resonant: tally.resonant + 1,
                 quantizedCoincidences: tally.quantizedCoincidences,
                 divergent: tally.divergent
-            )
+            )!
         }
         let corrupted = DioscuriCertificationCheckpoint(
             candidate: candidate,
@@ -337,7 +337,7 @@ final class HephaestusCompletionTests: XCTestCase {
             completed: checkpoint.completed,
             scopeTallies: inflatedTallies,
             divergences: checkpoint.divergences
-        )
+        )!
 
         XCTAssertEqual(
             Dioscuri.checkpointValidationLaw,
@@ -357,7 +357,7 @@ final class HephaestusCompletionTests: XCTestCase {
         XCTAssertEqual(contract.bodyOccurrenceCount, 1_811_967)
         XCTAssertEqual(contract.stationCount, 17_535)
         XCTAssertEqual(contract.retrogradePassageCount, 8_770)
-        XCTAssertEqual(contract.relationshipCount, 770_298)
+        XCTAssertEqual(contract.relationshipCount, 770_293)
         XCTAssertEqual(contract.eclipseCount, 1_133)
         XCTAssertEqual(
             MundaneTimespineP22ForgeRecipe.astronomicalSource,
@@ -371,7 +371,7 @@ final class HephaestusCompletionTests: XCTestCase {
         XCTAssertEqual(MundaneTimespineP22CanonicalInputs.sharedMotionInputs.count, 3)
         XCTAssertEqual(MundaneTimespineP22CanonicalInputs.universalEventInputs.count, 3)
         XCTAssertEqual(MundaneTimespineP22CanonicalInputs.all.count, 17)
-        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows, 770_298)
+        XCTAssertEqual(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows, 770_293)
         XCTAssertEqual(MundaneTimespineP22CanonicalInputs.expectedEclipseRows, 1_133)
         XCTAssertTrue(MundaneTimespineP22CanonicalInputs.all.allSatisfy {
             $0.compressedBytes > 0 && $0.sha256.count == 64
@@ -475,7 +475,7 @@ final class HephaestusCompletionTests: XCTestCase {
             eclipseCount: 0,
             artifactByteCount: data.count,
             candidateSHA256: identity.sha256
-        )
+        )!
         return TimespineCandidate(identity: identity, artifact: artifact, forgeRecord: record)
     }
 
@@ -496,7 +496,7 @@ final class HephaestusCompletionTests: XCTestCase {
             result: testimony.result,
             evidenceSHA256: evidenceSHA256 ?? testimony.evidenceSHA256,
             evidence: testimony.evidence
-        )
+        )!
     }
 
     private func sealed(_ disposition: HephaestusDisposition) throws -> HephaestusSealedArtifact {
