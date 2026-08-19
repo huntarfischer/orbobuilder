@@ -8,15 +8,31 @@ public enum DioscuriCertificationPhase: String, CaseIterable, Sendable {
     case eclipse
 }
 
+public enum DioscuriCertificationActivity: String, Hashable, Sendable {
+    case phaseProgress = "phase-progress"
+    case secondStrikeStarted = "second-strike-started"
+    case secondStrikeCompleted = "second-strike-completed"
+}
+
 public struct DioscuriCertificationProgress: Hashable, Sendable {
     public let phase: DioscuriCertificationPhase
     public let completed: Int
     public let total: Int
+    public let activity: DioscuriCertificationActivity
+    public let detail: String?
 
-    public init(phase: DioscuriCertificationPhase, completed: Int, total: Int) {
+    public init(
+        phase: DioscuriCertificationPhase,
+        completed: Int,
+        total: Int,
+        activity: DioscuriCertificationActivity = .phaseProgress,
+        detail: String? = nil
+    ) {
         self.phase = phase
         self.completed = completed
         self.total = total
+        self.activity = activity
+        self.detail = detail
     }
 }
 
@@ -36,6 +52,7 @@ public struct Dioscuri: Sendable {
     public static let averagingRole = "none"
     public static let quantizationPolicy = "explicit / integer-second"
     public static let secondStrikePolicy = "required on divergence"
+    public static let secondStrikeVisibilityLaw = "start / finish progress events with phase and question position"
     public static let divergencePolicy = "fail closed"
     public static let verdictTarget = "Hephaestus"
     public static let sealAuthority = "Hephaestus"
@@ -60,16 +77,8 @@ public struct Dioscuri: Sendable {
     public func strike(_ question: PolluxQuestion) throws -> DioscuriStrikeReport {
         let firstAnswer = try castor.answer(question.handoff)
         let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
-        guard !first.isResonant else {
-            return DioscuriStrikeReport(first: first, second: nil, divergences: [])
-        }
-
-        let freshPollux = try Pollux(candidate: candidate)
-        let freshCastor = try Castor(candidate: candidate)
-        let freshQuestion = try freshPollux.ask(question.celestialAddress)
-        let secondAnswer = try freshCastor.answer(freshQuestion.handoff)
-        let second = freshPollux.confirm(freshQuestion, answer: secondAnswer, storage: storage)
-        let divergences = divergenceEvidence(first: first, second: second)
+        let second = try secondStrikeIfNeeded(question: question, first: first)
+        let divergences = second.map { divergenceEvidence(first: first, second: $0) } ?? []
         return DioscuriStrikeReport(first: first, second: second, divergences: divergences)
     }
 
@@ -88,9 +97,35 @@ public struct Dioscuri: Sendable {
         var bodyCompleted = 0
         var bodyCursor = pollux.makeQuestionCursor()
         while let question = bodyCursor.next() {
-            let report = try strike(question)
-            accumulator.record(report.first.checks)
-            divergences.append(contentsOf: report.divergences)
+            let firstAnswer = try castor.answer(question.handoff)
+            let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
+            let second: PolluxConfirmation?
+            if first.isResonant {
+                second = nil
+            } else {
+                emitSecondStrike(
+                    progress,
+                    phase: .bodyOccurrence,
+                    completed: bodyCompleted + 1,
+                    total: bodyTotal,
+                    activity: .secondStrikeStarted,
+                    first: first
+                )
+                second = try secondStrikeIfNeeded(question: question, first: first)
+                emitSecondStrike(
+                    progress,
+                    phase: .bodyOccurrence,
+                    completed: bodyCompleted + 1,
+                    total: bodyTotal,
+                    activity: .secondStrikeCompleted,
+                    first: first,
+                    second: second
+                )
+            }
+            accumulator.record(first.checks)
+            if let second {
+                divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
+            }
             bodyCompleted += 1
             emitPeriodic(progress, phase: .bodyOccurrence, completed: bodyCompleted, total: bodyTotal)
         }
@@ -102,7 +137,29 @@ public struct Dioscuri: Sendable {
         while let question = motionCursor.next() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer)
-            let second = try secondStrikeIfNeeded(question: question, first: first)
+            let second: PolluxConfirmation?
+            if first.isResonant {
+                second = nil
+            } else {
+                emitSecondStrike(
+                    progress,
+                    phase: .motionTopology,
+                    completed: motionCompleted + 1,
+                    total: motionTotal,
+                    activity: .secondStrikeStarted,
+                    first: first
+                )
+                second = try secondStrikeIfNeeded(question: question, first: first)
+                emitSecondStrike(
+                    progress,
+                    phase: .motionTopology,
+                    completed: motionCompleted + 1,
+                    total: motionTotal,
+                    activity: .secondStrikeCompleted,
+                    first: first,
+                    second: second
+                )
+            }
             accumulator.record(first.checks)
             if let second {
                 divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
@@ -116,7 +173,29 @@ public struct Dioscuri: Sendable {
         for (index, question) in stationQuestions.enumerated() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
-            let second = try secondStrikeIfNeeded(question: question, first: first)
+            let second: PolluxConfirmation?
+            if first.isResonant {
+                second = nil
+            } else {
+                emitSecondStrike(
+                    progress,
+                    phase: .station,
+                    completed: index + 1,
+                    total: stationQuestions.count,
+                    activity: .secondStrikeStarted,
+                    first: first
+                )
+                second = try secondStrikeIfNeeded(question: question, first: first)
+                emitSecondStrike(
+                    progress,
+                    phase: .station,
+                    completed: index + 1,
+                    total: stationQuestions.count,
+                    activity: .secondStrikeCompleted,
+                    first: first,
+                    second: second
+                )
+            }
             accumulator.record(first.checks)
             if let second {
                 divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
@@ -128,10 +207,40 @@ public struct Dioscuri: Sendable {
         emit(progress, phase: .exactRelationship, completed: 0, total: relationshipTotal)
         var relationshipCompleted = 0
         var relationshipCursor = pollux.makeRelationshipQuestionCursor(storage: storage)
+        var relationshipSecondStrikeLookup: PolluxRelationshipDirectLookup?
         while let question = try relationshipCursor.next() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
-            let second = try secondStrikeIfNeeded(question: question, first: first)
+            let second: PolluxConfirmation?
+            if first.isResonant {
+                second = nil
+            } else {
+                emitSecondStrike(
+                    progress,
+                    phase: .exactRelationship,
+                    completed: relationshipCompleted + 1,
+                    total: relationshipTotal,
+                    activity: .secondStrikeStarted,
+                    first: first
+                )
+                if relationshipSecondStrikeLookup == nil {
+                    relationshipSecondStrikeLookup = try pollux.makeRelationshipDirectLookup(storage: storage)
+                }
+                second = try secondStrikeIfNeeded(
+                    question: question,
+                    first: first,
+                    lookup: relationshipSecondStrikeLookup!
+                )
+                emitSecondStrike(
+                    progress,
+                    phase: .exactRelationship,
+                    completed: relationshipCompleted + 1,
+                    total: relationshipTotal,
+                    activity: .secondStrikeCompleted,
+                    first: first,
+                    second: second
+                )
+            }
             accumulator.record(first.checks)
             if let second {
                 divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
@@ -150,7 +259,29 @@ public struct Dioscuri: Sendable {
         for (index, question) in eclipseQuestions.enumerated() {
             let firstAnswer = try castor.answer(question.handoff)
             let first = pollux.confirm(question, answer: firstAnswer, storage: storage)
-            let second = try secondStrikeIfNeeded(question: question, first: first)
+            let second: PolluxConfirmation?
+            if first.isResonant {
+                second = nil
+            } else {
+                emitSecondStrike(
+                    progress,
+                    phase: .eclipse,
+                    completed: index + 1,
+                    total: eclipseQuestions.count,
+                    activity: .secondStrikeStarted,
+                    first: first
+                )
+                second = try secondStrikeIfNeeded(question: question, first: first)
+                emitSecondStrike(
+                    progress,
+                    phase: .eclipse,
+                    completed: index + 1,
+                    total: eclipseQuestions.count,
+                    activity: .secondStrikeCompleted,
+                    first: first,
+                    second: second
+                )
+            }
             accumulator.record(first.checks)
             if let second {
                 divergences.append(contentsOf: divergenceEvidence(first: first, second: second))
@@ -176,6 +307,21 @@ public struct Dioscuri: Sendable {
             scopeTallies: tallies,
             divergences: divergences
         ))
+    }
+
+    private func secondStrikeIfNeeded(
+        question: PolluxQuestion,
+        first: PolluxConfirmation
+    ) throws -> PolluxConfirmation? {
+        guard !first.isResonant else { return nil }
+        let freshPollux = try Pollux(candidate: candidate)
+        let freshCastor = try Castor(candidate: candidate)
+        let freshQuestion = try freshPollux.ask(question.celestialAddress)
+        return freshPollux.confirm(
+            freshQuestion,
+            answer: try freshCastor.answer(freshQuestion.handoff),
+            storage: storage
+        )
     }
 
     private func secondStrikeIfNeeded(
@@ -217,22 +363,23 @@ public struct Dioscuri: Sendable {
 
     private func secondStrikeIfNeeded(
         question: PolluxRelationshipQuestion,
-        first: PolluxConfirmation
+        first: PolluxConfirmation,
+        lookup: PolluxRelationshipDirectLookup
     ) throws -> PolluxConfirmation? {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        var cursor = freshPollux.makeRelationshipQuestionCursor(storage: storage)
-        while let freshQuestion = try cursor.next() {
-            if freshQuestion.address == question.address {
-                return freshPollux.confirm(
-                    freshQuestion,
-                    answer: try freshCastor.answer(freshQuestion.handoff),
-                    storage: storage
-                )
-            }
+        guard let freshQuestion = freshPollux.reconstructRelationshipQuestion(
+            question.address,
+            using: lookup
+        ), freshQuestion.address == question.address else {
+            return nondeterministicFallback(first)
         }
-        return nondeterministicFallback(first)
+        return freshPollux.confirm(
+            freshQuestion,
+            answer: try freshCastor.answer(freshQuestion.handoff),
+            storage: storage
+        )
     }
 
     private func secondStrikeIfNeeded(
@@ -264,16 +411,56 @@ public struct Dioscuri: Sendable {
         }
     }
 
+    private func emitSecondStrike(
+        _ progress: ((DioscuriCertificationProgress) -> Void)?,
+        phase: DioscuriCertificationPhase,
+        completed: Int,
+        total: Int,
+        activity: DioscuriCertificationActivity,
+        first: PolluxConfirmation,
+        second: PolluxConfirmation? = nil
+    ) {
+        let subject = first.checks.first(where: { $0.outcome == .divergence })?.subject
+            ?? "divergent celestial question"
+        let detail: String
+        switch activity {
+        case .secondStrikeStarted:
+            detail = subject
+        case .secondStrikeCompleted:
+            if let second, second.isResonant {
+                detail = "not reproduced / \(subject)"
+            } else if second != nil {
+                detail = "reproduced divergence / \(subject)"
+            } else {
+                detail = "second strike unavailable / \(subject)"
+            }
+        case .phaseProgress:
+            detail = subject
+        }
+        emit(
+            progress,
+            phase: phase,
+            completed: completed,
+            total: total,
+            activity: activity,
+            detail: detail
+        )
+    }
+
     private func emit(
         _ progress: ((DioscuriCertificationProgress) -> Void)?,
         phase: DioscuriCertificationPhase,
         completed: Int,
-        total: Int
+        total: Int,
+        activity: DioscuriCertificationActivity = .phaseProgress,
+        detail: String? = nil
     ) {
         progress?(DioscuriCertificationProgress(
             phase: phase,
             completed: completed,
-            total: total
+            total: total,
+            activity: activity,
+            detail: detail
         ))
     }
 
