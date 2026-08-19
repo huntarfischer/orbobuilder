@@ -1,0 +1,50 @@
+name: Pass 5 Z23 Relationships
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z23-relationship.yml"
+      - "tools/pass5/generate_z23_relationship_tables.py"
+
+permissions:
+  contents: write
+
+jobs:
+  audit-z22-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+      - name: Audit frozen Z22 relationship artifact contract
+        run: |
+          python3 - <<'PY'
+          import csv, gzip, collections, json
+          from pathlib import Path
+          for family, path in [
+              ('major', Path('tools/pass5/p22-data/exact-major-mundane-transits.csv.gz')),
+              ('minor', Path('tools/pass5/p22-data/exact-minor-mundane-transits.csv.gz')),
+          ]:
+              counts=collections.Counter(); orientations=collections.Counter(); pairs=collections.Counter()
+              exact_duplicates=collections.Counter(); celestial=collections.Counter(); rows=0
+              with gzip.open(path,'rt',newline='') as f:
+                  r=csv.DictReader(f)
+                  print(f'{family}.header={r.fieldnames}')
+                  for row in r:
+                      rows += 1
+                      counts[int(row['ringDegrees'])]+=1
+                      orientations[row['orientation']]+=1
+                      pairs[(row['bodyA'],row['bodyB'])]+=1
+                      k=(row['bodyA'],row['bodyB'],row['ringDegrees'],row['orientation'],row['bodyACelestialTimeDegrees'],row['bodyBCelestialTimeDegrees'])
+                      celestial[k]+=1
+                      exact_duplicates[(k,row.get('civicTimeOffsetSeconds',''))]+=1
+              print(f'{family}.rows={rows}')
+              print(f'{family}.marks={json.dumps(dict(sorted(counts.items())))}')
+              print(f'{family}.orientations={json.dumps(dict(sorted(orientations.items())))}')
+              print(f'{family}.pairCount={len(pairs)} minPair={min(pairs.values())} maxPair={max(pairs.values())}')
+              print(f'{family}.sameSecondDuplicates={sum(v-1 for v in exact_duplicates.values() if v>1)}')
+              recur=[v for v in celestial.values() if v>1]
+              print(f'{family}.recurringCelestialKeys={len(recur)} recurringRows={sum(recur)} maxRecurrence={max(recur,default=1)}')
+          PY
