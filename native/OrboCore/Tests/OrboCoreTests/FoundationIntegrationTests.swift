@@ -208,4 +208,81 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertNotNil(started.detail)
         XCTAssertNotNil(completed.detail)
     }
+
+    func testCheckpointSeekCursorsBeginAtTheNextUntestedQuestion() throws {
+        let storedBody = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 200, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 12, civicOffsetSeconds: 300, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let start = try XCTUnwrap(JulianDay(1_000))
+        let firstRelationship = try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .sun,
+            bodyB: .moon,
+            mark: .conjunction,
+            orientation: .sameDegree,
+            bodyACelestialTimeDegrees: 20,
+            bodyBCelestialTimeDegrees: 20,
+            julianDay: try XCTUnwrap(JulianDay(start.value + 400.0 / 86_400.0)),
+            exactAspectResidualArcSeconds: 0
+        ))
+        let secondRelationship = try XCTUnwrap(MundaneTimespineRelationshipEvent(
+            bodyA: .sun,
+            bodyB: .moon,
+            mark: .square,
+            orientation: .bodyAAhead,
+            bodyACelestialTimeDegrees: 120,
+            bodyBCelestialTimeDegrees: 30,
+            julianDay: try XCTUnwrap(JulianDay(start.value + 500.0 / 86_400.0)),
+            exactAspectResidualArcSeconds: 0
+        ))
+        let storage = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "checkpoint-seek fixture",
+            astronomicalSource: "deterministic XCTest matter",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: try XCTUnwrap(JulianDay(1_001)),
+            bodies: [storedBody],
+            relationships: [firstRelationship, secondRelationship],
+            eclipses: []
+        ))
+
+        let bodyIndex = try PolluxBodyIndex(storedBody: storedBody)
+        var bodyCursor = PolluxQuestionCursor(
+            candidateSHA256: "fixture",
+            bodyIndexes: [bodyIndex],
+            startingAt: 2
+        )
+        XCTAssertEqual(bodyCursor.next()?.celestialAddress.celestialTick, 12)
+        XCTAssertNil(bodyCursor.next())
+
+        var motionCursor = PolluxMotionTopologyCursor(
+            candidateSHA256: "fixture",
+            storage: storage,
+            startingAt: 1
+        )
+        let motionQuestion = try XCTUnwrap(motionCursor.next())
+        XCTAssertEqual(motionQuestion.address.from.celestialTick, 11)
+        XCTAssertEqual(motionQuestion.address.to.celestialTick, 12)
+        XCTAssertNil(motionCursor.next())
+
+        var relationshipCursor = PolluxRelationshipQuestionCursor(
+            candidateSHA256: "fixture",
+            storage: storage
+        )
+        try relationshipCursor.seek(to: 1)
+        let relationshipQuestion = try XCTUnwrap(try relationshipCursor.next())
+        XCTAssertEqual(
+            relationshipQuestion.address,
+            PolluxRelationshipDirectLookup.address(for: secondRelationship)
+        )
+        XCTAssertNil(try relationshipCursor.next())
+    }
 }
