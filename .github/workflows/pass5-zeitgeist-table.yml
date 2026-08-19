@@ -1,5 +1,6 @@
 name: Pass 5 Zeitgeist Z0-Z30 Table
 
+# Manufacture-only workflow for the frozen Z0-Z30 reference table.
 on:
   workflow_dispatch:
   pull_request:
