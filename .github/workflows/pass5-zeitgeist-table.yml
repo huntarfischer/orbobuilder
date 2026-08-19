@@ -50,6 +50,29 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
+      - name: Repair diagnostic print syntax in manufacture worktree
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("native/OrboCore/Sources/ZeitgeistTableForgeTool/main.swift")
+          lines = path.read_text().splitlines()
+          out = []
+          for line in lines:
+              if 'print("Z22 firstAriesIngress=' in line:
+                  out.append('    let oldStartDeltaText = String(format: "%.3f", oldStartDelta)')
+                  out.append('    print("Z22 firstAriesIngress=\\(z22.firstAriesIngressUTC) oldP22StartDeltaSeconds=\\(oldStartDeltaText)")')
+              elif 'print("Z23 firstAriesIngress=' in line:
+                  out.append('    let oldEndFromZ23FirstText = String(format: "%.3f", oldEndFromZ23First)')
+                  out.append('    print("Z23 firstAriesIngress=\\(z23.firstAriesIngressUTC) oldP22EndDeltaSeconds=\\(oldEndFromZ23FirstText)")')
+              elif 'print("Z23 finalPiscesEgress=' in line:
+                  out.append('    let oldEndFromZ23FinalText = String(format: "%.3f", oldEndFromZ23Final)')
+                  out.append('    print("Z23 finalPiscesEgress=\\(z23.finalPiscesEgressUTC) oldP22EndDeltaSeconds=\\(oldEndFromZ23FinalText)")')
+              else:
+                  out.append(line)
+          path.write_text("\n".join(out) + "\n")
+          PY
+          grep -n 'oldP22.*DeltaSeconds' native/OrboCore/Sources/ZeitgeistTableForgeTool/main.swift
+
       - name: Manufacture Z0-Z30 table with native Swift
         run: |
           swift run \
