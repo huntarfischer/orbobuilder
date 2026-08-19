@@ -43,9 +43,10 @@ public struct DioscuriCertificationProgress: Hashable, Sendable {
 /// Dioscuri records the testimony and returns it to Hephaestus; it never seals or repairs.
 public struct Dioscuri: Sendable {
     public static let contractVersion: UInt16 = 1
-    public static let certificationImplementationVersion: UInt16 = 1
+    public static let certificationImplementationVersion: UInt16 = 2
     public static let checkpointQuestionCadence = 10_000
     public static let checkpointLaw = "candidate-bound / whole-question / deterministic-prefix"
+    public static let checkpointValidationLaw = DioscuriCheckpointValidator.law
     public static let role = "Timespine integrity gate"
     public static let order = "Pollux -> Castor -> Pollux"
     public static let origin = "celestial"
@@ -67,12 +68,22 @@ public struct Dioscuri: Sendable {
     private let storage: MundaneTimespineStorageImage
     private let pollux: Pollux
     private let castor: Castor
+    private let stationSecondStrikeLookup: PolluxStationDirectLookup
+    private let eclipseSecondStrikeLookup: PolluxEclipseDirectLookup
 
     public init(candidate: TimespineCandidate) throws {
+        let decodedStorage = try candidate.artifact.storageImage()
+        let decodedPollux = try Pollux(candidate: candidate)
+        let decodedCastor = try Castor(candidate: candidate)
+        let stationLookup = try decodedPollux.makeStationDirectLookup(storage: decodedStorage)
+        let eclipseLookup = try decodedPollux.makeEclipseDirectLookup(storage: decodedStorage)
+
         self.candidate = candidate
-        self.pollux = try Pollux(candidate: candidate)
-        self.castor = try Castor(candidate: candidate)
-        self.storage = try candidate.artifact.storageImage()
+        self.pollux = decodedPollux
+        self.castor = decodedCastor
+        self.storage = decodedStorage
+        self.stationSecondStrikeLookup = stationLookup
+        self.eclipseSecondStrikeLookup = eclipseLookup
         self.candidateSHA256 = candidate.identity.sha256
     }
 
@@ -202,7 +213,8 @@ public struct Dioscuri: Sendable {
             }
         }
 
-        // Stations are small enough to materialize, but resume still indexes directly into them.
+        // Stations are small enough to materialize for their deterministic first-pass order.
+        // Any second strike resolves the disputed celestial station through the compact direct map.
         emit(progress, phase: .station, completed: completed.station, total: stationQuestions.count)
         if completed.station < stationQuestions.count {
             for index in completed.station..<stationQuestions.count {
@@ -300,7 +312,7 @@ public struct Dioscuri: Sendable {
             }
         }
 
-        // Eclipses are small and directly indexable on resume.
+        // Eclipses are small and directly indexable on resume and on any second strike.
         emit(progress, phase: .eclipse, completed: completed.eclipse, total: eclipseQuestions.count)
         if completed.eclipse < eclipseQuestions.count {
             for index in completed.eclipse..<eclipseQuestions.count {
@@ -514,8 +526,10 @@ public struct Dioscuri: Sendable {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        let freshQuestions = try freshPollux.makeStationQuestions(storage: storage)
-        guard let freshQuestion = freshQuestions.first(where: { $0.address == question.address }) else {
+        guard let freshQuestion = freshPollux.reconstructStationQuestion(
+            question.address,
+            using: stationSecondStrikeLookup
+        ), freshQuestion.address == question.address else {
             return nondeterministicFallback(first)
         }
         return freshPollux.confirm(
@@ -553,8 +567,10 @@ public struct Dioscuri: Sendable {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        let freshQuestions = try freshPollux.makeEclipseQuestions(storage: storage)
-        guard let freshQuestion = freshQuestions.first(where: { $0.address == question.address }) else {
+        guard let freshQuestion = freshPollux.reconstructEclipseQuestion(
+            question.address,
+            using: eclipseSecondStrikeLookup
+        ), freshQuestion.address == question.address else {
             return nondeterministicFallback(first)
         }
         return freshPollux.confirm(
@@ -597,20 +613,7 @@ public struct Dioscuri: Sendable {
         guard checkpoint.divergences.allSatisfy({ $0.candidateSHA256 == candidate.identity.sha256 }) else {
             throw DioscuriCheckpointError.invalidDivergenceBinding
         }
-
-        let completedQuestions = checkpoint.completed.bodyOccurrence
-            + checkpoint.completed.motionTopology
-            + checkpoint.completed.station
-            + checkpoint.completed.exactRelationship
-            + checkpoint.completed.eclipse
-        let talliedChecks = checkpoint.scopeTallies.reduce(0) { $0 + $1.questions }
-        if completedQuestions == 0 {
-            guard talliedChecks == 0, checkpoint.divergences.isEmpty else {
-                throw DioscuriCheckpointError.invalidTallies
-            }
-        } else if talliedChecks < completedQuestions {
-            throw DioscuriCheckpointError.invalidTallies
-        }
+        try DioscuriCheckpointValidator.validate(checkpoint: checkpoint, storage: storage)
     }
 
     private func isValidPrefix(
