@@ -2,9 +2,11 @@
   "candidateBytes": 22729389,
   "candidateSHA256": "813dde4dd5fa1b3a189570a1beda8ec1cfa37cc8c7be3eb6010865902040ea78",
   "certificationCheckpointing": "built / native proof pending",
+  "checkpointValidation": "exact scope-count shape + divergence parity / native proof pending",
   "nativeProof": "pending",
   "preservedCandidateRestart": "built / native proof pending",
   "repositorySubstrate": "success",
-  "sourceCommit": "633d211195342d08c501dfd0290527354540c4e3",
+  "smallEventSecondStrikeLookup": "station + eclipse direct celestial identity / native proof pending",
+  "sourceCommit": "909b5b636d8965bfeeea7537782029f27114b2ca",
   "status": "pending"
 }
