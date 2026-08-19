@@ -3,10 +3,12 @@
   "candidateSHA256": "813dde4dd5fa1b3a189570a1beda8ec1cfa37cc8c7be3eb6010865902040ea78",
   "certificationCheckpointing": "built / native proof pending",
   "checkpointValidation": "exact scope-count shape + divergence parity / native proof pending",
+  "lastNativeRun": "body-occurrence + motion-topology + station complete; exact-relationship stopped after 20000 on repeated celestial geometry",
   "nativeProof": "pending",
   "preservedCandidateRestart": "built / native proof pending",
+  "relationshipRecurrenceIdentity": "exact celestial geometry + recurrence ordinal / civic UT excluded / native proof pending",
   "repositorySubstrate": "success",
   "smallEventSecondStrikeLookup": "station + eclipse direct celestial identity / native proof pending",
-  "sourceCommit": "909b5b636d8965bfeeea7537782029f27114b2ca",
+  "sourceCommit": "03645d4bbb0e562519bd20d4026bc3e512f2a046",
   "status": "pending"
 }
