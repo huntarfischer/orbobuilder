@@ -119,6 +119,22 @@ public extension Dioscuri {
         let verdict = try Dioscuri(candidate: candidate).certify(progress: progress)
         return DioscuriTestimony(candidate: candidate, verdict: verdict)
     }
+
+    /// Runs or resumes the same bound examination while emitting durable partial testimony.
+    /// A checkpoint can restore progress, but it can never itself become a DioscuriTestimony.
+    static func testify(
+        candidate: TimespineCandidate,
+        resumingFrom checkpoint: DioscuriCertificationCheckpoint?,
+        progress: ((DioscuriCertificationProgress) -> Void)? = nil,
+        checkpointHandler: ((DioscuriCertificationCheckpoint) throws -> Void)? = nil
+    ) throws -> DioscuriTestimony {
+        let verdict = try Dioscuri(candidate: candidate).certify(
+            resumingFrom: checkpoint,
+            progress: progress,
+            checkpointHandler: checkpointHandler
+        )
+        return DioscuriTestimony(candidate: candidate, verdict: verdict)
+    }
 }
 
 private struct DioscuriEvidenceWriter {
