@@ -46,4 +46,36 @@ final class FoundationIntegrationTests: XCTestCase {
             XCTAssertEqual(Set(frame.houses.map(\.house)), Set(House.canonicalOrder))
         }
     }
+
+    func testP22CivicSerializationAuditsLexicalCellsWithoutInventedTolerance() {
+        XCTAssertEqual(
+            MundaneTimespineP22CivicSerialization.auditLaw,
+            "lexical JD interval intersects integer-second cell"
+        )
+
+        // Exact-major row 49,648: the printed JD lies on a half-second serialization edge.
+        XCTAssertTrue(MundaneTimespineP22CivicSerialization.isConsistent(
+            julianDayText: "2400981.472553641070",
+            civicOffsetSeconds: 1_239_355_569
+        ))
+        XCTAssertFalse(MundaneTimespineP22CivicSerialization.isConsistent(
+            julianDayText: "2400981.472553641070",
+            civicOffsetSeconds: 1_239_355_571
+        ))
+
+        // Exact-minor row 301,552 exposed the opposite binary-Double rounding edge.
+        XCTAssertTrue(MundaneTimespineP22CivicSerialization.isConsistent(
+            julianDayText: "2444864.801095307805",
+            civicOffsetSeconds: 5_030_875_154
+        ))
+        XCTAssertFalse(MundaneTimespineP22CivicSerialization.isConsistent(
+            julianDayText: "2444864.801095307805",
+            civicOffsetSeconds: 5_030_875_156
+        ))
+
+        XCTAssertFalse(MundaneTimespineP22CivicSerialization.isConsistent(
+            julianDayText: "not-a-julian-day",
+            civicOffsetSeconds: 0
+        ))
+    }
 }
