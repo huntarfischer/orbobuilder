@@ -181,6 +181,90 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(question.handoff.civicOffsetSeconds, 500)
     }
 
+    func testStationSecondStrikeUsesCompactCelestialIndex() throws {
+        let station = MundaneTimespineStoredStation(
+            celestialMicrodegrees: 12_345_678,
+            civicOffsetSeconds: 250,
+            motionAfter: .retrograde
+        )
+        let storedBody = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 300, sequenceDirection: .decreasing, markerWholeDegrees: []),
+            ],
+            stations: [station],
+            retrogradePassages: []
+        ))
+        let storage = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "station-second-strike fixture",
+            astronomicalSource: "deterministic XCTest matter",
+            astronomicalSourceVersion: "1",
+            supportedStart: try XCTUnwrap(JulianDay(1_000)),
+            supportedEnd: try XCTUnwrap(JulianDay(1_001)),
+            bodies: [storedBody],
+            relationships: [],
+            eclipses: []
+        ))
+        let address = PolluxStationDirectLookup.address(body: .sun, station: station)
+        let lookup = try PolluxStationDirectLookup(candidateSHA256: "fixture", storage: storage)
+        let question = try XCTUnwrap(lookup.question(for: address))
+
+        XCTAssertEqual(
+            Pollux.stationSecondStrikeLookupLaw,
+            "celestial station identity -> compact candidate index -> civic occurrence"
+        )
+        XCTAssertEqual(question.address, address)
+        XCTAssertEqual(question.handoff.candidateSHA256, "fixture")
+        XCTAssertEqual(question.handoff.civicOffsetSeconds, 250)
+    }
+
+    func testEclipseSecondStrikeUsesCompactCelestialIndex() throws {
+        let storedBody = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 700, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let start = try XCTUnwrap(JulianDay(1_000))
+        let event = try XCTUnwrap(MundaneTimespineEclipseEvent(
+            kind: .solar,
+            type: .total,
+            eclipseDegree: 42.5,
+            julianDay: try XCTUnwrap(JulianDay(start.value + 600.0 / 86_400.0)),
+            magnitude: 1.02,
+            centrality: "central"
+        ))
+        let storage = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "eclipse-second-strike fixture",
+            astronomicalSource: "deterministic XCTest matter",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: try XCTUnwrap(JulianDay(1_001)),
+            bodies: [storedBody],
+            relationships: [],
+            eclipses: [event]
+        ))
+        let address = PolluxEclipseDirectLookup.address(for: event)
+        let lookup = try PolluxEclipseDirectLookup(candidateSHA256: "fixture", storage: storage)
+        let question = try XCTUnwrap(lookup.question(for: address))
+
+        XCTAssertEqual(
+            Pollux.eclipseSecondStrikeLookupLaw,
+            "celestial eclipse identity -> compact candidate index -> civic occurrence"
+        )
+        XCTAssertEqual(question.address, address)
+        XCTAssertEqual(question.handoff.candidateSHA256, "fixture")
+        XCTAssertEqual(question.handoff.civicOffsetSeconds, 600)
+    }
+
     func testDioscuriSecondStrikeProgressContractIsExplicit() {
         let started = DioscuriCertificationProgress(
             phase: .exactRelationship,
