@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, csv, ctypes, json, math
+import argparse, csv, ctypes, json
 from pathlib import Path
 
 SECONDS_PER_DAY = 86400.0
@@ -7,7 +7,11 @@ GREG_CAL = 1
 SEFLG_SWIEPH = 2
 SEFLG_MOSEPH = 4
 SEFLG_SPEED = 256
-BODIES = [("Mercury",2),("Venus",3),("Mars",4),("Jupiter",5),("Saturn",6),("Uranus",7),("Neptune",8),("Pluto",9)]
+BODIES = [
+    ("Mercury", 2, 2.0), ("Venus", 3, 3.0), ("Mars", 4, 5.0),
+    ("Jupiter", 5, 8.0), ("Saturn", 6, 8.0), ("Uranus", 7, 10.0),
+    ("Neptune", 8, 10.0), ("Pluto", 9, 10.0),
+]
 TARGET_START_JD = 2297171.740867775   # Z21 first Pluto Aries ingress
 TARGET_END_JD = 2565295.0945935287   # Z24 first Pluto Aries ingress; half-open
 BUFFER_DAYS = 2200.0
@@ -24,13 +28,17 @@ def delta(a, b):
     if d < -180: d += 360
     return d
 
+
 class Swiss:
     def __init__(self, library, ephe_dir):
         self.lib = ctypes.CDLL(library)
         self.lib.swe_set_ephe_path.argtypes = [ctypes.c_char_p]
-        self.lib.swe_calc_ut.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_char_p]
+        self.lib.swe_calc_ut.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_int,
+                                         ctypes.POINTER(ctypes.c_double), ctypes.c_char_p]
         self.lib.swe_calc_ut.restype = ctypes.c_int
-        self.lib.swe_revjul.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double)]
+        self.lib.swe_revjul.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.POINTER(ctypes.c_int),
+                                        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),
+                                        ctypes.POINTER(ctypes.c_double)]
         self.lib.swe_version.argtypes = [ctypes.c_char_p]
         self.lib.swe_version.restype = ctypes.c_char_p
         self.lib.swe_set_ephe_path(str(ephe_dir).encode())
@@ -58,101 +66,83 @@ class Swiss:
 def refine_station(sw, body, lo, hi):
     flo = sw.state(lo, body)[1]
     for _ in range(60):
-        mid = (lo + hi) / 2
-        fm = sw.state(mid, body)[1]
+        mid=(lo+hi)/2; fm=sw.state(mid, body)[1]
         if abs(fm) < 1e-13: return mid
-        if flo * fm <= 0:
-            hi = mid
-        else:
-            lo = mid; flo = fm
+        if flo*fm <= 0: hi=mid
+        else: lo=mid; flo=fm
         if (hi-lo)*SECONDS_PER_DAY < 0.001: break
     return (lo+hi)/2
 
 
-def refine_degree_crossing(sw, body, target, lo, hi):
-    flo = delta(target, sw.state(lo, body)[0])
+def refine_crossing(sw, body, target, lo, hi):
+    flo=delta(target, sw.state(lo, body)[0])
     for _ in range(60):
-        mid=(lo+hi)/2
-        fm=delta(target, sw.state(mid, body)[0])
+        mid=(lo+hi)/2; fm=delta(target, sw.state(mid, body)[0])
         if abs(fm) < 1e-12: return mid
-        if flo * fm <= 0:
-            hi=mid
-        else:
-            lo=mid; flo=fm
+        if flo*fm <= 0: hi=mid
+        else: lo=mid; flo=fm
         if (hi-lo)*SECONDS_PER_DAY < 0.001: break
     return (lo+hi)/2
 
 
-def stations(sw, body, start, end):
-    out=[]
-    step=1.0
-    lo=start; _, slo=sw.state(lo, body)
+def find_stations(sw, body, start, end, step):
+    out=[]; lo=start; _, slo=sw.state(lo, body)
     while lo < end:
         hi=min(end, lo+step); _, shi=sw.state(hi, body)
         if slo == 0 or shi == 0 or slo*shi < 0:
-            jd=refine_station(sw, body, lo, hi)
-            lon, _=sw.state(jd, body)
-            before = 1 if slo >= 0 else -1
-            after = 1 if shi >= 0 else -1
+            jd=refine_station(sw, body, lo, hi); lon,_=sw.state(jd, body)
+            before=1 if slo >= 0 else -1; after=1 if shi >= 0 else -1
             if not out or abs(out[-1][0]-jd)*SECONDS_PER_DAY > 1:
                 out.append((jd, lon, before, after))
         lo=hi; slo=shi
     return out
 
 
-def prior_direct_crossing(sw, body, target, before_jd):
-    start=before_jd-BUFFER_DAYS; step=1.0
-    lo=start; lon,speed=sw.state(lo, body); f=delta(target,lon)
-    found=None
-    while lo < before_jd:
-        hi=min(before_jd,lo+step); lon2,speed2=sw.state(hi,body); f2=delta(target,lon2)
-        if speed>0 and speed2>0 and f <= 0 <= f2 and abs(f-f2) < 30:
-            found=refine_degree_crossing(sw,body,target,lo,hi)
+def direct_crossings(sw, body, target, start, end, step):
+    """All direct crossings of target in one direct-motion station interval."""
+    found=[]; lo=start; lon,speed=sw.state(lo, body); f=delta(target, lon)
+    while lo < end:
+        hi=min(end, lo+step); lon2,speed2=sw.state(hi, body); f2=delta(target, lon2)
+        if speed >= 0 and speed2 >= 0 and f <= 0 <= f2 and abs(f-f2) < 90:
+            jd=refine_crossing(sw, body, target, lo, hi)
+            if not found or abs(found[-1]-jd)*SECONDS_PER_DAY > 1:
+                found.append(jd)
         lo=hi; lon,speed,f=lon2,speed2,f2
     return found
 
 
-def next_direct_crossing(sw, body, target, after_jd):
-    end=after_jd+BUFFER_DAYS; step=1.0
-    lo=after_jd; lon,speed=sw.state(lo,body); f=delta(target,lon)
-    while lo < end:
-        hi=min(end,lo+step); lon2,speed2=sw.state(hi,body); f2=delta(target,lon2)
-        if speed>0 and speed2>0 and f <= 0 <= f2 and abs(f-f2) < 30:
-            return refine_degree_crossing(sw,body,target,lo,hi)
-        lo=hi; lon,speed,f=lon2,speed2,f2
-    return None
-
-
 def make_rows(sw):
-    rows=[]
-    scan_start=TARGET_START_JD-BUFFER_DAYS
-    scan_end=TARGET_END_JD+BUFFER_DAYS
-    for name,body in BODIES:
-        sts=stations(sw,body,scan_start,scan_end)
+    rows=[]; scan_start=TARGET_START_JD-BUFFER_DAYS; scan_end=TARGET_END_JD+BUFFER_DAYS
+    for name,body,step in BODIES:
+        sts=find_stations(sw, body, scan_start, scan_end, step)
         ordinal=0
-        i=0
-        while i < len(sts)-1:
-            r=sts[i]
-            if r[2] == 1 and r[3] == -1:
-                j=i+1
-                while j < len(sts) and not (sts[j][2] == -1 and sts[j][3] == 1): j+=1
-                if j>=len(sts): break
-                d=sts[j]
-                pre=prior_direct_crossing(sw,body,d[1],r[0])
-                post=next_direct_crossing(sw,body,r[1],d[0])
-                if pre is None or post is None:
-                    raise RuntimeError(f"Could not close shadow topology for {name} retrograde station {sw.utc(r[0])}")
-                if pre < TARGET_END_JD and post >= TARGET_START_JD:
-                    rows.append({
-                        "body":name,"bodyId":body,"ordinal":ordinal,
-                        "preShadowStartDegree":d[1],"preShadowStartJulianDayUT":pre,"preShadowStartUTC":sw.utc(pre),
-                        "retrogradeStationDegree":r[1],"retrogradeStationJulianDayUT":r[0],"retrogradeStationUTC":sw.utc(r[0]),
-                        "directStationDegree":d[1],"directStationJulianDayUT":d[0],"directStationUTC":sw.utc(d[0]),
-                        "postShadowEndDegree":r[1],"postShadowEndJulianDayUT":post,"postShadowEndUTC":sw.utc(post),
-                    })
-                    ordinal+=1
-                i=j
-            i+=1
+        for i,r in enumerate(sts):
+            if not (r[2] == 1 and r[3] == -1):
+                continue
+            if i == 0:
+                continue
+            j=i+1
+            while j < len(sts) and not (sts[j][2] == -1 and sts[j][3] == 1):
+                j += 1
+            if j >= len(sts) or j+1 >= len(sts):
+                continue
+            d=sts[j]
+            pre_candidates=direct_crossings(sw, body, d[1], sts[i-1][0], r[0], step)
+            post_candidates=direct_crossings(sw, body, r[1], d[0], sts[j+1][0], step)
+            if not pre_candidates or not post_candidates:
+                raise RuntimeError(f"Could not close shadow topology for {name} retrograde station {sw.utc(r[0])}")
+            pre=pre_candidates[-1]
+            post=post_candidates[0]
+            if pre < TARGET_END_JD and post >= TARGET_START_JD:
+                rows.append({
+                    "body":name,"bodyId":body,"ordinal":ordinal,
+                    "preShadowStartDegree":d[1],"preShadowStartJulianDayUT":pre,"preShadowStartUTC":sw.utc(pre),
+                    "retrogradeStationDegree":r[1],"retrogradeStationJulianDayUT":r[0],"retrogradeStationUTC":sw.utc(r[0]),
+                    "directStationDegree":d[1],"directStationJulianDayUT":d[0],"directStationUTC":sw.utc(d[0]),
+                    "postShadowEndDegree":r[1],"postShadowEndJulianDayUT":post,"postShadowEndUTC":sw.utc(post),
+                })
+                ordinal += 1
+        print(f"scanned {name}: stations={len(sts)} shadows={ordinal}", flush=True)
     rows.sort(key=lambda x:(x["preShadowStartJulianDayUT"],x["bodyId"]))
     return rows
 
@@ -162,7 +152,7 @@ def main():
     a=ap.parse_args(); sw=Swiss(a.library,a.ephe_dir)
     if sw.version != "2.10.03": raise SystemExit(f"Unexpected Swiss version {sw.version}")
     rows=make_rows(sw)
-    counts={name:sum(1 for r in rows if r['body']==name) for name,_ in BODIES}
+    counts={name:sum(1 for r in rows if r['body']==name) for name,_,_ in BODIES}
     artifact={
       "artifactFamily":"Orbo planetary retrograde shadow table Z21-Z23",
       "astronomicalSource":"Swiss Ephemeris DE441","astronomicalSourceVersion":sw.version,
@@ -175,7 +165,7 @@ def main():
     with open(a.csv,'w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
     print(f"rows={len(rows)}")
-    for name,_ in BODIES: print(f"{name}={counts[name]}")
+    for name,_,_ in BODIES: print(f"{name}={counts[name]}")
     print(f"first={rows[0]['preShadowStartUTC']} {rows[0]['body']}")
     print(f"last={rows[-1]['postShadowEndUTC']} {rows[-1]['body']}")
 
