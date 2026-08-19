@@ -4,12 +4,12 @@
   "canonicalDuplicateAudit": "17 canonical inputs / literal duplicates 0 / relationship native duplicate occurrences 0 / success",
   "certificationCheckpointing": "built / native proof success",
   "checkpointValidation": "exact scope-count shape + divergence parity / native proof success",
-  "lastNativeRun": "accumulated OrboCore tests + OrboCore build + OrboLab build successful; corrected P22 candidate manufacture and exhaustive Dioscuri certification still pending",
-  "nativeProof": "success",
+  "lastNativeRun": "cleanup native proof failure; inspect workflow job before candidate manufacture",
+  "nativeProof": "failure",
   "preservedCandidateRestart": "built / native proof success",
-  "relationshipRecurrenceIdentity": "exact celestial geometry + recurrence ordinal / civic UT excluded / native proof success",
+  "relationshipRecurrenceIdentity": "exact celestial geometry + recurrence ordinal / civic UT excluded / native proof failure",
   "repositorySubstrate": "success",
   "smallEventSecondStrikeLookup": "station + eclipse direct celestial identity / native proof success",
-  "sourceCommit": "4642f36b1da0161bc9df2cd42450571c582dec8f",
-  "status": "success"
+  "sourceCommit": "332c0a58cc10c1904d2fcee0e11bde73762975f1",
+  "status": "failure"
 }
