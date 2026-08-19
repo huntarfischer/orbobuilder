@@ -42,12 +42,6 @@ struct P22CanonicalAssemblyProgress {
 struct P22CanonicalAssembler {
     let dataDirectory: URL
 
-    private static let decimalLocale = Locale(identifier: "en_US_POSIX")
-    private static let p22StartJulianDayDecimal = Decimal(
-        string: "2386637.079399706",
-        locale: decimalLocale
-    )!
-
     func assemble(
         progress: ((P22CanonicalAssemblyProgress) -> Void)? = nil
     ) throws -> MundaneTimespineStorageImage {
@@ -276,17 +270,17 @@ struct P22CanonicalAssembler {
             var storageJD = sourceJD
             if header.contains("civicTimeOffsetSeconds") {
                 let storedOffset = try int64(row, "civicTimeOffsetSeconds", rowNumber)
-                let derivedOffset = try decimalRoundedP22Offset(
+                guard MundaneTimespineP22CivicSerialization.isConsistent(
                     julianDayText: jdText,
-                    rowNumber: rowNumber
-                )
-                guard storedOffset >= 0, storedOffset == derivedOffset else {
+                    civicOffsetSeconds: storedOffset
+                ) else {
                     throw P22CanonicalAssemblyError.invalidValue("\(input.relativePath) row \(rowNumber) civic offset")
                 }
 
-                // The gzip keeps the sub-second astronomical JD for audit. ORBOTS civic time is the
-                // admitted integer-second P22 coordinate. Normalize the storage event to that exact
-                // persisted coordinate so later Double subtraction cannot move a half-second edge.
+                // The gzip keeps the sub-second astronomical JD as a quantized audit label.
+                // ORBOTS civic time is the admitted integer-second P22 coordinate. Normalize the
+                // storage event to that exact persisted coordinate so binary floating arithmetic
+                // cannot move an event across a half-second serialization edge.
                 storageJD = MundaneTimespineP22.startJulianDay.value + Double(storedOffset) / 86_400
             }
 
@@ -490,30 +484,6 @@ struct P22CanonicalAssembler {
             throw P22CanonicalAssemblyError.invalidValue(text)
         }
         return value
-    }
-
-    private func decimalRoundedP22Offset(
-        julianDayText: String,
-        rowNumber: Int
-    ) throws -> Int64 {
-        guard let julianDay = Decimal(
-            string: julianDayText,
-            locale: Self.decimalLocale
-        ) else {
-            throw P22CanonicalAssemblyError.invalidValue(
-                "row \(rowNumber) civicTimeJulianDayUT decimal"
-            )
-        }
-        var seconds = (julianDay - Self.p22StartJulianDayDecimal) * Decimal(86_400)
-        var rounded = Decimal()
-        NSDecimalRound(&rounded, &seconds, 0, .plain)
-        let text = NSDecimalNumber(decimal: rounded).stringValue
-        guard let offset = Int64(text) else {
-            throw P22CanonicalAssemblyError.invalidValue(
-                "row \(rowNumber) civicTimeOffsetSeconds decimal overflow"
-            )
-        }
-        return offset
     }
 
     private func nilIfEmpty(_ text: String?) -> String? {
