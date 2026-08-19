@@ -150,6 +150,45 @@ private struct P22CompletionArguments {
     }
 }
 
+private struct P22CandidateArguments {
+    let candidateURL: URL
+    let outputDirectory: URL
+
+    init(_ raw: [String]) throws {
+        let values = try LiveForgeArguments.keyValues(raw)
+        guard let candidate = values["--candidate"], !candidate.isEmpty else {
+            throw OrboForgeToolError.missingArgument("--candidate")
+        }
+        guard let output = values["--output-dir"], !output.isEmpty else {
+            throw OrboForgeToolError.missingArgument("--output-dir")
+        }
+        candidateURL = URL(fileURLWithPath: candidate)
+        outputDirectory = URL(fileURLWithPath: output, isDirectory: true)
+    }
+}
+
+private struct P22ResumeArguments {
+    let candidateURL: URL
+    let checkpointURL: URL
+    let outputDirectory: URL
+
+    init(_ raw: [String]) throws {
+        let values = try LiveForgeArguments.keyValues(raw)
+        guard let candidate = values["--candidate"], !candidate.isEmpty else {
+            throw OrboForgeToolError.missingArgument("--candidate")
+        }
+        guard let checkpoint = values["--checkpoint"], !checkpoint.isEmpty else {
+            throw OrboForgeToolError.missingArgument("--checkpoint")
+        }
+        guard let output = values["--output-dir"], !output.isEmpty else {
+            throw OrboForgeToolError.missingArgument("--output-dir")
+        }
+        candidateURL = URL(fileURLWithPath: candidate)
+        checkpointURL = URL(fileURLWithPath: checkpoint)
+        outputDirectory = URL(fileURLWithPath: output, isDirectory: true)
+    }
+}
+
 private struct CandidateReport: Codable {
     let candidateSHA256: String
     let artifactBytes: Int
@@ -268,19 +307,21 @@ private struct QuarantineReport: Codable {
 private struct OrboForgeTool {
     static func main() throws {
         let raw = Array(CommandLine.arguments.dropFirst())
-        if raw.first == "p22-complete" {
+        switch raw.first {
+        case "p22-complete":
             try completeP22(Array(raw.dropFirst()))
-        } else {
+        case "p22-certify":
+            try certifyPreservedP22(Array(raw.dropFirst()))
+        case "p22-resume":
+            try resumeP22(Array(raw.dropFirst()))
+        default:
             try runLiveP22Forge(raw)
         }
     }
 
     private static func completeP22(_ raw: [String]) throws {
         let arguments = try P22CompletionArguments(raw)
-        try FileManager.default.createDirectory(
-            at: arguments.outputDirectory,
-            withIntermediateDirectories: true
-        )
+        try prepare(arguments.outputDirectory)
 
         print("ORBO FORGE / P22 CANONICAL COMPLETION")
         print("manufacturing authority: Hephaestus")
@@ -304,27 +345,87 @@ private struct OrboForgeTool {
         let candidateURL = arguments.outputDirectory.appendingPathComponent("p22-candidate.orbots")
         try candidate.artifactData.write(to: candidateURL, options: .atomic)
         try writeJSON(CandidateReport(candidate), to: arguments.outputDirectory.appendingPathComponent("p22-candidate.json"))
-        print("candidate SHA-256: \(candidate.identity.sha256)")
-        print("candidate bytes: \(candidate.artifactData.count)")
-        print("candidate preserved: \(candidateURL.path)")
+        printCandidate(candidate, url: candidateURL, rehydrated: false)
 
-        print("Dioscuri: exhaustive resonance begins")
-        let testimony = try Dioscuri.testify(candidate: candidate) { update in
-            switch update.activity {
-            case .phaseProgress:
-                print("resonance \(update.phase.rawValue): \(update.completed)/\(update.total)")
-            case .secondStrikeStarted:
-                print(
-                    "resonance SECOND STRIKE START \(update.phase.rawValue) "
-                    + "question \(update.completed)/\(update.total): \(update.detail ?? "divergence")"
-                )
-            case .secondStrikeCompleted:
-                print(
-                    "resonance SECOND STRIKE END \(update.phase.rawValue) "
-                    + "question \(update.completed)/\(update.total): \(update.detail ?? "complete")"
-                )
+        let checkpointURL = arguments.outputDirectory.appendingPathComponent("p22-dioscuri-checkpoint.json")
+        try certifyAndComplete(
+            candidate: candidate,
+            candidateURL: candidateURL,
+            outputDirectory: arguments.outputDirectory,
+            checkpointURL: checkpointURL,
+            resumingFrom: nil
+        )
+    }
+
+    private static func certifyPreservedP22(_ raw: [String]) throws {
+        let arguments = try P22CandidateArguments(raw)
+        try prepare(arguments.outputDirectory)
+        let candidate = try loadP22Candidate(arguments.candidateURL)
+        try writeJSON(CandidateReport(candidate), to: arguments.outputDirectory.appendingPathComponent("p22-candidate.json"))
+
+        print("ORBO FORGE / P22 PRESERVED CANDIDATE CERTIFICATION")
+        print("assembly: skipped")
+        print("manufacture: skipped")
+        printCandidate(candidate, url: arguments.candidateURL, rehydrated: true)
+
+        let checkpointURL = arguments.outputDirectory.appendingPathComponent("p22-dioscuri-checkpoint.json")
+        try certifyAndComplete(
+            candidate: candidate,
+            candidateURL: arguments.candidateURL,
+            outputDirectory: arguments.outputDirectory,
+            checkpointURL: checkpointURL,
+            resumingFrom: nil
+        )
+    }
+
+    private static func resumeP22(_ raw: [String]) throws {
+        let arguments = try P22ResumeArguments(raw)
+        try prepare(arguments.outputDirectory)
+        let candidate = try loadP22Candidate(arguments.candidateURL)
+        let checkpoint: DioscuriCertificationCheckpoint = try readJSON(
+            DioscuriCertificationCheckpoint.self,
+            from: arguments.checkpointURL
+        )
+        try writeJSON(CandidateReport(candidate), to: arguments.outputDirectory.appendingPathComponent("p22-candidate.json"))
+
+        print("ORBO FORGE / P22 DIOSCURI RESUME")
+        print("assembly: skipped")
+        print("manufacture: skipped")
+        printCandidate(candidate, url: arguments.candidateURL, rehydrated: true)
+        print("checkpoint loaded: \(arguments.checkpointURL.path)")
+        printCheckpoint(checkpoint, prefix: "checkpoint resume")
+
+        try certifyAndComplete(
+            candidate: candidate,
+            candidateURL: arguments.candidateURL,
+            outputDirectory: arguments.outputDirectory,
+            checkpointURL: arguments.checkpointURL,
+            resumingFrom: checkpoint
+        )
+    }
+
+    private static func certifyAndComplete(
+        candidate: TimespineCandidate,
+        candidateURL: URL,
+        outputDirectory: URL,
+        checkpointURL: URL,
+        resumingFrom checkpoint: DioscuriCertificationCheckpoint?
+    ) throws {
+        print(checkpoint == nil
+            ? "Dioscuri: exhaustive resonance begins"
+            : "Dioscuri: exhaustive resonance resumes from durable checkpoint")
+        print("checkpoint law: \(Dioscuri.checkpointLaw)")
+        print("checkpoint cadence: every \(Dioscuri.checkpointQuestionCadence) questions + phase ends + second strikes")
+
+        let testimony = try Dioscuri.testify(
+            candidate: candidate,
+            resumingFrom: checkpoint,
+            progress: printProgress,
+            checkpointHandler: { value in
+                try writeJSON(value, to: checkpointURL)
+                printCheckpoint(value, prefix: "checkpoint saved")
             }
-        }
+        )
         print("Dioscuri result: \(testimony.result.rawValue)")
         print("Dioscuri evidence SHA-256: \(testimony.evidenceSHA256)")
 
@@ -336,15 +437,16 @@ private struct OrboForgeTool {
             }
             try writeJSON(
                 CertificateReport(testimony: testimony, certificate: certificate),
-                to: arguments.outputDirectory.appendingPathComponent("p22-dioscuri-certificate.json")
+                to: outputDirectory.appendingPathComponent("p22-dioscuri-certificate.json")
             )
             try writeJSON(
                 sealed.seal,
-                to: arguments.outputDirectory.appendingPathComponent("p22-seal.json")
+                to: outputDirectory.appendingPathComponent("p22-seal.json")
             )
             print("Hephaestus disposition: SEALED")
             print("seal SHA-256: \(sealed.seal.sealSHA256)")
             print("artifact unchanged: \(sealed.candidate.identity.sha256 == candidate.identity.sha256 ? "yes" : "NO")")
+            print("completed checkpoint retained: \(checkpointURL.path)")
 
         case let .quarantined(quarantine):
             if case let .rejection(report) = testimony.evidence {
@@ -354,13 +456,61 @@ private struct OrboForgeTool {
                         testimony: testimony,
                         report: report
                     ),
-                    to: arguments.outputDirectory.appendingPathComponent("p22-quarantine.json")
+                    to: outputDirectory.appendingPathComponent("p22-quarantine.json")
                 )
             }
             print("Hephaestus disposition: QUARANTINED")
             print("candidate remains unchanged at: \(candidateURL.path)")
+            print("completed checkpoint retained: \(checkpointURL.path)")
             throw OrboForgeToolError.quarantined(quarantine.reason.rawValue)
         }
+    }
+
+    private static func loadP22Candidate(_ url: URL) throws -> TimespineCandidate {
+        let data = try Data(contentsOf: url, options: [.mappedIfSafe])
+        return try Hephaestus.rehydrateCandidate(
+            recipe: MundaneTimespineP22ForgeRecipe.self,
+            artifactData: data
+        )
+    }
+
+    private static func printCandidate(
+        _ candidate: TimespineCandidate,
+        url: URL,
+        rehydrated: Bool
+    ) {
+        print("candidate custody: \(rehydrated ? "rehydrated exact artifact" : "new immutable candidate")")
+        print("candidate SHA-256: \(candidate.identity.sha256)")
+        print("candidate bytes: \(candidate.artifactData.count)")
+        print("candidate preserved: \(url.path)")
+    }
+
+    private static func printProgress(_ update: DioscuriCertificationProgress) {
+        switch update.activity {
+        case .phaseProgress:
+            print("resonance \(update.phase.rawValue): \(update.completed)/\(update.total)")
+        case .secondStrikeStarted:
+            print(
+                "resonance SECOND STRIKE START \(update.phase.rawValue) "
+                + "question \(update.completed)/\(update.total): \(update.detail ?? "divergence")"
+            )
+        case .secondStrikeCompleted:
+            print(
+                "resonance SECOND STRIKE END \(update.phase.rawValue) "
+                + "question \(update.completed)/\(update.total): \(update.detail ?? "complete")"
+            )
+        }
+    }
+
+    private static func printCheckpoint(
+        _ checkpoint: DioscuriCertificationCheckpoint,
+        prefix: String
+    ) {
+        let value = checkpoint.completed
+        print(
+            "\(prefix): body \(value.bodyOccurrence) / motion \(value.motionTopology) / "
+            + "station \(value.station) / relationships \(value.exactRelationship) / eclipse \(value.eclipse)"
+        )
     }
 
     private static func runLiveP22Forge(_ raw: [String]) throws {
@@ -394,11 +544,23 @@ private struct OrboForgeTool {
         print("status: live body reforge complete; canonical full assembly uses p22-complete")
     }
 
+    private static func prepare(_ directory: URL) throws {
+        try FileManager.default.createDirectory(
+            at: directory,
+            withIntermediateDirectories: true
+        )
+    }
+
     private static func writeJSON<T: Encodable>(_ value: T, to url: URL) throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try encoder.encode(value)
         try data.write(to: url, options: .atomic)
+    }
+
+    private static func readJSON<T: Decodable>(_ type: T.Type, from url: URL) throws -> T {
+        let data = try Data(contentsOf: url)
+        return try JSONDecoder().decode(type, from: data)
     }
 }
 
