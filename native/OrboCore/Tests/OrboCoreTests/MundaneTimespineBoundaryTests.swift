@@ -87,7 +87,7 @@ final class MundaneTimespineBoundaryTests: XCTestCase {
         ))
         let reader = MundaneTimespineReader(image: image)
 
-        let state = try XCTUnwrap(try reader.state(at: JulianDay(2_009)!)[.mercury])
+        let state = try XCTUnwrap(try reader.state(at: JulianDay(2_009.5)!)[.mercury])
         XCTAssertEqual(state.source, .interpolated)
         XCTAssertGreaterThan(state.celestialTimeDegrees, 359.9)
         XCTAssertLessThan(state.celestialTimeDegrees, 360)
