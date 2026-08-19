@@ -79,18 +79,20 @@ func relative(_ pair:Pair,_ jd:Double,_ target:Double,_ sw:Swiss)throws->(Double
     let a=try sw.state(pair.a,jd),b=try sw.state(pair.b,jd),raw=norm(a.longitude-b.longitude); return(raw+360*round((target-raw)/360)-target,a,b)
 }
 func refine(_ pair:Pair,_ target:Double,_ lo0:Double,_ hi0:Double,_ sw:Swiss)throws->(Double,State,State) {
-    var lo=lo0,hi=hi0,gl=try relative(pair,lo0,target,sw).0,gh=try relative(pair,hi0,target,sw).0
-    if abs(gl)<1e-13 {let q=try relative(pair,lo,target,sw);return(lo,q.1,q.2)}
-    if abs(gh)<1e-13 {let q=try relative(pair,hi,target,sw);return(hi,q.1,q.2)}
-    var x=lo+(hi-lo)*abs(gl)/(abs(gl)+abs(gh))
-    for _ in 0..<18 {
-        let q=try relative(pair,x,target,sw)
-        if abs(q.0)<1e-12 || (hi-lo)*86400<0.0005 {return(x,q.1,q.2)}
-        if gl*q.0<=0 {hi=x;gh=q.0}else{lo=x;gl=q.0}
-        let d=q.1.speed-q.2.speed; var c=abs(d)>1e-12 ? x-q.0/d : (lo+hi)/2
-        if !(c>lo && c<hi) || !c.isFinite {c=(lo+hi)/2}; x=c
+    var lo=lo0, hi=hi0
+    var gl=try relative(pair,lo,target,sw).0
+    var gh=try relative(pair,hi,target,sw).0
+    if abs(gl)<1e-12 { let q=try relative(pair,lo,target,sw); return(lo,q.1,q.2) }
+    if abs(gh)<1e-12 { let q=try relative(pair,hi,target,sw); return(hi,q.1,q.2) }
+    if gl*gh>0 {
+        let x=lo+(hi-lo)*abs(gl)/(abs(gl)+abs(gh)); let q=try relative(pair,x,target,sw); return(x,q.1,q.2)
     }
-    let x2=(lo+hi)/2,q=try relative(pair,x2,target,sw);return(x2,q.1,q.2)
+    for _ in 0..<56 {
+        let mid=(lo+hi)/2, q=try relative(pair,mid,target,sw)
+        if abs(q.0)<1e-11 || (hi-lo)<1e-10 { return(mid,q.1,q.2) }
+        if gl*q.0<=0 { hi=mid; gh=q.0 } else { lo=mid; gl=q.0 }
+    }
+    let x=(lo+hi)/2,q=try relative(pair,x,target,sw); return(x,q.1,q.2)
 }
 func parseArgs()throws->(String,String,String,Double,Double,Double) {
     var lib:String?,ephe:String?,out:String?,start:Double?,end:Double?,origin:Double?;let a=CommandLine.arguments;var i=1
@@ -102,7 +104,7 @@ func csvLine(_ e:Event)->String { [e.bodyA,e.bodyB,e.aspect,String(e.ring),e.ori
 func main()throws {
     let(lib,ephe,outPath,start,end,origin)=try parseArgs(),sw=try Swiss(lib,ephe);guard sw.version=="2.10.03" else{throw ForgeError.swiss("unexpected Swiss \(sw.version)")}
     let out=URL(fileURLWithPath:outPath);try FileManager.default.createDirectory(at:out,withIntermediateDirectories:true)
-    let major=out.appendingPathComponent("exact-major-mundane-transits.csv"),minor=out.appendingPathComponent("exact-minor-mundane-transits.csv");FileManager.default.createFile(atPath:major.path,contents:nil);FileManager.default.createFile(atPath:minor.path,contents:nil)
+    let major=out.appendingPathComponent("exact-major-mundane-transits.csv"),minor=out.appendingPathComponent("exact-minor-mundane-transits.csv");_ = FileManager.default.createFile(atPath:major.path,contents:nil);_ = FileManager.default.createFile(atPath:minor.path,contents:nil)
     let mh=try FileHandle(forWritingTo:major),nh=try FileHandle(forWritingTo:minor);defer{try? mh.close();try? nh.close()};let header="bodyA,bodyB,aspect,ringDegrees,orientation,bodyACelestialTimeDegrees,bodyBCelestialTimeDegrees,civicTimeJulianDayUT,civicTimeOffsetSeconds,exactAspectResidualArcSeconds\n".data(using:.utf8)!;try mh.write(contentsOf:header);try nh.write(contentsOf:header)
     let bodies=Body.allCases;var pairs:[Pair]=[];for i in 0..<bodies.count-1{for j in i+1..<bodies.count{pairs.append(Pair(a:bodies[i],b:bodies[j]))}}
     func states(_ jd:Double)throws->[Body:State]{var r:[Body:State]=[:];for b in bodies{r[b]=try sw.state(b,jd)};return r}
