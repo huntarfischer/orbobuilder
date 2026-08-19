@@ -133,3 +133,58 @@ public enum MundaneTimespineP22CanonicalInputs {
         )
     }
 }
+
+/// Relationship CSVs preserve two civic representations of the same occurrence: a decimal
+/// Julian Day label and the admitted integer-second P22 coordinate. The printed decimal text is
+/// quantized by its lexical precision, so it denotes a cell rather than an infinitely precise
+/// real number. A persisted integer second is consistent exactly when that source cell can
+/// intersect the integer second's rounding cell. No numerical tolerance is invented here.
+public enum MundaneTimespineP22CivicSerialization {
+    public static let startJulianDayText = "2386637.079399706"
+    public static let auditLaw = "lexical JD interval intersects integer-second cell"
+
+    private static let locale = Locale(identifier: "en_US_POSIX")
+    private static let secondsPerDay = Decimal(86_400)
+    private static let halfSecond = Decimal(string: "0.5", locale: locale)!
+    private static let startJulianDay = Decimal(string: startJulianDayText, locale: locale)!
+    private static let startHalfUnit = lexicalHalfUnit(startJulianDayText)!
+
+    public static func isConsistent(
+        julianDayText: String,
+        civicOffsetSeconds: Int64
+    ) -> Bool {
+        guard civicOffsetSeconds >= 0,
+              let julianDay = Decimal(string: julianDayText, locale: locale),
+              let julianDayHalfUnit = lexicalHalfUnit(julianDayText),
+              let storedSecond = Decimal(string: String(civicOffsetSeconds), locale: locale) else {
+            return false
+        }
+
+        let sourceCenter = (julianDay - startJulianDay) * secondsPerDay
+        let sourceHalfWidth = (julianDayHalfUnit + startHalfUnit) * secondsPerDay
+        let sourceLow = sourceCenter - sourceHalfWidth
+        let sourceHigh = sourceCenter + sourceHalfWidth
+        let storedLow = storedSecond - halfSecond
+        let storedHigh = storedSecond + halfSecond
+
+        // Require real overlap, not merely a boundary touch. A zero-width touch cannot identify
+        // which neighboring second owns the source occurrence.
+        return sourceHigh > storedLow && sourceLow < storedHigh
+    }
+
+    private static func lexicalHalfUnit(_ text: String) -> Decimal? {
+        let pieces = text.split(separator: ".", omittingEmptySubsequences: false)
+        guard pieces.count == 2,
+              !pieces[0].isEmpty,
+              !pieces[1].isEmpty,
+              pieces[1].allSatisfy({ $0.isNumber }) else {
+            return nil
+        }
+
+        var unit = Decimal(1)
+        for _ in 0..<pieces[1].count {
+            unit /= Decimal(10)
+        }
+        return unit / Decimal(2)
+    }
+}
