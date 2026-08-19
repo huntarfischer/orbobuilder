@@ -7,7 +7,6 @@ on:
       - agent/p22-duplicate-cleanup-staging
     paths:
       - ".github/workflows/pass5-z21-z23-body-occurrences.yml"
-      - "tools/pass5/generate_zeitgeist_body_tables.py"
 
 permissions:
   contents: write
@@ -47,17 +46,90 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
+      - name: Build Z21 and Z23 variants of proven Swift manufacturer
+        run: |
+          cp tools/pass5/P22TimespinePOC.swift /tmp/Z21TimespinePOC.swift
+          cp tools/pass5/P22TimespinePOC.swift /tmp/Z23TimespinePOC.swift
+          python3 - <<'PY'
+          from pathlib import Path
+          variants = {
+              '/tmp/Z21TimespinePOC.swift': ('2297171.740867775','2386637.0793997087'),
+              '/tmp/Z23TimespinePOC.swift': ('2475819.1417904533','2565295.0945935287'),
+          }
+          for path,(start,end) in variants.items():
+              p=Path(path); s=p.read_text()
+              s=s.replace('let p22StartJD = 2386637.079399706', f'let p22StartJD = {start}')
+              s=s.replace('let p23StartJD = 2475819.1417904524', f'let p23StartJD = {end}')
+              p.write_text(s)
+          PY
+          swiftc -O /tmp/Z21TimespinePOC.swift -o /tmp/z21-forge
+          swiftc -O /tmp/Z23TimespinePOC.swift -o /tmp/z23-forge
+
       - name: Manufacture celestial-first Z21 and Z23 body tables
         run: |
-          rm -rf tools/pass5/zeitgeist-body-data
-          python3 tools/pass5/generate_zeitgeist_body_tables.py \
+          rm -rf /tmp/z21-raw /tmp/z23-raw tools/pass5/zeitgeist-body-data
+          mkdir -p /tmp/z21-raw /tmp/z23-raw tools/pass5/zeitgeist-body-data/z21 tools/pass5/zeitgeist-body-data/z23
+          /tmp/z21-forge \
             --library "$PWD/.forge/swisseph/libswe.so" \
             --ephe-dir "$PWD/.forge/ephe" \
-            --output-root "$PWD/tools/pass5/zeitgeist-body-data" \
-            | tee /tmp/z-body-manufacture.txt
-          grep -q '^PASS Z21/Z23 celestial-first body occurrence manufacture$' /tmp/z-body-manufacture.txt
-          test "$(find tools/pass5/zeitgeist-body-data/z21/body-tables -name '*.csv.gz' | wc -l)" -eq 11
-          test "$(find tools/pass5/zeitgeist-body-data/z23/body-tables -name '*.csv.gz' | wc -l)" -eq 11
+            --output-dir /tmp/z21-raw \
+            | tee /tmp/z21-body-manufacture.txt
+          /tmp/z23-forge \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir /tmp/z23-raw \
+            | tee /tmp/z23-body-manufacture.txt
+          mkdir -p tools/pass5/zeitgeist-body-data/z21/body-tables tools/pass5/zeitgeist-body-data/z23/body-tables
+          for z in z21 z23; do
+            raw="/tmp/${z}-raw/body-tables"
+            dst="tools/pass5/zeitgeist-body-data/${z}/body-tables"
+            for f in "$raw"/*.csv; do gzip -6 -c "$f" > "$dst/$(basename "$f").gz"; done
+            test "$(find "$dst" -name '*.csv.gz' | wc -l)" -eq 11
+          done
+
+      - name: Build canonical Zeitgeist manifests
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,hashlib,json,glob,os
+          root='tools/pass5/zeitgeist-body-data'
+          spans={
+            'z21':('Z21',2297171.740867775,2386637.0793997087,'1577-05-05T05:46:50.976Z','1822-04-16T13:54:20.135Z'),
+            'z23':('Z23',2475819.1417904533,2565295.0945935287,'2066-06-17T15:24:10.695Z','2311-06-10T14:16:12.881Z'),
+          }
+          manifests={}
+          for key,(zid,start,end,sutc,eutc) in spans.items():
+              files=[]; total=0; bodies=[]
+              for p in sorted(glob.glob(f'{root}/{key}/body-tables/*.csv.gz')):
+                  h=hashlib.sha256(open(p,'rb').read()).hexdigest(); n=0
+                  with gzip.open(p,'rt',newline='') as f:
+                      r=csv.DictReader(f)
+                      res=None; markers=[]
+                      for row in r:
+                          if res is None:
+                              res=float(row['celestialResolutionDegrees'])
+                              markers=[c[:-6] for c in r.fieldnames if c.endswith('Degree') and c not in ('focalCelestialDegrees','celestialResolutionDegrees')]
+                          n+=1
+                  body=os.path.basename(p).replace('.csv.gz',''); total+=n
+                  files.append({'path':f'body-tables/{body}.csv.gz','bytes':os.path.getsize(p),'sha256':h})
+                  bodies.append({'body':body,'selectedRecords':n,'selectedResolutionDegrees':res,'selectedMarkers':markers})
+              manifest={
+                'zeitgeist':zid,
+                'spanLaw':'half-open owner interval [first Pluto direct Aries ingress, next Zeitgeist first Pluto direct Aries ingress)',
+                'celestialLaw':'body zodiacal position is primary celestial time; civic UT identifies occurrence only',
+                'startJulianDayUT':start,'startUTC':sutc,'endJulianDayUT':end,'endUTC':eutc,
+                'astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT',
+                'swissVersion':'2.10.03','bodyTableCount':11,'totalSelectedRecords':total,
+                'resolutionLaw':'1 degree Sun through Mars; 0.1 degree Jupiter, Saturn, Uranus, Neptune, Pluto, True North Node',
+                'nodeRepresentation':'True North Node; South Node derived at +180 degrees',
+                'bodyTables':bodies,'files':files,
+              }
+              with open(f'{root}/{key}/manifest.json','w') as f: json.dump(manifest,f,indent=2,sort_keys=True); f.write('\n')
+              manifests[zid]=manifest
+          with open(f'{root}/manifest.json','w') as f:
+              json.dump({'artifactFamily':'Orbo Z21/Z23 celestial-first body occurrence tables','swissRepository':'huntarfischer/swisseph','swissCommit':'3fd0f956d73898b91cc4f67cf18b21af656d1342','zeitgeists':manifests},f,indent=2,sort_keys=True); f.write('\n')
+          print('Z21 records',manifests['Z21']['totalSelectedRecords'])
+          print('Z23 records',manifests['Z23']['totalSelectedRecords'])
+          PY
 
       - name: Audit celestial ownership bounds and recurrence identity
         run: |
@@ -65,8 +137,7 @@ jobs:
           import csv,gzip,json,glob
           root='tools/pass5/zeitgeist-body-data'
           for zid in ('z21','z23'):
-              m=json.load(open(f'{root}/{zid}/manifest.json'))
-              start,end=m['startJulianDayUT'],m['endJulianDayUT']
+              m=json.load(open(f'{root}/{zid}/manifest.json')); start,end=m['startJulianDayUT'],m['endJulianDayUT']
               assert m['bodyTableCount']==11
               for p in glob.glob(f'{root}/{zid}/body-tables/*.csv.gz'):
                   with gzip.open(p,'rt',newline='') as f:
@@ -83,10 +154,7 @@ jobs:
 
       - name: Record artifact hashes
         run: |
-          find tools/pass5/zeitgeist-body-data -type f -print0 \
-            | sort -z \
-            | xargs -0 sha256sum \
-            > /tmp/z-body-sha256.txt
+          find tools/pass5/zeitgeist-body-data -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/z-body-sha256.txt
           du -sh tools/pass5/zeitgeist-body-data
           cat /tmp/z-body-sha256.txt
 
@@ -99,7 +167,8 @@ jobs:
           compression-level: 0
           path: |
             tools/pass5/zeitgeist-body-data/
-            /tmp/z-body-manufacture.txt
+            /tmp/z21-body-manufacture.txt
+            /tmp/z23-body-manufacture.txt
             /tmp/z-body-sha256.txt
 
       - name: Freeze verified tables on staging branch
