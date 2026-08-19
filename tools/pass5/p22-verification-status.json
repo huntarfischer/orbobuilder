@@ -1,6 +1,10 @@
 {
+  "candidateBytes": 22729389,
+  "candidateSHA256": "813dde4dd5fa1b3a189570a1beda8ec1cfa37cc8c7be3eb6010865902040ea78",
+  "certificationCheckpointing": "built / native proof pending",
   "nativeProof": "pending",
+  "preservedCandidateRestart": "built / native proof pending",
   "repositorySubstrate": "success",
-  "sourceCommit": "8266602301bd6964dba074dd58b3142af19475ec",
+  "sourceCommit": "38b92b7ee67f958b7eaab343b67fa9d45c832ff3",
   "status": "pending"
 }
