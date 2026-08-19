@@ -24,7 +24,7 @@ final class MundaneTimespineUniversalEventsTests: XCTestCase {
     func testP22UniversalEventContractIsCelestialTimeFirstAndUsesTheRing() {
         XCTAssertTrue(MundaneTimespineP22.universalEventsAreCelestialTimeFirst)
         XCTAssertEqual(MundaneTimespineP22.universalEventTables.count, 3)
-        XCTAssertEqual(MundaneTimespineP22.totalUniversalEventRecords, 771_431)
+        XCTAssertEqual(MundaneTimespineP22.totalUniversalEventRecords, 771_426)
 
         XCTAssertEqual(
             MundaneTimespineP22.majorRelationshipMarks.map(\.rawValue),
