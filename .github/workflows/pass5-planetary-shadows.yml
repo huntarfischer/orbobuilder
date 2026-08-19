@@ -10,7 +10,7 @@ on:
       - "tools/pass5/generate_planetary_shadow_table.py"
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
@@ -38,16 +38,12 @@ jobs:
           base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
           files=(
             seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1
-            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1 sepl_30.se1
-            sepl_36.se1
+            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1 sepl_30.se1 sepl_36.se1
             semom36.se1 semom30.se1 semom24.se1 semom18.se1 semom12.se1 semom06.se1
-            semo_00.se1 semo_06.se1 semo_12.se1 semo_18.se1 semo_24.se1 semo_30.se1
-            semo_36.se1
+            semo_00.se1 semo_06.se1 semo_12.se1 semo_18.se1 semo_24.se1 semo_30.se1 semo_36.se1
           )
           for file in "${files[@]}"; do
-            curl --fail --location --retry 4 --retry-all-errors \
-              "$base/$file" \
-              --output ".forge/ephe/$file"
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
             test -s ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
@@ -62,28 +58,21 @@ jobs:
             | tee /tmp/planetary-shadow-manufacture.txt
           test -s tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json
           test -s tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv
-          grep -q '^rows=' /tmp/planetary-shadow-manufacture.txt
-          sha256sum \
-            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json \
-            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv \
-            | tee /tmp/planetary-shadow-sha256.txt
-          wc -c \
-            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json \
-            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv \
-            | tee /tmp/planetary-shadow-bytes.txt
+          grep -q '^rows=6691$' /tmp/planetary-shadow-manufacture.txt
+          sha256sum tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv | tee /tmp/planetary-shadow-sha256.txt
+          grep -q '^e834b139e4a01650d59e33d54667dfd0c50d790bcb4a46db0c00a6a6ee59fa09 ' /tmp/planetary-shadow-sha256.txt
+          grep -q '^efe37424e8479f4e5ef6339342bfd9452ddfdf0af6e815baf5f5c6d6d9552457 ' /tmp/planetary-shadow-sha256.txt
+          wc -c tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv | tee /tmp/planetary-shadow-bytes.txt
 
       - name: Audit topology ordering
         run: |
           python3 - <<'PY'
           import csv
-          p='tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv'
-          rows=list(csv.DictReader(open(p)))
-          assert rows
+          rows=list(csv.DictReader(open('tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv')))
+          assert len(rows) == 6691
           for r in rows:
-              a=float(r['preShadowStartJulianDayUT'])
-              b=float(r['retrogradeStationJulianDayUT'])
-              c=float(r['directStationJulianDayUT'])
-              d=float(r['postShadowEndJulianDayUT'])
+              a=float(r['preShadowStartJulianDayUT']); b=float(r['retrogradeStationJulianDayUT'])
+              c=float(r['directStationJulianDayUT']); d=float(r['postShadowEndJulianDayUT'])
               assert a < b < c < d, (r['body'], r['retrogradeStationUTC'])
               assert abs(float(r['preShadowStartDegree'])-float(r['directStationDegree'])) < 1e-9
               assert abs(float(r['postShadowEndDegree'])-float(r['retrogradeStationDegree'])) < 1e-9
@@ -102,3 +91,40 @@ jobs:
             /tmp/planetary-shadow-manufacture.txt
             /tmp/planetary-shadow-sha256.txt
             /tmp/planetary-shadow-bytes.txt
+
+      - name: Freeze verified table on staging branch
+        run: |
+          mkdir -p /tmp/planetary-shadow-freeze
+          cp tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json /tmp/planetary-shadow-freeze/
+          cp tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv /tmp/planetary-shadow-freeze/
+          cat > /tmp/planetary-shadow-freeze/planetary-shadows-z21-z23.manifest.json <<'JSON'
+          {
+            "artifactFamily": "Orbo planetary retrograde shadow table Z21-Z23",
+            "rows": 6691,
+            "astronomicalSource": "Swiss Ephemeris DE441",
+            "astronomicalSourceVersion": "2.10.03",
+            "swissRepository": "huntarfischer/swisseph",
+            "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+            "spanStartUTC": "1577-05-05T05:46:50.976Z",
+            "spanEndUTC": "2311-06-10T14:16:12.881Z",
+            "inclusionLaw": "include every complete retrograde-shadow episode whose [pre-shadow start, post-shadow end] intersects the half-open Z21-Z24 ownership span",
+            "shadowLaw": "pre-shadow begins at the first direct crossing of the later direct-station degree; retrograde begins at the retrograde station; direct motion resumes at the direct station; post-shadow ends at the next direct crossing of the earlier retrograde-station degree",
+            "bodies": ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"],
+            "trueNodePolicy": "excluded pending separate motion-topology decision",
+            "counts": {"Mercury":2315,"Venus":460,"Mars":344,"Jupiter":673,"Saturn":710,"Uranus":726,"Neptune":731,"Pluto":732},
+            "jsonBytes": 4792614,
+            "jsonSha256": "e834b139e4a01650d59e33d54667dfd0c50d790bcb4a46db0c00a6a6ee59fa09",
+            "csvBytes": 1754184,
+            "csvSha256": "efe37424e8479f4e5ef6339342bfd9452ddfdf0af6e815baf5f5c6d6d9552457",
+            "topologyAudit": "PASS 6691/6691"
+          }
+          JSON
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-planetary-shadows origin/agent/p22-duplicate-cleanup-staging
+          mkdir -p tools/pass5/planetary-shadow-data
+          cp /tmp/planetary-shadow-freeze/* tools/pass5/planetary-shadow-data/
+          git add tools/pass5/planetary-shadow-data
+          git commit -m "freeze canonical Z21-Z23 planetary shadow table"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
