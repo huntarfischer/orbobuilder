@@ -254,6 +254,59 @@ final class HephaestusCompletionTests: XCTestCase {
         }
     }
 
+    func testHephaestusRehydratesPreservedCandidateAsSameImmutableWork() throws {
+        let minted = try makeCandidate(recipe: RecipeA.self)
+        let restored = try Hephaestus.rehydrateCandidate(
+            recipe: RecipeA.self,
+            artifactData: minted.artifactData
+        )
+
+        XCTAssertEqual(
+            Hephaestus.candidateRehydrationLaw,
+            "exact ORBOTS bytes + bound recipe -> same candidate identity"
+        )
+        XCTAssertEqual(restored.artifactData, minted.artifactData)
+        XCTAssertEqual(restored.identity, minted.identity)
+        XCTAssertEqual(restored.forgeRecord, minted.forgeRecord)
+    }
+
+    func testDioscuriCheckpointResumeMatchesFreshTestimony() throws {
+        let candidate = try makeCandidate(recipe: RecipeA.self)
+        var captured: DioscuriCertificationCheckpoint?
+
+        XCTAssertThrowsError(try Dioscuri.testify(
+            candidate: candidate,
+            resumingFrom: nil,
+            checkpointHandler: { checkpoint in
+                captured = checkpoint
+                throw TestFailure.checkpointCaptured
+            }
+        )) { error in
+            guard case TestFailure.checkpointCaptured = error else {
+                return XCTFail("unexpected checkpoint interruption: \(error)")
+            }
+        }
+
+        let checkpoint = try XCTUnwrap(captured)
+        XCTAssertEqual(checkpoint.candidateSHA256, candidate.identity.sha256)
+        XCTAssertEqual(checkpoint.completed.bodyOccurrence, 2)
+        XCTAssertEqual(checkpoint.completed.motionTopology, 0)
+        XCTAssertEqual(checkpoint.dioscuriContractVersion, Dioscuri.contractVersion)
+        XCTAssertEqual(
+            checkpoint.certificationImplementationVersion,
+            Dioscuri.certificationImplementationVersion
+        )
+        XCTAssertEqual(Dioscuri.checkpointLaw, "candidate-bound / whole-question / deterministic-prefix")
+
+        let resumed = try Dioscuri.testify(
+            candidate: candidate,
+            resumingFrom: checkpoint
+        )
+        let fresh = try Dioscuri.testify(candidate: candidate)
+        XCTAssertEqual(resumed.result, fresh.result)
+        XCTAssertEqual(resumed.evidenceSHA256, fresh.evidenceSHA256)
+    }
+
     func testP22RecipeBindsCompleteCanonicalArtifactAnatomy() {
         let contract = MundaneTimespineP22ForgeRecipe.artifactContract
         XCTAssertEqual(contract.bodyCount, 11)
@@ -422,5 +475,6 @@ final class HephaestusCompletionTests: XCTestCase {
 
     private enum TestFailure: Error {
         case unexpectedDisposition
+        case checkpointCaptured
     }
 }
