@@ -20,6 +20,10 @@ let package = Package(
         .executable(
             name: "P22BoundaryForgeTool",
             targets: ["P22BoundaryForgeTool"]
+        ),
+        .executable(
+            name: "ZeitgeistTableForgeTool",
+            targets: ["ZeitgeistTableForgeTool"]
         )
     ],
     targets: [
@@ -35,6 +39,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "P22BoundaryForgeTool",
+            dependencies: ["OrboCore"]
+        ),
+        .executableTarget(
+            name: "ZeitgeistTableForgeTool",
             dependencies: ["OrboCore"]
         ),
         .testTarget(
