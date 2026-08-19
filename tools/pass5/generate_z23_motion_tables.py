@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, csv, ctypes, hashlib, json, os
+import argparse, csv, ctypes, hashlib, json
 from pathlib import Path
 
 SECONDS_PER_DAY=86400.0
@@ -8,6 +8,10 @@ SEFLG_MOSEPH=4
 SEFLG_SPEED=256
 START=2475819.1417904533
 END=2565295.0945935287
+SHADOW_TABLE_START=2297171.740867775
+SHADOW_BUFFER_DAYS=2200.0
+SHADOW_SCAN_START=SHADOW_TABLE_START-SHADOW_BUFFER_DAYS
+SHADOW_SCAN_END=END+SHADOW_BUFFER_DAYS
 BODIES=[
     ("Mercury",2,2.0),("Venus",3,3.0),("Mars",4,5.0),("Jupiter",5,8.0),
     ("Saturn",6,8.0),("Uranus",7,10.0),("Neptune",8,10.0),("Pluto",9,10.0),
@@ -46,16 +50,16 @@ def refine_station(sw,body,lo,hi):
         if (hi-lo)*SECONDS_PER_DAY<0.001: break
     return (lo+hi)/2
 
-def find_stations(sw,name,body,step):
-    out=[]; lo=START; lon,slo=sw.state(lo,body)
-    while lo<END:
-        hi=min(END,lo+step); lon2,shi=sw.state(hi,body)
+def find_stations(sw,name,body,step,scan_start,scan_end):
+    out=[]; lo=scan_start; _,slo=sw.state(lo,body)
+    while lo<scan_end:
+        hi=min(scan_end,lo+step); _,shi=sw.state(hi,body)
         if slo==0 or shi==0 or slo*shi<0:
             jd=refine_station(sw,body,lo,hi); slon,_=sw.state(jd,body)
             before=1 if slo>=0 else -1; after=1 if shi>=0 else -1
             if not out or abs(out[-1]['jd']-jd)*SECONDS_PER_DAY>1:
                 out.append({'body':name,'jd':jd,'lon':slon,'before':before,'after':after})
-        lo=hi; lon,slo=lon2,shi
+        lo=hi; slo=shi
     return out
 
 def seq(d): return 'increasing' if d>=0 else 'decreasing'
@@ -67,13 +71,19 @@ def main():
     out=Path(a.output_dir); out.mkdir(parents=True,exist_ok=True)
     stations=[]; passages=[]; per_body={}
     for name,body,step in BODIES:
-        sts=find_stations(sw,name,body,step); per_body[name]={'stations':len(sts)}; stations.extend(sts)
+        if name=='NorthNode':
+            raw=find_stations(sw,name,body,step,START,END)
+        else:
+            # Reproduce the exact buffered scan grid used to manufacture the frozen shadow table.
+            raw=find_stations(sw,name,body,step,SHADOW_SCAN_START,SHADOW_SCAN_END)
+        sts=[x for x in raw if START <= x['jd'] < END]
+        per_body[name]={'stations':len(sts)}; stations.extend(sts)
         bounds=[START]+[x['jd'] for x in sts]+[END]
         retro=0
         for i in range(len(bounds)-1):
             s,e=bounds[i],bounds[i+1]
             if e-s<=1e-12: continue
-            mid=(s+e)/2; _,speed=sw.state(mid,body)
+            _,speed=sw.state((s+e)/2,body)
             if speed<0:
                 slon,_=sw.state(s,body); elon,_=sw.state(e,body)
                 passages.append({'body':name,'start':s,'end':e,'startLon':slon,'endLon':elon})
@@ -108,7 +118,7 @@ def main():
         best=min(idx[b],key=lambda x:abs(x[0]-r['start'])+abs(x[1]-r['end']))
         err=max(abs(best[0]-r['start']),abs(best[1]-r['end']))*SECONDS_PER_DAY
         maxerr=max(maxerr,err)
-        if err>0.01: raise AssertionError((b,r['start'],r['end'],best,err))
+        if err>0.001: raise AssertionError((b,r['start'],r['end'],best,err))
         compared+=1
     if compared==0: raise AssertionError('No shadow comparisons made')
 
@@ -120,8 +130,8 @@ def main():
       'swissVersion':sw.version,'swissRepository':'huntarfischer/swisseph','swissCommit':'3fd0f956d73898b91cc4f67cf18b21af656d1342',
       'stationRows':len(stations),'retrogradePassageRows':len(passages),'perBody':per_body,
       'shadowCrossCheckBodies':[x for x in idx],'shadowCrossCheckCompletePassages':compared,'shadowCrossCheckMaxErrorSeconds':maxerr,
-      'shadowCrossCheckLaw':'Mercury through Pluto complete retrograde passages reproduce the frozen planetary-shadow retrograde-station to direct-station interval; boundary-clipped passages excluded; 0.01 second maximum accepted numerical difference',
-      'trueNodePolicy':'True Node motion is manufactured from signed Swiss longitudinal speed using 0.1-day bracketing; it is not cross-checked against planetary-shadow data because True Node was intentionally excluded from that table.',
+      'shadowCrossCheckLaw':'Mercury through Pluto complete retrograde passages reproduce the frozen planetary-shadow retrograde-station to direct-station intervals by using the same buffered Z21-Z24 station scan grid; boundary-clipped passages excluded; 0.001 second maximum accepted difference',
+      'trueNodePolicy':'True Node motion is manufactured independently from signed Swiss longitudinal speed using 0.1-day bracketing; it is not cross-checked against planetary-shadow data because True Node was intentionally excluded from that table.',
       'files':[]
     }
     for p in (sp,rp):
