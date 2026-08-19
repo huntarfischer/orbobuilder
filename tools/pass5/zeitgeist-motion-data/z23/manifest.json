@@ -1,0 +1,79 @@
+{
+  "artifactFamily": "Orbo motion tables",
+  "astronomicalSource": "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude and signed speed; UT",
+  "endJulianDayUT": 2565295.0945935287,
+  "endUTC": "2311-06-10T14:16:12.881Z",
+  "files": [
+    {
+      "bytes": 1669337,
+      "path": "station-table.csv",
+      "sha256": "22e3ba30f88cf8d4ee123452ac578ccdbf71f9babacedeb449f44e72fcbb46e2"
+    },
+    {
+      "bytes": 989623,
+      "path": "retrograde-passages.csv",
+      "sha256": "b7d03093cde38cb779ac2ad57b95269d153fab80b5201e1d643a16e8a663f910"
+    }
+  ],
+  "ownershipLaw": "Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive",
+  "perBody": {
+    "Jupiter": {
+      "retrogradePassages": 225,
+      "stations": 449
+    },
+    "Mars": {
+      "retrogradePassages": 115,
+      "stations": 230
+    },
+    "Mercury": {
+      "retrogradePassages": 773,
+      "stations": 1545
+    },
+    "Neptune": {
+      "retrogradePassages": 244,
+      "stations": 487
+    },
+    "NorthNode": {
+      "retrogradePassages": 6567,
+      "stations": 13133
+    },
+    "Pluto": {
+      "retrogradePassages": 244,
+      "stations": 488
+    },
+    "Saturn": {
+      "retrogradePassages": 237,
+      "stations": 473
+    },
+    "Uranus": {
+      "retrogradePassages": 243,
+      "stations": 484
+    },
+    "Venus": {
+      "retrogradePassages": 154,
+      "stations": 307
+    }
+  },
+  "retrogradePassageRows": 8802,
+  "shadowCrossCheckBodies": [
+    "Mercury",
+    "Venus",
+    "Mars",
+    "Jupiter",
+    "Saturn",
+    "Uranus",
+    "Neptune",
+    "Pluto"
+  ],
+  "shadowCrossCheckCompletePassages": 2228,
+  "shadowCrossCheckLaw": "Mercury through Pluto complete retrograde passages reproduce the frozen planetary-shadow retrograde-station to direct-station intervals by using the same buffered Z21-Z24 station scan grid; boundary-clipped passages excluded; 0.001 second maximum accepted difference",
+  "shadowCrossCheckMaxErrorSeconds": 0.0,
+  "startJulianDayUT": 2475819.1417904533,
+  "startUTC": "2066-06-17T15:24:10.695Z",
+  "stationRows": 17596,
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissVersion": "2.10.03",
+  "trueNodePolicy": "True Node motion is manufactured independently from signed Swiss longitudinal speed using 0.1-day bracketing; it is not cross-checked against planetary-shadow data because True Node was intentionally excluded from that table.",
+  "zeitgeist": "Z23"
+}
