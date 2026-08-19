@@ -18,6 +18,7 @@ struct PolluxRelationshipAddress: Hashable, Sendable {
     let orientation: MundaneTimespineRelationshipOrientation
     let bodyAMicrodegrees: UInt32
     let bodyBMicrodegrees: UInt32
+    let recurrenceOrdinal: Int
 }
 
 struct PolluxRelationshipQuestion: Hashable, Sendable {
@@ -39,20 +40,24 @@ struct PolluxEclipseQuestion: Hashable, Sendable {
     let handoff: PolluxCivicHandoff
 }
 
-/// Streaming relationship cursor. It retains only the celestial identity set required to reject
-/// ambiguity; it does not duplicate all 770k P22 questions in another array during certification.
+/// Streaming relationship cursor. Exact celestial geometry may recur during a multi-century
+/// Timespine. Pollux therefore qualifies each repeated geometry by its zero-based recurrence
+/// ordinal inside that geometry's own occurrence sequence. Civic UT is still excluded from the
+/// celestial address and is discovered only after the qualified celestial identity is chosen.
 struct PolluxRelationshipQuestionCursor: Sendable {
     private let candidateSHA256: String
     private let supportedStart: JulianDay
     private let relationships: [MundaneTimespineRelationshipEvent]
     private var position = 0
-    private var seen = Set<PolluxRelationshipAddress>()
+    private var recurrenceCounts: [PolluxRelationshipDirectLookup.CelestialKey: Int] = [:]
+    private var lastOffsetByKey: [PolluxRelationshipDirectLookup.CelestialKey: Int64] = [:]
 
     init(candidateSHA256: String, storage: MundaneTimespineStorageImage) {
         self.candidateSHA256 = candidateSHA256
         self.supportedStart = storage.supportedStart
         self.relationships = storage.relationships
-        self.seen.reserveCapacity(storage.relationships.count)
+        self.recurrenceCounts.reserveCapacity(storage.relationships.count)
+        self.lastOffsetByKey.reserveCapacity(storage.relationships.count)
     }
 
     mutating func seek(to completed: Int) throws {
@@ -60,13 +65,11 @@ struct PolluxRelationshipQuestionCursor: Sendable {
             throw PolluxError.candidateContractMismatch
         }
         position = 0
-        seen.removeAll(keepingCapacity: true)
+        recurrenceCounts.removeAll(keepingCapacity: true)
+        lastOffsetByKey.removeAll(keepingCapacity: true)
         if completed > 0 {
             for index in 0..<completed {
-                let address = PolluxRelationshipDirectLookup.address(for: relationships[index])
-                guard seen.insert(address).inserted else {
-                    throw PolluxError.ambiguousRelationshipIdentity
-                }
+                _ = try qualify(relationships[index])
             }
         }
         position = completed
@@ -76,58 +79,113 @@ struct PolluxRelationshipQuestionCursor: Sendable {
         guard position < relationships.count else { return nil }
         let event = relationships[position]
         position += 1
-        let address = PolluxRelationshipDirectLookup.address(for: event)
-        guard seen.insert(address).inserted else {
-            throw PolluxError.ambiguousRelationshipIdentity
-        }
-        let offset = Int64(((event.julianDay.value - supportedStart.value) * 86_400).rounded())
+        let qualified = try qualify(event)
         return PolluxRelationshipQuestion(
-            address: address,
+            address: qualified.address,
             handoff: PolluxCivicHandoff(
                 candidateSHA256: candidateSHA256,
-                civicOffsetSeconds: offset
+                civicOffsetSeconds: qualified.offset
             )
+        )
+    }
+
+    private mutating func qualify(
+        _ event: MundaneTimespineRelationshipEvent
+    ) throws -> (address: PolluxRelationshipAddress, offset: Int64) {
+        let baseAddress = PolluxRelationshipDirectLookup.address(for: event)
+        let key = PolluxRelationshipDirectLookup.key(for: baseAddress)
+        let offset = Int64(((event.julianDay.value - supportedStart.value) * 86_400).rounded())
+
+        // Repeated celestial geometry at a later civic occurrence is valid. The same qualified
+        // geometry at the same stored second would instead be a duplicate source occurrence.
+        if lastOffsetByKey[key] == offset {
+            throw PolluxError.ambiguousRelationshipIdentity
+        }
+
+        let ordinal = recurrenceCounts[key, default: 0]
+        recurrenceCounts[key] = ordinal + 1
+        lastOffsetByKey[key] = offset
+        return (
+            PolluxRelationshipDirectLookup.address(
+                for: event,
+                recurrenceOrdinal: ordinal
+            ),
+            offset
         )
     }
 }
 
 /// Alternate relationship path used only after a first-strike divergence. It builds a compact
-/// celestial-key index lazily, once, and thereafter resolves the disputed relationship directly.
-/// The first strike still streams independently through PolluxRelationshipQuestionCursor.
+/// celestial recurrence index lazily, once, and thereafter resolves the disputed relationship
+/// directly. The first strike still streams independently through PolluxRelationshipQuestionCursor.
 struct PolluxRelationshipDirectLookup: Sendable {
-    static let law = "celestial relationship identity -> compact candidate index -> civic occurrence"
+    static let recurrenceLaw = "exact celestial geometry + recurrence ordinal / civic UT excluded"
+    static let law = "qualified celestial relationship identity -> compact candidate index -> civic occurrence"
 
     struct CelestialKey: Hashable, Sendable {
         let high: UInt64
         let low: UInt64
     }
 
+    private struct OccurrenceKey: Hashable, Sendable {
+        let celestial: CelestialKey
+        let recurrenceOrdinal: Int
+    }
+
     let candidateSHA256: String
     private let supportedStart: JulianDay
     private let relationships: [MundaneTimespineRelationshipEvent]
-    private let eventIndexByKey: [CelestialKey: Int]
+    private let eventIndexByKey: [OccurrenceKey: Int]
 
     init(candidateSHA256: String, storage: MundaneTimespineStorageImage) throws {
         self.candidateSHA256 = candidateSHA256
         self.supportedStart = storage.supportedStart
         self.relationships = storage.relationships
 
-        var index: [CelestialKey: Int] = [:]
+        var index: [OccurrenceKey: Int] = [:]
+        var recurrenceCounts: [CelestialKey: Int] = [:]
+        var lastOffsetByKey: [CelestialKey: Int64] = [:]
         index.reserveCapacity(storage.relationships.count)
+        recurrenceCounts.reserveCapacity(storage.relationships.count)
+        lastOffsetByKey.reserveCapacity(storage.relationships.count)
+
         for eventIndex in storage.relationships.indices {
-            let address = Self.address(for: storage.relationships[eventIndex])
-            let key = Self.key(for: address)
-            guard index.updateValue(eventIndex, forKey: key) == nil else {
+            let event = storage.relationships[eventIndex]
+            let baseAddress = Self.address(for: event)
+            let celestialKey = Self.key(for: baseAddress)
+            let offset = Int64(((event.julianDay.value - storage.supportedStart.value) * 86_400).rounded())
+            if lastOffsetByKey[celestialKey] == offset {
                 throw PolluxError.ambiguousRelationshipIdentity
             }
+
+            let ordinal = recurrenceCounts[celestialKey, default: 0]
+            let occurrenceKey = OccurrenceKey(
+                celestial: celestialKey,
+                recurrenceOrdinal: ordinal
+            )
+            guard index.updateValue(eventIndex, forKey: occurrenceKey) == nil else {
+                throw PolluxError.ambiguousRelationshipIdentity
+            }
+            recurrenceCounts[celestialKey] = ordinal + 1
+            lastOffsetByKey[celestialKey] = offset
         }
         self.eventIndexByKey = index
     }
 
     func question(for address: PolluxRelationshipAddress) -> PolluxRelationshipQuestion? {
-        guard let eventIndex = eventIndexByKey[Self.key(for: address)] else { return nil }
+        guard address.recurrenceOrdinal >= 0 else { return nil }
+        let occurrenceKey = OccurrenceKey(
+            celestial: Self.key(for: address),
+            recurrenceOrdinal: address.recurrenceOrdinal
+        )
+        guard let eventIndex = eventIndexByKey[occurrenceKey] else { return nil }
         let event = relationships[eventIndex]
-        guard Self.address(for: event) == address else { return nil }
+        guard Self.address(
+            for: event,
+            recurrenceOrdinal: address.recurrenceOrdinal
+        ) == address else {
+            return nil
+        }
         let offset = Int64(((event.julianDay.value - supportedStart.value) * 86_400).rounded())
         return PolluxRelationshipQuestion(
             address: address,
@@ -138,18 +196,22 @@ struct PolluxRelationshipDirectLookup: Sendable {
         )
     }
 
-    static func address(for event: MundaneTimespineRelationshipEvent) -> PolluxRelationshipAddress {
+    static func address(
+        for event: MundaneTimespineRelationshipEvent,
+        recurrenceOrdinal: Int = 0
+    ) -> PolluxRelationshipAddress {
         PolluxRelationshipAddress(
             bodyA: event.bodyA,
             bodyB: event.bodyB,
             mark: event.mark,
             orientation: event.orientation,
             bodyAMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyACelestialTimeDegrees),
-            bodyBMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyBCelestialTimeDegrees)
+            bodyBMicrodegrees: MundaneTimespineStorageImage.microdegrees(event.bodyBCelestialTimeDegrees),
+            recurrenceOrdinal: recurrenceOrdinal
         )
     }
 
-    private static func key(for address: PolluxRelationshipAddress) -> CelestialKey {
+    static func key(for address: PolluxRelationshipAddress) -> CelestialKey {
         let orientation: UInt64
         switch address.orientation {
         case .sameDegree: orientation = 0
@@ -169,6 +231,7 @@ struct PolluxRelationshipDirectLookup: Sendable {
 }
 
 extension Pollux {
+    public static let relationshipRecurrenceIdentityLaw = PolluxRelationshipDirectLookup.recurrenceLaw
     public static let relationshipSecondStrikeLookupLaw = PolluxRelationshipDirectLookup.law
 
     func makeStationQuestions(storage: MundaneTimespineStorageImage) throws -> [PolluxStationQuestion] {
@@ -261,10 +324,16 @@ extension Pollux {
             if $0.address.bodyAMicrodegrees != $1.address.bodyAMicrodegrees {
                 return $0.address.bodyAMicrodegrees < $1.address.bodyAMicrodegrees
             }
+            if $0.address.bodyBMicrodegrees != $1.address.bodyBMicrodegrees {
+                return $0.address.bodyBMicrodegrees < $1.address.bodyBMicrodegrees
+            }
             if $0.address.mark.rawValue != $1.address.mark.rawValue {
                 return $0.address.mark.rawValue < $1.address.mark.rawValue
             }
-            return $0.address.orientation.rawValue < $1.address.orientation.rawValue
+            if $0.address.orientation.rawValue != $1.address.orientation.rawValue {
+                return $0.address.orientation.rawValue < $1.address.orientation.rawValue
+            }
+            return $0.address.recurrenceOrdinal < $1.address.recurrenceOrdinal
         }
     }
 
