@@ -8,6 +8,7 @@ extension MundaneTimespineStorageImage {
 
         var payloads: [(kind: MundaneTimespineStorageSectionKind, body: MundaneBody?, count: Int, data: Data)] = []
         payloads.append((.metadata, nil, 1, try encodeMetadata()))
+        payloads.append((.boundaries, nil, boundaryStates.count, try encodeBoundaries()))
         for body in bodies {
             payloads.append((.body, body.body, body.occurrences.count, try encodeBody(body)))
         }
@@ -61,6 +62,18 @@ extension MundaneTimespineStorageImage {
         writer.string(spanName)
         writer.string(astronomicalSource)
         writer.string(astronomicalSourceVersion)
+        return writer.data
+    }
+
+    private func encodeBoundaries() throws -> Data {
+        var writer = MundaneTimespineBinaryWriter()
+        for state in boundaryStates {
+            writer.byte(state.body.rawValue)
+            writer.varUInt(UInt64(state.startCelestialMicrodegrees))
+            writer.byte(state.startMotion == .retrograde ? 1 : 0)
+            writer.varUInt(UInt64(state.endCelestialMicrodegrees))
+            writer.byte(state.endMotion == .retrograde ? 1 : 0)
+        }
         return writer.data
     }
 
