@@ -18,7 +18,7 @@ env:
 
 jobs:
   manufacture-zeitgeist-table:
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - name: Checkout Orbo
@@ -31,8 +31,8 @@ jobs:
           git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
           git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
           git -C .forge/swisseph checkout --detach FETCH_HEAD
-          make -C .forge/swisseph libswe.so
-          test -f .forge/swisseph/libswe.so
+          make -C .forge/swisseph libswe.dylib
+          test -f .forge/swisseph/libswe.dylib
 
       - name: Fetch pinned long-range Swiss DE441 planetary files from Huntarfischer fork
         run: |
@@ -56,7 +56,7 @@ jobs:
             --package-path native/OrboCore \
             -c release \
             ZeitgeistTableForgeTool \
-            --library "$PWD/.forge/swisseph/libswe.so" \
+            --library "$PWD/.forge/swisseph/libswe.dylib" \
             --ephe-dir "$PWD/.forge/ephe" \
             --json "$PWD/tools/pass5/p22-data/zeitgeist-z0-z30.json" \
             --csv "$PWD/tools/pass5/p22-data/zeitgeist-z0-z30.csv" \
@@ -64,7 +64,7 @@ jobs:
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.json
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.csv
           grep -q '^rows=31$' /tmp/zeitgeist-table-manufacture.txt
-          sha256sum tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
+          shasum -a 256 tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
             | tee /tmp/zeitgeist-table-sha256.txt
           wc -c tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
             | tee /tmp/zeitgeist-table-bytes.txt
