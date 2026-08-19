@@ -7,8 +7,7 @@ on:
       - agent/p22-duplicate-cleanup-staging
     paths:
       - ".github/workflows/pass5-zeitgeist-table.yml"
-      - "native/OrboCore/Package.swift"
-      - "native/OrboCore/Sources/ZeitgeistTableForgeTool/**"
+      - "tools/pass5/generate_zeitgeist_table.py"
 
 permissions:
   contents: read
@@ -18,7 +17,7 @@ env:
 
 jobs:
   manufacture-zeitgeist-table:
-    runs-on: macos-15
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout Orbo
@@ -31,10 +30,10 @@ jobs:
           git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
           git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
           git -C .forge/swisseph checkout --detach FETCH_HEAD
-          make -C .forge/swisseph libswe.dylib
-          test -f .forge/swisseph/libswe.dylib
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
 
-      - name: Fetch pinned long-range Swiss DE441 planetary files from Huntarfischer fork
+      - name: Fetch pinned long-range DE441 planetary files from Huntarfischer fork
         run: |
           base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
           files=(
@@ -50,38 +49,10 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
 
-      - name: Repair manufacture-tool compile syntax in worktree
+      - name: Manufacture Z0-Z30 table
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path("native/OrboCore/Sources/ZeitgeistTableForgeTool/main.swift")
-          lines = path.read_text().splitlines()
-          out = []
-          for line in lines:
-              if line.strip() == 'let version: String':
-                  out.append('    private(set) var version: String = ""')
-              elif 'print("Z22 firstAriesIngress=' in line:
-                  out.append('    let oldStartDeltaText = String(format: "%.3f", oldStartDelta)')
-                  out.append('    print("Z22 firstAriesIngress=\\(z22.firstAriesIngressUTC) oldP22StartDeltaSeconds=\\(oldStartDeltaText)")')
-              elif 'print("Z23 firstAriesIngress=' in line:
-                  out.append('    let oldEndFromZ23FirstText = String(format: "%.3f", oldEndFromZ23First)')
-                  out.append('    print("Z23 firstAriesIngress=\\(z23.firstAriesIngressUTC) oldP22EndDeltaSeconds=\\(oldEndFromZ23FirstText)")')
-              elif 'print("Z23 finalPiscesEgress=' in line:
-                  out.append('    let oldEndFromZ23FinalText = String(format: "%.3f", oldEndFromZ23Final)')
-                  out.append('    print("Z23 finalPiscesEgress=\\(z23.finalPiscesEgressUTC) oldP22EndDeltaSeconds=\\(oldEndFromZ23FinalText)")')
-              else:
-                  out.append(line)
-          path.write_text("\n".join(out) + "\n")
-          PY
-          grep -n -E 'version: String|oldP22.*DeltaSeconds' native/OrboCore/Sources/ZeitgeistTableForgeTool/main.swift
-
-      - name: Manufacture Z0-Z30 table with native Swift
-        run: |
-          swift run \
-            --package-path native/OrboCore \
-            -c release \
-            ZeitgeistTableForgeTool \
-            --library "$PWD/.forge/swisseph/libswe.dylib" \
+          python3 tools/pass5/generate_zeitgeist_table.py \
+            --library "$PWD/.forge/swisseph/libswe.so" \
             --ephe-dir "$PWD/.forge/ephe" \
             --json "$PWD/tools/pass5/p22-data/zeitgeist-z0-z30.json" \
             --csv "$PWD/tools/pass5/p22-data/zeitgeist-z0-z30.csv" \
@@ -89,7 +60,7 @@ jobs:
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.json
           test -s tools/pass5/p22-data/zeitgeist-z0-z30.csv
           grep -q '^rows=31$' /tmp/zeitgeist-table-manufacture.txt
-          shasum -a 256 tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
+          sha256sum tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
             | tee /tmp/zeitgeist-table-sha256.txt
           wc -c tools/pass5/p22-data/zeitgeist-z0-z30.json tools/pass5/p22-data/zeitgeist-z0-z30.csv \
             | tee /tmp/zeitgeist-table-bytes.txt
