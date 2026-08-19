@@ -307,6 +307,50 @@ final class HephaestusCompletionTests: XCTestCase {
         XCTAssertEqual(resumed.evidenceSHA256, fresh.evidenceSHA256)
     }
 
+    func testDioscuriCheckpointRejectsInflatedTallyShape() throws {
+        let candidate = try makeCandidate(recipe: RecipeA.self)
+        var captured: DioscuriCertificationCheckpoint?
+
+        XCTAssertThrowsError(try Dioscuri.testify(
+            candidate: candidate,
+            resumingFrom: nil,
+            checkpointHandler: { checkpoint in
+                captured = checkpoint
+                throw TestFailure.checkpointCaptured
+            }
+        ))
+
+        let checkpoint = try XCTUnwrap(captured)
+        let inflatedTallies = checkpoint.scopeTallies.map { tally -> DioscuriScopeTally in
+            guard tally.scope == .bodyOccurrence else { return tally }
+            return DioscuriScopeTally(
+                scope: tally.scope,
+                questions: tally.questions + 1,
+                resonant: tally.resonant + 1,
+                quantizedCoincidences: tally.quantizedCoincidences,
+                divergent: tally.divergent
+            )
+        }
+        let corrupted = DioscuriCertificationCheckpoint(
+            candidate: candidate,
+            certificationImplementationVersion: Dioscuri.certificationImplementationVersion,
+            completed: checkpoint.completed,
+            scopeTallies: inflatedTallies,
+            divergences: checkpoint.divergences
+        )
+
+        XCTAssertEqual(
+            Dioscuri.checkpointValidationLaw,
+            "exact scope-count shape + divergence parity / no replay"
+        )
+        XCTAssertThrowsError(try Dioscuri.testify(
+            candidate: candidate,
+            resumingFrom: corrupted
+        )) { error in
+            XCTAssertEqual(error as? DioscuriCheckpointError, .invalidTallies)
+        }
+    }
+
     func testP22RecipeBindsCompleteCanonicalArtifactAnatomy() {
         let contract = MundaneTimespineP22ForgeRecipe.artifactContract
         XCTAssertEqual(contract.bodyCount, 11)
