@@ -136,6 +136,7 @@ enum MundaneTimespineStorageSectionKind: UInt8 {
     case body = 2
     case relationships = 3
     case eclipses = 4
+    case boundaries = 5
 }
 
 struct MundaneTimespineStorageSection {
