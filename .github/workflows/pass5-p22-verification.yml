@@ -6,15 +6,19 @@ on:
     branches:
       - main
       - agent/timespine-celestial-time-build
+      - agent/p22-duplicate-cleanup-staging
     paths:
       - ".github/workflows/pass5-p22-verification.yml"
       - "tools/pass5/p22-data/**"
       - "tools/pass5/p22-results/**"
+      - "tools/pass5/audit_p22_canonical_duplicates.py"
       - "tools/pass5/verify_p22_substrate.py"
       - "tools/pass5/record_p22_verification.py"
       - "native/OrboCore/Package.swift"
+      - "native/OrboCore/Sources/OrboCore/Dioscuri/**"
+      - "native/OrboCore/Sources/OrboCore/Forge/**"
       - "native/OrboCore/Sources/OrboCore/MundaneTimespine/**"
-      - "native/OrboCore/Tests/OrboCoreTests/MundaneTimespineTests.swift"
+      - "native/OrboCore/Tests/OrboCoreTests/**"
       - "native/OrboLab/OrboLabApp.swift"
 
 permissions:
@@ -30,6 +34,9 @@ jobs:
 
       - name: Verify committed P22 substrate directly
         run: python3 tools/pass5/verify_p22_substrate.py
+
+      - name: Audit all 17 canonical inputs for duplicate emissions
+        run: python3 tools/pass5/audit_p22_canonical_duplicates.py
 
   native-proof:
     runs-on: macos-15
