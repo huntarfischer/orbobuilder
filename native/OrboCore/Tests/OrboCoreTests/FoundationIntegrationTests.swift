@@ -78,4 +78,57 @@ final class FoundationIntegrationTests: XCTestCase {
             civicOffsetSeconds: 0
         ))
     }
+
+    func testMotionTopologySecondStrikeUsesDirectCelestialReconstruction() throws {
+        let storedBody = try XCTUnwrap(MundaneTimespineStoredBody(
+            body: .sun,
+            ticksPerDegree: 1,
+            markerBodies: [],
+            occurrences: [
+                .init(celestialTick: 10, civicOffsetSeconds: 100, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 11, civicOffsetSeconds: 200, sequenceDirection: .increasing, markerWholeDegrees: []),
+                .init(celestialTick: 12, civicOffsetSeconds: 300, sequenceDirection: .increasing, markerWholeDegrees: []),
+            ],
+            stations: [],
+            retrogradePassages: []
+        ))
+        let storage = try XCTUnwrap(MundaneTimespineStorageImage(
+            spanName: "direct-second-strike fixture",
+            astronomicalSource: "deterministic XCTest matter",
+            astronomicalSourceVersion: "1",
+            supportedStart: try XCTUnwrap(JulianDay(1_000)),
+            supportedEnd: try XCTUnwrap(JulianDay(1_001)),
+            bodies: [storedBody],
+            relationships: [],
+            eclipses: []
+        ))
+        let endpointAddress = try XCTUnwrap(PolluxCelestialAddress(
+            body: .sun,
+            celestialTick: 12,
+            ticksPerDegree: 1,
+            markerFingerprint: []
+        ))
+        let endpoint = PolluxQuestion(
+            celestialAddress: endpointAddress,
+            expectedSequenceDirection: .increasing,
+            handoff: PolluxCivicHandoff(candidateSHA256: "fixture", civicOffsetSeconds: 300)
+        )
+
+        let reconstructed = try XCTUnwrap(PolluxMotionTopologyDirectLookup.reconstruct(
+            endpoint: endpoint,
+            storage: storage
+        ))
+
+        XCTAssertEqual(
+            Pollux.motionTopologySecondStrikeLookupLaw,
+            "celestial endpoint -> indexed civic occurrence -> adjacent topology"
+        )
+        XCTAssertEqual(reconstructed.address.body, .sun)
+        XCTAssertEqual(reconstructed.address.from.celestialTick, 11)
+        XCTAssertEqual(reconstructed.address.to.celestialTick, 12)
+        XCTAssertEqual(reconstructed.address.fromDirection, .increasing)
+        XCTAssertEqual(reconstructed.address.toDirection, .increasing)
+        XCTAssertTrue(reconstructed.address.stationsBetween.isEmpty)
+        XCTAssertEqual(reconstructed.handoff.civicOffsetSeconds, 300)
+    }
 }
