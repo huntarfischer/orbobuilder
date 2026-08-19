@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, ctypes, csv, gzip, itertools, json, math, os, hashlib
+import argparse, ctypes, csv, gzip, itertools, json, math, hashlib
 from pathlib import Path
 
 SECONDS_PER_DAY = 86400.0
@@ -12,7 +12,6 @@ BODIES = [
     ("Saturn",6,0.1,0.50),("Uranus",7,0.1,1.0),("Neptune",8,0.1,1.0),
     ("Pluto",9,0.1,1.0),("NorthNode",11,0.1,0.10)
 ]
-BODY_BY_NAME = {x[0]:x for x in BODIES}
 MARKER_PRIORITY = ["Sun","Pluto","Neptune","Uranus","Saturn","Jupiter","NorthNode","Mars","Venus","Mercury","Moon"]
 SPANS = {
     "Z21": (2297171.740867775, 2386637.0793997087, "1577-05-05T05:46:50.976Z", "1822-04-16T13:54:20.135Z"),
@@ -56,20 +55,36 @@ def refine_station(sw,body,lo,hi):
         if (hi-lo)*SECONDS_PER_DAY<0.001: break
     return (lo+hi)/2
 
-def refine_crossing(sw,body,target,lo,hi,anchor_lon,anchor_u):
-    def val(jd):
-        lon,speed=sw.state(body,jd)
-        return anchor_u+delta(anchor_lon,lon)-target,speed
-    a,b=lo,hi; fa,_=val(a); fb,_=val(b)
-    if abs(fa)<1e-12:return a
-    if abs(fb)<1e-12:return b
-    if fa*fb>0:return (a+b)/2
-    for _ in range(48):
-        m=(a+b)/2; fm,_=val(m)
-        if abs(fm)<1e-11:return m
+def refine_crossing(sw,body,target,lo,hi,anchor_lon,anchor_u,hi_u):
+    # Station-bounded segment is monotonic. Start at the linear celestial-time
+    # solution, then use Swiss speed for Newton correction. Bisection is only
+    # a safety fallback, matching the established Z22 strategy rather than
+    # spending dozens of Swiss calls on every crossing.
+    denom=hi_u-anchor_u
+    if abs(denom)<1e-15:return (lo+hi)/2
+    x=lo+(hi-lo)*(target-anchor_u)/denom
+    x=min(hi,max(lo,x))
+    a,b=lo,hi
+    for _ in range(4):
+        lon,speed=sw.state(body,x)
+        fx=anchor_u+delta(anchor_lon,lon)-target
+        if abs(fx)<1e-10:return x
+        if fx*(anchor_u-target)<=0:b=x
+        else:a=x
+        if abs(speed)>1e-9:
+            nx=x-fx/speed
+            if a<nx<b:
+                x=nx
+                continue
+        x=(a+b)/2
+    # Rare fallback. Ten bracket halvings already gives sub-second temporal
+    # resolution for the sampling intervals used here.
+    fa=anchor_u-target
+    for _ in range(10):
+        m=(a+b)/2; lon,_=sw.state(body,m); fm=anchor_u+delta(anchor_lon,lon)-target
+        if abs(fm)<1e-10:return m
         if fa*fm<=0:b=m
         else:a=m;fa=fm
-        if (b-a)*SECONDS_PER_DAY<0.001:break
     return (a+b)/2
 
 def emit(sw,body,res,span_start,span_end,lo,hi,ls,hs,out):
@@ -77,13 +92,11 @@ def emit(sw,body,res,span_start,span_end,lo,hi,ls,hs,out):
     if abs(d)<1e-14:return
     scale=round(1/res)
     if d>0:
-        ks=range(math.floor(lo_u/res)+1, math.floor(hi_u/res)+1)
-        direction=1
+        ks=range(math.floor(lo_u/res)+1, math.floor(hi_u/res)+1); direction=1
     else:
-        ks=range(math.ceil(lo_u/res)-1, math.ceil(hi_u/res)-1, -1)
-        direction=-1
+        ks=range(math.ceil(lo_u/res)-1, math.ceil(hi_u/res)-1, -1); direction=-1
     for k in ks:
-        jd=refine_crossing(sw,body,k*res,lo,hi,ls[0],lo_u)
+        jd=refine_crossing(sw,body,k*res,lo,hi,ls[0],lo_u,hi_u)
         if span_start-1e-9 <= jd < span_end-1e-9:
             tick=imod(k,360*scale)
             if not out or not (out[-1][1]==tick and abs(out[-1][0]-jd)*SECONDS_PER_DAY<0.25):
@@ -121,20 +134,18 @@ def marker_cells(focal,marker):
     return vals
 
 def repeated(ticks, arrays):
-    seen={}; repeated_keys=0; repeated_rows=0
+    seen={}
     for i,t in enumerate(ticks):
-        key=(t,)+tuple(a[i] for a in arrays)
-        seen[key]=seen.get(key,0)+1
+        key=(t,)+tuple(a[i] for a in arrays); seen[key]=seen.get(key,0)+1
+    rk=rr=0
     for n in seen.values():
-        if n>1: repeated_keys+=1; repeated_rows+=n
-    return repeated_keys,repeated_rows
+        if n>1:rk+=1;rr+=n
+    return rk,rr
 
 def choose_markers(focal,rows,baselines):
     ticks=[r[1] for r in rows]
     arrays={n:marker_cells(rows,baselines[n]) for n,_,_,_ in BODIES if n!=focal}
-    singles=[]
-    for n in MARKER_PRIORITY:
-        if n!=focal and n in arrays and repeated(ticks,[arrays[n]])[0]==0: singles.append(n)
+    singles=[n for n in MARKER_PRIORITY if n!=focal and n in arrays and repeated(ticks,[arrays[n]])[0]==0]
     if focal!="Sun":
         s=arrays["Sun"]; sr,srows=repeated(ticks,[s])
         if sr==0:return ["Sun"],arrays,{"sunAloneRepeatedKeys":0,"sunAloneRepeatedRows":0,"singleMarkerWinners":singles,"sunFirst":True}
@@ -162,20 +173,20 @@ def manufacture_span(sw,zid,start,end,start_utc,end_utc,root):
     all_rows={}; baselines={}
     for name,body,res,step in BODIES:
         rows,base=generate_body(sw,name,body,res,step,start,end); all_rows[name]=rows; baselines[name]=base
-        print(f"{zid} scanned {name}: rows={len(rows)}")
+        print(f"{zid} scanned {name}: rows={len(rows)}",flush=True)
     summaries=[]; files=[]; total=0
     for name,body,res,step in BODIES:
         rows=all_rows[name]; markers,arrays,audit=choose_markers(name,rows,baselines)
         audit["selectedMarkers"]=markers; audit["selectedRepeatedKeys"]=repeated([r[1] for r in rows],[arrays[m] for m in markers])[0]; audit["markerCount"]=len(markers)
         path=bodies_dir/f"{name}.csv.gz"; occurrence={}
-        with gzip.open(path,'wt',newline='',compresslevel=9) as f:
+        with gzip.open(path,'wt',newline='',compresslevel=6) as f:
             w=csv.writer(f); w.writerow(["focalCelestialTick","focalCelestialDegrees","celestialResolutionDegrees","occurrence","utOffsetSeconds","utJulianDay","sequenceDirection"]+[m+"Degree" for m in markers])
             for i,(jd,tick,d) in enumerate(rows):
                 occurrence[tick]=occurrence.get(tick,0)+1
                 w.writerow([tick,f"{tick*res:.1f}",f"{res:.1f}",occurrence[tick],round((jd-start)*SECONDS_PER_DAY),f"{jd:.12f}","increasing" if d>0 else "decreasing"]+[arrays[m][i] for m in markers])
         size=path.stat().st_size; files.append({"path":str(path.relative_to(root)),"bytes":size,"sha256":sha(path)}); total+=len(rows)
         summaries.append({"body":name,"selectedRecords":len(rows),"selectedResolutionDegrees":res,"selectedResolutionMarkerAudit":audit})
-        print(f"{zid} AUDIT {name}: markers={markers} rows={len(rows)}")
+        print(f"{zid} AUDIT {name}: markers={markers} rows={len(rows)}",flush=True)
     manifest={
       "zeitgeist":zid,"spanLaw":"half-open owner interval [first Pluto direct Aries ingress, next Zeitgeist first Pluto direct Aries ingress)",
       "celestialLaw":"body zodiacal position is primary celestial time; civic UT identifies occurrence only",
@@ -186,7 +197,7 @@ def manufacture_span(sw,zid,start,end,start_utc,end_utc,root):
       "nodeRepresentation":"True North Node; South Node derived at +180 degrees"
     }
     (root/'manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+"\n")
-    print(f"{zid} totalSelectedRecords={total}")
+    print(f"{zid} totalSelectedRecords={total}",flush=True)
     return manifest
 
 def main():
@@ -196,6 +207,6 @@ def main():
     out={}
     for zid,(s,e,su,eu) in SPANS.items():out[zid]=manufacture_span(sw,zid,s,e,su,eu,a.output_root)
     Path(a.output_root,'manifest.json').write_text(json.dumps({"artifactFamily":"Orbo Z21/Z23 celestial-first body occurrence tables","swissVersion":sw.version,"zeitgeists":out},indent=2,sort_keys=True)+"\n")
-    print("PASS Z21/Z23 celestial-first body occurrence manufacture")
+    print("PASS Z21/Z23 celestial-first body occurrence manufacture",flush=True)
 
 if __name__=='__main__':main()
