@@ -24,9 +24,14 @@ struct PolluxMotionTopologyCursor: Sendable {
     private var occurrencePosition = 1
     private var stationPosition = 0
 
-    init(candidateSHA256: String, storage: MundaneTimespineStorageImage) {
+    init(
+        candidateSHA256: String,
+        storage: MundaneTimespineStorageImage,
+        startingAt completed: Int = 0
+    ) {
         self.candidateSHA256 = candidateSHA256
         self.bodies = storage.bodies.sorted { $0.body.rawValue < $1.body.rawValue }
+        seek(to: completed)
     }
 
     mutating func next() -> PolluxMotionTopologyQuestion? {
@@ -83,10 +88,54 @@ struct PolluxMotionTopologyCursor: Sendable {
         return nil
     }
 
+    private mutating func seek(to completed: Int) {
+        guard completed > 0 else { return }
+        var remaining = completed
+
+        for index in bodies.indices {
+            let body = bodies[index]
+            let count = max(0, body.occurrences.count - 1)
+            if remaining >= count {
+                remaining -= count
+                continue
+            }
+
+            bodyPosition = index
+            occurrencePosition = remaining + 1
+            let previous = body.occurrences[occurrencePosition - 1]
+            stationPosition = Self.firstStationIndex(
+                after: previous.civicOffsetSeconds,
+                in: body.stations
+            )
+            return
+        }
+
+        bodyPosition = bodies.count
+        occurrencePosition = 1
+        stationPosition = 0
+    }
+
     private mutating func advanceBody() {
         bodyPosition += 1
         occurrencePosition = 1
         stationPosition = 0
+    }
+
+    private static func firstStationIndex(
+        after civicOffsetSeconds: Int64,
+        in stations: [MundaneTimespineStoredStation]
+    ) -> Int {
+        var lower = 0
+        var upper = stations.count
+        while lower < upper {
+            let midpoint = lower + (upper - lower) / 2
+            if stations[midpoint].civicOffsetSeconds <= civicOffsetSeconds {
+                lower = midpoint + 1
+            } else {
+                upper = midpoint
+            }
+        }
+        return lower
     }
 
     private static func celestialAddress(
@@ -217,6 +266,20 @@ extension Pollux {
 
     func makeMotionTopologyCursor(storage: MundaneTimespineStorageImage) -> PolluxMotionTopologyCursor {
         PolluxMotionTopologyCursor(candidateSHA256: candidateSHA256, storage: storage)
+    }
+
+    func makeMotionTopologyCursor(
+        storage: MundaneTimespineStorageImage,
+        startingAt completed: Int
+    ) -> PolluxMotionTopologyCursor? {
+        guard (0...motionTopologyQuestionCount(storage: storage)).contains(completed) else {
+            return nil
+        }
+        return PolluxMotionTopologyCursor(
+            candidateSHA256: candidateSHA256,
+            storage: storage,
+            startingAt: completed
+        )
     }
 
     func motionTopologyQuestionCount(storage: MundaneTimespineStorageImage) -> Int {
