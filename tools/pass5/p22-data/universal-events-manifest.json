@@ -4,7 +4,7 @@
   "celestialTimeFirst": true,
   "civicOccurrenceCoordinate": "Julian Day UT plus integer seconds from P22 start",
   "bodyCount": 11,
-  "totalRows": 771431,
+  "totalRows": 771426,
   "files": [
     {
       "family": "eclipse",
@@ -32,9 +32,9 @@
     {
       "family": "exact-minor-relationships",
       "path": "exact-minor-mundane-transits.csv.gz",
-      "rows": 461824,
-      "gzipBytes": 17090967,
-      "sha256": "3acbafa92a0a091f125337ab0898c32f1b02be0d88bf0d78415af79ef179ff46",
+      "rows": 461819,
+      "gzipBytes": 17090897,
+      "sha256": "b1d3f3dbb5a78654b713dc03b7869241312f9e08ca88357c59446ba529000552",
       "celestialPrimaryFields": ["bodyA", "bodyACelestialTimeDegrees", "bodyB", "bodyBCelestialTimeDegrees", "ringDegrees", "orientation"],
       "civicOccurrenceFields": ["civicTimeJulianDayUT", "civicTimeOffsetSeconds"],
       "ringDegrees": [30, 45, 72, 135, 144, 150],
