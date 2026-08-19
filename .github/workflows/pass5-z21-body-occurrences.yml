@@ -1,0 +1,175 @@
+name: Pass 5 Z21 Body Occurrences
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z21-body-occurrences.yml"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+  Z21_START_JD: 2297171.740867775
+  Z22_START_JD: 2386637.0793997087
+
+jobs:
+  manufacture-z21-body-occurrences:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library from Huntarfischer fork
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned DE441 files from Huntarfischer fork
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          files=(
+            sepl_12.se1 sepl_18.se1
+            semo_12.se1 semo_18.se1
+          )
+          for file in "${files[@]}"; do
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$base/$file" --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Prepare proven Z22 manufacturer for Z21 owner bounds
+        run: |
+          cp tools/pass5/P22TimespinePOC.swift /tmp/Z21TimespinePOC.swift
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/Z21TimespinePOC.swift')
+          s=p.read_text()
+          old_a='let p22StartJD = 2386637.079399706'
+          old_b='let p23StartJD = 2475819.1417904524'
+          assert old_a in s and old_b in s
+          s=s.replace(old_a, 'let p22StartJD = 2297171.740867775', 1)
+          s=s.replace(old_b, 'let p23StartJD = 2386637.0793997087', 1)
+          p.write_text(s)
+          PY
+
+      - name: Manufacture celestial-first Z21 body occurrences
+        run: |
+          rm -rf /tmp/z21-body-build
+          mkdir -p /tmp/z21-body-build
+          swift /tmp/Z21TimespinePOC.swift \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir /tmp/z21-body-build \
+            | tee /tmp/z21-body-manufacture.txt
+          test "$(find /tmp/z21-body-build/body-tables -name '*.csv' | wc -l)" -eq 11
+
+      - name: Compress body tables reproducibly
+        run: |
+          mkdir -p /tmp/z21-frozen/body-tables
+          for src in /tmp/z21-body-build/body-tables/*.csv; do
+            name="$(basename "$src")"
+            gzip -n -c "$src" > "/tmp/z21-frozen/body-tables/$name.gz"
+          done
+          test "$(find /tmp/z21-frozen/body-tables -name '*.csv.gz' | wc -l)" -eq 11
+
+      - name: Audit celestial bounds recurrence and schema
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,glob,os
+          start=float(os.environ['Z21_START_JD']); end=float(os.environ['Z22_START_JD'])
+          expected_prefix=['focalCelestialTick','focalCelestialDegrees','celestialResolutionDegrees','occurrence','utOffsetSeconds','utJulianDay','sequenceDirection']
+          total=0; counts={}
+          for p in sorted(glob.glob('/tmp/z21-frozen/body-tables/*.csv.gz')):
+              body=os.path.basename(p).replace('.csv.gz','')
+              with gzip.open(p,'rt',newline='') as f:
+                  r=csv.DictReader(f)
+                  assert r.fieldnames[:7]==expected_prefix,(body,r.fieldnames)
+                  seen={}; n=0
+                  for row in r:
+                      jd=float(row['utJulianDay']); tick=int(row['focalCelestialTick']); occ=int(row['occurrence'])
+                      assert start-1e-9 <= jd < end-1e-9,(body,jd)
+                      seen[tick]=seen.get(tick,0)+1
+                      assert occ==seen[tick],(body,tick,occ,seen[tick])
+                      n+=1
+                  assert n>0,body
+                  counts[body]=n; total+=n
+          assert len(counts)==11
+          print('PASS Z21 celestial bounds + recurrence + schema audit')
+          print('totalRows='+str(total))
+          for b,n in sorted(counts.items()): print(f'{b}={n}')
+          PY
+
+      - name: Build frozen Z21 manifest
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,glob,hashlib,json,os
+          root='/tmp/z21-frozen'
+          files=[]; total_rows=0
+          for p in sorted(glob.glob(root+'/body-tables/*.csv.gz')):
+              body=os.path.basename(p).replace('.csv.gz','')
+              h=hashlib.sha256(open(p,'rb').read()).hexdigest()
+              with gzip.open(p,'rt',newline='') as f:
+                  rows=sum(1 for _ in csv.DictReader(f))
+              total_rows+=rows
+              files.append({'body':body,'path':'body-tables/'+os.path.basename(p),'rows':rows,'bytes':os.path.getsize(p),'sha256':h})
+          manifest={
+            'zeitgeist':'Z21',
+            'artifactFamily':'Orbo celestial-first body occurrence tables',
+            'ownershipLaw':'Z21 first Pluto Aries ingress inclusive to Z22 first Pluto Aries ingress exclusive',
+            'startJulianDayUT':2297171.740867775,
+            'startUTC':'1577-05-05T05:46:50.976Z',
+            'endJulianDayUT':2386637.0793997087,
+            'endUTC':'1822-04-16T13:54:20.135Z',
+            'astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT',
+            'swissVersion':'2.10.03',
+            'swissRepository':'huntarfischer/swisseph',
+            'swissCommit':'3fd0f956d73898b91cc4f67cf18b21af656d1342',
+            'bodyTableCount':11,
+            'totalRows':total_rows,
+            'resolutionLaw':{'Sun':1.0,'Moon':1.0,'Mercury':1.0,'Venus':1.0,'Mars':1.0,'Jupiter':0.1,'Saturn':0.1,'Uranus':0.1,'Neptune':0.1,'Pluto':0.1,'NorthNode':0.1},
+            'identityLaw':'celestial tick + recurrence occurrence; civic UT identifies occurrence and does not define celestial identity',
+            'files':files,
+            'audit':'PASS celestial bounds + recurrence + schema'
+          }
+          with open(root+'/manifest.json','w') as f: json.dump(manifest,f,indent=2,sort_keys=True); f.write('\n')
+          print(json.dumps({'totalRows':total_rows,'bodyTableCount':len(files)},sort_keys=True))
+          PY
+          sha256sum /tmp/z21-frozen/body-tables/*.csv.gz /tmp/z21-frozen/manifest.json | tee /tmp/z21-body-sha256.txt
+          du -sh /tmp/z21-frozen
+
+      - name: Upload Z21 body occurrence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: z21-body-occurrences
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            /tmp/z21-frozen/
+            /tmp/z21-body-manufacture.txt
+            /tmp/z21-body-sha256.txt
+
+      - name: Freeze verified Z21 tables on staging branch
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-z21 origin/agent/p22-duplicate-cleanup-staging
+          rm -rf tools/pass5/zeitgeist-body-data/z21
+          mkdir -p tools/pass5/zeitgeist-body-data
+          cp -R /tmp/z21-frozen tools/pass5/zeitgeist-body-data/z21
+          git add -A tools/pass5/zeitgeist-body-data/z21
+          git commit -m "freeze Z21 celestial body occurrence tables"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
