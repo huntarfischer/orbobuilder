@@ -18,6 +18,7 @@ public struct MundaneTimespineCivicWindow: Hashable, Sendable {
 
 public enum MundaneTimespineReadSource: String, Codable, Hashable, Sendable {
     case storedAnchor
+    case boundaryAnchor
     case station
     case interpolated
     case boundaryExtrapolation
@@ -40,6 +41,24 @@ public struct MundaneTimespineCelestialAnchor: Hashable, Sendable {
         var result = value.truncatingRemainder(dividingBy: 360)
         if result < 0 { result += 360 }
         return result == 360 ? 0 : result
+    }
+}
+
+/// Exact non-occurrence knowledge at a Timespine span boundary.
+/// Boundary anchors participate in civic reconstruction only. They are never indexed as
+/// celestial occurrences and therefore do not alter the half-open occurrence chronology.
+public struct MundaneTimespineBoundaryAnchor: Hashable, Sendable {
+    public let celestialTimeDegrees: Double
+    public let julianDay: JulianDay
+    public let motion: Motion
+
+    public init?(celestialTimeDegrees: Double, julianDay: JulianDay, motion: Motion) {
+        guard celestialTimeDegrees.isFinite else { return nil }
+        var normalized = celestialTimeDegrees.truncatingRemainder(dividingBy: 360)
+        if normalized < 0 { normalized += 360 }
+        self.celestialTimeDegrees = normalized == 360 ? 0 : normalized
+        self.julianDay = julianDay
+        self.motion = motion
     }
 }
 
@@ -223,20 +242,25 @@ public enum MundaneTimespineReaderError: Error, Equatable, CustomStringConvertib
     }
 }
 
-/// Decoded runtime body chronology. Final serialization may change without changing this contract.
+/// Decoded runtime body chronology. Boundary anchors are exact reconstruction knowledge and
+/// remain separate from the stored occurrence lattice used for celestial lookup.
 public struct MundaneTimespineBodySeries: Sendable {
     public let body: MundaneBody
     public let celestialResolutionDegrees: Double
     public let anchors: [MundaneTimespineCelestialAnchor]
     public let stations: [MundaneTimespineStationAnchor]
+    public let initialBoundary: MundaneTimespineBoundaryAnchor?
+    public let terminalBoundary: MundaneTimespineBoundaryAnchor?
 
     private enum TimelinePoint: Sendable {
         case anchor(MundaneTimespineCelestialAnchor)
+        case boundary(MundaneTimespineBoundaryAnchor)
         case station(MundaneTimespineStationAnchor)
 
         var julianDay: JulianDay {
             switch self {
             case let .anchor(value): return value.julianDay
+            case let .boundary(value): return value.julianDay
             case let .station(value): return value.julianDay
             }
         }
@@ -244,6 +268,7 @@ public struct MundaneTimespineBodySeries: Sendable {
         var celestialTimeDegrees: Double {
             switch self {
             case let .anchor(value): return value.celestialTimeDegrees
+            case let .boundary(value): return value.celestialTimeDegrees
             case let .station(value): return value.celestialTimeDegrees
             }
         }
@@ -251,6 +276,7 @@ public struct MundaneTimespineBodySeries: Sendable {
         var motionBefore: Motion {
             switch self {
             case let .anchor(value): return value.motion
+            case let .boundary(value): return value.motion
             case let .station(value): return value.motionBefore
             }
         }
@@ -258,6 +284,7 @@ public struct MundaneTimespineBodySeries: Sendable {
         var motionAfter: Motion {
             switch self {
             case let .anchor(value): return value.motion
+            case let .boundary(value): return value.motion
             case let .station(value): return value.motionAfter
             }
         }
@@ -265,12 +292,18 @@ public struct MundaneTimespineBodySeries: Sendable {
         var readSource: MundaneTimespineReadSource {
             switch self {
             case .anchor: return .storedAnchor
+            case .boundary: return .boundaryAnchor
             case .station: return .station
             }
         }
 
         var isStation: Bool {
             if case .station = self { return true }
+            return false
+        }
+
+        var isBoundary: Bool {
+            if case .boundary = self { return true }
             return false
         }
     }
@@ -283,11 +316,18 @@ public struct MundaneTimespineBodySeries: Sendable {
         body: MundaneBody,
         celestialResolutionDegrees: Double,
         anchors: [MundaneTimespineCelestialAnchor],
-        stations: [MundaneTimespineStationAnchor]
+        stations: [MundaneTimespineStationAnchor],
+        initialBoundary: MundaneTimespineBoundaryAnchor? = nil,
+        terminalBoundary: MundaneTimespineBoundaryAnchor? = nil
     ) {
         guard celestialResolutionDegrees.isFinite,
               celestialResolutionDegrees > 0,
               anchors.count >= 2 else { return nil }
+
+        if let initialBoundary, let terminalBoundary,
+           initialBoundary.julianDay.value >= terminalBoundary.julianDay.value {
+            return nil
+        }
 
         let ticks = Int((360 / celestialResolutionDegrees).rounded())
         guard ticks > 0,
@@ -310,10 +350,13 @@ public struct MundaneTimespineBodySeries: Sendable {
         }
 
         var merged = sortedAnchors.map(TimelinePoint.anchor) + sortedStations.map(TimelinePoint.station)
+        if let initialBoundary { merged.append(.boundary(initialBoundary)) }
+        if let terminalBoundary { merged.append(.boundary(terminalBoundary)) }
         merged.sort {
             if abs($0.julianDay.value - $1.julianDay.value) > 1e-12 {
                 return $0.julianDay.value < $1.julianDay.value
             }
+            if $0.isBoundary != $1.isBoundary { return $0.isBoundary }
             return $0.isStation && !$1.isStation
         }
 
@@ -321,6 +364,8 @@ public struct MundaneTimespineBodySeries: Sendable {
         self.celestialResolutionDegrees = celestialResolutionDegrees
         self.anchors = sortedAnchors
         self.stations = sortedStations
+        self.initialBoundary = initialBoundary
+        self.terminalBoundary = terminalBoundary
         self.circleTicks = ticks
         self.exactByTick = buckets
         self.timeline = merged
@@ -454,7 +499,6 @@ public struct MundaneTimespineBodySeries: Sendable {
 }
 
 /// The decoded, ephemeris-free image consumed by the runtime reader.
-/// A future packed shipping artifact should decode into this contract rather than change reader semantics.
 public struct MundaneTimespineRuntimeImage: Sendable {
     public let spanName: String
     public let supportedStart: JulianDay
@@ -542,7 +586,8 @@ public struct MundaneTimespineReader: Sendable {
     }
 
     /// Stored celestial time -> every exact civic occurrence inside the image span.
-    /// The requested degree must lie on that body's earned P22 storage lattice.
+    /// Boundary anchors are deliberately excluded because they are reconstruction knowledge,
+    /// not occurrences inside the half-open chronology.
     public func occurrences(
         of body: MundaneBody,
         at celestialTimeDegrees: Double
@@ -556,7 +601,6 @@ public struct MundaneTimespineReader: Sendable {
         )
     }
 
-    /// Exact object-to-object relationships in a half-open civic window, filtered at read time.
     public func relationships(
         in window: MundaneTimespineCivicWindow,
         involving bodies: Set<MundaneBody>? = nil,
@@ -581,7 +625,6 @@ public struct MundaneTimespineReader: Sendable {
         return result
     }
 
-    /// Eclipse references in a half-open civic window, filtered at read time.
     public func eclipses(
         in window: MundaneTimespineCivicWindow,
         kinds: Set<MundaneTimespineEclipseKind>? = nil
@@ -601,7 +644,6 @@ public struct MundaneTimespineReader: Sendable {
         return result
     }
 
-    /// Chronological union of exact relationship and eclipse references.
     public func events(in window: MundaneTimespineCivicWindow) -> [MundaneTimespineEvent] {
         let relationshipRows = relationships(in: window).map(MundaneTimespineEvent.relationship)
         let eclipseRows = eclipses(in: window).map(MundaneTimespineEvent.eclipse)
