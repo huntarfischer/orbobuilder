@@ -1,0 +1,85 @@
+name: Pass 5 Z21 Motion Tables
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z21-motion.yml"
+      - "tools/pass5/generate_z21_motion_tables.py"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  manufacture-z21-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library from Huntarfischer fork
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned DE441 files from Huntarfischer fork
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          files=(sepl_12.se1 sepl_18.se1 semo_12.se1 semo_18.se1)
+          for file in "${files[@]}"; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Manufacture and certify Z21 motion tables
+        run: |
+          rm -rf /tmp/z21-motion-frozen
+          python3 tools/pass5/generate_z21_motion_tables.py \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --shadow-csv "$PWD/tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv" \
+            --output-dir /tmp/z21-motion-frozen \
+            | tee /tmp/z21-motion-manufacture.txt
+          grep -q '^PASS Z21 focused motion manufacture$' /tmp/z21-motion-manufacture.txt
+          test -s /tmp/z21-motion-frozen/station-table.csv
+          test -s /tmp/z21-motion-frozen/retrograde-passages.csv
+          test -s /tmp/z21-motion-frozen/manifest.json
+          sha256sum /tmp/z21-motion-frozen/* | tee /tmp/z21-motion-sha256.txt
+
+      - name: Upload Z21 motion artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: z21-motion-tables
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            /tmp/z21-motion-frozen/
+            /tmp/z21-motion-manufacture.txt
+            /tmp/z21-motion-sha256.txt
+
+      - name: Freeze verified Z21 motion tables on staging branch
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-z21-motion origin/agent/p22-duplicate-cleanup-staging
+          rm -rf tools/pass5/zeitgeist-motion-data/z21
+          mkdir -p tools/pass5/zeitgeist-motion-data
+          cp -R /tmp/z21-motion-frozen tools/pass5/zeitgeist-motion-data/z21
+          git add tools/pass5/zeitgeist-motion-data/z21
+          git commit -m "freeze Z21 station and retrograde passage tables"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
