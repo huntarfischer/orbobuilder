@@ -1,0 +1,104 @@
+name: Pass 5 Planetary Shadows Z21-Z23
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-planetary-shadows.yml"
+      - "tools/pass5/generate_planetary_shadow_table.py"
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  manufacture-planetary-shadows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library from Huntarfischer fork
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned long-range DE441 files from Huntarfischer fork
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          files=(
+            seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1
+            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1 sepl_30.se1
+            sepl_36.se1
+            semom36.se1 semom30.se1 semom24.se1 semom18.se1 semom12.se1 semom06.se1
+            semo_00.se1 semo_06.se1 semo_12.se1 semo_18.se1 semo_24.se1 semo_30.se1
+            semo_36.se1
+          )
+          for file in "${files[@]}"; do
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$base/$file" \
+              --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Manufacture planetary shadow table
+        run: |
+          python3 tools/pass5/generate_planetary_shadow_table.py \
+            --library "$PWD/.forge/swisseph/libswe.so" \
+            --ephe-dir "$PWD/.forge/ephe" \
+            --json "$PWD/tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json" \
+            --csv "$PWD/tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv" \
+            | tee /tmp/planetary-shadow-manufacture.txt
+          test -s tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json
+          test -s tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv
+          grep -q '^rows=' /tmp/planetary-shadow-manufacture.txt
+          sha256sum \
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json \
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv \
+            | tee /tmp/planetary-shadow-sha256.txt
+          wc -c \
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json \
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv \
+            | tee /tmp/planetary-shadow-bytes.txt
+
+      - name: Audit topology ordering
+        run: |
+          python3 - <<'PY'
+          import csv
+          p='tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv'
+          rows=list(csv.DictReader(open(p)))
+          assert rows
+          for r in rows:
+              a=float(r['preShadowStartJulianDayUT'])
+              b=float(r['retrogradeStationJulianDayUT'])
+              c=float(r['directStationJulianDayUT'])
+              d=float(r['postShadowEndJulianDayUT'])
+              assert a < b < c < d, (r['body'], r['retrogradeStationUTC'])
+              assert abs(float(r['preShadowStartDegree'])-float(r['directStationDegree'])) < 1e-9
+              assert abs(float(r['postShadowEndDegree'])-float(r['retrogradeStationDegree'])) < 1e-9
+          print(f'PASS topology rows={len(rows)}')
+          PY
+
+      - name: Upload manufactured table for audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: planetary-shadows-z21-z23
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.json
+            tools/pass5/planetary-shadow-data/planetary-shadows-z21-z23.csv
+            /tmp/planetary-shadow-manufacture.txt
+            /tmp/planetary-shadow-sha256.txt
+            /tmp/planetary-shadow-bytes.txt
