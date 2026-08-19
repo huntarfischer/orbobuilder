@@ -185,16 +185,16 @@ public struct Dioscuri: Sendable {
         guard !first.isResonant else { return nil }
         let freshPollux = try Pollux(candidate: candidate)
         let freshCastor = try Castor(candidate: candidate)
-        var cursor = freshPollux.makeMotionTopologyCursor(storage: storage)
-        while let freshQuestion = cursor.next() {
-            if freshQuestion.address == question.address {
-                return freshPollux.confirm(
-                    freshQuestion,
-                    answer: try freshCastor.answer(freshQuestion.handoff)
-                )
-            }
+        guard let freshQuestion = try freshPollux.reconstructMotionTopologyQuestion(
+            endingAt: question.address.to,
+            storage: storage
+        ), freshQuestion.address == question.address else {
+            return nondeterministicFallback(first)
         }
-        return nondeterministicFallback(first)
+        return freshPollux.confirm(
+            freshQuestion,
+            answer: try freshCastor.answer(freshQuestion.handoff)
+        )
     }
 
     private func secondStrikeIfNeeded(
