@@ -1,6 +1,7 @@
 import XCTest
 @testable import OrboCore
 
+// Canonical live-data proof for the manufactured Aion runtime index.
 final class AionCanonicalTests: XCTestCase {
     func testCanonicalIndexResolves1985IntoZeitgeist22Scorpio() throws {
         let aion = try Aion.canonical()
