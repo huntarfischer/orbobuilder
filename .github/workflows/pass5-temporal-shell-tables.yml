@@ -7,11 +7,13 @@ on:
     paths:
       - ".github/workflows/pass5-temporal-shell-tables.yml"
       - "tools/pass5/generate_temporal_shell_tables.py"
+      - "tools/pass5/generate_temporal_shell_tables_canonical.py"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/pass5-temporal-shell-tables.yml"
       - "tools/pass5/generate_temporal_shell_tables.py"
+      - "tools/pass5/generate_temporal_shell_tables_canonical.py"
 
 permissions:
   contents: write
@@ -40,12 +42,14 @@ jobs:
           make -C .forge/swisseph libswe.so
           test -f .forge/swisseph/libswe.so
 
-      - name: Stage long-range DE441 planet files from fork
+      - name: Stage long-range DE441 planet and lunar files from fork
         run: |
           mkdir -p .forge/ephe
           for file in \
             seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1 \
-            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1; do
+            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1 \
+            semom36.se1 semom30.se1 semom24.se1 semom18.se1 semom12.se1 semom06.se1 \
+            semo_00.se1 semo_06.se1 semo_12.se1 semo_18.se1 semo_24.se1; do
             cp ".forge/swisseph/ephe/$file" ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
@@ -54,7 +58,7 @@ jobs:
       - name: Manufacture numbered shell tables
         run: |
           rm -rf tools/pass5/temporal-shells
-          python tools/pass5/generate_temporal_shell_tables.py \
+          python tools/pass5/generate_temporal_shell_tables_canonical.py \
             --library .forge/swisseph/libswe.so \
             --ephe-dir .forge/ephe \
             --out-dir tools/pass5/temporal-shells \
