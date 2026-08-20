@@ -77,7 +77,7 @@ The frozen Z22 table is the schema, vocabulary, ordering, and topology calibrati
 
 ## Z22 calibration finding
 
-The focused eclipse Forge was run across the full Z22 owner span before Z23 manufacture. It reproduced all 1,133 eclipse occurrences with exact agreement in eclipse kind, eclipse type, and solar centrality.
+The focused eclipse Forge was run across the full Z22 owner span before neighboring manufacture. It reproduced all 1,133 eclipse occurrences with exact agreement in eclipse kind, eclipse type, and solar centrality.
 
 The regenerated pinned-Swiss numerical values were not bit-identical to the historical Z22 artifact. Maximum observed differences were:
 
@@ -104,6 +104,45 @@ Before a neighboring Zeitgeist can be frozen:
 4. duplicate source occurrences must be absent;
 5. the artifact must preserve the canonical Z22 schema and eclipse-degree ordering;
 6. deterministic gzip and SHA-256 provenance must be recorded in the Zeitgeist manifest.
+
+## Z21 frozen reference
+
+Canonical Z21 eclipse data lives at:
+
+`tools/pass5/zeitgeist-eclipse-data/z21/`
+
+Owner span:
+
+`1577-05-05T05:46:50.976Z` to `1822-04-16T13:54:20.135Z`, half-open.
+
+Frozen count: 1,221 eclipses.
+
+Kinds:
+
+- solar: 606
+- lunar: 615
+
+Types:
+
+- annular: 184
+- penumbral: 230
+- partial: 453
+- total: 304
+- hybrid: 50
+
+Solar centrality:
+
+- central: 385
+- noncentral: 221
+
+No duplicate source rows were emitted.
+
+Frozen gzip:
+
+- bytes: 66,677
+- SHA-256: `ca192388a7897eb4f5e7a58117098ef36d7879c6879ad451d6ab6f07d6e7236f`
+
+The Z21 freeze commit is `0f6c257` on `agent/p22-duplicate-cleanup-staging`.
 
 ## Z23 frozen reference
 
