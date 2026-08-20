@@ -1,0 +1,71 @@
+name: Pass 5 Temporal Shell Tables
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pass5-temporal-shell-tables.yml"
+      - "tools/pass5/generate_temporal_shell_tables.py"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_REPO: https://github.com/huntarfischer/swisseph.git
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  manufacture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Orbo Builder
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build pinned Swiss C from Ean fork
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin "$SWISS_REPO"
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Stage long-range DE441 planet files from fork
+        run: |
+          mkdir -p .forge/ephe
+          for file in \
+            seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1 \
+            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1; do
+            cp ".forge/swisseph/ephe/$file" ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+          sha256sum .forge/ephe/*.se1 | sort
+
+      - name: Manufacture numbered shell tables
+        run: |
+          rm -rf tools/pass5/temporal-shells
+          python tools/pass5/generate_temporal_shell_tables.py \
+            --library .forge/swisseph/libswe.so \
+            --ephe-dir .forge/ephe \
+            --out-dir tools/pass5/temporal-shells \
+            --source-commit "$SWISS_COMMIT"
+
+      - name: Show Z21-Z23 shell membership
+        run: cat tools/pass5/temporal-shells/temporal-shell-z21-z23-summary.json
+
+      - name: Commit canonical tables
+        run: |
+          git config user.name "orbo-forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git add tools/pass5/temporal-shells
+          if git diff --cached --quiet; then
+            echo "Canonical shell tables unchanged."
+          else
+            git commit -m "Manufacture canonical temporal shell tables"
+            git push origin HEAD:main
+          fi
