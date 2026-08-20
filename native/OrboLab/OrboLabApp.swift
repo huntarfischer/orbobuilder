@@ -11,25 +11,6 @@ struct OrboLabApp: App {
     }
 }
 
-private struct LabForgeReference: ForgeEphemerisReference {
-    private let epoch = 2_451_545.0
-
-    func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneCelestialState {
-        let t = julianDay.value - epoch
-        let ordinal = Double(body.rawValue + 1)
-        let base = 357.25 + ordinal * 0.13
-        let linear = body == .trueNorthNode ? -0.31 : 0.42 + ordinal * 0.017
-        let quadratic = (ordinal.truncatingRemainder(dividingBy: 3) - 1) * 0.0012
-        let cubic = (ordinal.truncatingRemainder(dividingBy: 2) == 0 ? 1 : -1) * 0.000015
-        let longitudeValue = base + linear * t + quadratic * t * t + cubic * t * t * t
-        let speed = linear + 2 * quadratic * t + 3 * cubic * t * t
-        return MundaneCelestialState(
-            longitude: CelestialLongitude(longitudeValue)!,
-            longitudinalSpeedDegreesPerDay: speed
-        )!
-    }
-}
-
 private struct FoundationLabView: View {
     private let bodyLongitude = CelestialLongitude(70)!
     private let ascendantLongitude = CelestialLongitude(220)!
@@ -49,20 +30,6 @@ private struct FoundationLabView: View {
         3_599,
         2_096_000,
     ])!
-    private let labTimespine: MundaneTimespine = {
-        let plan = MundaneTimespineForgePlan(
-            version: "v1-construction-fixture",
-            astronomicalSource: "analytic Lab reference",
-            astronomicalSourceVersion: "1",
-            supportedStart: JulianDay(2_451_545.0)!,
-            supportedEnd: JulianDay(2_451_553.0)!,
-            profiles: MundaneTimespineForge.candidateProfiles
-        )!
-        return try! MundaneTimespineForge.manufacture(
-            plan: plan,
-            reference: LabForgeReference()
-        )
-    }()
 
     private var condition: EssentialCondition {
         Mater.essentialCondition(
@@ -93,10 +60,6 @@ private struct FoundationLabView: View {
             time: civilClock,
             in: place.timezone
         )
-    }
-
-    private var labTimespineState: MundaneCelestialState {
-        try! labTimespine.state(of: .trueNorthNode, at: JulianDay(2_451_548.25)!)
     }
 
     var body: some View {
@@ -219,23 +182,6 @@ private struct FoundationLabView: View {
                 readout("Node motion", labAstroDNA.motion(of: .northNode).rawValue)
                 readout("South Node", String(format: "%.6f", labAstroDNA.southNodeLongitude.degrees))
                 readout("degree projection", labAstroDNA.degreeSequenceString)
-
-                Divider()
-
-                sectionTitle("MUNDANE TIMESPINE / FORGE")
-                readout("status", "construction candidate")
-                readout("codec", "\(MundaneTimespine.codec)")
-                readout("representation", MundaneTimespine.representation)
-                readout("profiles", "\(MundaneTimespineForge.candidateProfiles.count) bodies")
-                readout("artifact", labTimespine.metadata.version)
-                readout("source", labTimespine.metadata.astronomicalSource)
-                readout("checksum", String(labTimespine.checksum.prefix(16)) + "...")
-                readout("sample body", MundaneBody.trueNorthNode.displayName)
-                readout("sample JD", "2451548.25")
-                readout("longitude", String(format: "%.6f", labTimespineState.longitude.degrees))
-                readout("speed/day", String(format: "%.6f", labTimespineState.longitudinalSpeedDegreesPerDay))
-                readout("motion", labTimespineState.motion.rawValue)
-                readout("Swiss v1 sky", "pending qualified forge")
 
                 Divider()
 
