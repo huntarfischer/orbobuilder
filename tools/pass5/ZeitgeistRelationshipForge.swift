@@ -46,23 +46,23 @@ struct Target { let oriented:Double; let aspect:String; let ring:Int; let orient
 let targets:[Target]=[
     Target(oriented:0,aspect:"conjunction",ring:0,orientation:"same_degree",family:"major"),
     Target(oriented:30,aspect:"semisextile",ring:30,orientation:"bodyA_ahead_30",family:"minor"),
-    Target(oriented:45,aspect:"semisquare",ring:45,orientation:"bodyA_ahead_45",family:"minor"),
+    Target(oriented:45,aspect:"octile",ring:45,orientation:"bodyA_ahead_45",family:"minor"),
     Target(oriented:60,aspect:"sextile",ring:60,orientation:"bodyA_ahead_60",family:"major"),
     Target(oriented:72,aspect:"quintile",ring:72,orientation:"bodyA_ahead_72",family:"minor"),
     Target(oriented:90,aspect:"square",ring:90,orientation:"bodyA_ahead_90",family:"major"),
     Target(oriented:120,aspect:"trine",ring:120,orientation:"bodyA_ahead_120",family:"major"),
-    Target(oriented:135,aspect:"sesquiquadrate",ring:135,orientation:"bodyA_ahead_135",family:"minor"),
+    Target(oriented:135,aspect:"trioctile",ring:135,orientation:"bodyA_ahead_135",family:"minor"),
     Target(oriented:144,aspect:"biquintile",ring:144,orientation:"bodyA_ahead_144",family:"minor"),
     Target(oriented:150,aspect:"quincunx",ring:150,orientation:"bodyA_ahead_150",family:"minor"),
     Target(oriented:180,aspect:"opposition",ring:180,orientation:"opposite_degree",family:"major"),
     Target(oriented:210,aspect:"quincunx",ring:150,orientation:"bodyB_ahead_150",family:"minor"),
     Target(oriented:216,aspect:"biquintile",ring:144,orientation:"bodyB_ahead_144",family:"minor"),
-    Target(oriented:225,aspect:"sesquiquadrate",ring:135,orientation:"bodyB_ahead_135",family:"minor"),
+    Target(oriented:225,aspect:"trioctile",ring:135,orientation:"bodyB_ahead_135",family:"minor"),
     Target(oriented:240,aspect:"trine",ring:120,orientation:"bodyB_ahead_120",family:"major"),
     Target(oriented:270,aspect:"square",ring:90,orientation:"bodyB_ahead_90",family:"major"),
     Target(oriented:288,aspect:"quintile",ring:72,orientation:"bodyB_ahead_72",family:"minor"),
     Target(oriented:300,aspect:"sextile",ring:60,orientation:"bodyB_ahead_60",family:"major"),
-    Target(oriented:315,aspect:"semisquare",ring:45,orientation:"bodyB_ahead_45",family:"minor"),
+    Target(oriented:315,aspect:"octile",ring:45,orientation:"bodyB_ahead_45",family:"minor"),
     Target(oriented:330,aspect:"semisextile",ring:30,orientation:"bodyB_ahead_30",family:"minor")
 ]
 struct Pair:Hashable { let a:Body; let b:Body }
@@ -79,20 +79,18 @@ func relative(_ pair:Pair,_ jd:Double,_ target:Double,_ sw:Swiss)throws->(Double
     let a=try sw.state(pair.a,jd),b=try sw.state(pair.b,jd),raw=norm(a.longitude-b.longitude); return(raw+360*round((target-raw)/360)-target,a,b)
 }
 func refine(_ pair:Pair,_ target:Double,_ lo0:Double,_ hi0:Double,_ sw:Swiss)throws->(Double,State,State) {
-    var lo=lo0, hi=hi0
-    var gl=try relative(pair,lo,target,sw).0
-    var gh=try relative(pair,hi,target,sw).0
-    if abs(gl)<1e-12 { let q=try relative(pair,lo,target,sw); return(lo,q.1,q.2) }
-    if abs(gh)<1e-12 { let q=try relative(pair,hi,target,sw); return(hi,q.1,q.2) }
-    if gl*gh>0 {
-        let x=lo+(hi-lo)*abs(gl)/(abs(gl)+abs(gh)); let q=try relative(pair,x,target,sw); return(x,q.1,q.2)
+    var lo=lo0,hi=hi0,gl=try relative(pair,lo0,target,sw).0,gh=try relative(pair,hi0,target,sw).0
+    if abs(gl)<1e-13 {let q=try relative(pair,lo,target,sw);return(lo,q.1,q.2)}
+    if abs(gh)<1e-13 {let q=try relative(pair,hi,target,sw);return(hi,q.1,q.2)}
+    var x=lo+(hi-lo)*abs(gl)/(abs(gl)+abs(gh))
+    for _ in 0..<18 {
+        let q=try relative(pair,x,target,sw)
+        if abs(q.0)<1e-12 || (hi-lo)*86400<0.0005 {return(x,q.1,q.2)}
+        if gl*q.0<=0 {hi=x;gh=q.0}else{lo=x;gl=q.0}
+        let d=q.1.speed-q.2.speed; var c=abs(d)>1e-12 ? x-q.0/d : (lo+hi)/2
+        if !(c>lo && c<hi) || !c.isFinite {c=(lo+hi)/2}; x=c
     }
-    for _ in 0..<56 {
-        let mid=(lo+hi)/2, q=try relative(pair,mid,target,sw)
-        if abs(q.0)<1e-11 || (hi-lo)<1e-10 { return(mid,q.1,q.2) }
-        if gl*q.0<=0 { hi=mid; gh=q.0 } else { lo=mid; gl=q.0 }
-    }
-    let x=(lo+hi)/2,q=try relative(pair,x,target,sw); return(x,q.1,q.2)
+    let x2=(lo+hi)/2,q=try relative(pair,x2,target,sw);return(x2,q.1,q.2)
 }
 func parseArgs()throws->(String,String,String,Double,Double,Double) {
     var lib:String?,ephe:String?,out:String?,start:Double?,end:Double?,origin:Double?;let a=CommandLine.arguments;var i=1
