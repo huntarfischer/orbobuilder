@@ -9,6 +9,7 @@ on:
       - "tools/pass5/generate_temporal_shell_tables.py"
       - "tools/pass5/generate_temporal_shell_tables_canonical.py"
       - "tools/pass5/generate_plutonian_sign_segments.py"
+      - "tools/pass5/generate_temporal_shell_sign_segments.py"
   pull_request:
     branches: [main]
     paths:
@@ -16,6 +17,7 @@ on:
       - "tools/pass5/generate_temporal_shell_tables.py"
       - "tools/pass5/generate_temporal_shell_tables_canonical.py"
       - "tools/pass5/generate_plutonian_sign_segments.py"
+      - "tools/pass5/generate_temporal_shell_sign_segments.py"
 
 permissions:
   contents: write
@@ -74,11 +76,22 @@ jobs:
             --out-dir tools/pass5/temporal-shells \
             --source-commit "$SWISS_COMMIT"
 
+      - name: Manufacture WRF Shell.sign tables
+        run: |
+          python tools/pass5/generate_temporal_shell_sign_segments.py \
+            --library .forge/swisseph/libswe.so \
+            --ephe-dir .forge/ephe \
+            --out-dir tools/pass5/temporal-shells \
+            --source-commit "$SWISS_COMMIT"
+
       - name: Show Z21-Z23 shell membership
         run: cat tools/pass5/temporal-shells/temporal-shell-z21-z23-summary.json
 
       - name: Show Pluto Shell.sign audit
         run: cat tools/pass5/temporal-shells/plutonian-zeitgeist-sign-z21-z23-summary.json
+
+      - name: Show WRF Shell.sign audit
+        run: cat tools/pass5/temporal-shells/temporal-shell-sign-summary.json
 
       - name: Upload canonical shell tables
         uses: actions/upload-artifact@v4
