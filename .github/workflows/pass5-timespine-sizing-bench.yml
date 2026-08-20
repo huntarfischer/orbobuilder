@@ -1,0 +1,67 @@
+name: Pass 5 Timespine Sizing Bench
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [phase-f-aion]
+    paths:
+      - ".github/workflows/pass5-timespine-sizing-bench.yml"
+      - "tools/pass5/timespine_sizing_bench.py"
+      - "tools/pass5/generate_swiss_samples.py"
+      - "tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv"
+
+permissions:
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build pinned official Swiss C library
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned qualified Swiss DE441 files
+        run: |
+          mkdir -p .forge/ephe
+          base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Run Z21-Z23 sizing bench
+        run: |
+          mkdir -p .forge/timespine-sizing-bench
+          python tools/pass5/timespine_sizing_bench.py \
+            --library .forge/swisseph/libswe.so \
+            --ephe-dir .forge/ephe \
+            --shell-csv tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv \
+            --report .forge/timespine-sizing-bench/timespine-sizing-bench.json \
+            --markdown .forge/timespine-sizing-bench/timespine-sizing-bench.md \
+            --random-probes 2000
+
+      - name: Upload sizing bench
+        uses: actions/upload-artifact@v4
+        with:
+          name: pass5-timespine-sizing-bench
+          retention-days: 14
+          path: .forge/timespine-sizing-bench/
