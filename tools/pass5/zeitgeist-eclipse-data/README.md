@@ -75,6 +75,23 @@ Z22 type distribution:
 
 The frozen Z22 table is the schema, vocabulary, ordering, and topology calibration reference for neighboring Zeitgeist manufacture.
 
+## Z22 calibration finding
+
+The focused eclipse Forge was run across the full Z22 owner span before Z23 manufacture. It reproduced all 1,133 eclipse occurrences with exact agreement in eclipse kind, eclipse type, and solar centrality.
+
+The regenerated pinned-Swiss numerical values were not bit-identical to the historical Z22 artifact. Maximum observed differences were:
+
+- solar phase time: 4.788548 seconds
+- solar greatest-eclipse time: 4.986374 seconds
+- solar eclipse degree: 0.208681 arcseconds
+- solar magnitude: 0.000970
+- lunar phase time: 3.784852 seconds
+- lunar greatest-eclipse time: 4.044034 seconds
+- lunar eclipse degree: 0.192937 arcseconds
+- lunar magnitude: 0.001251
+
+Therefore the historical Z22 table remains the topology/schema reference, while newly manufactured neighboring Zeitgeists use the pinned direct Swiss search values and independently refined exact phase roots. Historical numerical drift is not deliberately copied into new data.
+
 ## Precision and acceptance
 
 The eclipse phase root must be residual-driven. The manufacturer must refine the exact conjunction/opposition geometry to less than 0.001 arcseconds before emitting an event.
@@ -87,5 +104,46 @@ Before a neighboring Zeitgeist can be frozen:
 4. duplicate source occurrences must be absent;
 5. the artifact must preserve the canonical Z22 schema and eclipse-degree ordering;
 6. deterministic gzip and SHA-256 provenance must be recorded in the Zeitgeist manifest.
+
+## Z23 frozen reference
+
+Canonical Z23 eclipse data lives at:
+
+`tools/pass5/zeitgeist-eclipse-data/z23/`
+
+Owner span:
+
+`2066-06-17T15:24:10.695Z` to `2311-06-10T14:16:12.881Z`, half-open.
+
+Frozen count: 1,185 eclipses.
+
+Kinds:
+
+- solar: 588
+- lunar: 597
+
+Types:
+
+- annular: 206
+- penumbral: 219
+- partial: 422
+- total: 329
+- hybrid: 9
+
+Solar centrality:
+
+- central: 376
+- noncentral: 212
+
+No duplicate source rows were emitted.
+
+Frozen gzip:
+
+- bytes: 64,965
+- SHA-256: `d5b486cd9aa1860bcac5d9bf48269384396e36f35afa8d9d49666782a6b7438f`
+
+The Z23 freeze commit is `e013408` on `agent/p22-duplicate-cleanup-staging`.
+
+## Manufacture workflow rule
 
 Temporary manufacture code and CI workflows belong on temporary manufacture branches. Verified data and its manifest are frozen directly onto `agent/p22-duplicate-cleanup-staging`; the temporary PR is then closed without merge and its branch is preserved for archaeology.
