@@ -1,0 +1,168 @@
+name: Pass 5 Z23 Eclipses
+
+on:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z23-eclipse.yml"
+      - "tools/pass5/ZeitgeistEclipseForge.swift"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+  Z22_START: "2386637.0793997087"
+  Z23_START: "2475819.1417904533"
+  Z24_START: "2565295.0945935287"
+
+jobs:
+  manufacture-z23-eclipses:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned DE441 files
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Compile focused eclipse forge
+        run: |
+          swiftc tools/pass5/ZeitgeistEclipseForge.swift -O -o /tmp/zeitgeist-eclipse-forge
+          test -x /tmp/zeitgeist-eclipse-forge
+
+      - name: Calibrate full Z22 eclipse topology
+        run: |
+          rm -rf /tmp/z22-eclipse-calibration && mkdir -p /tmp/z22-eclipse-calibration
+          /tmp/zeitgeist-eclipse-forge \
+            --library "$PWD/.forge/swisseph/libswe.so" --ephe-dir "$PWD/.forge/ephe" \
+            --output /tmp/z22-eclipse-calibration/eclipse-table.csv \
+            --start-jd "$Z22_START" --end-jd "$Z23_START"
+          python3 - <<'PY'
+          import csv,gzip,collections
+          gen=list(csv.DictReader(open('/tmp/z22-eclipse-calibration/eclipse-table.csv')))
+          with gzip.open('tools/pass5/p22-data/eclipse-table.csv.gz','rt',newline='') as f: can=list(csv.DictReader(f))
+          assert len(gen)==len(can)==1133,(len(gen),len(can))
+          keycounts=lambda rows:(collections.Counter(x['eclipse_kind'] for x in rows),collections.Counter(x['eclipse_type'] for x in rows),collections.Counter(x['centrality'] for x in rows))
+          assert keycounts(gen)==keycounts(can),(keycounts(gen),keycounts(can))
+          for kind in ('solar','lunar'):
+              g=sorted((x for x in gen if x['eclipse_kind']==kind),key=lambda x:float(x['greatest_eclipse_jd_ut']))
+              c=sorted((x for x in can if x['eclipse_kind']==kind),key=lambda x:float(x['greatest_eclipse_jd_ut']))
+              assert len(g)==len(c)
+              phase=[];great=[];deg=[];mag=[]
+              for a,b in zip(g,c):
+                  assert a['eclipse_type']==b['eclipse_type'],(kind,a,b)
+                  assert a['centrality']==b['centrality'],(kind,a,b)
+                  phase.append(abs(float(a['phase_jd_ut'])-float(b['phase_jd_ut']))*86400)
+                  great.append(abs(float(a['greatest_eclipse_jd_ut'])-float(b['greatest_eclipse_jd_ut']))*86400)
+                  deg.append(abs(float(a['eclipse_degree'])-float(b['eclipse_degree']))*3600)
+                  mag.append(abs(float(a['magnitude'])-float(b['magnitude'])))
+              print(f'PASS Z22 eclipse calibration {kind}: rows={len(g)} phaseDeltaMaxSeconds={max(phase):.6f} greatestDeltaMaxSeconds={max(great):.6f} degreeDeltaMaxArcSeconds={max(deg):.6f} magnitudeDeltaMax={max(mag):.9f}')
+          PY
+
+      - name: Manufacture full celestial-first Z23 eclipses
+        run: |
+          rm -rf /tmp/z23-eclipses-raw /tmp/z23-eclipses-frozen
+          mkdir -p /tmp/z23-eclipses-raw /tmp/z23-eclipses-frozen
+          /tmp/zeitgeist-eclipse-forge \
+            --library "$PWD/.forge/swisseph/libswe.so" --ephe-dir "$PWD/.forge/ephe" \
+            --output /tmp/z23-eclipses-raw/eclipse-table.csv \
+            --start-jd "$Z23_START" --end-jd "$Z24_START" \
+            | tee /tmp/z23-eclipse-manufacture.txt
+
+      - name: Audit, manifest, and compress
+        run: |
+          python3 - <<'PY'
+          import csv,collections,hashlib,json,os
+          from pathlib import Path
+          start=float(os.environ['Z23_START']);end=float(os.environ['Z24_START'])
+          src=Path('/tmp/z23-eclipses-raw/eclipse-table.csv');out=Path('/tmp/z23-eclipses-frozen')
+          expected=['eclipse_degree','degree_label','sign','degree_in_sign','eclipse_kind','eclipse_type','centrality','phase_jd_ut','phase_utc','greatest_eclipse_jd_ut','greatest_eclipse_utc','magnitude','secondary_magnitude']
+          with src.open(newline='') as f:
+              r=csv.DictReader(f);assert r.fieldnames==expected,r.fieldnames;rows=list(r)
+          assert rows
+          kinds=collections.Counter();types=collections.Counter();central=collections.Counter();seen=set();prev=-1.0
+          for x in rows:
+              d=float(x['eclipse_degree']);jd=float(x['phase_jd_ut']);kind=x['eclipse_kind'];typ=x['eclipse_type']
+              assert 0<=d<360 and d>=prev,(prev,d);prev=d
+              assert start<=jd<end,(jd,start,end)
+              assert kind in {'solar','lunar'}
+              assert typ in {'annular','penumbral','partial','total','hybrid'}
+              if kind=='solar': assert x['centrality'] in {'central','noncentral'} and x['secondary_magnitude']==''
+              else: assert x['centrality']=='' and x['secondary_magnitude']!=''
+              k=(kind,x['eclipse_type'],x['centrality'],x['phase_jd_ut'],x['greatest_eclipse_jd_ut'])
+              assert k not in seen,('duplicate',k);seen.add(k)
+              kinds[kind]+=1;types[typ]+=1;central[x['centrality']]+=1
+          manifest={
+            'zeitgeist':'Z23',
+            'artifactFamily':'Orbo celestial-first eclipse table',
+            'ownershipLaw':'Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive',
+            'startJulianDayUT':start,'startUTC':'2066-06-17T15:24:10.695Z',
+            'endJulianDayUT':end,'endUTC':'2311-06-10T14:16:12.881Z',
+            'identityLaw':'solar = exact Sun-Moon conjunction; lunar = exact Sun-Moon opposition; eclipse degree primary; civic UT identifies occurrence',
+            'occurrenceDiscoveryLaw':'actual eclipse occurrences discovered by Swiss global eclipse search; exact celestial phase independently refined',
+            'phaseResidualGateArcSeconds':0.001,
+            'astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT',
+            'swissVersion':'2.10.03','swissRepository':'huntarfischer/swisseph','swissCommit':os.environ['SWISS_COMMIT'],
+            'rows':len(rows),'kinds':dict(kinds),'types':dict(types),'centrality':dict(central),
+            'duplicateSourceRows':0
+          }
+          target=out/'eclipse-table.csv';target.write_text(src.read_text())
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+          print('PASS Z23 eclipse audit',manifest)
+          PY
+          gzip -n -9 -c /tmp/z23-eclipses-frozen/eclipse-table.csv > /tmp/z23-eclipses-frozen/eclipse-table.csv.gz
+          rm /tmp/z23-eclipses-frozen/eclipse-table.csv
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('/tmp/z23-eclipses-frozen/manifest.json');m=json.loads(p.read_text());m['files']=[]
+          for q in sorted(Path('/tmp/z23-eclipses-frozen').glob('*.csv.gz')):
+              b=q.read_bytes();m['files'].append({'path':q.name,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          p.write_text(json.dumps(m,indent=2,sort_keys=True)+'\n')
+          PY
+          sha256sum /tmp/z23-eclipses-frozen/* | tee /tmp/z23-eclipse-sha256.txt
+
+      - name: Upload verified Z23 eclipse artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: z23-eclipse-table
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            /tmp/z23-eclipses-frozen/
+            /tmp/z23-eclipse-manufacture.txt
+            /tmp/z23-eclipse-sha256.txt
+
+      - name: Freeze verified Z23 eclipse table on staging
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-z23-eclipses origin/agent/p22-duplicate-cleanup-staging
+          rm -rf tools/pass5/zeitgeist-eclipse-data/z23
+          mkdir -p tools/pass5/zeitgeist-eclipse-data
+          cp -R /tmp/z23-eclipses-frozen tools/pass5/zeitgeist-eclipse-data/z23
+          git add tools/pass5/zeitgeist-eclipse-data/z23
+          git commit -m "freeze Z23 celestial-first eclipse table"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
