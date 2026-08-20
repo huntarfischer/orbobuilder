@@ -1,0 +1,178 @@
+name: Pass 5 Z21 Relationships
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z21-relationship.yml"
+      - "tools/pass5/ZeitgeistRelationshipForge.swift"
+
+permissions:
+  contents: write
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+  Z21_START: "2297171.740867775"
+  Z22_START: "2386637.0793997087"
+
+jobs:
+  audit-z22-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+      - name: Audit frozen Z22 relationship artifact contract
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,collections
+          from pathlib import Path
+          for family,path in [('major',Path('tools/pass5/p22-data/exact-major-mundane-transits.csv.gz')),('minor',Path('tools/pass5/p22-data/exact-minor-mundane-transits.csv.gz'))]:
+              marks=collections.Counter();ori=collections.Counter();pairs=collections.Counter();dups=collections.Counter();rows=0
+              with gzip.open(path,'rt',newline='') as f:
+                  r=csv.DictReader(f); print(f'{family}.header={r.fieldnames}')
+                  for x in r:
+                      rows+=1;marks[int(x['ringDegrees'])]+=1;ori[x['orientation']]+=1;pairs[(x['bodyA'],x['bodyB'])]+=1
+                      k=(x['bodyA'],x['bodyB'],x['ringDegrees'],x['orientation'],x['bodyACelestialTimeDegrees'],x['bodyBCelestialTimeDegrees'],x['civicTimeOffsetSeconds']);dups[k]+=1
+              assert sum(v-1 for v in dups.values() if v>1)==0
+              print(f'{family}.rows={rows} marks={dict(sorted(marks.items()))} orientations={dict(sorted(ori.items()))} pairCount={len(pairs)}')
+          PY
+
+  manufacture-z21:
+    needs: audit-z22-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C library
+        run: |
+          mkdir -p .forge/swisseph .forge/ephe
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/huntarfischer/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Fetch pinned DE441 files
+        run: |
+          base="https://raw.githubusercontent.com/huntarfischer/swisseph/$SWISS_COMMIT/ephe"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
+            test -s ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+
+      - name: Compile focused relationship forge
+        run: |
+          swiftc tools/pass5/ZeitgeistRelationshipForge.swift -O -o /tmp/zeitgeist-relationship-forge
+          test -x /tmp/zeitgeist-relationship-forge
+
+      - name: Calibrate celestial topology against frozen Z22
+        run: |
+          rm -rf /tmp/z22-calibration && mkdir -p /tmp/z22-calibration
+          /tmp/zeitgeist-relationship-forge \
+            --library "$PWD/.forge/swisseph/libswe.so" --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir /tmp/z22-calibration --start-jd "$Z22_START" --end-jd "2386667.0793997087" --offset-origin-jd "$Z22_START"
+          python3 - <<'PY'
+          import csv,gzip,collections,os,statistics
+          start=float(os.environ['Z22_START']);end=2386667.0793997087
+          for fam in ('major','minor'):
+              gen=list(csv.DictReader(open(f'/tmp/z22-calibration/exact-{fam}-mundane-transits.csv')))
+              with gzip.open(f'tools/pass5/p22-data/exact-{fam}-mundane-transits.csv.gz','rt',newline='') as f:
+                  can=[x for x in csv.DictReader(f) if start <= float(x['civicTimeJulianDayUT']) < end]
+              key=lambda x:(x['bodyA'],x['bodyB'],x['aspect'],x['ringDegrees'],x['orientation'])
+              gd=collections.defaultdict(list);cd=collections.defaultdict(list)
+              for x in gen:gd[key(x)].append(x)
+              for x in can:cd[key(x)].append(x)
+              assert gd.keys()==cd.keys(),(fam,'topology key mismatch',set(gd)^set(cd))
+              errs=[]
+              for k in gd:
+                  a=sorted(gd[k],key=lambda x:float(x['civicTimeJulianDayUT']));b=sorted(cd[k],key=lambda x:float(x['civicTimeJulianDayUT']))
+                  assert len(a)==len(b),(fam,k,len(a),len(b))
+                  for x,y in zip(a,b):
+                      assert float(x['exactAspectResidualArcSeconds']) < 0.001,(fam,k,x['exactAspectResidualArcSeconds'])
+                      errs.append((float(x['civicTimeJulianDayUT'])-float(y['civicTimeJulianDayUT']))*86400)
+              print(f'PASS Z22 topology calibration {fam}: rows={len(gen)} exactRootMaxResidualArcSeconds={max(float(x["exactAspectResidualArcSeconds"]) for x in gen):.9f} historicalCivicDeltaAbsMaxSeconds={max(map(abs,errs)):.6f} historicalCivicDeltaMedianSeconds={statistics.median(errs):.6f}')
+          PY
+
+      - name: Manufacture full celestial-first Z21 relationships
+        run: |
+          rm -rf /tmp/z21-relationships-raw /tmp/z21-relationships-frozen
+          mkdir -p /tmp/z21-relationships-raw /tmp/z21-relationships-frozen
+          /tmp/zeitgeist-relationship-forge \
+            --library "$PWD/.forge/swisseph/libswe.so" --ephe-dir "$PWD/.forge/ephe" \
+            --output-dir /tmp/z21-relationships-raw --start-jd "$Z21_START" --end-jd "$Z22_START" --offset-origin-jd "$Z21_START" \
+            | tee /tmp/z21-relationship-manufacture.txt
+
+      - name: Clean, audit, manifest, and compress
+        run: |
+          python3 - <<'PY'
+          import csv,collections,hashlib,json,os
+          from pathlib import Path
+          start=float(os.environ['Z21_START']);end=float(os.environ['Z22_START']);out=Path('/tmp/z21-relationships-frozen');raw=Path('/tmp/z21-relationships-raw')
+          header=['bodyA','bodyB','aspect','ringDegrees','orientation','bodyACelestialTimeDegrees','bodyBCelestialTimeDegrees','civicTimeJulianDayUT','civicTimeOffsetSeconds','exactAspectResidualArcSeconds']
+          allowed={'major':{0,60,90,120,180},'minor':{30,45,72,135,144,150}}
+          manifest={'zeitgeist':'Z21','artifactFamily':'Orbo exact mundane relationship tables','ownershipLaw':'Z21 first Pluto Aries ingress inclusive to Z22 first Pluto Aries ingress exclusive','startJulianDayUT':start,'startUTC':'1577-05-05T05:46:50.976Z','endJulianDayUT':end,'endUTC':'1822-04-16T13:54:20.135Z','identityLaw':'exact celestial geometry + recurrence ordinal / civic UT excluded','exactOccurrenceLaw':'relationship civic occurrence is the refined Swiss root of the exact oriented Ring geometry; celestial geometry is primary','calibrationLaw':'event topology is calibrated against the frozen Z22 canonical relationship tables; historical Z22 civic placements are not copied because diagnostic calibration proved they are variably displaced from exact Swiss roots','duplicateSourceLaw':'same qualified celestial geometry at same stored second is a duplicate source occurrence and is emitted once','astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT','swissVersion':'2.10.03','swissRepository':'huntarfischer/swisseph','swissCommit':os.environ['SWISS_COMMIT'],'families':{}}
+          for fam in ('major','minor'):
+              p=raw/f'exact-{fam}-mundane-transits.csv'; r=csv.DictReader(open(p)); assert r.fieldnames==header
+              rows=list(r); marks=collections.Counter();oris=collections.Counter();pairs=collections.Counter();seen=set();clean=[];removed=0;maxres=0.0
+              for x in rows:
+                  jd=float(x['civicTimeJulianDayUT']);off=int(x['civicTimeOffsetSeconds']);ring=int(x['ringDegrees']);res=float(x['exactAspectResidualArcSeconds'])
+                  assert start <= jd < end and off>=0 and ring in allowed[fam] and res < 0.001,(fam,jd,ring,res)
+                  k=(x['bodyA'],x['bodyB'],x['ringDegrees'],x['orientation'],x['bodyACelestialTimeDegrees'],x['bodyBCelestialTimeDegrees'],x['civicTimeOffsetSeconds'])
+                  if k in seen: removed+=1;continue
+                  seen.add(k);clean.append(x);marks[ring]+=1;oris[x['orientation']]+=1;pairs[(x['bodyA'],x['bodyB'])]+=1;maxres=max(maxres,res)
+              clean.sort(key=lambda x:(float(x['civicTimeJulianDayUT']),x['bodyA'],x['bodyB'],int(x['ringDegrees']),x['orientation']))
+              celestial=collections.Counter((x['bodyA'],x['bodyB'],x['ringDegrees'],x['orientation'],x['bodyACelestialTimeDegrees'],x['bodyBCelestialTimeDegrees']) for x in clean)
+              same=collections.Counter((x['bodyA'],x['bodyB'],x['ringDegrees'],x['orientation'],x['bodyACelestialTimeDegrees'],x['bodyBCelestialTimeDegrees'],x['civicTimeOffsetSeconds']) for x in clean)
+              assert not any(v>1 for v in same.values())
+              target=out/f'exact-{fam}-mundane-transits.csv'
+              with target.open('w',newline='') as f:w=csv.DictWriter(f,fieldnames=header);w.writeheader();w.writerows(clean)
+              recur=[v for v in celestial.values() if v>1]
+              manifest['families'][fam]={'rows':len(clean),'duplicateSourceRowsRemoved':removed,'marks':dict(sorted(marks.items())),'orientations':dict(sorted(oris.items())),'bodyPairsWithEvents':len(pairs),'maxExactAspectResidualArcSeconds':maxres,'recurringCelestialKeys':len(recur),'rowsInRecurringCelestialKeys':sum(recur),'maxRecurrence':max(recur,default=1)}
+              print(f'PASS Z21 {fam}: rows={len(clean)} removed={removed} pairs={len(pairs)} maxResidualArcSeconds={maxres} recurringKeys={len(recur)}')
+          (out/'manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+          PY
+          for family in major minor; do
+            gzip -n -9 -c "/tmp/z21-relationships-frozen/exact-$family-mundane-transits.csv" > "/tmp/z21-relationships-frozen/exact-$family-mundane-transits.csv.gz"
+            rm "/tmp/z21-relationships-frozen/exact-$family-mundane-transits.csv"
+          done
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('/tmp/z21-relationships-frozen/manifest.json');m=json.loads(p.read_text());m['files']=[]
+          for q in sorted(Path('/tmp/z21-relationships-frozen').glob('*.csv.gz')):
+              b=q.read_bytes();m['files'].append({'path':q.name,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+          p.write_text(json.dumps(m,indent=2,sort_keys=True)+'\n')
+          PY
+          sha256sum /tmp/z21-relationships-frozen/* | tee /tmp/z21-relationship-sha256.txt
+
+      - name: Upload verified Z21 relationship artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: z21-relationship-tables
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+          path: |
+            /tmp/z21-relationships-frozen/
+            /tmp/z21-relationship-manufacture.txt
+            /tmp/z21-relationship-sha256.txt
+
+      - name: Freeze verified Z21 relationship tables on staging
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin agent/p22-duplicate-cleanup-staging
+          git checkout -B freeze-z21-relationships origin/agent/p22-duplicate-cleanup-staging
+          rm -rf tools/pass5/zeitgeist-relationship-data/z21
+          mkdir -p tools/pass5/zeitgeist-relationship-data
+          cp -R /tmp/z21-relationships-frozen tools/pass5/zeitgeist-relationship-data/z21
+          git add tools/pass5/zeitgeist-relationship-data/z21
+          git commit -m "freeze Z21 exact relationship tables"
+          git push origin HEAD:agent/p22-duplicate-cleanup-staging
