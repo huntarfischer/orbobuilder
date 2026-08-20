@@ -11,7 +11,7 @@ on:
       - "tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv"
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
@@ -58,6 +58,19 @@ jobs:
             --report .forge/timespine-sizing-bench/timespine-sizing-bench.json \
             --markdown .forge/timespine-sizing-bench/timespine-sizing-bench.md \
             --random-probes 2000
+
+      - name: Persist bench report on feature branch
+        run: |
+          mkdir -p tools/pass5/benchmarks
+          cp .forge/timespine-sizing-bench/timespine-sizing-bench.json tools/pass5/benchmarks/timespine-sizing-bench.json
+          cp .forge/timespine-sizing-bench/timespine-sizing-bench.md tools/pass5/benchmarks/timespine-sizing-bench.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/pass5/benchmarks/timespine-sizing-bench.json tools/pass5/benchmarks/timespine-sizing-bench.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Record Timespine sizing bench results"
+            git push
+          fi
 
       - name: Upload sizing bench
         uses: actions/upload-artifact@v4
