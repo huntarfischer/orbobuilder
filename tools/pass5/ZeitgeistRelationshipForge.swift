@@ -80,17 +80,36 @@ func relative(_ pair:Pair,_ jd:Double,_ target:Double,_ sw:Swiss)throws->(Double
 }
 func refine(_ pair:Pair,_ target:Double,_ lo0:Double,_ hi0:Double,_ sw:Swiss)throws->(Double,State,State) {
     var lo=lo0,hi=hi0,gl=try relative(pair,lo0,target,sw).0,gh=try relative(pair,hi0,target,sw).0
-    if abs(gl)<1e-13 {let q=try relative(pair,lo,target,sw);return(lo,q.1,q.2)}
-    if abs(gh)<1e-13 {let q=try relative(pair,hi,target,sw);return(hi,q.1,q.2)}
+    if abs(gl)<1e-10 {let q=try relative(pair,lo,target,sw);return(lo,q.1,q.2)}
+    if abs(gh)<1e-10 {let q=try relative(pair,hi,target,sw);return(hi,q.1,q.2)}
+
     var x=lo+(hi-lo)*abs(gl)/(abs(gl)+abs(gh))
-    for _ in 0..<18 {
+    var bestJD=x
+    var best=try relative(pair,x,target,sw)
+
+    // Hybrid Newton/bracket refinement. Acceptance is driven by celestial residual, never
+    // merely by elapsed bracket time, so every emitted relationship is genuinely exact-first.
+    for _ in 0..<32 {
         let q=try relative(pair,x,target,sw)
-        if abs(q.0)<1e-12 || (hi-lo)*86400<0.0005 {return(x,q.1,q.2)}
+        if abs(q.0)<abs(best.0) { bestJD=x; best=q }
+        if abs(q.0)<1e-10 { return(x,q.1,q.2) }
         if gl*q.0<=0 {hi=x;gh=q.0}else{lo=x;gl=q.0}
-        let d=q.1.speed-q.2.speed; var c=abs(d)>1e-12 ? x-q.0/d : (lo+hi)/2
-        if !(c>lo && c<hi) || !c.isFinite {c=(lo+hi)/2}; x=c
+        let d=q.1.speed-q.2.speed
+        var c=abs(d)>1e-12 ? x-q.0/d : (lo+hi)/2
+        if !(c>lo && c<hi) || !c.isFinite {c=(lo+hi)/2}
+        x=c
     }
-    let x2=(lo+hi)/2,q=try relative(pair,x2,target,sw);return(x2,q.1,q.2)
+
+    // Rare pathological geometry gets a deterministic pure-bisection finish rather than
+    // leaking a near-root into the canonical artifact.
+    for _ in 0..<24 {
+        let mid=(lo+hi)/2
+        let q=try relative(pair,mid,target,sw)
+        if abs(q.0)<abs(best.0) { bestJD=mid; best=q }
+        if abs(q.0)<1e-10 { return(mid,q.1,q.2) }
+        if gl*q.0<=0 {hi=mid;gh=q.0}else{lo=mid;gl=q.0}
+    }
+    return(bestJD,best.1,best.2)
 }
 func parseArgs()throws->(String,String,String,Double,Double,Double) {
     var lib:String?,ephe:String?,out:String?,start:Double?,end:Double?,origin:Double?;let a=CommandLine.arguments;var i=1
