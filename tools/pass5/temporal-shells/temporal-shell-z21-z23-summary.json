@@ -1,0 +1,119 @@
+{
+  "checks": {
+    "F": {
+      "next_boundary_exact": true,
+      "ordinals_contiguous": true,
+      "row_count": 198,
+      "starts_strictly_increasing": true,
+      "transition_ends_direct": true,
+      "transition_starts_direct": true,
+      "z21_rows": [
+        "F172",
+        "F173",
+        "F174",
+        "F175",
+        "F176",
+        "F177",
+        "F178",
+        "F179",
+        "F180",
+        "F181"
+      ],
+      "z22_rows": [
+        "F181",
+        "F182",
+        "F183",
+        "F184",
+        "F185",
+        "F186",
+        "F187",
+        "F188",
+        "F189"
+      ],
+      "z23_rows": [
+        "F189",
+        "F190",
+        "F191",
+        "F192",
+        "F193",
+        "F194",
+        "F195",
+        "F196",
+        "F197"
+      ]
+    },
+    "R": {
+      "next_boundary_exact": true,
+      "ordinals_contiguous": true,
+      "row_count": 70,
+      "starts_strictly_increasing": true,
+      "transition_ends_direct": true,
+      "transition_starts_direct": true,
+      "z21_rows": [
+        "R60",
+        "R61",
+        "R62",
+        "R63"
+      ],
+      "z22_rows": [
+        "R63",
+        "R64",
+        "R65",
+        "R66"
+      ],
+      "z23_rows": [
+        "R66",
+        "R67",
+        "R68",
+        "R69"
+      ]
+    },
+    "W": {
+      "next_boundary_exact": true,
+      "ordinals_contiguous": true,
+      "row_count": 35,
+      "starts_strictly_increasing": true,
+      "transition_ends_direct": true,
+      "transition_starts_direct": true,
+      "z21_rows": [
+        "W30",
+        "W31"
+      ],
+      "z22_rows": [
+        "W31",
+        "W32",
+        "W33"
+      ],
+      "z23_rows": [
+        "W33",
+        "W34"
+      ]
+    }
+  },
+  "numbering_epoch": {
+    "jd_ut": 431167.610188324,
+    "utc": "-3532-05-24T02:38:40.271Z",
+    "zeitgeist_id": "Z0"
+  },
+  "status": "PASS",
+  "zeitgeist_boundaries": {
+    "Z21": {
+      "end_jd_ut": 2386637.0793997087,
+      "end_utc": "1822-04-16T13:54:20.135Z",
+      "start_jd_ut": 2297171.740867775,
+      "start_utc": "1577-05-05T05:46:50.976Z"
+    },
+    "Z22": {
+      "end_jd_ut": 2475819.1417904533,
+      "end_utc": "2066-06-17T15:24:10.695Z",
+      "start_jd_ut": 2386637.0793997087,
+      "start_utc": "1822-04-16T13:54:20.135Z"
+    },
+    "Z23": {
+      "end_jd_ut": 2565295.0945935287,
+      "end_utc": "2311-06-10T14:16:12.881Z",
+      "start_jd_ut": 2475819.1417904533,
+      "start_utc": "2066-06-17T15:24:10.695Z"
+    }
+  }
+}

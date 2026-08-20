@@ -1,0 +1,1419 @@
+{
+  "numbering_epoch": {
+    "jd_ut": 431167.610188324,
+    "utc": "-3532-05-24T02:38:40.271Z",
+    "zeitgeist_id": "Z0"
+  },
+  "numbering_law": "W0 is the first qualifying Neptune direct Pisces-to-Aries ingress strictly after Z0; later 0-Aries recrossings remain in the same shell.",
+  "ownership": "[first_aries_ingress, next_shell_first_aries_ingress)",
+  "provenance": {
+    "astronomical_engine": "official Swiss Ephemeris C",
+    "coordinate_contract": {
+      "center": "geocentric",
+      "frame": "ecliptic of date",
+      "zodiac": "tropical"
+    },
+    "ephemeris_files": [
+      {
+        "bytes": 508266,
+        "name": "seplm36.se1",
+        "sha256": "3decdf336fa377489051cc4428be6761602dacd02d214a1e9b0b21df7650c4a3"
+      },
+      {
+        "bytes": 498417,
+        "name": "seplm30.se1",
+        "sha256": "a1c87c8cd69d2621098e8efe01795be0bfbc6ead0d925d6fb80c35b6d94589c4"
+      },
+      {
+        "bytes": 493045,
+        "name": "seplm24.se1",
+        "sha256": "4c536e748481b23ac25f42d0e815ba5c7ae1c27e034efb04a6977a2e95291f10"
+      },
+      {
+        "bytes": 489915,
+        "name": "seplm18.se1",
+        "sha256": "d02d4ae93d215e3e1a4f9a7ca56c8aa331630ffde646132cee4d3f018b65f443"
+      },
+      {
+        "bytes": 484597,
+        "name": "seplm12.se1",
+        "sha256": "b744e60a251c04a086a1f03ac1971d96945aa8b354d1704e3be6c767ff10bac3"
+      },
+      {
+        "bytes": 484263,
+        "name": "seplm06.se1",
+        "sha256": "5a8719a75e48b223c0d7c8ba0191d698b808b4fb7265f2cddaa975edd8ac7aec"
+      },
+      {
+        "bytes": 483932,
+        "name": "sepl_00.se1",
+        "sha256": "65f1bfa4c27a2311f6db8447ba9f678a03b1431eb30052bf323619c8209282f1"
+      },
+      {
+        "bytes": 482956,
+        "name": "sepl_06.se1",
+        "sha256": "5aff87ba1664410669b54366752343ca71a22cca1b3698c57edcc4631361675a"
+      },
+      {
+        "bytes": 483743,
+        "name": "sepl_12.se1",
+        "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d"
+      },
+      {
+        "bytes": 484061,
+        "name": "sepl_18.se1",
+        "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66"
+      },
+      {
+        "bytes": 483414,
+        "name": "sepl_24.se1",
+        "sha256": "dea65ffc3ee39125eb1427ecfd578a208be2dd021f49fdfd4b8a130ccd5244f0"
+      },
+      {
+        "bytes": 1380647,
+        "name": "semom36.se1",
+        "sha256": "950dbc6bd68137376872b2c684a5bf01c4556e323c2fa6a8c693610e4c777638"
+      },
+      {
+        "bytes": 1371496,
+        "name": "semom30.se1",
+        "sha256": "9798e8b1fe32e76798681cf2a6e9e1d93a37674588ee2d25d8c944df52351bcd"
+      },
+      {
+        "bytes": 1365135,
+        "name": "semom24.se1",
+        "sha256": "90c9803cce19d2e4cdbf60b8161ef6699f1c6b25fc01c33f2bad84cf00bc87b7"
+      },
+      {
+        "bytes": 1356303,
+        "name": "semom18.se1",
+        "sha256": "e3920cb18cbf756737c8429af100f6ca90a498761c65e3b87262e879c22f0566"
+      },
+      {
+        "bytes": 1347252,
+        "name": "semom12.se1",
+        "sha256": "4f88cf96ed6a0069e24a6525c404f6ce1a749acf281451819915e123e1af7408"
+      },
+      {
+        "bytes": 1332989,
+        "name": "semom06.se1",
+        "sha256": "d21bb9968c97c0647088aaa4af402dee22706f327b2bedd67685623738ebd54b"
+      },
+      {
+        "bytes": 1322594,
+        "name": "semo_00.se1",
+        "sha256": "4b4cc4d2894130f006ab872f1e2c365883bc7354d63c9ca6491271ad3b8effe4"
+      },
+      {
+        "bytes": 1316056,
+        "name": "semo_06.se1",
+        "sha256": "3ab86918312d125cbadc10e087237a7f30254a206925f769123027c367fd15ac"
+      },
+      {
+        "bytes": 1305932,
+        "name": "semo_12.se1",
+        "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61"
+      },
+      {
+        "bytes": 1304771,
+        "name": "semo_18.se1",
+        "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7"
+      },
+      {
+        "bytes": 1308128,
+        "name": "semo_24.se1",
+        "sha256": "62260992014e61d655c13733bb2d415ac23e8013d8ecf1d7714c237ea8f5b250"
+      }
+    ],
+    "ephemeris_generation": "DE441",
+    "flags": 258,
+    "source_commit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+    "source_repository": "huntarfischer/swisseph",
+    "swiss_version": "2.10.03"
+  },
+  "rows": [
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 487315.50752104644,
+      "final_pisces_egress_utc": "-3378-02-15T00:10:49.818Z",
+      "first_aries_ingress_jd_ut": 487010.37297789264,
+      "first_aries_ingress_utc": "-3379-04-15T20:57:05.290Z",
+      "next_shell_first_aries_ingress_jd_ut": 546892.7232027927,
+      "next_shell_first_aries_ingress_utc": "-3215-03-29T05:21:24.721Z",
+      "ordinal": 0,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.789577591358,
+      "pre_shadow_start_jd_ut": 486977.3206186766,
+      "pre_shadow_start_utc": "-3379-03-13T19:41:41.454Z",
+      "shell_id": "W0",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 487010.37297789264,
+          "motion": "direct",
+          "utc": "-3379-04-15T20:57:05.290Z"
+        },
+        {
+          "jd_ut": 487176.4534006197,
+          "motion": "retrograde",
+          "utc": "-3379-09-28T22:52:53.814Z"
+        },
+        {
+          "jd_ut": 487315.50752104644,
+          "motion": "direct",
+          "utc": "-3378-02-15T00:10:49.818Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 547192.6079912214,
+      "final_pisces_egress_utc": "-3214-01-23T02:35:30.442Z",
+      "first_aries_ingress_jd_ut": 546892.7232027927,
+      "first_aries_ingress_utc": "-3215-03-29T05:21:24.721Z",
+      "next_shell_first_aries_ingress_jd_ut": 606474.9616491874,
+      "next_shell_first_aries_ingress_utc": "-3052-05-15T11:04:46.490Z",
+      "ordinal": 1,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.44660882189197,
+      "pre_shadow_start_jd_ut": 546877.8606416772,
+      "pre_shadow_start_utc": "-3215-03-14T08:39:19.441Z",
+      "shell_id": "W1",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 546892.7232027927,
+          "motion": "direct",
+          "utc": "-3215-03-29T05:21:24.721Z"
+        },
+        {
+          "jd_ut": 547102.2398291347,
+          "motion": "retrograde",
+          "utc": "-3215-10-24T17:45:21.237Z"
+        },
+        {
+          "jd_ut": 547192.6079912214,
+          "motion": "direct",
+          "utc": "-3214-01-23T02:35:30.442Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 606775.974398857,
+      "final_pisces_egress_utc": "-3051-03-12T11:23:08.061Z",
+      "first_aries_ingress_jd_ut": 606474.9616491874,
+      "first_aries_ingress_utc": "-3052-05-15T11:04:46.490Z",
+      "next_shell_first_aries_ingress_jd_ut": 666354.56891012,
+      "next_shell_first_aries_ingress_utc": "-2888-04-26T01:39:13.834Z",
+      "ordinal": 2,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.8408386423758,
+      "pre_shadow_start_jd_ut": 606410.8725403333,
+      "pre_shadow_start_utc": "-3052-03-12T08:56:27.485Z",
+      "shell_id": "W2",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 606474.9616491874,
+          "motion": "direct",
+          "utc": "-3052-05-15T11:04:46.490Z"
+        },
+        {
+          "jd_ut": 606575.1248403224,
+          "motion": "retrograde",
+          "utc": "-3052-08-23T14:59:46.204Z"
+        },
+        {
+          "jd_ut": 606775.974398857,
+          "motion": "direct",
+          "utc": "-3051-03-12T11:23:08.061Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 666659.5042824803,
+      "final_pisces_egress_utc": "-2887-02-25T00:06:10.006Z",
+      "first_aries_ingress_jd_ut": 666354.56891012,
+      "first_aries_ingress_utc": "-2888-04-26T01:39:13.834Z",
+      "next_shell_first_aries_ingress_jd_ut": 726237.9396091457,
+      "next_shell_first_aries_ingress_utc": "-2724-04-08T10:33:02.230Z",
+      "ordinal": 3,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.447298455946,
+      "pre_shadow_start_jd_ut": 666311.3442850071,
+      "pre_shadow_start_utc": "-2888-03-13T20:15:46.225Z",
+      "shell_id": "W3",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 666354.56891012,
+          "motion": "direct",
+          "utc": "-2888-04-26T01:39:13.834Z"
+        },
+        {
+          "jd_ut": 666498.3360590255,
+          "motion": "retrograde",
+          "utc": "-2888-09-16T20:03:55.500Z"
+        },
+        {
+          "jd_ut": 666659.5042824803,
+          "motion": "direct",
+          "utc": "-2887-02-25T00:06:10.006Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 726542.0599520572,
+      "final_pisces_egress_utc": "-2723-02-06T13:26:19.858Z",
+      "first_aries_ingress_jd_ut": 726237.9396091457,
+      "first_aries_ingress_utc": "-2724-04-08T10:33:02.230Z",
+      "next_shell_first_aries_ingress_jd_ut": 785832.3148049735,
+      "next_shell_first_aries_ingress_utc": "-2561-06-08T19:33:19.150Z",
+      "ordinal": 4,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.02595748538283,
+      "pre_shadow_start_jd_ut": 726211.5951597416,
+      "pre_shadow_start_utc": "-2724-03-13T02:17:01.802Z",
+      "shell_id": "W4",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 726237.9396091457,
+          "motion": "direct",
+          "utc": "-2724-04-08T10:33:02.230Z"
+        },
+        {
+          "jd_ut": 726419.4381330048,
+          "motion": "retrograde",
+          "utc": "-2724-10-06T22:30:54.692Z"
+        },
+        {
+          "jd_ut": 726542.0599520572,
+          "motion": "direct",
+          "utc": "-2723-02-06T13:26:19.858Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 786419.5904266133,
+      "final_pisces_egress_utc": "-2559-01-16T02:10:12.859Z",
+      "first_aries_ingress_jd_ut": 785832.3148049735,
+      "first_aries_ingress_utc": "-2561-06-08T19:33:19.150Z",
+      "next_shell_first_aries_ingress_jd_ut": 845706.2928628505,
+      "next_shell_first_aries_ingress_utc": "-2397-05-13T19:01:43.350Z",
+      "ordinal": 5,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.3639015176492,
+      "pre_shadow_start_jd_ut": 785744.345647495,
+      "pre_shadow_start_utc": "-2561-03-12T20:17:43.944Z",
+      "shell_id": "W5",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 785832.3148049735,
+          "motion": "direct",
+          "utc": "-2561-06-08T19:33:19.150Z"
+        },
+        {
+          "jd_ut": 785884.4458880716,
+          "motion": "retrograde",
+          "utc": "-2561-07-30T22:42:04.729Z"
+        },
+        {
+          "jd_ut": 786122.455066209,
+          "motion": "direct",
+          "utc": "-2560-03-24T22:55:17.720Z"
+        },
+        {
+          "jd_ut": 786344.1919913488,
+          "motion": "retrograde",
+          "utc": "-2560-11-01T16:36:28.053Z"
+        },
+        {
+          "jd_ut": 786419.5904266133,
+          "motion": "direct",
+          "utc": "-2559-01-16T02:10:12.859Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 846008.2392516062,
+      "final_pisces_egress_utc": "-2396-03-10T17:44:31.339Z",
+      "first_aries_ingress_jd_ut": 845706.2928628505,
+      "first_aries_ingress_utc": "-2397-05-13T19:01:43.350Z",
+      "next_shell_first_aries_ingress_jd_ut": 905589.0463410837,
+      "next_shell_first_aries_ingress_utc": "-2233-04-26T13:06:43.870Z",
+      "ordinal": 6,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.90507047141574,
+      "pre_shadow_start_jd_ut": 845644.7186032808,
+      "pre_shadow_start_utc": "-2397-03-13T05:14:47.323Z",
+      "shell_id": "W6",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 845706.2928628505,
+          "motion": "direct",
+          "utc": "-2397-05-13T19:01:43.350Z"
+        },
+        {
+          "jd_ut": 845812.071633732,
+          "motion": "retrograde",
+          "utc": "-2397-08-27T13:43:09.154Z"
+        },
+        {
+          "jd_ut": 846008.2392516062,
+          "motion": "direct",
+          "utc": "-2396-03-10T17:44:31.339Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 905894.0875551454,
+      "final_pisces_egress_utc": "-2232-02-25T14:06:04.765Z",
+      "first_aries_ingress_jd_ut": 905589.0463410837,
+      "first_aries_ingress_utc": "-2233-04-26T13:06:43.870Z",
+      "next_shell_first_aries_ingress_jd_ut": 965476.0357127632,
+      "next_shell_first_aries_ingress_utc": "-2069-04-14T12:51:25.583Z",
+      "ordinal": 7,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.42451051103416,
+      "pre_shadow_start_jd_ut": 905545.1594664122,
+      "pre_shadow_start_utc": "-2233-03-13T15:49:37.898Z",
+      "shell_id": "W7",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 905589.0463410837,
+          "motion": "direct",
+          "utc": "-2233-04-26T13:06:43.870Z"
+        },
+        {
+          "jd_ut": 905731.7537755927,
+          "motion": "retrograde",
+          "utc": "-2233-09-16T06:05:26.211Z"
+        },
+        {
+          "jd_ut": 905894.0875551454,
+          "motion": "direct",
+          "utc": "-2232-02-25T14:06:04.765Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 965780.7565208937,
+      "final_pisces_egress_utc": "-2068-02-13T06:09:23.405Z",
+      "first_aries_ingress_jd_ut": 965476.0357127632,
+      "first_aries_ingress_utc": "-2069-04-14T12:51:25.583Z",
+      "next_shell_first_aries_ingress_jd_ut": 1025364.4161260647,
+      "next_shell_first_aries_ingress_utc": "-1905-04-01T21:59:13.292Z",
+      "ordinal": 8,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.87496048932235,
+      "pre_shadow_start_jd_ut": 965445.4975863283,
+      "pre_shadow_start_utc": "-2069-03-14T23:56:31.459Z",
+      "shell_id": "W8",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 965476.0357127632,
+          "motion": "direct",
+          "utc": "-2069-04-14T12:51:25.583Z"
+        },
+        {
+          "jd_ut": 965647.9585635576,
+          "motion": "retrograde",
+          "utc": "-2069-10-03T11:00:19.891Z"
+        },
+        {
+          "jd_ut": 965780.7565208937,
+          "motion": "direct",
+          "utc": "-2068-02-13T06:09:23.405Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1025666.37405343,
+      "final_pisces_egress_utc": "-1904-01-28T20:58:38.216Z",
+      "first_aries_ingress_jd_ut": 1025364.4161260647,
+      "first_aries_ingress_utc": "-1905-04-01T21:59:13.292Z",
+      "next_shell_first_aries_ingress_jd_ut": 1084960.6157409642,
+      "next_shell_first_aries_ingress_utc": "-1742-06-03T02:46:40.019Z",
+      "ordinal": 9,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.29889082195257,
+      "pre_shadow_start_jd_ut": 1025345.6198732418,
+      "pre_shadow_start_utc": "-1905-03-14T02:52:37.048Z",
+      "shell_id": "W9",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1025364.4161260647,
+          "motion": "direct",
+          "utc": "-1905-04-01T21:59:13.292Z"
+        },
+        {
+          "jd_ut": 1025564.2996938105,
+          "motion": "retrograde",
+          "utc": "-1905-10-18T19:11:33.545Z"
+        },
+        {
+          "jd_ut": 1025666.37405343,
+          "motion": "direct",
+          "utc": "-1904-01-28T20:58:38.216Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1085548.801889123,
+      "final_pisces_egress_utc": "-1740-01-12T07:14:43.220Z",
+      "first_aries_ingress_jd_ut": 1084960.6157409642,
+      "first_aries_ingress_utc": "-1742-06-03T02:46:40.019Z",
+      "next_shell_first_aries_ingress_jd_ut": 1144842.492021772,
+      "next_shell_first_aries_ingress_utc": "-1578-05-15T23:48:30.681Z",
+      "ordinal": 10,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.44922816508125,
+      "pre_shadow_start_jd_ut": 1084878.1628347505,
+      "pre_shadow_start_utc": "-1742-03-12T15:54:28.922Z",
+      "shell_id": "W10",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 1084960.6157409642,
+          "motion": "direct",
+          "utc": "-1742-06-03T02:46:40.019Z"
+        },
+        {
+          "jd_ut": 1085023.9368630713,
+          "motion": "retrograde",
+          "utc": "-1742-08-05T10:29:04.969Z"
+        },
+        {
+          "jd_ut": 1085253.8212244743,
+          "motion": "direct",
+          "utc": "-1741-03-23T07:42:33.795Z"
+        },
+        {
+          "jd_ut": 1085483.2214154596,
+          "motion": "retrograde",
+          "utc": "-1741-11-07T17:18:50.296Z"
+        },
+        {
+          "jd_ut": 1085548.801889123,
+          "motion": "direct",
+          "utc": "-1740-01-12T07:14:43.220Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1145143.6652268544,
+      "final_pisces_egress_utc": "-1577-03-13T03:57:55.600Z",
+      "first_aries_ingress_jd_ut": 1144842.492021772,
+      "first_aries_ingress_utc": "-1578-05-15T23:48:30.681Z",
+      "next_shell_first_aries_ingress_jd_ut": 1204729.2657979801,
+      "next_shell_first_aries_ingress_utc": "-1414-05-02T18:22:44.945Z",
+      "ordinal": 11,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.8347282023275,
+      "pre_shadow_start_jd_ut": 1144778.3092658408,
+      "pre_shadow_start_utc": "-1578-03-12T19:25:20.569Z",
+      "shell_id": "W11",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1144842.492021772,
+          "motion": "direct",
+          "utc": "-1578-05-15T23:48:30.681Z"
+        },
+        {
+          "jd_ut": 1144943.0674231579,
+          "motion": "retrograde",
+          "utc": "-1578-08-24T13:37:05.361Z"
+        },
+        {
+          "jd_ut": 1145143.6652268544,
+          "motion": "direct",
+          "utc": "-1577-03-13T03:57:55.600Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1205033.5436406857,
+      "final_pisces_egress_utc": "-1413-03-03T01:02:50.555Z",
+      "first_aries_ingress_jd_ut": 1204729.2657979801,
+      "first_aries_ingress_utc": "-1414-05-02T18:22:44.945Z",
+      "next_shell_first_aries_ingress_jd_ut": 1264618.5709104044,
+      "next_shell_first_aries_ingress_utc": "-1250-04-23T01:42:06.659Z",
+      "ordinal": 12,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.21019969353284,
+      "pre_shadow_start_jd_ut": 1204678.6217216817,
+      "pre_shadow_start_utc": "-1414-03-13T02:55:16.753Z",
+      "shell_id": "W12",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1204729.2657979801,
+          "motion": "direct",
+          "utc": "-1414-05-02T18:22:44.945Z"
+        },
+        {
+          "jd_ut": 1204857.77997543,
+          "motion": "retrograde",
+          "utc": "-1414-09-08T06:43:09.877Z"
+        },
+        {
+          "jd_ut": 1205033.5436406857,
+          "motion": "direct",
+          "utc": "-1413-03-03T01:02:50.555Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1264923.8211669489,
+      "final_pisces_egress_utc": "-1249-02-22T07:42:28.824Z",
+      "first_aries_ingress_jd_ut": 1264618.5709104044,
+      "first_aries_ingress_utc": "-1250-04-23T01:42:06.659Z",
+      "next_shell_first_aries_ingress_jd_ut": 1324507.7821095656,
+      "next_shell_first_aries_ingress_utc": "-1086-04-12T06:46:14.266Z",
+      "ordinal": 13,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.5560118584705,
+      "pre_shadow_start_jd_ut": 1264578.8368309182,
+      "pre_shadow_start_utc": "-1250-03-14T08:05:02.191Z",
+      "shell_id": "W13",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1264618.5709104044,
+          "motion": "direct",
+          "utc": "-1250-04-23T01:42:06.659Z"
+        },
+        {
+          "jd_ut": 1264770.3132069288,
+          "motion": "retrograde",
+          "utc": "-1250-09-21T19:31:01.079Z"
+        },
+        {
+          "jd_ut": 1264923.8211669489,
+          "motion": "direct",
+          "utc": "-1249-02-22T07:42:28.824Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1324812.4894470014,
+      "final_pisces_egress_utc": "-1085-02-10T23:44:48.221Z",
+      "first_aries_ingress_jd_ut": 1324507.7821095656,
+      "first_aries_ingress_utc": "-1086-04-12T06:46:14.266Z",
+      "next_shell_first_aries_ingress_jd_ut": 1384396.9081203584,
+      "next_shell_first_aries_ingress_utc": "-0922-04-01T09:47:41.599Z",
+      "ordinal": 14,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.9320467212508,
+      "pre_shadow_start_jd_ut": 1324478.9665122232,
+      "pre_shadow_start_utc": "-1086-03-14T11:11:46.656Z",
+      "shell_id": "W14",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1324507.7821095656,
+          "motion": "direct",
+          "utc": "-1086-04-12T06:46:14.266Z"
+        },
+        {
+          "jd_ut": 1324683.9139157836,
+          "motion": "retrograde",
+          "utc": "-1086-10-05T09:56:02.324Z"
+        },
+        {
+          "jd_ut": 1324812.4894470014,
+          "motion": "direct",
+          "utc": "-1085-02-10T23:44:48.221Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1384698.790991751,
+      "final_pisces_egress_utc": "-0921-01-28T06:59:01.687Z",
+      "first_aries_ingress_jd_ut": 1384396.9081203584,
+      "first_aries_ingress_utc": "-0922-04-01T09:47:41.599Z",
+      "next_shell_first_aries_ingress_jd_ut": 1443988.2518867585,
+      "next_shell_first_aries_ingress_utc": "-0759-05-27T18:02:43.016Z",
+      "ordinal": 15,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.33029305828376,
+      "pre_shadow_start_jd_ut": 1384379.0301119364,
+      "pre_shadow_start_utc": "-0922-03-14T12:43:21.671Z",
+      "shell_id": "W15",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1384396.9081203584,
+          "motion": "direct",
+          "utc": "-0922-04-01T09:47:41.599Z"
+        },
+        {
+          "jd_ut": 1384599.4518927787,
+          "motion": "retrograde",
+          "utc": "-0922-10-20T22:50:43.536Z"
+        },
+        {
+          "jd_ut": 1384698.790991751,
+          "motion": "direct",
+          "utc": "-0921-01-28T06:59:01.687Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1444576.4268570328,
+      "final_pisces_egress_utc": "-0757-01-05T22:14:40.448Z",
+      "first_aries_ingress_jd_ut": 1443988.2518867585,
+      "first_aries_ingress_utc": "-0759-05-27T18:02:43.016Z",
+      "next_shell_first_aries_ingress_jd_ut": 1503867.7023626766,
+      "next_shell_first_aries_ingress_utc": "-0595-05-08T04:51:24.135Z",
+      "ordinal": 16,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.55309281901367,
+      "pre_shadow_start_jd_ut": 1443911.6261879588,
+      "pre_shadow_start_utc": "-0759-03-12T03:01:42.640Z",
+      "shell_id": "W16",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 1443988.2518867585,
+          "motion": "direct",
+          "utc": "-0759-05-27T18:02:43.016Z"
+        },
+        {
+          "jd_ut": 1444063.3697308498,
+          "motion": "retrograde",
+          "utc": "-0759-08-10T20:52:24.745Z"
+        },
+        {
+          "jd_ut": 1444284.4918018747,
+          "motion": "direct",
+          "utc": "-0758-03-19T23:48:11.682Z"
+        },
+        {
+          "jd_ut": 1444523.4717107452,
+          "motion": "retrograde",
+          "utc": "-0758-11-13T23:19:15.808Z"
+        },
+        {
+          "jd_ut": 1444576.4268570328,
+          "motion": "direct",
+          "utc": "-0757-01-05T22:14:40.448Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1504171.1577043491,
+      "final_pisces_egress_utc": "-0594-03-07T15:47:05.656Z",
+      "first_aries_ingress_jd_ut": 1503867.7023626766,
+      "first_aries_ingress_utc": "-0595-05-08T04:51:24.135Z",
+      "next_shell_first_aries_ingress_jd_ut": 1563750.7064597337,
+      "next_shell_first_aries_ingress_utc": "-0431-04-21T04:57:18.121Z",
+      "ordinal": 17,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.06073081392395,
+      "pre_shadow_start_jd_ut": 1503812.0403832062,
+      "pre_shadow_start_utc": "-0595-03-13T12:58:09.109Z",
+      "shell_id": "W17",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1503867.7023626766,
+          "motion": "direct",
+          "utc": "-0595-05-08T04:51:24.135Z"
+        },
+        {
+          "jd_ut": 1503985.7547639874,
+          "motion": "retrograde",
+          "utc": "-0595-09-03T06:06:51.609Z"
+        },
+        {
+          "jd_ut": 1504171.1577043491,
+          "motion": "direct",
+          "utc": "-0594-03-07T15:47:05.656Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1564056.2305856282,
+      "final_pisces_egress_utc": "-0430-02-20T17:32:02.598Z",
+      "first_aries_ingress_jd_ut": 1563750.7064597337,
+      "first_aries_ingress_utc": "-0431-04-21T04:57:18.121Z",
+      "next_shell_first_aries_ingress_jd_ut": 1623634.6728622243,
+      "next_shell_first_aries_ingress_utc": "-0267-04-05T04:08:55.296Z",
+      "ordinal": 18,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.601958369139,
+      "pre_shadow_start_jd_ut": 1563712.436313379,
+      "pre_shadow_start_utc": "-0431-03-13T22:28:17.476Z",
+      "shell_id": "W18",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1563750.7064597337,
+          "motion": "direct",
+          "utc": "-0431-04-21T04:57:18.121Z"
+        },
+        {
+          "jd_ut": 1563905.7639012751,
+          "motion": "retrograde",
+          "utc": "-0431-09-23T06:20:01.070Z"
+        },
+        {
+          "jd_ut": 1564056.2305856282,
+          "motion": "direct",
+          "utc": "-0430-02-20T17:32:02.598Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1623938.0450820443,
+      "final_pisces_egress_utc": "-0266-02-02T13:04:55.089Z",
+      "first_aries_ingress_jd_ut": 1623634.6728622243,
+      "first_aries_ingress_utc": "-0267-04-05T04:08:55.296Z",
+      "next_shell_first_aries_ingress_jd_ut": 1683222.8112630476,
+      "next_shell_first_aries_ingress_utc": "-0104-05-28T07:28:13.127Z",
+      "ordinal": 19,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.18267007381905,
+      "pre_shadow_start_jd_ut": 1623612.837975231,
+      "pre_shadow_start_utc": "-0267-03-14T08:06:41.060Z",
+      "shell_id": "W19",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1623634.6728622243,
+          "motion": "direct",
+          "utc": "-0267-04-05T04:08:55.296Z"
+        },
+        {
+          "jd_ut": 1623827.3375694207,
+          "motion": "retrograde",
+          "utc": "-0267-10-14T20:06:05.998Z"
+        },
+        {
+          "jd_ut": 1623938.0450820443,
+          "motion": "direct",
+          "utc": "-0266-02-02T13:04:55.089Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1683811.0455277897,
+      "final_pisces_egress_utc": "-0102-01-06T13:05:33.601Z",
+      "first_aries_ingress_jd_ut": 1683222.8112630476,
+      "first_aries_ingress_utc": "-0104-05-28T07:28:13.127Z",
+      "next_shell_first_aries_ingress_jd_ut": 1743096.0799429598,
+      "next_shell_first_aries_ingress_utc": "0060-05-01T13:55:07.072Z",
+      "ordinal": 20,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.54049044635,
+      "pre_shadow_start_jd_ut": 1683145.4780157367,
+      "pre_shadow_start_utc": "-0104-03-11T23:28:20.560Z",
+      "shell_id": "W20",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 1683222.8112630476,
+          "motion": "direct",
+          "utc": "-0104-05-28T07:28:13.127Z"
+        },
+        {
+          "jd_ut": 1683296.2451543068,
+          "motion": "retrograde",
+          "utc": "-0104-08-09T17:53:01.332Z"
+        },
+        {
+          "jd_ut": 1683518.6508439798,
+          "motion": "direct",
+          "utc": "-0103-03-20T03:37:12.920Z"
+        },
+        {
+          "jd_ut": 1683756.8176848693,
+          "motion": "retrograde",
+          "utc": "-0103-11-13T07:37:27.973Z"
+        },
+        {
+          "jd_ut": 1683811.0455277897,
+          "motion": "direct",
+          "utc": "-0102-01-06T13:05:33.601Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1743400.909917153,
+      "final_pisces_egress_utc": "0061-03-02T09:50:16.842Z",
+      "first_aries_ingress_jd_ut": 1743096.0799429598,
+      "first_aries_ingress_utc": "0060-05-01T13:55:07.072Z",
+      "next_shell_first_aries_ingress_jd_ut": 1802975.9737796262,
+      "next_shell_first_aries_ingress_utc": "0224-04-12T11:22:14.560Z",
+      "ordinal": 21,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.2180125853498,
+      "pre_shadow_start_jd_ut": 1743045.860116918,
+      "pre_shadow_start_utc": "0060-03-12T08:38:34.102Z",
+      "shell_id": "W21",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1743096.0799429598,
+          "motion": "direct",
+          "utc": "0060-05-01T13:55:07.072Z"
+        },
+        {
+          "jd_ut": 1743225.7031777576,
+          "motion": "retrograde",
+          "utc": "0060-09-08T04:52:34.558Z"
+        },
+        {
+          "jd_ut": 1743400.909917153,
+          "motion": "direct",
+          "utc": "0061-03-02T09:50:16.842Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1803281.3860823824,
+      "final_pisces_egress_utc": "0225-02-11T21:15:57.518Z",
+      "first_aries_ingress_jd_ut": 1802975.9737796262,
+      "first_aries_ingress_utc": "0224-04-12T11:22:14.560Z",
+      "next_shell_first_aries_ingress_jd_ut": 1862568.3541938467,
+      "next_shell_first_aries_ingress_utc": "0387-06-09T20:30:02.348Z",
+      "ordinal": 22,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.9002301434322,
+      "pre_shadow_start_jd_ut": 1802946.3656887817,
+      "pre_shadow_start_utc": "0224-03-13T20:46:35.511Z",
+      "shell_id": "W22",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1802975.9737796262,
+          "motion": "direct",
+          "utc": "0224-04-12T11:22:14.560Z"
+        },
+        {
+          "jd_ut": 1803150.6456500082,
+          "motion": "retrograde",
+          "utc": "0224-10-04T03:29:44.161Z"
+        },
+        {
+          "jd_ut": 1803281.3860823824,
+          "motion": "direct",
+          "utc": "0225-02-11T21:15:57.518Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1863155.309148929,
+      "final_pisces_egress_utc": "0389-01-16T19:25:10.467Z",
+      "first_aries_ingress_jd_ut": 1862568.3541938467,
+      "first_aries_ingress_utc": "0387-06-09T20:30:02.348Z",
+      "next_shell_first_aries_ingress_jd_ut": 1922436.3713328224,
+      "next_shell_first_aries_ingress_utc": "0551-05-08T20:54:43.156Z",
+      "ordinal": 23,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.35409290051865,
+      "pre_shadow_start_jd_ut": 1862479.452225104,
+      "pre_shadow_start_utc": "0387-03-12T22:51:12.249Z",
+      "shell_id": "W23",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 1862568.3541938467,
+          "motion": "direct",
+          "utc": "0387-06-09T20:30:02.348Z"
+        },
+        {
+          "jd_ut": 1862617.8891673856,
+          "motion": "retrograde",
+          "utc": "0387-07-29T09:20:24.062Z"
+        },
+        {
+          "jd_ut": 1862857.4343913659,
+          "motion": "direct",
+          "utc": "0388-03-24T22:25:31.414Z"
+        },
+        {
+          "jd_ut": 1863080.0845795786,
+          "motion": "retrograde",
+          "utc": "0388-11-02T14:01:47.676Z"
+        },
+        {
+          "jd_ut": 1863155.309148929,
+          "motion": "direct",
+          "utc": "0389-01-16T19:25:10.467Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1922739.7100129658,
+      "final_pisces_egress_utc": "0552-03-07T05:02:25.120Z",
+      "first_aries_ingress_jd_ut": 1922436.3713328224,
+      "first_aries_ingress_utc": "0551-05-08T20:54:43.156Z",
+      "next_shell_first_aries_ingress_jd_ut": 1982314.4929237133,
+      "next_shell_first_aries_ingress_utc": "0715-04-17T23:49:48.609Z",
+      "ordinal": 24,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.0367312552437,
+      "pre_shadow_start_jd_ut": 1922379.9376463117,
+      "pre_shadow_start_utc": "0551-03-13T10:30:12.641Z",
+      "shell_id": "W24",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1922436.3713328224,
+          "motion": "direct",
+          "utc": "0551-05-08T20:54:43.156Z"
+        },
+        {
+          "jd_ut": 1922552.4060117137,
+          "motion": "retrograde",
+          "utc": "0551-09-01T21:44:39.412Z"
+        },
+        {
+          "jd_ut": 1922739.7100129658,
+          "motion": "direct",
+          "utc": "0552-03-07T05:02:25.120Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 1982620.4180709035,
+      "final_pisces_egress_utc": "0716-02-17T22:02:01.326Z",
+      "first_aries_ingress_jd_ut": 1982314.4929237133,
+      "first_aries_ingress_utc": "0715-04-17T23:49:48.609Z",
+      "next_shell_first_aries_ingress_jd_ut": 2041918.2639929135,
+      "next_shell_first_aries_ingress_utc": "0878-06-24T18:20:08.988Z",
+      "ordinal": 25,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.735797991956,
+      "pre_shadow_start_jd_ut": 1982280.2414250658,
+      "pre_shadow_start_utc": "0715-03-14T17:47:39.126Z",
+      "shell_id": "W25",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1982314.4929237133,
+          "motion": "direct",
+          "utc": "0715-04-17T23:49:48.609Z"
+        },
+        {
+          "jd_ut": 1982478.5628285958,
+          "motion": "retrograde",
+          "utc": "0715-09-29T01:30:28.391Z"
+        },
+        {
+          "jd_ut": 1982620.4180709035,
+          "motion": "direct",
+          "utc": "0716-02-17T22:02:01.326Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2042496.345935442,
+      "final_pisces_egress_utc": "0880-01-23T20:18:08.822Z",
+      "first_aries_ingress_jd_ut": 2041918.2639929135,
+      "first_aries_ingress_utc": "0878-06-24T18:20:08.988Z",
+      "next_shell_first_aries_ingress_jd_ut": 2101774.7177383304,
+      "next_shell_first_aries_ingress_utc": "1042-05-13T05:13:32.592Z",
+      "ordinal": 26,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.2067587327267,
+      "pre_shadow_start_jd_ut": 2041813.1255501807,
+      "pre_shadow_start_utc": "0878-03-11T15:00:47.536Z",
+      "shell_id": "W26",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2041918.2639929135,
+          "motion": "direct",
+          "utc": "0878-06-24T18:20:08.988Z"
+        },
+        {
+          "jd_ut": 2041935.106358971,
+          "motion": "retrograde",
+          "utc": "0878-07-11T14:33:09.415Z"
+        },
+        {
+          "jd_ut": 2042195.3125890018,
+          "motion": "direct",
+          "utc": "0879-03-28T19:30:07.690Z"
+        },
+        {
+          "jd_ut": 2042406.601078371,
+          "motion": "retrograde",
+          "utc": "0879-10-26T02:25:33.171Z"
+        },
+        {
+          "jd_ut": 2042496.345935442,
+          "motion": "direct",
+          "utc": "0880-01-23T20:18:08.822Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2102077.1805462837,
+      "final_pisces_egress_utc": "1043-03-11T16:19:59.199Z",
+      "first_aries_ingress_jd_ut": 2101774.7177383304,
+      "first_aries_ingress_utc": "1042-05-13T05:13:32.592Z",
+      "next_shell_first_aries_ingress_jd_ut": 2161652.4848165903,
+      "next_shell_first_aries_ingress_utc": "1206-04-20T23:38:08.153Z",
+      "ordinal": 27,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.9075255299696,
+      "pre_shadow_start_jd_ut": 2101713.6080094427,
+      "pre_shadow_start_utc": "1042-03-13T02:35:32.016Z",
+      "shell_id": "W27",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2101774.7177383304,
+          "motion": "direct",
+          "utc": "1042-05-13T05:13:32.592Z"
+        },
+        {
+          "jd_ut": 2101881.077239114,
+          "motion": "retrograde",
+          "utc": "1042-08-27T13:51:13.459Z"
+        },
+        {
+          "jd_ut": 2102077.1805462837,
+          "motion": "direct",
+          "utc": "1043-03-11T16:19:59.199Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2161958.498300012,
+      "final_pisces_egress_utc": "1207-02-20T23:57:33.121Z",
+      "first_aries_ingress_jd_ut": 2161652.4848165903,
+      "first_aries_ingress_utc": "1206-04-20T23:38:08.153Z",
+      "next_shell_first_aries_ingress_jd_ut": 2221534.9029355766,
+      "next_shell_first_aries_ingress_utc": "1370-04-03T09:40:13.634Z",
+      "ordinal": 28,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.5964101690227,
+      "pre_shadow_start_jd_ut": 2161614.196869228,
+      "pre_shadow_start_utc": "1206-03-13T16:43:29.501Z",
+      "shell_id": "W28",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2161652.4848165903,
+          "motion": "direct",
+          "utc": "1206-04-20T23:38:08.153Z"
+        },
+        {
+          "jd_ut": 2161807.3129182197,
+          "motion": "retrograde",
+          "utc": "1206-09-22T19:30:36.134Z"
+        },
+        {
+          "jd_ut": 2161958.498300012,
+          "motion": "direct",
+          "utc": "1207-02-20T23:57:33.121Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2221838.3700238615,
+      "final_pisces_egress_utc": "1371-01-31T20:52:50.062Z",
+      "first_aries_ingress_jd_ut": 2221534.9029355766,
+      "first_aries_ingress_utc": "1370-04-03T09:40:13.634Z",
+      "next_shell_first_aries_ingress_jd_ut": 2281120.0785638494,
+      "next_shell_first_aries_ingress_utc": "1533-05-24T13:53:07.917Z",
+      "ordinal": 29,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.23626614762145,
+      "pre_shadow_start_jd_ut": 2221514.6213370375,
+      "pre_shadow_start_utc": "1370-03-14T02:54:43.520Z",
+      "shell_id": "W29",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2221534.9029355766,
+          "motion": "direct",
+          "utc": "1370-04-03T09:40:13.634Z"
+        },
+        {
+          "jd_ut": 2221731.4497860605,
+          "motion": "retrograde",
+          "utc": "1370-10-16T22:47:41.516Z"
+        },
+        {
+          "jd_ut": 2221838.3700238615,
+          "motion": "direct",
+          "utc": "1371-01-31T20:52:50.062Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2281707.2588535817,
+      "final_pisces_egress_utc": "1535-01-01T18:12:44.949Z",
+      "first_aries_ingress_jd_ut": 2281120.0785638494,
+      "first_aries_ingress_utc": "1533-05-24T13:53:07.917Z",
+      "next_shell_first_aries_ingress_jd_ut": 2340996.9357619807,
+      "next_shell_first_aries_ingress_utc": "1697-04-30T10:27:29.835Z",
+      "ordinal": 30,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.6317791304469,
+      "pre_shadow_start_jd_ut": 2281047.3485925375,
+      "pre_shadow_start_utc": "1533-03-12T20:21:58.395Z",
+      "shell_id": "W30",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2281120.0785638494,
+          "motion": "direct",
+          "utc": "1533-05-24T13:53:07.917Z"
+        },
+        {
+          "jd_ut": 2281202.06846074,
+          "motion": "retrograde",
+          "utc": "1533-08-14T13:38:35.008Z"
+        },
+        {
+          "jd_ut": 2281418.2551856823,
+          "motion": "direct",
+          "utc": "1534-03-18T18:07:28.043Z"
+        },
+        {
+          "jd_ut": 2281665.2874839725,
+          "motion": "retrograde",
+          "utc": "1534-11-20T18:53:58.615Z"
+        },
+        {
+          "jd_ut": 2281707.2588535817,
+          "motion": "direct",
+          "utc": "1535-01-01T18:12:44.949Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21"
+      ]
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2341302.306753779,
+      "final_pisces_egress_utc": "1698-03-01T19:21:43.526Z",
+      "first_aries_ingress_jd_ut": 2340996.9357619807,
+      "first_aries_ingress_utc": "1697-04-30T10:27:29.835Z",
+      "next_shell_first_aries_ingress_jd_ut": 2400879.3503769916,
+      "next_shell_first_aries_ingress_utc": "1861-04-13T20:24:32.572Z",
+      "ordinal": 31,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.24069103409533,
+      "pre_shadow_start_jd_ut": 2340947.644258119,
+      "pre_shadow_start_utc": "1697-03-12T03:27:43.901Z",
+      "shell_id": "W31",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2340996.9357619807,
+          "motion": "direct",
+          "utc": "1697-04-30T10:27:29.835Z"
+        },
+        {
+          "jd_ut": 2341127.923165423,
+          "motion": "retrograde",
+          "utc": "1697-09-08T10:09:21.493Z"
+        },
+        {
+          "jd_ut": 2341302.306753779,
+          "motion": "direct",
+          "utc": "1698-03-01T19:21:43.526Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21",
+        "Z22"
+      ]
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2401185.513636592,
+      "final_pisces_egress_utc": "1862-02-14T00:19:38.202Z",
+      "first_aries_ingress_jd_ut": 2400879.3503769916,
+      "first_aries_ingress_utc": "1861-04-13T20:24:32.572Z",
+      "next_shell_first_aries_ingress_jd_ut": 2460764.9985714555,
+      "next_shell_first_aries_ingress_utc": "2025-03-30T11:57:56.574Z",
+      "ordinal": 32,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 358.83271344155264,
+      "pre_shadow_start_jd_ut": 2400847.976135306,
+      "pre_shadow_start_utc": "1861-03-13T11:25:38.090Z",
+      "shell_id": "W32",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2400879.3503769916,
+          "motion": "direct",
+          "utc": "1861-04-13T20:24:32.572Z"
+        },
+        {
+          "jd_ut": 2401049.7431997387,
+          "motion": "retrograde",
+          "utc": "1861-10-01T05:50:12.457Z"
+        },
+        {
+          "jd_ut": 2401185.513636592,
+          "motion": "direct",
+          "utc": "1862-02-14T00:19:38.202Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z22"
+      ]
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2461067.232389752,
+      "final_pisces_egress_utc": "2026-01-26T17:34:38.475Z",
+      "first_aries_ingress_jd_ut": 2460764.9985714555,
+      "first_aries_ingress_utc": "2025-03-30T11:57:56.574Z",
+      "next_shell_first_aries_ingress_jd_ut": 2520354.622369686,
+      "next_shell_first_aries_ingress_utc": "2188-05-24T02:56:12.741Z",
+      "ordinal": 33,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 359.3726543812796,
+      "pre_shadow_start_jd_ut": 2460748.4095829157,
+      "pre_shadow_start_utc": "2025-03-13T21:49:47.964Z",
+      "shell_id": "W33",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2460764.9985714555,
+          "motion": "direct",
+          "utc": "2025-03-30T11:57:56.574Z"
+        },
+        {
+          "jd_ut": 2460970.9102396183,
+          "motion": "retrograde",
+          "utc": "2025-10-22T09:50:44.703Z"
+        },
+        {
+          "jd_ut": 2461067.232389752,
+          "motion": "direct",
+          "utc": "2026-01-26T17:34:38.475Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z22",
+        "Z23"
+      ]
+    },
+    {
+      "family": "Neptunian Wave",
+      "final_pisces_egress_jd_ut": 2520942.251434435,
+      "final_pisces_egress_utc": "2190-01-01T18:02:03.935Z",
+      "first_aries_ingress_jd_ut": 2520354.622369686,
+      "first_aries_ingress_utc": "2188-05-24T02:56:12.741Z",
+      "next_shell_first_aries_ingress_jd_ut": 2580236.089022046,
+      "next_shell_first_aries_ingress_utc": "2352-05-06T14:08:11.505Z",
+      "ordinal": 34,
+      "planet": "Neptune",
+      "pre_shadow_floor_degree": 357.61611607986816,
+      "pre_shadow_start_jd_ut": 2520281.1708877413,
+      "pre_shadow_start_utc": "2188-03-11T16:06:04.701Z",
+      "shell_id": "W34",
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2520354.622369686,
+          "motion": "direct",
+          "utc": "2188-05-24T02:56:12.741Z"
+        },
+        {
+          "jd_ut": 2520434.4777235966,
+          "motion": "retrograde",
+          "utc": "2188-08-11T23:27:55.319Z"
+        },
+        {
+          "jd_ut": 2520652.396002827,
+          "motion": "direct",
+          "utc": "2189-03-17T21:30:14.644Z"
+        },
+        {
+          "jd_ut": 2520897.816397123,
+          "motion": "retrograde",
+          "utc": "2189-11-18T07:35:36.711Z"
+        },
+        {
+          "jd_ut": 2520942.251434435,
+          "motion": "direct",
+          "utc": "2190-01-01T18:02:03.935Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z23"
+      ]
+    }
+  ],
+  "schema_version": "1.0.0"
+}

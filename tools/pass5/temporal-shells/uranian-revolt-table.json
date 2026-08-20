@@ -1,0 +1,2519 @@
+{
+  "numbering_epoch": {
+    "jd_ut": 431167.610188324,
+    "utc": "-3532-05-24T02:38:40.271Z",
+    "zeitgeist_id": "Z0"
+  },
+  "numbering_law": "R0 is the first qualifying Uranus direct Pisces-to-Aries ingress strictly after Z0; later 0-Aries recrossings remain in the same shell.",
+  "ownership": "[first_aries_ingress, next_shell_first_aries_ingress)",
+  "provenance": {
+    "astronomical_engine": "official Swiss Ephemeris C",
+    "coordinate_contract": {
+      "center": "geocentric",
+      "frame": "ecliptic of date",
+      "zodiac": "tropical"
+    },
+    "ephemeris_files": [
+      {
+        "bytes": 508266,
+        "name": "seplm36.se1",
+        "sha256": "3decdf336fa377489051cc4428be6761602dacd02d214a1e9b0b21df7650c4a3"
+      },
+      {
+        "bytes": 498417,
+        "name": "seplm30.se1",
+        "sha256": "a1c87c8cd69d2621098e8efe01795be0bfbc6ead0d925d6fb80c35b6d94589c4"
+      },
+      {
+        "bytes": 493045,
+        "name": "seplm24.se1",
+        "sha256": "4c536e748481b23ac25f42d0e815ba5c7ae1c27e034efb04a6977a2e95291f10"
+      },
+      {
+        "bytes": 489915,
+        "name": "seplm18.se1",
+        "sha256": "d02d4ae93d215e3e1a4f9a7ca56c8aa331630ffde646132cee4d3f018b65f443"
+      },
+      {
+        "bytes": 484597,
+        "name": "seplm12.se1",
+        "sha256": "b744e60a251c04a086a1f03ac1971d96945aa8b354d1704e3be6c767ff10bac3"
+      },
+      {
+        "bytes": 484263,
+        "name": "seplm06.se1",
+        "sha256": "5a8719a75e48b223c0d7c8ba0191d698b808b4fb7265f2cddaa975edd8ac7aec"
+      },
+      {
+        "bytes": 483932,
+        "name": "sepl_00.se1",
+        "sha256": "65f1bfa4c27a2311f6db8447ba9f678a03b1431eb30052bf323619c8209282f1"
+      },
+      {
+        "bytes": 482956,
+        "name": "sepl_06.se1",
+        "sha256": "5aff87ba1664410669b54366752343ca71a22cca1b3698c57edcc4631361675a"
+      },
+      {
+        "bytes": 483743,
+        "name": "sepl_12.se1",
+        "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d"
+      },
+      {
+        "bytes": 484061,
+        "name": "sepl_18.se1",
+        "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66"
+      },
+      {
+        "bytes": 483414,
+        "name": "sepl_24.se1",
+        "sha256": "dea65ffc3ee39125eb1427ecfd578a208be2dd021f49fdfd4b8a130ccd5244f0"
+      },
+      {
+        "bytes": 1380647,
+        "name": "semom36.se1",
+        "sha256": "950dbc6bd68137376872b2c684a5bf01c4556e323c2fa6a8c693610e4c777638"
+      },
+      {
+        "bytes": 1371496,
+        "name": "semom30.se1",
+        "sha256": "9798e8b1fe32e76798681cf2a6e9e1d93a37674588ee2d25d8c944df52351bcd"
+      },
+      {
+        "bytes": 1365135,
+        "name": "semom24.se1",
+        "sha256": "90c9803cce19d2e4cdbf60b8161ef6699f1c6b25fc01c33f2bad84cf00bc87b7"
+      },
+      {
+        "bytes": 1356303,
+        "name": "semom18.se1",
+        "sha256": "e3920cb18cbf756737c8429af100f6ca90a498761c65e3b87262e879c22f0566"
+      },
+      {
+        "bytes": 1347252,
+        "name": "semom12.se1",
+        "sha256": "4f88cf96ed6a0069e24a6525c404f6ce1a749acf281451819915e123e1af7408"
+      },
+      {
+        "bytes": 1332989,
+        "name": "semom06.se1",
+        "sha256": "d21bb9968c97c0647088aaa4af402dee22706f327b2bedd67685623738ebd54b"
+      },
+      {
+        "bytes": 1322594,
+        "name": "semo_00.se1",
+        "sha256": "4b4cc4d2894130f006ab872f1e2c365883bc7354d63c9ca6491271ad3b8effe4"
+      },
+      {
+        "bytes": 1316056,
+        "name": "semo_06.se1",
+        "sha256": "3ab86918312d125cbadc10e087237a7f30254a206925f769123027c367fd15ac"
+      },
+      {
+        "bytes": 1305932,
+        "name": "semo_12.se1",
+        "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61"
+      },
+      {
+        "bytes": 1304771,
+        "name": "semo_18.se1",
+        "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7"
+      },
+      {
+        "bytes": 1308128,
+        "name": "semo_24.se1",
+        "sha256": "62260992014e61d655c13733bb2d415ac23e8013d8ecf1d7714c237ea8f5b250"
+      }
+    ],
+    "ephemeris_generation": "DE441",
+    "flags": 258,
+    "source_commit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+    "source_repository": "huntarfischer/swisseph",
+    "swiss_version": "2.10.03"
+  },
+  "rows": [
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 437229.6377209552,
+      "final_pisces_egress_utc": "-3516-12-28T03:18:19.091Z",
+      "first_aries_ingress_jd_ut": 436953.759450997,
+      "first_aries_ingress_utc": "-3516-03-27T06:13:36.566Z",
+      "next_shell_first_aries_ingress_jd_ut": 467338.6081740393,
+      "next_shell_first_aries_ingress_utc": "-3433-06-06T02:35:46.237Z",
+      "ordinal": 0,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.77954966305225,
+      "pre_shadow_start_jd_ut": 436950.02470140124,
+      "pre_shadow_start_utc": "-3516-03-23T12:35:34.201Z",
+      "shell_id": "R0",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 436953.759450997,
+          "motion": "direct",
+          "utc": "-3516-03-27T06:13:36.566Z"
+        },
+        {
+          "jd_ut": 437184.82752491964,
+          "motion": "retrograde",
+          "utc": "-3516-11-13T07:51:38.153Z"
+        },
+        {
+          "jd_ut": 437229.6377209552,
+          "motion": "direct",
+          "utc": "-3516-12-28T03:18:19.091Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 467619.29562580516,
+      "final_pisces_egress_utc": "-3432-03-12T19:05:42.070Z",
+      "first_aries_ingress_jd_ut": 467338.6081740393,
+      "first_aries_ingress_utc": "-3433-06-06T02:35:46.237Z",
+      "next_shell_first_aries_ingress_jd_ut": 497993.3862494825,
+      "next_shell_first_aries_ingress_utc": "-3349-05-11T21:16:11.955Z",
+      "ordinal": 1,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.35788089321187,
+      "pre_shadow_start_jd_ut": 467261.49624929857,
+      "pre_shadow_start_utc": "-3433-03-20T23:54:35.939Z",
+      "shell_id": "R1",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 467338.6081740393,
+          "motion": "direct",
+          "utc": "-3433-06-06T02:35:46.237Z"
+        },
+        {
+          "jd_ut": 467400.3055011487,
+          "motion": "retrograde",
+          "utc": "-3433-08-06T19:19:55.299Z"
+        },
+        {
+          "jd_ut": 467619.29562580516,
+          "motion": "direct",
+          "utc": "-3432-03-12T19:05:42.070Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 498284.3353712441,
+      "final_pisces_egress_utc": "-3348-02-26T20:02:56.075Z",
+      "first_aries_ingress_jd_ut": 497993.3862494825,
+      "first_aries_ingress_utc": "-3349-05-11T21:16:11.955Z",
+      "next_shell_first_aries_ingress_jd_ut": 528655.6659539666,
+      "next_shell_first_aries_ingress_utc": "-3265-04-24T03:58:58.423Z",
+      "ordinal": 2,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.29461714192246,
+      "pre_shadow_start_jd_ut": 497942.8117267176,
+      "pre_shadow_start_utc": "-3349-03-22T07:28:53.188Z",
+      "shell_id": "R2",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 497993.3862494825,
+          "motion": "direct",
+          "utc": "-3349-05-11T21:16:11.955Z"
+        },
+        {
+          "jd_ut": 498109.43924754276,
+          "motion": "retrograde",
+          "utc": "-3349-09-04T22:32:30.988Z"
+        },
+        {
+          "jd_ut": 498284.3353712441,
+          "motion": "direct",
+          "utc": "-3348-02-26T20:02:56.075Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 528948.1137430056,
+      "final_pisces_egress_utc": "-3264-02-10T14:43:47.396Z",
+      "first_aries_ingress_jd_ut": 528655.6659539666,
+      "first_aries_ingress_utc": "-3265-04-24T03:58:58.423Z",
+      "next_shell_first_aries_ingress_jd_ut": 559318.9844509186,
+      "next_shell_first_aries_ingress_utc": "-3181-04-06T11:37:36.559Z",
+      "ordinal": 3,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.21728948041834,
+      "pre_shadow_start_jd_ut": 528624.1435438856,
+      "pre_shadow_start_utc": "-3265-03-23T15:26:42.192Z",
+      "shell_id": "R3",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 528655.6659539666,
+          "motion": "direct",
+          "utc": "-3265-04-24T03:58:58.423Z"
+        },
+        {
+          "jd_ut": 528812.7406117399,
+          "motion": "retrograde",
+          "utc": "-3265-09-28T05:46:28.854Z"
+        },
+        {
+          "jd_ut": 528948.1137430056,
+          "motion": "direct",
+          "utc": "-3264-02-10T14:43:47.396Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 559606.0852178391,
+      "final_pisces_egress_utc": "-3180-01-18T14:02:42.821Z",
+      "first_aries_ingress_jd_ut": 559318.9844509186,
+      "first_aries_ingress_utc": "-3181-04-06T11:37:36.559Z",
+      "next_shell_first_aries_ingress_jd_ut": 589983.4139719403,
+      "next_shell_first_aries_ingress_utc": "-3097-03-21T21:56:07.176Z",
+      "ordinal": 4,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.2139488104918,
+      "pre_shadow_start_jd_ut": 559305.4990876268,
+      "pre_shadow_start_utc": "-3181-03-23T23:58:41.171Z",
+      "shell_id": "R4",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 559318.9844509186,
+          "motion": "direct",
+          "utc": "-3181-04-06T11:37:36.559Z"
+        },
+        {
+          "jd_ut": 559519.7193754178,
+          "motion": "retrograde",
+          "utc": "-3181-10-24T05:15:54.036Z"
+        },
+        {
+          "jd_ut": 559606.0852178391,
+          "motion": "direct",
+          "utc": "-3180-01-18T14:02:42.821Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 589983.4139719403,
+      "final_pisces_egress_utc": "-3097-03-21T21:56:07.176Z",
+      "first_aries_ingress_jd_ut": 589983.4139719403,
+      "first_aries_ingress_utc": "-3097-03-21T21:56:07.176Z",
+      "next_shell_first_aries_ingress_jd_ut": 620358.0493025454,
+      "next_shell_first_aries_ingress_utc": "-3014-05-19T13:10:59.740Z",
+      "ordinal": 5,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": null,
+      "pre_shadow_start_jd_ut": null,
+      "pre_shadow_start_utc": null,
+      "shell_id": "R5",
+      "transition_crossing_count": 1,
+      "transition_crossings": [
+        {
+          "jd_ut": 589983.4139719403,
+          "motion": "direct",
+          "utc": "-3097-03-21T21:56:07.176Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 620646.9247225258,
+      "final_pisces_egress_utc": "-3013-03-04T10:11:36.026Z",
+      "first_aries_ingress_jd_ut": 620358.0493025454,
+      "first_aries_ingress_utc": "-3014-05-19T13:10:59.740Z",
+      "next_shell_first_aries_ingress_jd_ut": 651017.4115718161,
+      "next_shell_first_aries_ingress_utc": "-2930-04-28T21:52:39.805Z",
+      "ordinal": 6,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.9337078390334,
+      "pre_shadow_start_jd_ut": 620298.4691852494,
+      "pre_shadow_start_utc": "-3014-03-20T23:15:37.606Z",
+      "shell_id": "R6",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 620358.0493025454,
+          "motion": "direct",
+          "utc": "-3014-05-19T13:10:59.740Z"
+        },
+        {
+          "jd_ut": 620456.0007150103,
+          "motion": "retrograde",
+          "utc": "-3014-08-25T12:01:01.777Z"
+        },
+        {
+          "jd_ut": 620646.9247225258,
+          "motion": "direct",
+          "utc": "-3013-03-04T10:11:36.026Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 651310.3866657992,
+      "final_pisces_egress_utc": "-2929-02-15T21:16:47.925Z",
+      "first_aries_ingress_jd_ut": 651017.4115718161,
+      "first_aries_ingress_utc": "-2930-04-28T21:52:39.805Z",
+      "next_shell_first_aries_ingress_jd_ut": 681680.0910379798,
+      "next_shell_first_aries_ingress_utc": "-2846-04-11T14:11:05.681Z",
+      "ordinal": 7,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.9107633391436,
+      "pre_shadow_start_jd_ut": 650979.829672118,
+      "pre_shadow_start_utc": "-2930-03-22T07:54:43.671Z",
+      "shell_id": "R7",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 651017.4115718161,
+          "motion": "direct",
+          "utc": "-2930-04-28T21:52:39.805Z"
+        },
+        {
+          "jd_ut": 651161.7009466139,
+          "motion": "retrograde",
+          "utc": "-2930-09-20T04:49:21.787Z"
+        },
+        {
+          "jd_ut": 651310.3866657992,
+          "motion": "direct",
+          "utc": "-2929-02-15T21:16:47.925Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 681970.3433383198,
+      "final_pisces_egress_utc": "-2845-01-26T20:14:24.431Z",
+      "first_aries_ingress_jd_ut": 681680.0910379798,
+      "first_aries_ingress_utc": "-2846-04-11T14:11:05.681Z",
+      "next_shell_first_aries_ingress_jd_ut": 712345.1962920101,
+      "next_shell_first_aries_ingress_utc": "-2762-03-26T16:42:39.630Z",
+      "ordinal": 8,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.90704310916294,
+      "pre_shadow_start_jd_ut": 681661.1622952139,
+      "pre_shadow_start_utc": "-2846-03-23T15:53:42.306Z",
+      "shell_id": "R8",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 681680.0910379798,
+          "motion": "direct",
+          "utc": "-2846-04-11T14:11:05.681Z"
+        },
+        {
+          "jd_ut": 681867.3534799356,
+          "motion": "retrograde",
+          "utc": "-2846-10-15T20:29:00.666Z"
+        },
+        {
+          "jd_ut": 681970.3433383198,
+          "motion": "direct",
+          "utc": "-2845-01-26T20:14:24.431Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 712619.6634298165,
+      "final_pisces_egress_utc": "-2762-12-26T03:55:20.336Z",
+      "first_aries_ingress_jd_ut": 712345.1962920101,
+      "first_aries_ingress_utc": "-2762-03-26T16:42:39.630Z",
+      "next_shell_first_aries_ingress_jd_ut": 742723.6566200345,
+      "next_shell_first_aries_ingress_utc": "-2679-05-29T03:45:31.971Z",
+      "ordinal": 9,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.84231084776457,
+      "pre_shadow_start_jd_ut": 712342.5050172978,
+      "pre_shadow_start_utc": "-2762-03-24T00:07:13.495Z",
+      "shell_id": "R9",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 712345.1962920101,
+          "motion": "direct",
+          "utc": "-2762-03-26T16:42:39.630Z"
+        },
+        {
+          "jd_ut": 712581.7898463381,
+          "motion": "retrograde",
+          "utc": "-2762-11-18T06:57:22.724Z"
+        },
+        {
+          "jd_ut": 712619.6634298165,
+          "motion": "direct",
+          "utc": "-2762-12-26T03:55:20.336Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 743009.033315663,
+      "final_pisces_egress_utc": "-2678-03-10T12:47:58.473Z",
+      "first_aries_ingress_jd_ut": 742723.6566200345,
+      "first_aries_ingress_utc": "-2679-05-29T03:45:31.971Z",
+      "next_shell_first_aries_ingress_jd_ut": 773379.6392373978,
+      "next_shell_first_aries_ingress_utc": "-2595-05-05T03:20:30.111Z",
+      "ordinal": 10,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.5982590447093,
+      "pre_shadow_start_jd_ut": 742654.1120471181,
+      "pre_shadow_start_utc": "-2679-03-20T14:41:20.871Z",
+      "shell_id": "R10",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 742723.6566200345,
+          "motion": "direct",
+          "utc": "-2679-05-29T03:45:31.971Z"
+        },
+        {
+          "jd_ut": 742801.8252679466,
+          "motion": "retrograde",
+          "utc": "-2679-08-15T07:48:23.151Z"
+        },
+        {
+          "jd_ut": 743009.033315663,
+          "motion": "direct",
+          "utc": "-2678-03-10T12:47:58.473Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 773672.4365742132,
+      "final_pisces_egress_utc": "-2594-02-21T22:28:40.012Z",
+      "first_aries_ingress_jd_ut": 773379.6392373978,
+      "first_aries_ingress_utc": "-2595-05-05T03:20:30.111Z",
+      "next_shell_first_aries_ingress_jd_ut": 804039.4658548723,
+      "next_shell_first_aries_ingress_utc": "-2511-04-13T23:10:49.861Z",
+      "ordinal": 11,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.60692298812074,
+      "pre_shadow_start_jd_ut": 773335.5552272091,
+      "pre_shadow_start_utc": "-2595-03-22T01:19:31.631Z",
+      "shell_id": "R11",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 773379.6392373978,
+          "motion": "direct",
+          "utc": "-2595-05-05T03:20:30.111Z"
+        },
+        {
+          "jd_ut": 773510.4464091358,
+          "motion": "retrograde",
+          "utc": "-2595-09-12T22:42:49.749Z"
+        },
+        {
+          "jd_ut": 773672.4365742132,
+          "motion": "direct",
+          "utc": "-2594-02-21T22:28:40.012Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 804331.1040021221,
+      "final_pisces_egress_utc": "-2510-01-30T14:29:45.783Z",
+      "first_aries_ingress_jd_ut": 804039.4658548723,
+      "first_aries_ingress_utc": "-2511-04-13T23:10:49.861Z",
+      "next_shell_first_aries_ingress_jd_ut": 834702.3110180551,
+      "next_shell_first_aries_ingress_utc": "-2427-03-27T19:27:51.960Z",
+      "ordinal": 12,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.7207292150254,
+      "pre_shadow_start_jd_ut": 804017.0935228348,
+      "pre_shadow_start_utc": "-2511-03-22T14:14:40.373Z",
+      "shell_id": "R12",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 804039.4658548723,
+          "motion": "direct",
+          "utc": "-2511-04-13T23:10:49.861Z"
+        },
+        {
+          "jd_ut": 804218.6981710445,
+          "motion": "retrograde",
+          "utc": "-2511-10-10T04:45:21.978Z"
+        },
+        {
+          "jd_ut": 804331.1040021221,
+          "motion": "direct",
+          "utc": "-2510-01-30T14:29:45.783Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 834979.2763622291,
+      "final_pisces_egress_utc": "-2427-12-29T18:37:57.697Z",
+      "first_aries_ingress_jd_ut": 834702.3110180551,
+      "first_aries_ingress_utc": "-2427-03-27T19:27:51.960Z",
+      "next_shell_first_aries_ingress_jd_ut": 865078.2692583608,
+      "next_shell_first_aries_ingress_utc": "-2344-05-26T18:27:43.922Z",
+      "ordinal": 13,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.784255525072,
+      "pre_shadow_start_jd_ut": 834698.6143619567,
+      "pre_shadow_start_utc": "-2427-03-24T02:44:40.873Z",
+      "shell_id": "R13",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 834702.3110180551,
+          "motion": "direct",
+          "utc": "-2427-03-27T19:27:51.960Z"
+        },
+        {
+          "jd_ut": 834934.9042645076,
+          "motion": "retrograde",
+          "utc": "-2427-11-15T09:42:08.453Z"
+        },
+        {
+          "jd_ut": 834979.2763622291,
+          "motion": "direct",
+          "utc": "-2427-12-29T18:37:57.697Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 865364.5051741351,
+      "final_pisces_egress_utc": "-2343-03-09T00:07:27.045Z",
+      "first_aries_ingress_jd_ut": 865078.2692583608,
+      "first_aries_ingress_utc": "-2344-05-26T18:27:43.922Z",
+      "next_shell_first_aries_ingress_jd_ut": 895734.1474509789,
+      "next_shell_first_aries_ingress_utc": "-2260-05-02T15:32:19.765Z",
+      "ordinal": 14,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.6607339594418,
+      "pre_shadow_start_jd_ut": 865010.3564435344,
+      "pre_shadow_start_utc": "-2344-03-19T20:33:16.721Z",
+      "shell_id": "R14",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 865078.2692583608,
+          "motion": "direct",
+          "utc": "-2344-05-26T18:27:43.922Z"
+        },
+        {
+          "jd_ut": 865159.9717761693,
+          "motion": "retrograde",
+          "utc": "-2344-08-16T11:19:21.461Z"
+        },
+        {
+          "jd_ut": 865364.5051741351,
+          "motion": "direct",
+          "utc": "-2343-03-09T00:07:27.045Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 896027.2914186779,
+      "final_pisces_egress_utc": "-2259-02-19T18:59:38.574Z",
+      "first_aries_ingress_jd_ut": 895734.1474509789,
+      "first_aries_ingress_utc": "-2260-05-02T15:32:19.765Z",
+      "next_shell_first_aries_ingress_jd_ut": 926394.0251481829,
+      "next_shell_first_aries_ingress_utc": "-2176-04-12T12:36:12.803Z",
+      "ordinal": 15,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.69832458035063,
+      "pre_shadow_start_jd_ut": 895691.8366385037,
+      "pre_shadow_start_utc": "-2260-03-21T08:04:45.567Z",
+      "shell_id": "R15",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 895734.1474509789,
+          "motion": "direct",
+          "utc": "-2260-05-02T15:32:19.765Z"
+        },
+        {
+          "jd_ut": 895868.9622216853,
+          "motion": "retrograde",
+          "utc": "-2260-09-14T11:05:35.954Z"
+        },
+        {
+          "jd_ut": 896027.2914186779,
+          "motion": "direct",
+          "utc": "-2259-02-19T18:59:38.574Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 926685.3889854222,
+      "final_pisces_egress_utc": "-2175-01-28T21:20:08.340Z",
+      "first_aries_ingress_jd_ut": 926394.0251481829,
+      "first_aries_ingress_utc": "-2176-04-12T12:36:12.803Z",
+      "next_shell_first_aries_ingress_jd_ut": 957056.509898145,
+      "next_shell_first_aries_ingress_utc": "-2092-03-26T00:14:15.200Z",
+      "ordinal": 16,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.81913488386886,
+      "pre_shadow_start_jd_ut": 926373.3490698836,
+      "pre_shadow_start_utc": "-2176-03-22T20:22:39.638Z",
+      "shell_id": "R16",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 926394.0251481829,
+          "motion": "direct",
+          "utc": "-2176-04-12T12:36:12.803Z"
+        },
+        {
+          "jd_ut": 926577.6386834332,
+          "motion": "retrograde",
+          "utc": "-2176-10-13T03:19:42.249Z"
+        },
+        {
+          "jd_ut": 926685.3889854222,
+          "motion": "direct",
+          "utc": "-2175-01-28T21:20:08.340Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 957328.5333665367,
+      "final_pisces_egress_utc": "-2092-12-23T00:48:02.869Z",
+      "first_aries_ingress_jd_ut": 957056.509898145,
+      "first_aries_ingress_utc": "-2092-03-26T00:14:15.200Z",
+      "next_shell_first_aries_ingress_jd_ut": 987428.5242644327,
+      "next_shell_first_aries_ingress_utc": "-2009-05-22T00:34:56.447Z",
+      "ordinal": 17,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.9034318804952,
+      "pre_shadow_start_jd_ut": 957054.8482256772,
+      "pre_shadow_start_utc": "-2092-03-24T08:21:26.699Z",
+      "shell_id": "R17",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 957056.509898145,
+          "motion": "direct",
+          "utc": "-2092-03-26T00:14:15.200Z"
+        },
+        {
+          "jd_ut": 957298.8795811313,
+          "motion": "retrograde",
+          "utc": "-2092-11-23T09:06:35.810Z"
+        },
+        {
+          "jd_ut": 957328.5333665367,
+          "motion": "direct",
+          "utc": "-2092-12-23T00:48:02.869Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 987717.4149829447,
+      "final_pisces_egress_utc": "-2008-03-05T21:57:34.526Z",
+      "first_aries_ingress_jd_ut": 987428.5242644327,
+      "first_aries_ingress_utc": "-2009-05-22T00:34:56.447Z",
+      "next_shell_first_aries_ingress_jd_ut": 1018083.6713861874,
+      "next_shell_first_aries_ingress_utc": "-1925-04-26T04:06:47.767Z",
+      "ordinal": 18,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.8874082322214,
+      "pre_shadow_start_jd_ut": 987366.7046763964,
+      "pre_shadow_start_utc": "-2009-03-21T04:54:44.041Z",
+      "shell_id": "R18",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 987428.5242644327,
+          "motion": "direct",
+          "utc": "-2009-05-22T00:34:56.447Z"
+        },
+        {
+          "jd_ut": 987522.9395573095,
+          "motion": "retrograde",
+          "utc": "-2009-08-24T10:32:57.752Z"
+        },
+        {
+          "jd_ut": 987717.4149829447,
+          "motion": "direct",
+          "utc": "-2008-03-05T21:57:34.526Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1018377.520274733,
+      "final_pisces_egress_utc": "-1924-02-14T00:29:11.737Z",
+      "first_aries_ingress_jd_ut": 1018083.6713861874,
+      "first_aries_ingress_utc": "-1925-04-26T04:06:47.767Z",
+      "next_shell_first_aries_ingress_jd_ut": 1048742.4925903277,
+      "next_shell_first_aries_ingress_utc": "-1841-04-04T23:49:19.804Z",
+      "ordinal": 19,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.04349299721474,
+      "pre_shadow_start_jd_ut": 1018048.234348359,
+      "pre_shadow_start_utc": "-1925-03-21T17:37:27.698Z",
+      "shell_id": "R19",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1018083.6713861874,
+          "motion": "direct",
+          "utc": "-1925-04-26T04:06:47.767Z"
+        },
+        {
+          "jd_ut": 1018233.7766215436,
+          "motion": "retrograde",
+          "utc": "-1925-09-23T06:38:20.101Z"
+        },
+        {
+          "jd_ut": 1018377.520274733,
+          "motion": "direct",
+          "utc": "-1924-02-14T00:29:11.737Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1049030.4803857636,
+      "final_pisces_egress_utc": "-1840-01-17T23:31:45.330Z",
+      "first_aries_ingress_jd_ut": 1048742.4925903277,
+      "first_aries_ingress_utc": "-1841-04-04T23:49:19.804Z",
+      "next_shell_first_aries_ingress_jd_ut": 1079125.8204724207,
+      "next_shell_first_aries_ingress_utc": "-1758-06-12T07:41:28.817Z",
+      "ordinal": 20,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.2700291331056,
+      "pre_shadow_start_jd_ut": 1048729.799793356,
+      "pre_shadow_start_utc": "-1841-03-23T07:11:42.146Z",
+      "shell_id": "R20",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1048742.4925903277,
+          "motion": "direct",
+          "utc": "-1841-04-04T23:49:19.804Z"
+        },
+        {
+          "jd_ut": 1048947.1335301576,
+          "motion": "retrograde",
+          "utc": "-1841-10-26T15:12:17.006Z"
+        },
+        {
+          "jd_ut": 1049030.4803857636,
+          "motion": "direct",
+          "utc": "-1840-01-17T23:31:45.330Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1079403.9593157992,
+      "final_pisces_egress_utc": "-1757-03-17T11:01:24.885Z",
+      "first_aries_ingress_jd_ut": 1079125.8204724207,
+      "first_aries_ingress_utc": "-1758-06-12T07:41:28.817Z",
+      "next_shell_first_aries_ingress_jd_ut": 1109771.2898398149,
+      "next_shell_first_aries_ingress_utc": "-1674-05-08T18:57:22.160Z",
+      "ordinal": 21,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.2559816958403,
+      "pre_shadow_start_jd_ut": 1079041.6813328215,
+      "pre_shadow_start_utc": "-1758-03-20T04:21:07.156Z",
+      "shell_id": "R21",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1079125.8204724207,
+          "motion": "direct",
+          "utc": "-1758-06-12T07:41:28.817Z"
+        },
+        {
+          "jd_ut": 1079175.4079381605,
+          "motion": "retrograde",
+          "utc": "-1758-07-31T21:47:25.857Z"
+        },
+        {
+          "jd_ut": 1079403.9593157992,
+          "motion": "direct",
+          "utc": "-1757-03-17T11:01:24.885Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1110064.404617623,
+      "final_pisces_egress_utc": "-1673-02-25T21:42:38.963Z",
+      "first_aries_ingress_jd_ut": 1109771.2898398149,
+      "first_aries_ingress_utc": "-1674-05-08T18:57:22.160Z",
+      "next_shell_first_aries_ingress_jd_ut": 1140429.4337909925,
+      "next_shell_first_aries_ingress_utc": "-1590-04-15T22:24:39.542Z",
+      "ordinal": 22,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.4508285091686,
+      "pre_shadow_start_jd_ut": 1109723.2003077567,
+      "pre_shadow_start_utc": "-1674-03-21T16:48:26.590Z",
+      "shell_id": "R22",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1109771.2898398149,
+          "motion": "direct",
+          "utc": "-1674-05-08T18:57:22.160Z"
+        },
+        {
+          "jd_ut": 1109894.7311536842,
+          "motion": "retrograde",
+          "utc": "-1674-09-09T05:32:51.678Z"
+        },
+        {
+          "jd_ut": 1110064.404617623,
+          "motion": "direct",
+          "utc": "-1673-02-25T21:42:38.963Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1140722.7291051885,
+      "final_pisces_egress_utc": "-1589-02-03T05:29:54.688Z",
+      "first_aries_ingress_jd_ut": 1140429.4337909925,
+      "first_aries_ingress_utc": "-1590-04-15T22:24:39.542Z",
+      "next_shell_first_aries_ingress_jd_ut": 1171089.3046112712,
+      "next_shell_first_aries_ingress_utc": "-1506-03-25T19:18:38.414Z",
+      "ordinal": 23,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.60925061173486,
+      "pre_shadow_start_jd_ut": 1140404.7213429646,
+      "pre_shadow_start_utc": "-1590-03-22T05:18:44.032Z",
+      "shell_id": "R23",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1140429.4337909925,
+          "motion": "direct",
+          "utc": "-1590-04-15T22:24:39.542Z"
+        },
+        {
+          "jd_ut": 1140604.3832187904,
+          "motion": "retrograde",
+          "utc": "-1590-10-07T21:11:50.103Z"
+        },
+        {
+          "jd_ut": 1140722.7291051885,
+          "motion": "direct",
+          "utc": "-1589-02-03T05:29:54.688Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1171366.1199424462,
+      "final_pisces_egress_utc": "-1506-12-27T14:52:43.027Z",
+      "first_aries_ingress_jd_ut": 1171089.3046112712,
+      "first_aries_ingress_utc": "-1506-03-25T19:18:38.414Z",
+      "next_shell_first_aries_ingress_jd_ut": 1201459.9730101116,
+      "next_shell_first_aries_ingress_utc": "-1423-05-20T11:21:08.074Z",
+      "ordinal": 24,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.8260715771114,
+      "pre_shadow_start_jd_ut": 1171086.2838533889,
+      "pre_shadow_start_utc": "-1506-03-22T18:48:44.933Z",
+      "shell_id": "R24",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1171089.3046112712,
+          "motion": "direct",
+          "utc": "-1506-03-25T19:18:38.414Z"
+        },
+        {
+          "jd_ut": 1171326.151257995,
+          "motion": "retrograde",
+          "utc": "-1506-11-17T15:37:48.691Z"
+        },
+        {
+          "jd_ut": 1171366.1199424462,
+          "motion": "direct",
+          "utc": "-1506-12-27T14:52:43.027Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1201749.8047585296,
+      "final_pisces_egress_utc": "-1422-03-06T07:18:51.137Z",
+      "first_aries_ingress_jd_ut": 1201459.9730101116,
+      "first_aries_ingress_utc": "-1423-05-20T11:21:08.074Z",
+      "next_shell_first_aries_ingress_jd_ut": 1232113.331815077,
+      "next_shell_first_aries_ingress_utc": "-1339-04-23T19:57:48.823Z",
+      "ordinal": 25,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.91125484430313,
+      "pre_shadow_start_jd_ut": 1201398.2977419305,
+      "pre_shadow_start_utc": "-1423-03-19T19:08:44.903Z",
+      "shell_id": "R25",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1201459.9730101116,
+          "motion": "direct",
+          "utc": "-1423-05-20T11:21:08.074Z"
+        },
+        {
+          "jd_ut": 1201555.5657762596,
+          "motion": "retrograde",
+          "utc": "-1423-08-24T01:34:43.069Z"
+        },
+        {
+          "jd_ut": 1201749.8047585296,
+          "motion": "direct",
+          "utc": "-1422-03-06T07:18:51.137Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1232407.9877781137,
+      "final_pisces_egress_utc": "-1338-02-12T11:42:24.029Z",
+      "first_aries_ingress_jd_ut": 1232113.331815077,
+      "first_aries_ingress_utc": "-1339-04-23T19:57:48.823Z",
+      "next_shell_first_aries_ingress_jd_ut": 1262772.3140430083,
+      "next_shell_first_aries_ingress_utc": "-1255-04-02T19:32:13.316Z",
+      "ordinal": 26,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.1576205879354,
+      "pre_shadow_start_jd_ut": 1232079.9188572946,
+      "pre_shadow_start_utc": "-1339-03-21T10:03:09.270Z",
+      "shell_id": "R26",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1232113.331815077,
+          "motion": "direct",
+          "utc": "-1339-04-23T19:57:48.823Z"
+        },
+        {
+          "jd_ut": 1232268.8086579912,
+          "motion": "retrograde",
+          "utc": "-1339-09-26T07:24:28.050Z"
+        },
+        {
+          "jd_ut": 1232407.9877781137,
+          "motion": "direct",
+          "utc": "-1338-02-12T11:42:24.029Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1263059.6537264185,
+      "final_pisces_egress_utc": "-1254-01-15T03:41:21.963Z",
+      "first_aries_ingress_jd_ut": 1262772.3140430083,
+      "first_aries_ingress_utc": "-1255-04-02T19:32:13.316Z",
+      "next_shell_first_aries_ingress_jd_ut": 1293148.3381314212,
+      "next_shell_first_aries_ingress_utc": "-1172-06-01T20:06:54.555Z",
+      "ordinal": 27,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.38541000135126,
+      "pre_shadow_start_jd_ut": 1262761.5740470984,
+      "pre_shadow_start_utc": "-1255-03-23T01:46:37.669Z",
+      "shell_id": "R27",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1262772.3140430083,
+          "motion": "direct",
+          "utc": "-1255-04-02T19:32:13.316Z"
+        },
+        {
+          "jd_ut": 1262983.2759357258,
+          "motion": "retrograde",
+          "utc": "-1255-10-30T18:37:20.847Z"
+        },
+        {
+          "jd_ut": 1263059.6537264185,
+          "motion": "direct",
+          "utc": "-1254-01-15T03:41:21.963Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1293432.6886749137,
+      "final_pisces_egress_utc": "-1171-03-13T04:31:41.513Z",
+      "first_aries_ingress_jd_ut": 1293148.3381314212,
+      "first_aries_ingress_utc": "-1172-06-01T20:06:54.555Z",
+      "next_shell_first_aries_ingress_jd_ut": 1323798.4056198774,
+      "next_shell_first_aries_ingress_utc": "-1088-05-02T21:44:05.557Z",
+      "ordinal": 28,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.50003770114586,
+      "pre_shadow_start_jd_ut": 1293073.597197881,
+      "pre_shadow_start_utc": "-1172-03-19T02:19:57.897Z",
+      "shell_id": "R28",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1293148.3381314212,
+          "motion": "direct",
+          "utc": "-1172-06-01T20:06:54.555Z"
+        },
+        {
+          "jd_ut": 1293217.5031459024,
+          "motion": "retrograde",
+          "utc": "-1172-08-10T00:04:31.806Z"
+        },
+        {
+          "jd_ut": 1293432.6886749137,
+          "motion": "direct",
+          "utc": "-1171-03-13T04:31:41.513Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1324092.8001203765,
+      "final_pisces_egress_utc": "-1087-02-21T07:12:10.401Z",
+      "first_aries_ingress_jd_ut": 1323798.4056198774,
+      "first_aries_ingress_utc": "-1088-05-02T21:44:05.557Z",
+      "next_shell_first_aries_ingress_jd_ut": 1354456.6354843988,
+      "next_shell_first_aries_ingress_utc": "-1004-04-10T03:15:05.852Z",
+      "ordinal": 29,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.6892139848543,
+      "pre_shadow_start_jd_ut": 1323755.2332644155,
+      "pre_shadow_start_utc": "-1088-03-20T17:35:54.046Z",
+      "shell_id": "R29",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1323798.4056198774,
+          "motion": "direct",
+          "utc": "-1088-05-02T21:44:05.557Z"
+        },
+        {
+          "jd_ut": 1323932.8034382872,
+          "motion": "retrograde",
+          "utc": "-1088-09-14T07:16:57.068Z"
+        },
+        {
+          "jd_ut": 1324092.8001203765,
+          "motion": "direct",
+          "utc": "-1087-02-21T07:12:10.401Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1354749.0607797033,
+      "final_pisces_egress_utc": "-1003-01-27T13:27:31.366Z",
+      "first_aries_ingress_jd_ut": 1354456.6354843988,
+      "first_aries_ingress_utc": "-1004-04-10T03:15:05.852Z",
+      "next_shell_first_aries_ingress_jd_ut": 1385117.15232336,
+      "next_shell_first_aries_ingress_utc": "-0920-03-21T15:39:20.738Z",
+      "ordinal": 30,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.88371392397045,
+      "pre_shadow_start_jd_ut": 1354436.8442401262,
+      "pre_shadow_start_utc": "-1004-03-21T08:15:42.347Z",
+      "shell_id": "R30",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1354456.6354843988,
+          "motion": "direct",
+          "utc": "-1004-04-10T03:15:05.852Z"
+        },
+        {
+          "jd_ut": 1354643.906281061,
+          "motion": "retrograde",
+          "utc": "-1004-10-14T09:45:02.684Z"
+        },
+        {
+          "jd_ut": 1354749.0607797033,
+          "motion": "direct",
+          "utc": "-1003-01-27T13:27:31.366Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1385117.15232336,
+      "final_pisces_egress_utc": "-0920-03-21T15:39:20.738Z",
+      "first_aries_ingress_jd_ut": 1385117.15232336,
+      "first_aries_ingress_utc": "-0920-03-21T15:39:20.738Z",
+      "next_shell_first_aries_ingress_jd_ut": 1415485.451839272,
+      "next_shell_first_aries_ingress_utc": "-0837-05-14T22:50:38.913Z",
+      "ordinal": 31,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": null,
+      "pre_shadow_start_jd_ut": null,
+      "pre_shadow_start_utc": null,
+      "shell_id": "R31",
+      "transition_crossing_count": 1,
+      "transition_crossings": [
+        {
+          "jd_ut": 1385117.15232336,
+          "motion": "direct",
+          "utc": "-0920-03-21T15:39:20.738Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1415777.6644468936,
+      "final_pisces_egress_utc": "-0836-03-02T03:56:48.212Z",
+      "first_aries_ingress_jd_ut": 1415485.451839272,
+      "first_aries_ingress_utc": "-0837-05-14T22:50:38.913Z",
+      "next_shell_first_aries_ingress_jd_ut": 1446141.6239990098,
+      "next_shell_first_aries_ingress_utc": "-0753-04-20T02:58:33.514Z",
+      "ordinal": 32,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.18534749343326,
+      "pre_shadow_start_jd_ut": 1415430.5400943332,
+      "pre_shadow_start_utc": "-0837-03-21T00:57:44.150Z",
+      "shell_id": "R32",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1415485.451839272,
+          "motion": "direct",
+          "utc": "-0837-05-14T22:50:38.913Z"
+        },
+        {
+          "jd_ut": 1415595.1717567532,
+          "motion": "retrograde",
+          "utc": "-0837-09-01T16:07:19.783Z"
+        },
+        {
+          "jd_ut": 1415777.6644468936,
+          "motion": "direct",
+          "utc": "-0836-03-02T03:56:48.212Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1446436.2762520812,
+      "final_pisces_egress_utc": "-0752-02-08T18:37:48.180Z",
+      "first_aries_ingress_jd_ut": 1446141.6239990098,
+      "first_aries_ingress_utc": "-0753-04-20T02:58:33.514Z",
+      "next_shell_first_aries_ingress_jd_ut": 1476801.83883585,
+      "next_shell_first_aries_ingress_utc": "-0669-03-31T08:07:55.417Z",
+      "ordinal": 33,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.368103637909,
+      "pre_shadow_start_jd_ut": 1446112.1565458295,
+      "pre_shadow_start_utc": "-0753-03-21T15:45:25.560Z",
+      "shell_id": "R33",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1446141.6239990098,
+          "motion": "direct",
+          "utc": "-0753-04-20T02:58:33.514Z"
+        },
+        {
+          "jd_ut": 1446306.1591433436,
+          "motion": "retrograde",
+          "utc": "-0753-10-01T15:49:09.985Z"
+        },
+        {
+          "jd_ut": 1446436.2762520812,
+          "motion": "direct",
+          "utc": "-0752-02-08T18:37:48.180Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1477087.1372653772,
+      "final_pisces_egress_utc": "-0668-01-10T15:17:39.729Z",
+      "first_aries_ingress_jd_ut": 1476801.83883585,
+      "first_aries_ingress_utc": "-0669-03-31T08:07:55.417Z",
+      "next_shell_first_aries_ingress_jd_ut": 1507177.742355859,
+      "next_shell_first_aries_ingress_utc": "-0586-05-31T05:48:59.546Z",
+      "ordinal": 34,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.53527609575525,
+      "pre_shadow_start_jd_ut": 1476793.705315737,
+      "pre_shadow_start_utc": "-0669-03-23T04:55:39.280Z",
+      "shell_id": "R34",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1476801.83883585,
+          "motion": "direct",
+          "utc": "-0669-03-31T08:07:55.417Z"
+        },
+        {
+          "jd_ut": 1477020.9307209882,
+          "motion": "retrograde",
+          "utc": "-0669-11-05T10:20:14.293Z"
+        },
+        {
+          "jd_ut": 1477087.1372653772,
+          "motion": "direct",
+          "utc": "-0668-01-10T15:17:39.729Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1507463.6122770747,
+      "final_pisces_egress_utc": "-0585-03-13T02:41:40.739Z",
+      "first_aries_ingress_jd_ut": 1507177.742355859,
+      "first_aries_ingress_utc": "-0586-05-31T05:48:59.546Z",
+      "next_shell_first_aries_ingress_jd_ut": 1537830.284995385,
+      "next_shell_first_aries_ingress_utc": "-0502-05-02T18:50:23.601Z",
+      "ordinal": 35,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.59466501549997,
+      "pre_shadow_start_jd_ut": 1507105.74516907,
+      "pre_shadow_start_utc": "-0586-03-20T05:53:02.608Z",
+      "shell_id": "R35",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1507177.742355859,
+          "motion": "direct",
+          "utc": "-0586-05-31T05:48:59.546Z"
+        },
+        {
+          "jd_ut": 1507252.4572945219,
+          "motion": "retrograde",
+          "utc": "-0586-08-13T22:58:30.247Z"
+        },
+        {
+          "jd_ut": 1507463.6122770747,
+          "motion": "direct",
+          "utc": "-0585-03-13T02:41:40.739Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1538125.0026447796,
+      "final_pisces_egress_utc": "-0501-02-21T12:03:48.509Z",
+      "first_aries_ingress_jd_ut": 1537830.284995385,
+      "first_aries_ingress_utc": "-0502-05-02T18:50:23.601Z",
+      "next_shell_first_aries_ingress_jd_ut": 1568490.1775922356,
+      "next_shell_first_aries_ingress_utc": "-0418-04-12T16:15:43.969Z",
+      "ordinal": 36,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.70176099140434,
+      "pre_shadow_start_jd_ut": 1537787.2112680278,
+      "pre_shadow_start_utc": "-0502-03-20T17:04:13.558Z",
+      "shell_id": "R36",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1537830.284995385,
+          "motion": "direct",
+          "utc": "-0502-05-02T18:50:23.601Z"
+        },
+        {
+          "jd_ut": 1537965.0688889287,
+          "motion": "retrograde",
+          "utc": "-0502-09-14T13:39:12.003Z"
+        },
+        {
+          "jd_ut": 1538125.0026447796,
+          "motion": "direct",
+          "utc": "-0501-02-21T12:03:48.509Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1568783.6023891158,
+      "final_pisces_egress_utc": "-0417-01-31T02:27:26.420Z",
+      "first_aries_ingress_jd_ut": 1568490.1775922356,
+      "first_aries_ingress_utc": "-0418-04-12T16:15:43.969Z",
+      "next_shell_first_aries_ingress_jd_ut": 1599152.3342772885,
+      "next_shell_first_aries_ingress_utc": "-0334-03-24T20:01:21.558Z",
+      "ordinal": 37,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.7926612783684,
+      "pre_shadow_start_jd_ut": 1568468.6587554035,
+      "pre_shadow_start_utc": "-0418-03-22T03:48:36.467Z",
+      "shell_id": "R37",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1568490.1775922356,
+          "motion": "direct",
+          "utc": "-0418-04-12T16:15:43.969Z"
+        },
+        {
+          "jd_ut": 1568673.5996607542,
+          "motion": "retrograde",
+          "utc": "-0418-10-13T02:23:30.689Z"
+        },
+        {
+          "jd_ut": 1568783.6023891158,
+          "motion": "direct",
+          "utc": "-0417-01-31T02:27:26.420Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1599428.23209285,
+      "final_pisces_egress_utc": "-0334-12-25T17:34:12.822Z",
+      "first_aries_ingress_jd_ut": 1599152.3342772885,
+      "first_aries_ingress_utc": "-0334-03-24T20:01:21.558Z",
+      "next_shell_first_aries_ingress_jd_ut": 1629524.96105565,
+      "next_shell_first_aries_ingress_utc": "-0251-05-21T11:03:55.208Z",
+      "ordinal": 38,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.87054884938306,
+      "pre_shadow_start_jd_ut": 1599150.0714428169,
+      "pre_shadow_start_utc": "-0334-03-22T13:42:52.659Z",
+      "shell_id": "R38",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1599152.3342772885,
+          "motion": "direct",
+          "utc": "-0334-03-24T20:01:21.558Z"
+        },
+        {
+          "jd_ut": 1599393.6788312183,
+          "motion": "retrograde",
+          "utc": "-0334-11-21T04:17:31.017Z"
+        },
+        {
+          "jd_ut": 1599428.23209285,
+          "motion": "direct",
+          "utc": "-0334-12-25T17:34:12.822Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1629815.0959845735,
+      "final_pisces_egress_utc": "-0250-03-07T14:18:13.067Z",
+      "first_aries_ingress_jd_ut": 1629524.96105565,
+      "first_aries_ingress_utc": "-0251-05-21T11:03:55.208Z",
+      "next_shell_first_aries_ingress_jd_ut": 1660181.4608652368,
+      "next_shell_first_aries_ingress_utc": "-0167-04-27T23:03:38.756Z",
+      "ordinal": 39,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.8894426275899,
+      "pre_shadow_start_jd_ut": 1629462.0710625104,
+      "pre_shadow_start_utc": "-0251-03-19T13:42:19.801Z",
+      "shell_id": "R39",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1629524.96105565,
+          "motion": "direct",
+          "utc": "-0251-05-21T11:03:55.208Z"
+        },
+        {
+          "jd_ut": 1629618.496342789,
+          "motion": "retrograde",
+          "utc": "-0251-08-22T23:54:44.017Z"
+        },
+        {
+          "jd_ut": 1629815.0959845735,
+          "motion": "direct",
+          "utc": "-0250-03-07T14:18:13.067Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1660476.9403537428,
+      "final_pisces_egress_utc": "-0166-02-17T10:34:06.563Z",
+      "first_aries_ingress_jd_ut": 1660181.4608652368,
+      "first_aries_ingress_utc": "-0167-04-27T23:03:38.756Z",
+      "next_shell_first_aries_ingress_jd_ut": 1690843.0416761753,
+      "next_shell_first_aries_ingress_utc": "-0083-04-09T13:00:00.822Z",
+      "ordinal": 40,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.94197980709185,
+      "pre_shadow_start_jd_ut": 1660143.4770423742,
+      "pre_shadow_start_utc": "-0167-03-20T23:26:56.461Z",
+      "shell_id": "R40",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1660181.4608652368,
+          "motion": "direct",
+          "utc": "-0167-04-27T23:03:38.756Z"
+        },
+        {
+          "jd_ut": 1660327.5148562277,
+          "motion": "retrograde",
+          "utc": "-0167-09-21T00:21:23.578Z"
+        },
+        {
+          "jd_ut": 1660476.9403537428,
+          "motion": "direct",
+          "utc": "-0166-02-17T10:34:06.563Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1691135.608969973,
+      "final_pisces_egress_utc": "-0082-01-27T02:36:55.006Z",
+      "first_aries_ingress_jd_ut": 1690843.0416761753,
+      "first_aries_ingress_utc": "-0083-04-09T13:00:00.822Z",
+      "next_shell_first_aries_ingress_jd_ut": 1721506.509339681,
+      "next_shell_first_aries_ingress_utc": "0001-03-23T00:13:26.948Z",
+      "ordinal": 41,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.976153581159,
+      "pre_shadow_start_jd_ut": 1690824.899830385,
+      "pre_shadow_start_utc": "-0083-03-22T09:35:45.345Z",
+      "shell_id": "R41",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1690843.0416761753,
+          "motion": "direct",
+          "utc": "-0083-04-09T13:00:00.822Z"
+        },
+        {
+          "jd_ut": 1691035.0700980118,
+          "motion": "retrograde",
+          "utc": "-0083-10-18T13:40:56.468Z"
+        },
+        {
+          "jd_ut": 1691135.608969973,
+          "motion": "direct",
+          "utc": "-0082-01-27T02:36:55.006Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1721772.8118675528,
+      "final_pisces_egress_utc": "0001-12-14T07:29:05.357Z",
+      "first_aries_ingress_jd_ut": 1721506.509339681,
+      "first_aries_ingress_utc": "0001-03-23T00:13:26.948Z",
+      "next_shell_first_aries_ingress_jd_ut": 1751879.2706472296,
+      "next_shell_first_aries_ingress_utc": "0084-05-18T18:29:43.921Z",
+      "ordinal": 42,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.9875734046454,
+      "pre_shadow_start_jd_ut": 1721506.2922510132,
+      "pre_shadow_start_utc": "0001-03-22T19:00:50.488Z",
+      "shell_id": "R42",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1721506.509339681,
+          "motion": "direct",
+          "utc": "0001-03-23T00:13:26.948Z"
+        },
+        {
+          "jd_ut": 1721762.129254635,
+          "motion": "retrograde",
+          "utc": "0001-12-03T15:06:07.600Z"
+        },
+        {
+          "jd_ut": 1721772.8118675528,
+          "motion": "direct",
+          "utc": "0001-12-14T07:29:05.357Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1752170.2739402587,
+      "final_pisces_egress_utc": "0085-03-05T18:34:28.438Z",
+      "first_aries_ingress_jd_ut": 1751879.2706472296,
+      "first_aries_ingress_utc": "0084-05-18T18:29:43.921Z",
+      "next_shell_first_aries_ingress_jd_ut": 1782537.345937414,
+      "next_shell_first_aries_ingress_utc": "0168-04-26T20:18:08.993Z",
+      "ordinal": 43,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.95952916168284,
+      "pre_shadow_start_jd_ut": 1751818.2663250002,
+      "pre_shadow_start_utc": "0084-03-18T18:23:30.480Z",
+      "shell_id": "R43",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1751879.2706472296,
+          "motion": "direct",
+          "utc": "0084-05-18T18:29:43.921Z"
+        },
+        {
+          "jd_ut": 1751976.707207085,
+          "motion": "retrograde",
+          "utc": "0084-08-24T04:58:22.692Z"
+        },
+        {
+          "jd_ut": 1752170.2739402587,
+          "motion": "direct",
+          "utc": "0085-03-05T18:34:28.438Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1782832.9829867678,
+      "final_pisces_egress_utc": "0169-02-16T11:35:30.057Z",
+      "first_aries_ingress_jd_ut": 1782537.345937414,
+      "first_aries_ingress_utc": "0168-04-26T20:18:08.993Z",
+      "next_shell_first_aries_ingress_jd_ut": 1813199.5800907565,
+      "next_shell_first_aries_ingress_utc": "0252-04-09T01:55:19.841Z",
+      "ordinal": 44,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.95916252067633,
+      "pre_shadow_start_jd_ut": 1782499.66466831,
+      "pre_shadow_start_utc": "0168-03-20T03:57:07.342Z",
+      "shell_id": "R44",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1782537.345937414,
+          "motion": "direct",
+          "utc": "0168-04-26T20:18:08.993Z"
+        },
+        {
+          "jd_ut": 1782684.065836674,
+          "motion": "retrograde",
+          "utc": "0168-09-20T13:34:48.289Z"
+        },
+        {
+          "jd_ut": 1782832.9829867678,
+          "motion": "direct",
+          "utc": "0169-02-16T11:35:30.057Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1813492.4017524798,
+      "final_pisces_egress_utc": "0253-01-26T21:38:31.414Z",
+      "first_aries_ingress_jd_ut": 1813199.5800907565,
+      "first_aries_ingress_utc": "0252-04-09T01:55:19.841Z",
+      "next_shell_first_aries_ingress_jd_ut": 1843863.3075235155,
+      "next_shell_first_aries_ingress_utc": "0336-03-23T19:22:50.032Z",
+      "ordinal": 45,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.95748896999766,
+      "pre_shadow_start_jd_ut": 1813181.085712688,
+      "pre_shadow_start_utc": "0252-03-21T14:03:25.576Z",
+      "shell_id": "R45",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1813199.5800907565,
+          "motion": "direct",
+          "utc": "0252-04-09T01:55:19.841Z"
+        },
+        {
+          "jd_ut": 1813390.7282021898,
+          "motion": "retrograde",
+          "utc": "0252-10-17T05:28:36.669Z"
+        },
+        {
+          "jd_ut": 1813492.4017524798,
+          "motion": "direct",
+          "utc": "0253-01-26T21:38:31.414Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1844134.0616954337,
+      "final_pisces_egress_utc": "0336-12-19T13:28:50.485Z",
+      "first_aries_ingress_jd_ut": 1843863.3075235155,
+      "first_aries_ingress_utc": "0336-03-23T19:22:50.032Z",
+      "next_shell_first_aries_ingress_jd_ut": 1874236.5151736303,
+      "next_shell_first_aries_ingress_utc": "0419-05-21T00:21:51.002Z",
+      "ordinal": 46,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.95385220405973,
+      "pre_shadow_start_jd_ut": 1843862.5019046515,
+      "pre_shadow_start_utc": "0336-03-23T00:02:44.562Z",
+      "shell_id": "R46",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1843863.3075235155,
+          "motion": "direct",
+          "utc": "0336-03-23T19:22:50.032Z"
+        },
+        {
+          "jd_ut": 1844113.4057564493,
+          "motion": "retrograde",
+          "utc": "0336-11-28T21:44:17.357Z"
+        },
+        {
+          "jd_ut": 1844134.0616954337,
+          "motion": "direct",
+          "utc": "0336-12-19T13:28:50.485Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1874527.1247443114,
+      "final_pisces_egress_utc": "0420-03-06T14:59:37.909Z",
+      "first_aries_ingress_jd_ut": 1874236.5151736303,
+      "first_aries_ingress_utc": "0419-05-21T00:21:51.002Z",
+      "next_shell_first_aries_ingress_jd_ut": 1904894.55320849,
+      "next_shell_first_aries_ingress_utc": "0503-04-29T01:16:37.214Z",
+      "ordinal": 47,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.92320464316236,
+      "pre_shadow_start_jd_ut": 1874174.4885592517,
+      "pre_shadow_start_utc": "0419-03-19T23:43:31.519Z",
+      "shell_id": "R47",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1874236.5151736303,
+          "motion": "direct",
+          "utc": "0419-05-21T00:21:51.002Z"
+        },
+        {
+          "jd_ut": 1874331.6504148399,
+          "motion": "retrograde",
+          "utc": "0419-08-24T03:36:35.842Z"
+        },
+        {
+          "jd_ut": 1874527.1247443114,
+          "motion": "direct",
+          "utc": "0420-03-06T14:59:37.909Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1905190.1207742305,
+      "final_pisces_egress_utc": "0504-02-18T14:53:54.894Z",
+      "first_aries_ingress_jd_ut": 1904894.55320849,
+      "first_aries_ingress_utc": "0503-04-29T01:16:37.214Z",
+      "next_shell_first_aries_ingress_jd_ut": 1935556.8130908683,
+      "next_shell_first_aries_ingress_utc": "0587-04-10T07:30:51.051Z",
+      "ordinal": 48,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.91167804958565,
+      "pre_shadow_start_jd_ut": 1904855.9000509535,
+      "pre_shadow_start_utc": "0503-03-21T09:36:04.402Z",
+      "shell_id": "R48",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1904894.55320849,
+          "motion": "direct",
+          "utc": "0503-04-29T01:16:37.214Z"
+        },
+        {
+          "jd_ut": 1905038.9793678885,
+          "motion": "retrograde",
+          "utc": "0503-09-20T11:30:17.386Z"
+        },
+        {
+          "jd_ut": 1905190.1207742305,
+          "motion": "direct",
+          "utc": "0504-02-18T14:53:54.894Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1935850.037144306,
+      "final_pisces_egress_utc": "0588-01-28T12:53:29.268Z",
+      "first_aries_ingress_jd_ut": 1935556.8130908683,
+      "first_aries_ingress_utc": "0587-04-10T07:30:51.051Z",
+      "next_shell_first_aries_ingress_jd_ut": 1966220.586806524,
+      "next_shell_first_aries_ingress_utc": "0671-03-25T02:05:00.084Z",
+      "ordinal": 49,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.9022233211421,
+      "pre_shadow_start_jd_ut": 1935537.3096098201,
+      "pre_shadow_start_utc": "0587-03-21T19:25:50.288Z",
+      "shell_id": "R49",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1935556.8130908683,
+          "motion": "direct",
+          "utc": "0587-04-10T07:30:51.051Z"
+        },
+        {
+          "jd_ut": 1935745.3443611306,
+          "motion": "retrograde",
+          "utc": "0587-10-15T20:15:52.802Z"
+        },
+        {
+          "jd_ut": 1935850.037144306,
+          "motion": "direct",
+          "utc": "0588-01-28T12:53:29.268Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1966495.9690412316,
+      "final_pisces_egress_utc": "0671-12-25T11:15:25.162Z",
+      "first_aries_ingress_jd_ut": 1966220.586806524,
+      "first_aries_ingress_utc": "0671-03-25T02:05:00.084Z",
+      "next_shell_first_aries_ingress_jd_ut": 1996594.456848523,
+      "next_shell_first_aries_ingress_utc": "0754-05-22T22:57:51.712Z",
+      "ordinal": 50,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.8887682568389,
+      "pre_shadow_start_jd_ut": 1966218.6435079556,
+      "pre_shadow_start_utc": "0671-03-23T03:26:39.087Z",
+      "shell_id": "R50",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1966220.586806524,
+          "motion": "direct",
+          "utc": "0671-03-25T02:05:00.084Z"
+        },
+        {
+          "jd_ut": 1966463.880142155,
+          "motion": "retrograde",
+          "utc": "0671-11-23T09:07:24.282Z"
+        },
+        {
+          "jd_ut": 1966495.9690412316,
+          "motion": "direct",
+          "utc": "0671-12-25T11:15:25.162Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 1996884.4667270933,
+      "final_pisces_egress_utc": "0755-03-08T23:12:05.221Z",
+      "first_aries_ingress_jd_ut": 1996594.456848523,
+      "first_aries_ingress_utc": "0754-05-22T22:57:51.712Z",
+      "next_shell_first_aries_ingress_jd_ut": 2027251.9006697373,
+      "next_shell_first_aries_ingress_utc": "0838-04-29T09:36:57.865Z",
+      "ordinal": 51,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.86545797338135,
+      "pre_shadow_start_jd_ut": 1996530.6348937186,
+      "pre_shadow_start_utc": "0754-03-20T03:14:14.817Z",
+      "shell_id": "R51",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 1996594.456848523,
+          "motion": "direct",
+          "utc": "0754-05-22T22:57:51.712Z"
+        },
+        {
+          "jd_ut": 1996685.7342287935,
+          "motion": "retrograde",
+          "utc": "0754-08-22T05:37:17.368Z"
+        },
+        {
+          "jd_ut": 1996884.4667270933,
+          "motion": "direct",
+          "utc": "0755-03-08T23:12:05.221Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2027547.626916654,
+      "final_pisces_egress_utc": "0839-02-19T03:02:45.599Z",
+      "first_aries_ingress_jd_ut": 2027251.9006697373,
+      "first_aries_ingress_utc": "0838-04-29T09:36:57.865Z",
+      "next_shell_first_aries_ingress_jd_ut": 2057913.7912940825,
+      "next_shell_first_aries_ingress_utc": "0922-04-11T06:59:27.809Z",
+      "ordinal": 52,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.8505465143386,
+      "pre_shadow_start_jd_ut": 2027211.9487997903,
+      "pre_shadow_start_utc": "0838-03-20T10:46:16.302Z",
+      "shell_id": "R52",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2027251.9006697373,
+          "motion": "direct",
+          "utc": "0838-04-29T09:36:57.865Z"
+        },
+        {
+          "jd_ut": 2027393.5431728717,
+          "motion": "retrograde",
+          "utc": "0838-09-18T01:02:10.136Z"
+        },
+        {
+          "jd_ut": 2027547.626916654,
+          "motion": "direct",
+          "utc": "0839-02-19T03:02:45.599Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2058207.683637191,
+      "final_pisces_egress_utc": "0923-01-30T04:24:26.253Z",
+      "first_aries_ingress_jd_ut": 2057913.7912940825,
+      "first_aries_ingress_utc": "0922-04-11T06:59:27.809Z",
+      "next_shell_first_aries_ingress_jd_ut": 2088577.4891579524,
+      "next_shell_first_aries_ingress_utc": "1006-03-25T23:44:23.247Z",
+      "ordinal": 53,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.8470881938757,
+      "pre_shadow_start_jd_ut": 2057893.2841009363,
+      "pre_shadow_start_utc": "0922-03-21T18:49:06.321Z",
+      "shell_id": "R53",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2057913.7912940825,
+          "motion": "direct",
+          "utc": "0922-04-11T06:59:27.809Z"
+        },
+        {
+          "jd_ut": 2058100.0502116033,
+          "motion": "retrograde",
+          "utc": "0922-10-14T13:12:18.283Z"
+        },
+        {
+          "jd_ut": 2058207.683637191,
+          "motion": "direct",
+          "utc": "0923-01-30T04:24:26.253Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2088855.8245250871,
+      "final_pisces_egress_utc": "1006-12-29T07:47:18.968Z",
+      "first_aries_ingress_jd_ut": 2088577.4891579524,
+      "first_aries_ingress_utc": "1006-03-25T23:44:23.247Z",
+      "next_shell_first_aries_ingress_jd_ut": 2118951.3865586407,
+      "next_shell_first_aries_ingress_utc": "1089-05-22T21:16:38.667Z",
+      "ordinal": 54,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.8342453112774,
+      "pre_shadow_start_jd_ut": 2088574.5897357673,
+      "pre_shadow_start_utc": "1006-03-23T02:09:13.170Z",
+      "shell_id": "R54",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2088577.4891579524,
+          "motion": "direct",
+          "utc": "1006-03-25T23:44:23.247Z"
+        },
+        {
+          "jd_ut": 2088816.5308268582,
+          "motion": "retrograde",
+          "utc": "1006-11-20T00:44:23.441Z"
+        },
+        {
+          "jd_ut": 2088855.8245250871,
+          "motion": "direct",
+          "utc": "1006-12-29T07:47:18.968Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2119241.339938361,
+      "final_pisces_egress_utc": "1090-03-08T20:09:30.674Z",
+      "first_aries_ingress_jd_ut": 2118951.3865586407,
+      "first_aries_ingress_utc": "1089-05-22T21:16:38.667Z",
+      "next_shell_first_aries_ingress_jd_ut": 2149608.414731906,
+      "next_shell_first_aries_ingress_utc": "1173-04-29T21:57:12.837Z",
+      "ordinal": 55,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.83141988117984,
+      "pre_shadow_start_jd_ut": 2118886.628659784,
+      "pre_shadow_start_utc": "1089-03-19T03:05:16.205Z",
+      "shell_id": "R55",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2118951.3865586407,
+          "motion": "direct",
+          "utc": "1089-05-22T21:16:38.667Z"
+        },
+        {
+          "jd_ut": 2119040.8046851344,
+          "motion": "retrograde",
+          "utc": "1089-08-20T07:18:44.796Z"
+        },
+        {
+          "jd_ut": 2119241.339938361,
+          "motion": "direct",
+          "utc": "1090-03-08T20:09:30.674Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2149904.4201292284,
+      "final_pisces_egress_utc": "1174-02-19T22:04:59.165Z",
+      "first_aries_ingress_jd_ut": 2149608.414731906,
+      "first_aries_ingress_utc": "1173-04-29T21:57:12.837Z",
+      "next_shell_first_aries_ingress_jd_ut": 2180269.861309788,
+      "next_shell_first_aries_ingress_utc": "1257-04-10T08:40:17.166Z",
+      "ordinal": 56,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.8259359478344,
+      "pre_shadow_start_jd_ut": 2149567.936851546,
+      "pre_shadow_start_utc": "1173-03-20T10:29:03.974Z",
+      "shell_id": "R56",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2149608.414731906,
+          "motion": "direct",
+          "utc": "1173-04-29T21:57:12.837Z"
+        },
+        {
+          "jd_ut": 2149749.037146247,
+          "motion": "retrograde",
+          "utc": "1173-09-17T12:53:29.436Z"
+        },
+        {
+          "jd_ut": 2149904.4201292284,
+          "motion": "direct",
+          "utc": "1174-02-19T22:04:59.165Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2180564.0560563784,
+      "final_pisces_egress_utc": "1258-01-29T13:20:43.271Z",
+      "first_aries_ingress_jd_ut": 2180269.861309788,
+      "first_aries_ingress_utc": "1257-04-10T08:40:17.166Z",
+      "next_shell_first_aries_ingress_jd_ut": 2210933.111226801,
+      "next_shell_first_aries_ingress_utc": "1341-03-24T14:40:09.996Z",
+      "ordinal": 57,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.8459733459559,
+      "pre_shadow_start_jd_ut": 2180249.3102293145,
+      "pre_shadow_start_utc": "1257-03-20T19:26:43.813Z",
+      "shell_id": "R57",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2180269.861309788,
+          "motion": "direct",
+          "utc": "1257-04-10T08:40:17.166Z"
+        },
+        {
+          "jd_ut": 2180456.1824248834,
+          "motion": "retrograde",
+          "utc": "1257-10-13T16:22:41.510Z"
+        },
+        {
+          "jd_ut": 2180564.0560563784,
+          "motion": "direct",
+          "utc": "1258-01-29T13:20:43.271Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2211210.5880551403,
+      "final_pisces_egress_utc": "1341-12-27T02:06:47.964Z",
+      "first_aries_ingress_jd_ut": 2210933.111226801,
+      "first_aries_ingress_utc": "1341-03-24T14:40:09.996Z",
+      "next_shell_first_aries_ingress_jd_ut": 2241305.1637343066,
+      "next_shell_first_aries_ingress_utc": "1424-05-20T15:55:46.644Z",
+      "ordinal": 58,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.85974573488954,
+      "pre_shadow_start_jd_ut": 2210930.6571781123,
+      "pre_shadow_start_utc": "1341-03-22T03:46:20.189Z",
+      "shell_id": "R58",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2210933.111226801,
+          "motion": "direct",
+          "utc": "1341-03-24T14:40:09.996Z"
+        },
+        {
+          "jd_ut": 2211174.3909060657,
+          "motion": "retrograde",
+          "utc": "1341-11-20T21:22:54.284Z"
+        },
+        {
+          "jd_ut": 2211210.5880551403,
+          "motion": "direct",
+          "utc": "1341-12-27T02:06:47.964Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2241596.2932125162,
+      "final_pisces_egress_utc": "1425-03-07T19:02:13.561Z",
+      "first_aries_ingress_jd_ut": 2241305.1637343066,
+      "first_aries_ingress_utc": "1424-05-20T15:55:46.644Z",
+      "next_shell_first_aries_ingress_jd_ut": 2271961.9839784177,
+      "next_shell_first_aries_ingress_utc": "1508-04-27T11:36:55.735Z",
+      "ordinal": 59,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.91379871067124,
+      "pre_shadow_start_jd_ut": 2241242.747972139,
+      "pre_shadow_start_utc": "1424-03-19T05:57:04.793Z",
+      "shell_id": "R59",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2241305.1637343066,
+          "motion": "direct",
+          "utc": "1424-05-20T15:55:46.644Z"
+        },
+        {
+          "jd_ut": 2241399.4251766494,
+          "motion": "retrograde",
+          "utc": "1424-08-22T22:12:15.263Z"
+        },
+        {
+          "jd_ut": 2241596.2932125162,
+          "motion": "direct",
+          "utc": "1425-03-07T19:02:13.561Z"
+        }
+      ],
+      "z21_z23_intersections": []
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2272258.3443654515,
+      "final_pisces_egress_utc": "1509-02-17T20:15:53.175Z",
+      "first_aries_ingress_jd_ut": 2271961.9839784177,
+      "first_aries_ingress_utc": "1508-04-27T11:36:55.735Z",
+      "next_shell_first_aries_ingress_jd_ut": 2302622.9736407194,
+      "next_shell_first_aries_ingress_utc": "1592-04-07T11:22:02.558Z",
+      "ordinal": 60,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.95361301008677,
+      "pre_shadow_start_jd_ut": 2271924.170148574,
+      "pre_shadow_start_utc": "1508-03-20T16:05:00.837Z",
+      "shell_id": "R60",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2271961.9839784177,
+          "motion": "direct",
+          "utc": "1508-04-27T11:36:55.735Z"
+        },
+        {
+          "jd_ut": 2272108.4166373992,
+          "motion": "retrograde",
+          "utc": "1508-09-20T21:59:57.471Z"
+        },
+        {
+          "jd_ut": 2272258.3443654515,
+          "motion": "direct",
+          "utc": "1509-02-17T20:15:53.175Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2302916.053661174,
+      "final_pisces_egress_utc": "1593-01-25T13:17:16.325Z",
+      "first_aries_ingress_jd_ut": 2302622.9736407194,
+      "first_aries_ingress_utc": "1592-04-07T11:22:02.558Z",
+      "next_shell_first_aries_ingress_jd_ut": 2333016.2119260225,
+      "next_shell_first_aries_ingress_utc": "1675-06-24T17:05:10.408Z",
+      "ordinal": 61,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.02330563651054,
+      "pre_shadow_start_jd_ut": 2302605.668720224,
+      "pre_shadow_start_utc": "1592-03-21T04:02:57.427Z",
+      "shell_id": "R61",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2302622.9736407194,
+          "motion": "direct",
+          "utc": "1592-04-07T11:22:02.558Z"
+        },
+        {
+          "jd_ut": 2302817.4002049984,
+          "motion": "retrograde",
+          "utc": "1592-10-18T21:36:17.712Z"
+        },
+        {
+          "jd_ut": 2302916.053661174,
+          "motion": "direct",
+          "utc": "1593-01-25T13:17:16.325Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2333285.428703732,
+      "final_pisces_egress_utc": "1676-03-19T22:17:20.002Z",
+      "first_aries_ingress_jd_ut": 2333016.2119260225,
+      "first_aries_ingress_utc": "1675-06-24T17:05:10.408Z",
+      "next_shell_first_aries_ingress_jd_ut": 2363653.5145490738,
+      "next_shell_first_aries_ingress_utc": "1759-05-13T00:20:57.040Z",
+      "ordinal": 62,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.1169042733012,
+      "pre_shadow_start_jd_ut": 2332917.8083741106,
+      "pre_shadow_start_utc": "1675-03-18T07:24:03.523Z",
+      "shell_id": "R62",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2333016.2119260225,
+          "motion": "direct",
+          "utc": "1675-06-24T17:05:10.408Z"
+        },
+        {
+          "jd_ut": 2333037.005870032,
+          "motion": "retrograde",
+          "utc": "1675-07-15T12:08:27.171Z"
+        },
+        {
+          "jd_ut": 2333285.428703732,
+          "motion": "direct",
+          "utc": "1676-03-19T22:17:20.002Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2363947.243974573,
+      "final_pisces_egress_utc": "1760-03-01T17:51:19.403Z",
+      "first_aries_ingress_jd_ut": 2363653.5145490738,
+      "first_aries_ingress_utc": "1759-05-13T00:20:57.040Z",
+      "next_shell_first_aries_ingress_jd_ut": 2394310.7203630107,
+      "next_shell_first_aries_ingress_utc": "1843-04-20T05:17:19.364Z",
+      "ordinal": 63,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.2284037140518,
+      "pre_shadow_start_jd_ut": 2363599.3212355515,
+      "pre_shadow_start_utc": "1759-03-19T19:42:34.752Z",
+      "shell_id": "R63",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2363653.5145490738,
+          "motion": "direct",
+          "utc": "1759-05-13T00:20:57.040Z"
+        },
+        {
+          "jd_ut": 2363764.578834827,
+          "motion": "retrograde",
+          "utc": "1759-09-01T01:53:31.329Z"
+        },
+        {
+          "jd_ut": 2363947.243974573,
+          "motion": "direct",
+          "utc": "1760-03-01T17:51:19.403Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z21",
+        "Z22"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2394606.951073996,
+      "final_pisces_egress_utc": "1844-02-10T10:49:32.793Z",
+      "first_aries_ingress_jd_ut": 2394310.7203630107,
+      "first_aries_ingress_utc": "1843-04-20T05:17:19.364Z",
+      "next_shell_first_aries_ingress_jd_ut": 2424971.22359044,
+      "next_shell_first_aries_ingress_utc": "1927-03-31T17:21:58.214Z",
+      "ordinal": 64,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 358.35102192564875,
+      "pre_shadow_start_jd_ut": 2394280.805163065,
+      "pre_shadow_start_utc": "1843-03-21T07:19:26.089Z",
+      "shell_id": "R64",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2394310.7203630107,
+          "motion": "direct",
+          "utc": "1843-04-20T05:17:19.364Z"
+        },
+        {
+          "jd_ut": 2394474.651513152,
+          "motion": "retrograde",
+          "utc": "1843-10-01T03:38:10.736Z"
+        },
+        {
+          "jd_ut": 2394606.951073996,
+          "motion": "direct",
+          "utc": "1844-02-10T10:49:32.793Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z22"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2425258.8609665437,
+      "final_pisces_egress_utc": "1928-01-13T08:39:47.509Z",
+      "first_aries_ingress_jd_ut": 2424971.22359044,
+      "first_aries_ingress_utc": "1927-03-31T17:21:58.214Z",
+      "next_shell_first_aries_ingress_jd_ut": 2455344.5733949225,
+      "next_shell_first_aries_ingress_utc": "2010-05-28T01:45:41.321Z",
+      "ordinal": 65,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.4935903686302,
+      "pre_shadow_start_jd_ut": 2424962.3268453423,
+      "pre_shadow_start_utc": "1927-03-22T19:50:39.438Z",
+      "shell_id": "R65",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2424971.22359044,
+          "motion": "direct",
+          "utc": "1927-03-31T17:21:58.214Z"
+        },
+        {
+          "jd_ut": 2425188.9426527545,
+          "motion": "retrograde",
+          "utc": "1927-11-04T10:37:25.198Z"
+        },
+        {
+          "jd_ut": 2425258.8609665437,
+          "motion": "direct",
+          "utc": "1928-01-13T08:39:47.509Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z22"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2455632.5349789783,
+      "final_pisces_egress_utc": "2011-03-12T00:50:22.184Z",
+      "first_aries_ingress_jd_ut": 2455344.5733949225,
+      "first_aries_ingress_utc": "2010-05-28T01:45:41.321Z",
+      "next_shell_first_aries_ingress_jd_ut": 2485996.26081724,
+      "next_shell_first_aries_ingress_utc": "2094-04-28T18:15:34.610Z",
+      "ordinal": 66,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.6720725508632,
+      "pre_shadow_start_jd_ut": 2455274.5430140225,
+      "pre_shadow_start_utc": "2010-03-19T01:01:56.412Z",
+      "shell_id": "R66",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2455344.5733949225,
+          "motion": "direct",
+          "utc": "2010-05-28T01:45:41.321Z"
+        },
+        {
+          "jd_ut": 2455422.6486826977,
+          "motion": "retrograde",
+          "utc": "2010-08-14T03:34:06.185Z"
+        },
+        {
+          "jd_ut": 2455632.5349789783,
+          "motion": "direct",
+          "utc": "2011-03-12T00:50:22.184Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z22",
+        "Z23"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2486292.626678831,
+      "final_pisces_egress_utc": "2095-02-19T03:02:25.051Z",
+      "first_aries_ingress_jd_ut": 2485996.26081724,
+      "first_aries_ingress_utc": "2094-04-28T18:15:34.610Z",
+      "next_shell_first_aries_ingress_jd_ut": 2516654.890059023,
+      "next_shell_first_aries_ingress_utc": "2178-04-07T09:21:41.100Z",
+      "ordinal": 67,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 357.8417030089078,
+      "pre_shadow_start_jd_ut": 2485956.0791206025,
+      "pre_shadow_start_utc": "2094-03-19T13:53:56.020Z",
+      "shell_id": "R67",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2485996.26081724,
+          "motion": "direct",
+          "utc": "2094-04-28T18:15:34.610Z"
+        },
+        {
+          "jd_ut": 2486137.1826830218,
+          "motion": "retrograde",
+          "utc": "2094-09-16T16:23:03.813Z"
+        },
+        {
+          "jd_ut": 2486292.626678831,
+          "motion": "direct",
+          "utc": "2095-02-19T03:02:25.051Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z23"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2516948.2157842144,
+      "final_pisces_egress_utc": "2179-01-25T17:10:43.756Z",
+      "first_aries_ingress_jd_ut": 2516654.890059023,
+      "first_aries_ingress_utc": "2178-04-07T09:21:41.100Z",
+      "next_shell_first_aries_ingress_jd_ut": 2547037.4315947676,
+      "next_shell_first_aries_ingress_utc": "2261-06-13T22:21:29.788Z",
+      "ordinal": 68,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 359.02425757115947,
+      "pre_shadow_start_jd_ut": 2516637.59348277,
+      "pre_shadow_start_utc": "2178-03-21T02:14:36.911Z",
+      "shell_id": "R68",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2516654.890059023,
+          "motion": "direct",
+          "utc": "2178-04-07T09:21:41.100Z"
+        },
+        {
+          "jd_ut": 2516849.28329035,
+          "motion": "retrograde",
+          "utc": "2178-10-18T18:47:56.286Z"
+        },
+        {
+          "jd_ut": 2516948.2157842144,
+          "motion": "direct",
+          "utc": "2179-01-25T17:10:43.756Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z23"
+      ]
+    },
+    {
+      "family": "Uranian Revolt",
+      "final_pisces_egress_jd_ut": 2547315.247221209,
+      "final_pisces_egress_utc": "2262-03-18T17:55:59.912Z",
+      "first_aries_ingress_jd_ut": 2547037.4315947676,
+      "first_aries_ingress_utc": "2261-06-13T22:21:29.788Z",
+      "next_shell_first_aries_ingress_jd_ut": 2577679.4351533223,
+      "next_shell_first_aries_ingress_utc": "2345-05-06T22:26:37.247Z",
+      "ordinal": 69,
+      "planet": "Uranus",
+      "pre_shadow_floor_degree": 356.26201689855696,
+      "pre_shadow_start_jd_ut": 2546949.906985799,
+      "pre_shadow_start_utc": "2261-03-18T09:46:03.573Z",
+      "shell_id": "R69",
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2547037.4315947676,
+          "motion": "direct",
+          "utc": "2261-06-13T22:21:29.788Z"
+        },
+        {
+          "jd_ut": 2547079.754713577,
+          "motion": "retrograde",
+          "utc": "2261-07-26T06:06:47.253Z"
+        },
+        {
+          "jd_ut": 2547315.247221209,
+          "motion": "direct",
+          "utc": "2262-03-18T17:55:59.912Z"
+        }
+      ],
+      "z21_z23_intersections": [
+        "Z23"
+      ]
+    }
+  ],
+  "schema_version": "1.0.0"
+}
