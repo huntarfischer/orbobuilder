@@ -1,0 +1,55 @@
+name: Phase F Aion Canonical Resource
+
+on:
+  push:
+    branches: [phase-f-aion]
+    paths:
+      - "native/OrboCore/Tests/OrboCoreTests/AionCanonicalTests.swift"
+      - "tools/pass5/generate_aion_runtime_index.py"
+      - ".github/workflows/phase-f-aion-canonical-resource.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  forge-and-prove:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Manufacture canonical Aion runtime index
+        run: |
+          python tools/pass5/generate_aion_runtime_index.py \
+            --source-dir tools/pass5/temporal-shells \
+            --output native/OrboCore/Sources/OrboCore/Aion/Resources/aion-shell-sign-index-v1.json
+          test -s native/OrboCore/Sources/OrboCore/Aion/Resources/aion-shell-sign-index-v1.json
+          python - <<'PY'
+          import json
+          path = "native/OrboCore/Sources/OrboCore/Aion/Resources/aion-shell-sign-index-v1.json"
+          data = json.load(open(path))
+          counts = {k: len(v) for k, v in data["families"].items()}
+          print(counts)
+          assert set(counts) == {"F", "R", "W", "Z"}
+          assert all(value > 0 for value in counts.values())
+          PY
+
+      - name: Run accumulated OrboCore tests against canonical Aion data
+        run: swift test --package-path native/OrboCore
+
+      - name: Commit generated Aion runtime resource
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "orbo-forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git add -- native/OrboCore/Sources/OrboCore/Aion/Resources/aion-shell-sign-index-v1.json
+          if git diff --cached --quiet; then
+            echo "Aion runtime resource unchanged."
+          else
+            git commit -m "Manufacture canonical Aion runtime index"
+            git push origin HEAD:phase-f-aion
+          fi
