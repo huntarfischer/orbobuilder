@@ -1,0 +1,1353 @@
+{
+  "notation": "Shell.sign",
+  "numbering_law": "01=Aries through 12=Pisces inside each numbered temporal shell; retrograde recrossings do not renumber the segment.",
+  "ownership": "[first_direct_ingress, next_sign_first_direct_ingress)",
+  "provenance": {
+    "astronomical_engine": "official Swiss Ephemeris C",
+    "coordinate_contract": {
+      "center": "geocentric",
+      "frame": "ecliptic of date",
+      "zodiac": "tropical"
+    },
+    "ephemeris_files": [
+      {
+        "bytes": 508266,
+        "name": "seplm36.se1",
+        "sha256": "3decdf336fa377489051cc4428be6761602dacd02d214a1e9b0b21df7650c4a3"
+      },
+      {
+        "bytes": 498417,
+        "name": "seplm30.se1",
+        "sha256": "a1c87c8cd69d2621098e8efe01795be0bfbc6ead0d925d6fb80c35b6d94589c4"
+      },
+      {
+        "bytes": 493045,
+        "name": "seplm24.se1",
+        "sha256": "4c536e748481b23ac25f42d0e815ba5c7ae1c27e034efb04a6977a2e95291f10"
+      },
+      {
+        "bytes": 489915,
+        "name": "seplm18.se1",
+        "sha256": "d02d4ae93d215e3e1a4f9a7ca56c8aa331630ffde646132cee4d3f018b65f443"
+      },
+      {
+        "bytes": 484597,
+        "name": "seplm12.se1",
+        "sha256": "b744e60a251c04a086a1f03ac1971d96945aa8b354d1704e3be6c767ff10bac3"
+      },
+      {
+        "bytes": 484263,
+        "name": "seplm06.se1",
+        "sha256": "5a8719a75e48b223c0d7c8ba0191d698b808b4fb7265f2cddaa975edd8ac7aec"
+      },
+      {
+        "bytes": 483932,
+        "name": "sepl_00.se1",
+        "sha256": "65f1bfa4c27a2311f6db8447ba9f678a03b1431eb30052bf323619c8209282f1"
+      },
+      {
+        "bytes": 482956,
+        "name": "sepl_06.se1",
+        "sha256": "5aff87ba1664410669b54366752343ca71a22cca1b3698c57edcc4631361675a"
+      },
+      {
+        "bytes": 483743,
+        "name": "sepl_12.se1",
+        "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d"
+      },
+      {
+        "bytes": 484061,
+        "name": "sepl_18.se1",
+        "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66"
+      },
+      {
+        "bytes": 483414,
+        "name": "sepl_24.se1",
+        "sha256": "dea65ffc3ee39125eb1427ecfd578a208be2dd021f49fdfd4b8a130ccd5244f0"
+      }
+    ],
+    "ephemeris_generation": "DE441",
+    "flags": "SEFLG_SWIEPH | SEFLG_SPEED",
+    "source_commit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+    "source_repository": "huntarfischer/swisseph",
+    "swiss_ephemeris_version": "2.10.03"
+  },
+  "rows": [
+    {
+      "first_direct_ingress_jd_ut": 2297171.740867775,
+      "first_direct_ingress_utc": "1577-05-05T05:46:50.976Z",
+      "next_sign_first_direct_ingress_jd_ut": 2307828.495696569,
+      "next_sign_first_direct_ingress_utc": "1606-07-08T23:53:48.184Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.01",
+      "sign_name": "Aries",
+      "sign_ordinal": 1,
+      "sign_start_degree": 0,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2297171.740867775,
+          "motion": "direct",
+          "utc": "1577-05-05T05:46:50.976Z"
+        },
+        {
+          "jd_ut": 2297286.5545825465,
+          "motion": "retrograde",
+          "utc": "1577-08-28T01:18:35.932Z"
+        },
+        {
+          "jd_ut": 2297490.259656082,
+          "motion": "direct",
+          "utc": "1578-03-19T18:13:54.285Z"
+        },
+        {
+          "jd_ut": 2297711.0236680843,
+          "motion": "retrograde",
+          "utc": "1578-10-26T12:34:04.922Z"
+        },
+        {
+          "jd_ut": 2297807.3231940987,
+          "motion": "direct",
+          "utc": "1579-01-30T19:45:23.970Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2307828.495696569,
+      "first_direct_ingress_utc": "1606-07-08T23:53:48.184Z",
+      "next_sign_first_direct_ingress_jd_ut": 2319517.034424579,
+      "next_sign_first_direct_ingress_utc": "1638-07-09T12:49:34.284Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.02",
+      "sign_name": "Taurus",
+      "sign_ordinal": 2,
+      "sign_start_degree": 30,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2307828.495696569,
+          "motion": "direct",
+          "utc": "1606-07-08T23:53:48.184Z"
+        },
+        {
+          "jd_ut": 2307872.217167545,
+          "motion": "retrograde",
+          "utc": "1606-08-21T17:12:43.276Z"
+        },
+        {
+          "jd_ut": 2308133.9454573905,
+          "motion": "direct",
+          "utc": "1607-05-10T10:41:27.519Z"
+        },
+        {
+          "jd_ut": 2308302.811219318,
+          "motion": "retrograde",
+          "utc": "1607-10-26T07:28:09.349Z"
+        },
+        {
+          "jd_ut": 2308457.33443485,
+          "motion": "direct",
+          "utc": "1608-03-28T20:01:35.171Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2319517.034424579,
+      "first_direct_ingress_utc": "1638-07-09T12:49:34.284Z",
+      "next_sign_first_direct_ingress_jd_ut": 2330490.068364661,
+      "next_sign_first_direct_ingress_utc": "1668-07-24T13:38:26.707Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.03",
+      "sign_name": "Gemini",
+      "sign_ordinal": 3,
+      "sign_start_degree": 60,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2319517.034424579,
+          "motion": "direct",
+          "utc": "1638-07-09T12:49:34.284Z"
+        },
+        {
+          "jd_ut": 2319621.7347782934,
+          "motion": "retrograde",
+          "utc": "1638-10-22T05:38:04.845Z"
+        },
+        {
+          "jd_ut": 2319836.5898531526,
+          "motion": "direct",
+          "utc": "1639-05-25T02:09:23.312Z"
+        },
+        {
+          "jd_ut": 2320040.556516369,
+          "motion": "retrograde",
+          "utc": "1639-12-15T01:21:23.014Z"
+        },
+        {
+          "jd_ut": 2320158.1603314923,
+          "motion": "direct",
+          "utc": "1640-04-10T15:50:52.641Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2330490.068364661,
+      "first_direct_ingress_utc": "1668-07-24T13:38:26.707Z",
+      "next_sign_first_direct_ingress_jd_ut": 2339296.509016726,
+      "next_sign_first_direct_ingress_utc": "1692-09-03T00:12:59.045Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.04",
+      "sign_name": "Cancer",
+      "sign_ordinal": 4,
+      "sign_start_degree": 90,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2330490.068364661,
+          "motion": "direct",
+          "utc": "1668-07-24T13:38:26.707Z"
+        },
+        {
+          "jd_ut": 2330627.0059024636,
+          "motion": "retrograde",
+          "utc": "1668-12-08T12:08:29.973Z"
+        },
+        {
+          "jd_ut": 2330809.7848597737,
+          "motion": "direct",
+          "utc": "1669-06-09T06:50:11.884Z"
+        },
+        {
+          "jd_ut": 2331055.5004503224,
+          "motion": "retrograde",
+          "utc": "1670-02-10T00:00:38.908Z"
+        },
+        {
+          "jd_ut": 2331118.5438771145,
+          "motion": "direct",
+          "utc": "1670-04-14T01:03:10.983Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2339296.509016726,
+      "first_direct_ingress_utc": "1692-09-03T00:12:59.045Z",
+      "next_sign_first_direct_ingress_jd_ut": 2345914.8749986747,
+      "next_sign_first_direct_ingress_utc": "1710-10-18T08:59:59.885Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.05",
+      "sign_name": "Leo",
+      "sign_ordinal": 5,
+      "sign_start_degree": 120,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2339296.509016726,
+          "motion": "direct",
+          "utc": "1692-09-03T00:12:59.045Z"
+        },
+        {
+          "jd_ut": 2339414.37378323,
+          "motion": "retrograde",
+          "utc": "1692-12-29T20:58:14.871Z"
+        },
+        {
+          "jd_ut": 2339609.4348783502,
+          "motion": "direct",
+          "utc": "1693-07-12T22:26:13.489Z"
+        },
+        {
+          "jd_ut": 2339853.8543087495,
+          "motion": "retrograde",
+          "utc": "1694-03-14T08:30:12.276Z"
+        },
+        {
+          "jd_ut": 2339910.3081951533,
+          "motion": "direct",
+          "utc": "1694-05-09T19:23:48.061Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2345914.8749986747,
+      "first_direct_ingress_utc": "1710-10-18T08:59:59.885Z",
+      "next_sign_first_direct_ingress_jd_ut": 2351056.4842621638,
+      "next_sign_first_direct_ingress_utc": "1724-11-14T23:37:20.251Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.06",
+      "sign_name": "Virgo",
+      "sign_ordinal": 6,
+      "sign_start_degree": 150,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2345914.8749986747,
+          "motion": "direct",
+          "utc": "1710-10-18T08:59:59.885Z"
+        },
+        {
+          "jd_ut": 2346006.784707672,
+          "motion": "retrograde",
+          "utc": "1711-01-18T06:49:58.743Z"
+        },
+        {
+          "jd_ut": 2346218.0623769388,
+          "motion": "direct",
+          "utc": "1711-08-17T13:29:49.368Z"
+        },
+        {
+          "jd_ut": 2346462.711929084,
+          "motion": "retrograde",
+          "utc": "1712-04-18T05:05:10.673Z"
+        },
+        {
+          "jd_ut": 2346508.58927809,
+          "motion": "direct",
+          "utc": "1712-06-03T02:08:33.627Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2351056.4842621638,
+      "first_direct_ingress_utc": "1724-11-14T23:37:20.251Z",
+      "next_sign_first_direct_ingress_jd_ut": 2355460.9973751213,
+      "next_sign_first_direct_ingress_utc": "1736-12-06T11:56:13.210Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.07",
+      "sign_name": "Libra",
+      "sign_ordinal": 7,
+      "sign_start_degree": 180,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2351056.4842621638,
+          "motion": "direct",
+          "utc": "1724-11-14T23:37:20.251Z"
+        },
+        {
+          "jd_ut": 2351155.0720921606,
+          "motion": "retrograde",
+          "utc": "1725-02-21T13:43:48.763Z"
+        },
+        {
+          "jd_ut": 2351355.6763050016,
+          "motion": "direct",
+          "utc": "1725-09-10T04:13:52.752Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2355460.9973751213,
+      "first_direct_ingress_utc": "1736-12-06T11:56:13.210Z",
+      "next_sign_first_direct_ingress_jd_ut": 2359848.2164927227,
+      "next_sign_first_direct_ingress_utc": "1748-12-10T17:11:44.971Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.08",
+      "sign_name": "Scorpio",
+      "sign_ordinal": 8,
+      "sign_start_degree": 210,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2355460.9973751213,
+          "motion": "direct",
+          "utc": "1736-12-06T11:56:13.210Z"
+        },
+        {
+          "jd_ut": 2355579.5795918927,
+          "motion": "retrograde",
+          "utc": "1737-04-04T01:54:36.740Z"
+        },
+        {
+          "jd_ut": 2355760.5150367534,
+          "motion": "direct",
+          "utc": "1737-10-02T00:21:39.175Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2359848.2164927227,
+      "first_direct_ingress_utc": "1748-12-10T17:11:44.971Z",
+      "next_sign_first_direct_ingress_jd_ut": 2364624.620799032,
+      "next_sign_first_direct_ingress_utc": "1762-01-08T02:53:57.036Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.09",
+      "sign_name": "Sagittarius",
+      "sign_ordinal": 9,
+      "sign_start_degree": 240,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2359848.2164927227,
+          "motion": "direct",
+          "utc": "1748-12-10T17:11:44.971Z"
+        },
+        {
+          "jd_ut": 2360027.552194014,
+          "motion": "retrograde",
+          "utc": "1749-06-08T01:15:09.563Z"
+        },
+        {
+          "jd_ut": 2360148.9567077104,
+          "motion": "direct",
+          "utc": "1749-10-07T10:57:39.546Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2364624.620799032,
+      "first_direct_ingress_utc": "1762-01-08T02:53:57.036Z",
+      "next_sign_first_direct_ingress_jd_ut": 2370190.2027120367,
+      "next_sign_first_direct_ingress_utc": "1777-04-04T16:51:54.320Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.10",
+      "sign_name": "Capricorn",
+      "sign_ordinal": 10,
+      "sign_start_degree": 270,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2364624.620799032,
+          "motion": "direct",
+          "utc": "1762-01-08T02:53:57.036Z"
+        },
+        {
+          "jd_ut": 2364805.8411181048,
+          "motion": "retrograde",
+          "utc": "1762-07-08T08:11:12.604Z"
+        },
+        {
+          "jd_ut": 2364930.247050546,
+          "motion": "direct",
+          "utc": "1762-11-09T17:55:45.167Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2370190.2027120367,
+      "first_direct_ingress_utc": "1777-04-04T16:51:54.320Z",
+      "next_sign_first_direct_ingress_jd_ut": 2377502.0420999518,
+      "next_sign_first_direct_ingress_utc": "1797-04-11T13:00:37.436Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.11",
+      "sign_name": "Aquarius",
+      "sign_ordinal": 11,
+      "sign_start_degree": 300,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2370190.2027120367,
+          "motion": "direct",
+          "utc": "1777-04-04T16:51:54.320Z"
+        },
+        {
+          "jd_ut": 2370243.110463462,
+          "motion": "retrograde",
+          "utc": "1777-05-27T14:39:04.043Z"
+        },
+        {
+          "jd_ut": 2370487.5132128773,
+          "motion": "direct",
+          "utc": "1778-01-27T00:19:01.593Z"
+        },
+        {
+          "jd_ut": 2370693.1235495014,
+          "motion": "retrograde",
+          "utc": "1778-08-20T14:57:54.677Z"
+        },
+        {
+          "jd_ut": 2370796.3724035276,
+          "motion": "direct",
+          "utc": "1778-12-01T20:56:15.665Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2377502.0420999518,
+      "first_direct_ingress_utc": "1797-04-11T13:00:37.436Z",
+      "next_sign_first_direct_ingress_jd_ut": 2386637.0793997087,
+      "next_sign_first_direct_ingress_utc": "1822-04-16T13:54:20.135Z",
+      "shell_id": "Z21",
+      "shell_sign_id": "Z21.12",
+      "sign_name": "Pisces",
+      "sign_ordinal": 12,
+      "sign_start_degree": 330,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2377502.0420999518,
+          "motion": "direct",
+          "utc": "1797-04-11T13:00:37.436Z"
+        },
+        {
+          "jd_ut": 2377602.5640159883,
+          "motion": "retrograde",
+          "utc": "1797-07-21T01:32:10.981Z"
+        },
+        {
+          "jd_ut": 2377814.4981125686,
+          "motion": "direct",
+          "utc": "1798-02-17T23:57:16.926Z"
+        },
+        {
+          "jd_ut": 2378036.936844182,
+          "motion": "retrograde",
+          "utc": "1798-09-28T10:29:03.337Z"
+        },
+        {
+          "jd_ut": 2378126.100185411,
+          "motion": "direct",
+          "utc": "1798-12-26T14:24:16.020Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2386637.0793997087,
+      "first_direct_ingress_utc": "1822-04-16T13:54:20.135Z",
+      "next_sign_first_direct_ingress_jd_ut": 2397262.9576194435,
+      "next_sign_first_direct_ingress_utc": "1851-05-20T10:58:58.320Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.01",
+      "sign_name": "Aries",
+      "sign_ordinal": 1,
+      "sign_start_degree": 0,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2386637.0793997087,
+          "motion": "direct",
+          "utc": "1822-04-16T13:54:20.135Z"
+        },
+        {
+          "jd_ut": 2386793.1140889255,
+          "motion": "retrograde",
+          "utc": "1822-09-19T14:44:17.283Z"
+        },
+        {
+          "jd_ut": 2386957.910776185,
+          "motion": "direct",
+          "utc": "1823-03-03T09:51:31.062Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2397262.9576194435,
+      "first_direct_ingress_utc": "1851-05-20T10:58:58.320Z",
+      "next_sign_first_direct_ingress_jd_ut": 2408648.410722484,
+      "next_sign_first_direct_ingress_utc": "1882-07-21T21:51:26.423Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.02",
+      "sign_name": "Taurus",
+      "sign_ordinal": 2,
+      "sign_start_degree": 30,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2397262.9576194435,
+          "motion": "direct",
+          "utc": "1851-05-20T10:58:58.320Z"
+        },
+        {
+          "jd_ut": 2397410.191398981,
+          "motion": "retrograde",
+          "utc": "1851-10-14T16:35:36.872Z"
+        },
+        {
+          "jd_ut": 2397586.04365886,
+          "motion": "direct",
+          "utc": "1852-04-07T13:02:52.126Z"
+        },
+        {
+          "jd_ut": 2397834.5255363053,
+          "motion": "retrograde",
+          "utc": "1852-12-12T00:36:46.337Z"
+        },
+        {
+          "jd_ut": 2397898.8483518483,
+          "motion": "direct",
+          "utc": "1853-02-14T08:21:37.600Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2408648.410722484,
+      "first_direct_ingress_utc": "1882-07-21T21:51:26.423Z",
+      "next_sign_first_direct_ingress_jd_ut": 2419656.1876045633,
+      "next_sign_first_direct_ingress_utc": "1912-09-10T16:30:09.034Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.03",
+      "sign_name": "Gemini",
+      "sign_ordinal": 3,
+      "sign_start_degree": 60,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2408648.410722484,
+          "motion": "direct",
+          "utc": "1882-07-21T21:51:26.423Z"
+        },
+        {
+          "jd_ut": 2408727.854405866,
+          "motion": "retrograde",
+          "utc": "1882-10-09T08:30:20.667Z"
+        },
+        {
+          "jd_ut": 2408963.549680354,
+          "motion": "direct",
+          "utc": "1883-06-02T01:11:32.383Z"
+        },
+        {
+          "jd_ut": 2409149.410784778,
+          "motion": "retrograde",
+          "utc": "1883-12-04T21:51:31.805Z"
+        },
+        {
+          "jd_ut": 2409286.519082577,
+          "motion": "direct",
+          "utc": "1884-04-20T00:27:28.735Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2419656.1876045633,
+      "first_direct_ingress_utc": "1912-09-10T16:30:09.034Z",
+      "next_sign_first_direct_ingress_jd_ut": 2428814.0099122487,
+      "next_sign_first_direct_ingress_utc": "1937-10-07T12:14:16.418Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.04",
+      "sign_name": "Cancer",
+      "sign_ordinal": 4,
+      "sign_start_degree": 90,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2419656.1876045633,
+          "motion": "direct",
+          "utc": "1912-09-10T16:30:09.034Z"
+        },
+        {
+          "jd_ut": 2419695.84585075,
+          "motion": "retrograde",
+          "utc": "1912-10-20T08:18:01.505Z"
+        },
+        {
+          "jd_ut": 2419958.433868304,
+          "motion": "direct",
+          "utc": "1913-07-09T22:24:46.221Z"
+        },
+        {
+          "jd_ut": 2420129.678687229,
+          "motion": "retrograde",
+          "utc": "1913-12-28T04:17:18.577Z"
+        },
+        {
+          "jd_ut": 2420279.363411464,
+          "motion": "direct",
+          "utc": "1914-05-26T20:43:18.750Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2428814.0099122487,
+      "first_direct_ingress_utc": "1937-10-07T12:14:16.418Z",
+      "next_sign_first_direct_ingress_jd_ut": 2435766.7632749723,
+      "next_sign_first_direct_ingress_utc": "1956-10-20T06:19:06.958Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.05",
+      "sign_name": "Leo",
+      "sign_ordinal": 5,
+      "sign_start_degree": 120,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2428814.0099122487,
+          "motion": "direct",
+          "utc": "1937-10-07T12:14:16.418Z"
+        },
+        {
+          "jd_ut": 2428862.8792959936,
+          "motion": "retrograde",
+          "utc": "1937-11-25T09:06:11.174Z"
+        },
+        {
+          "jd_ut": 2429114.2486131694,
+          "motion": "direct",
+          "utc": "1938-08-03T17:58:00.178Z"
+        },
+        {
+          "jd_ut": 2429302.039068361,
+          "motion": "retrograde",
+          "utc": "1939-02-07T12:56:15.506Z"
+        },
+        {
+          "jd_ut": 2429428.700406312,
+          "motion": "direct",
+          "utc": "1939-06-14T04:48:35.105Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2435766.7632749723,
+      "first_direct_ingress_utc": "1956-10-20T06:19:06.958Z",
+      "next_sign_first_direct_ingress_jd_ut": 2441229.762352539,
+      "next_sign_first_direct_ingress_utc": "1971-10-05T06:17:47.259Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.06",
+      "sign_name": "Virgo",
+      "sign_ordinal": 6,
+      "sign_start_degree": 150,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2435766.7632749723,
+          "motion": "direct",
+          "utc": "1956-10-20T06:19:06.958Z"
+        },
+        {
+          "jd_ut": 2435853.6089549586,
+          "motion": "retrograde",
+          "utc": "1957-01-15T02:36:53.708Z"
+        },
+        {
+          "jd_ut": 2436069.6858216394,
+          "motion": "direct",
+          "utc": "1957-08-19T04:27:34.990Z"
+        },
+        {
+          "jd_ut": 2436305.1163674034,
+          "motion": "retrograde",
+          "utc": "1958-04-11T14:47:34.144Z"
+        },
+        {
+          "jd_ut": 2436365.291631138,
+          "motion": "direct",
+          "utc": "1958-06-10T18:59:56.930Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2441229.762352539,
+      "first_direct_ingress_utc": "1971-10-05T06:17:47.259Z",
+      "next_sign_first_direct_ingress_jd_ut": 2445644.3810085356,
+      "next_sign_first_direct_ingress_utc": "1983-11-05T21:08:39.137Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.07",
+      "sign_name": "Libra",
+      "sign_ordinal": 7,
+      "sign_start_degree": 180,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2441229.762352539,
+          "motion": "direct",
+          "utc": "1971-10-05T06:17:47.259Z"
+        },
+        {
+          "jd_ut": 2441424.8222508654,
+          "motion": "retrograde",
+          "utc": "1972-04-17T07:44:02.475Z"
+        },
+        {
+          "jd_ut": 2441528.9885822553,
+          "motion": "direct",
+          "utc": "1972-07-30T11:43:33.507Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2445644.3810085356,
+      "first_direct_ingress_utc": "1983-11-05T21:08:39.137Z",
+      "next_sign_first_direct_ingress_jd_ut": 2449734.8860416887,
+      "next_sign_first_direct_ingress_utc": "1995-01-17T09:15:54.002Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.08",
+      "sign_name": "Scorpio",
+      "sign_ordinal": 8,
+      "sign_start_degree": 210,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2445644.3810085356,
+          "motion": "direct",
+          "utc": "1983-11-05T21:08:39.137Z"
+        },
+        {
+          "jd_ut": 2445839.105695434,
+          "motion": "retrograde",
+          "utc": "1984-05-18T14:32:12.085Z"
+        },
+        {
+          "jd_ut": 2445940.6985508483,
+          "motion": "direct",
+          "utc": "1984-08-28T04:45:54.793Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2449734.8860416887,
+      "first_direct_ingress_utc": "1995-01-17T09:15:54.002Z",
+      "next_sign_first_direct_ingress_jd_ut": 2454491.6097680284,
+      "next_sign_first_direct_ingress_utc": "2008-01-26T02:38:03.958Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.09",
+      "sign_name": "Sagittarius",
+      "sign_ordinal": 9,
+      "sign_start_degree": 240,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2449734.8860416887,
+          "motion": "direct",
+          "utc": "1995-01-17T09:15:54.002Z"
+        },
+        {
+          "jd_ut": 2449828.622195877,
+          "motion": "retrograde",
+          "utc": "1995-04-21T02:55:57.724Z"
+        },
+        {
+          "jd_ut": 2450032.299682131,
+          "motion": "direct",
+          "utc": "1995-11-10T19:11:32.536Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2454491.6097680284,
+      "first_direct_ingress_utc": "2008-01-26T02:38:03.958Z",
+      "next_sign_first_direct_ingress_jd_ut": 2460027.0157429986,
+      "next_sign_first_direct_ingress_utc": "2023-03-23T12:22:40.195Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.10",
+      "sign_name": "Capricorn",
+      "sign_ordinal": 10,
+      "sign_start_degree": 270,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2454491.6097680284,
+          "motion": "direct",
+          "utc": "2008-01-26T02:38:03.958Z"
+        },
+        {
+          "jd_ut": 2454631.7166787954,
+          "motion": "retrograde",
+          "utc": "2008-06-14T05:12:01.048Z"
+        },
+        {
+          "jd_ut": 2454797.544285817,
+          "motion": "direct",
+          "utc": "2008-11-27T01:03:46.295Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2460027.0157429986,
+      "first_direct_ingress_utc": "2023-03-23T12:22:40.195Z",
+      "next_sign_first_direct_ingress_jd_ut": 2467317.542675128,
+      "next_sign_first_direct_ingress_utc": "2043-03-09T01:01:27.131Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.11",
+      "sign_name": "Aquarius",
+      "sign_ordinal": 11,
+      "sign_start_degree": 300,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2460027.0157429986,
+          "motion": "direct",
+          "utc": "2023-03-23T12:22:40.195Z"
+        },
+        {
+          "jd_ut": 2460106.8999650534,
+          "motion": "retrograde",
+          "utc": "2023-06-11T09:35:56.981Z"
+        },
+        {
+          "jd_ut": 2460330.5387325194,
+          "motion": "direct",
+          "utc": "2024-01-21T00:55:46.490Z"
+        },
+        {
+          "jd_ut": 2460555.498788993,
+          "motion": "retrograde",
+          "utc": "2024-09-01T23:58:15.369Z"
+        },
+        {
+          "jd_ut": 2460634.360386842,
+          "motion": "direct",
+          "utc": "2024-11-19T20:38:57.423Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2467317.542675128,
+      "first_direct_ingress_utc": "2043-03-09T01:01:27.131Z",
+      "next_sign_first_direct_ingress_jd_ut": 2475819.1417904533,
+      "next_sign_first_direct_ingress_utc": "2066-06-17T15:24:10.695Z",
+      "shell_id": "Z22",
+      "shell_sign_id": "Z22.12",
+      "sign_name": "Pisces",
+      "sign_ordinal": 12,
+      "sign_start_degree": 330,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2467317.542675128,
+          "motion": "direct",
+          "utc": "2043-03-09T01:01:27.131Z"
+        },
+        {
+          "jd_ut": 2467493.633721551,
+          "motion": "retrograde",
+          "utc": "2043-09-01T03:12:33.542Z"
+        },
+        {
+          "jd_ut": 2467633.9087993735,
+          "motion": "direct",
+          "utc": "2044-01-19T09:48:40.266Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2475819.1417904533,
+      "first_direct_ingress_utc": "2066-06-17T15:24:10.695Z",
+      "next_sign_first_direct_ingress_jd_ut": 2486402.7029821044,
+      "next_sign_first_direct_ingress_utc": "2095-06-09T04:52:17.654Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.01",
+      "sign_name": "Aries",
+      "sign_ordinal": 1,
+      "sign_start_degree": 0,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2475819.1417904533,
+          "motion": "direct",
+          "utc": "2066-06-17T15:24:10.695Z"
+        },
+        {
+          "jd_ut": 2475843.4150137603,
+          "motion": "retrograde",
+          "utc": "2066-07-11T21:57:37.189Z"
+        },
+        {
+          "jd_ut": 2476114.4184064474,
+          "motion": "direct",
+          "utc": "2067-04-08T22:02:30.317Z"
+        },
+        {
+          "jd_ut": 2476286.1991668586,
+          "motion": "retrograde",
+          "utc": "2067-09-27T16:46:48.017Z"
+        },
+        {
+          "jd_ut": 2476435.0696570706,
+          "motion": "direct",
+          "utc": "2068-02-23T13:40:18.371Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2486402.7029821044,
+      "first_direct_ingress_utc": "2095-06-09T04:52:17.654Z",
+      "next_sign_first_direct_ingress_jd_ut": 2498096.403358385,
+      "next_sign_first_direct_ingress_utc": "2127-06-15T21:40:50.164Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.02",
+      "sign_name": "Taurus",
+      "sign_ordinal": 2,
+      "sign_start_degree": 30,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2486402.7029821044,
+          "motion": "direct",
+          "utc": "2095-06-09T04:52:17.654Z"
+        },
+        {
+          "jd_ut": 2486506.4247426884,
+          "motion": "retrograde",
+          "utc": "2095-09-20T22:11:37.768Z"
+        },
+        {
+          "jd_ut": 2486721.4692418566,
+          "motion": "direct",
+          "utc": "2096-04-22T23:15:42.496Z"
+        },
+        {
+          "jd_ut": 2486927.1089689406,
+          "motion": "retrograde",
+          "utc": "2096-11-14T14:36:54.916Z"
+        },
+        {
+          "jd_ut": 2487042.530177449,
+          "motion": "direct",
+          "utc": "2097-03-10T00:43:27.332Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2498096.403358385,
+      "first_direct_ingress_utc": "2127-06-15T21:40:50.164Z",
+      "next_sign_first_direct_ingress_jd_ut": 2509114.144822725,
+      "next_sign_first_direct_ingress_utc": "2157-08-14T15:28:32.683Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.03",
+      "sign_name": "Gemini",
+      "sign_ordinal": 3,
+      "sign_start_degree": 60,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2498096.403358385,
+          "motion": "direct",
+          "utc": "2127-06-15T21:40:50.164Z"
+        },
+        {
+          "jd_ut": 2498251.707856101,
+          "motion": "retrograde",
+          "utc": "2127-11-18T04:59:18.767Z"
+        },
+        {
+          "jd_ut": 2498420.1223874846,
+          "motion": "direct",
+          "utc": "2128-05-04T14:56:14.279Z"
+        },
+        {
+          "jd_ut": 2498677.927834505,
+          "motion": "retrograde",
+          "utc": "2129-01-17T10:16:04.901Z"
+        },
+        {
+          "jd_ut": 2498729.7939664843,
+          "motion": "direct",
+          "utc": "2129-03-10T07:03:18.704Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2509114.144822725,
+      "first_direct_ingress_utc": "2157-08-14T15:28:32.683Z",
+      "next_sign_first_direct_ingress_jd_ut": 2518620.792314549,
+      "next_sign_first_direct_ingress_utc": "2183-08-25T07:00:55.977Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.04",
+      "sign_name": "Cancer",
+      "sign_ordinal": 4,
+      "sign_start_degree": 90,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2509114.144822725,
+          "motion": "direct",
+          "utc": "2157-08-14T15:28:32.683Z"
+        },
+        {
+          "jd_ut": 2509207.4646738265,
+          "motion": "retrograde",
+          "utc": "2157-11-15T23:09:07.819Z"
+        },
+        {
+          "jd_ut": 2509430.0023049237,
+          "motion": "direct",
+          "utc": "2158-06-26T12:03:19.145Z"
+        },
+        {
+          "jd_ut": 2509630.1663663574,
+          "motion": "retrograde",
+          "utc": "2159-01-12T15:59:34.053Z"
+        },
+        {
+          "jd_ut": 2509749.585755257,
+          "motion": "direct",
+          "utc": "2159-05-12T02:03:29.254Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2518620.792314549,
+      "first_direct_ingress_utc": "2183-08-25T07:00:55.977Z",
+      "next_sign_first_direct_ingress_jd_ut": 2525625.0408271346,
+      "next_sign_first_direct_ingress_utc": "2202-10-29T12:58:47.464Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.05",
+      "sign_name": "Leo",
+      "sign_ordinal": 5,
+      "sign_start_degree": 120,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2518620.792314549,
+          "motion": "direct",
+          "utc": "2183-08-25T07:00:55.977Z"
+        },
+        {
+          "jd_ut": 2518758.489911926,
+          "motion": "retrograde",
+          "utc": "2184-01-09T23:45:28.390Z"
+        },
+        {
+          "jd_ut": 2518936.7312644804,
+          "motion": "direct",
+          "utc": "2184-07-06T05:33:01.251Z"
+        },
+        {
+          "jd_ut": 2519206.076099231,
+          "motion": "retrograde",
+          "utc": "2185-04-01T13:49:34.974Z"
+        },
+        {
+          "jd_ut": 2519227.056025885,
+          "motion": "direct",
+          "utc": "2185-04-22T13:20:40.636Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2525625.0408271346,
+      "first_direct_ingress_utc": "2202-10-29T12:58:47.464Z",
+      "next_sign_first_direct_ingress_jd_ut": 2531110.8646143656,
+      "next_sign_first_direct_ingress_utc": "2217-11-05T08:45:02.681Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.06",
+      "sign_name": "Virgo",
+      "sign_ordinal": 6,
+      "sign_start_degree": 150,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2525625.0408271346,
+          "motion": "direct",
+          "utc": "2202-10-29T12:58:47.464Z"
+        },
+        {
+          "jd_ut": 2525693.5148212565,
+          "motion": "retrograde",
+          "utc": "2203-01-06T00:21:20.557Z"
+        },
+        {
+          "jd_ut": 2525924.827709607,
+          "motion": "direct",
+          "utc": "2203-08-25T07:51:54.110Z"
+        },
+        {
+          "jd_ut": 2526141.763204313,
+          "motion": "retrograde",
+          "utc": "2204-03-29T06:19:00.853Z"
+        },
+        {
+          "jd_ut": 2526227.2906766944,
+          "motion": "direct",
+          "utc": "2204-06-22T18:58:34.466Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2531110.8646143656,
+      "first_direct_ingress_utc": "2217-11-05T08:45:02.681Z",
+      "next_sign_first_direct_ingress_jd_ut": 2535542.2818552945,
+      "next_sign_first_direct_ingress_utc": "2229-12-23T18:45:52.297Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.07",
+      "sign_name": "Libra",
+      "sign_ordinal": 7,
+      "sign_start_degree": 180,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2531110.8646143656,
+          "motion": "direct",
+          "utc": "2217-11-05T08:45:02.681Z"
+        },
+        {
+          "jd_ut": 2531230.9334702836,
+          "motion": "retrograde",
+          "utc": "2218-03-05T10:24:11.833Z"
+        },
+        {
+          "jd_ut": 2531413.251274474,
+          "motion": "direct",
+          "utc": "2218-09-03T18:01:50.115Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2535542.2818552945,
+      "first_direct_ingress_utc": "2229-12-23T18:45:52.297Z",
+      "next_sign_first_direct_ingress_jd_ut": 2539919.712708695,
+      "next_sign_first_direct_ingress_utc": "2241-12-18T05:06:18.031Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.08",
+      "sign_name": "Scorpio",
+      "sign_ordinal": 8,
+      "sign_start_degree": 210,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2535542.2818552945,
+          "motion": "direct",
+          "utc": "2229-12-23T18:45:52.297Z"
+        },
+        {
+          "jd_ut": 2535624.290915439,
+          "motion": "retrograde",
+          "utc": "2230-03-15T18:58:55.094Z"
+        },
+        {
+          "jd_ut": 2535836.488522321,
+          "motion": "direct",
+          "utc": "2230-10-13T23:43:28.329Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2539919.712708695,
+      "first_direct_ingress_utc": "2241-12-18T05:06:18.031Z",
+      "next_sign_first_direct_ingress_jd_ut": 2544374.4077977687,
+      "next_sign_first_direct_ingress_utc": "2254-02-27T21:47:13.727Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.09",
+      "sign_name": "Sagittarius",
+      "sign_ordinal": 9,
+      "sign_start_degree": 240,
+      "transition_crossing_count": 3,
+      "transition_crossings": [
+        {
+          "jd_ut": 2539919.712708695,
+          "motion": "direct",
+          "utc": "2241-12-18T05:06:18.031Z"
+        },
+        {
+          "jd_ut": 2540081.89535591,
+          "motion": "retrograde",
+          "utc": "2242-05-29T09:29:18.751Z"
+        },
+        {
+          "jd_ut": 2540220.930069254,
+          "motion": "direct",
+          "utc": "2242-10-15T10:19:17.984Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2544374.4077977687,
+      "first_direct_ingress_utc": "2254-02-27T21:47:13.727Z",
+      "next_sign_first_direct_ingress_jd_ut": 2549878.371130185,
+      "next_sign_first_direct_ingress_utc": "2269-03-24T20:54:25.648Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.10",
+      "sign_name": "Capricorn",
+      "sign_ordinal": 10,
+      "sign_start_degree": 270,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2544374.4077977687,
+          "motion": "direct",
+          "utc": "2254-02-27T21:47:13.727Z"
+        },
+        {
+          "jd_ut": 2544442.120427166,
+          "motion": "retrograde",
+          "utc": "2254-05-06T14:53:24.907Z"
+        },
+        {
+          "jd_ut": 2544669.6831074506,
+          "motion": "direct",
+          "utc": "2254-12-20T04:23:40.484Z"
+        },
+        {
+          "jd_ut": 2544910.1324744653,
+          "motion": "retrograde",
+          "utc": "2255-08-17T15:10:45.794Z"
+        },
+        {
+          "jd_ut": 2544958.9623610955,
+          "motion": "direct",
+          "utc": "2255-10-05T11:05:47.999Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2549878.371130185,
+      "first_direct_ingress_utc": "2269-03-24T20:54:25.648Z",
+      "next_sign_first_direct_ingress_jd_ut": 2556829.015024527,
+      "next_sign_first_direct_ingress_utc": "2288-04-04T12:21:38.119Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.11",
+      "sign_name": "Aquarius",
+      "sign_ordinal": 11,
+      "sign_start_degree": 300,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2549878.371130185,
+          "motion": "direct",
+          "utc": "2269-03-24T20:54:25.648Z"
+        },
+        {
+          "jd_ut": 2549954.7383283274,
+          "motion": "retrograde",
+          "utc": "2269-06-09T05:43:11.567Z"
+        },
+        {
+          "jd_ut": 2550180.485249996,
+          "motion": "direct",
+          "utc": "2270-01-20T23:38:45.600Z"
+        },
+        {
+          "jd_ut": 2550405.3491283497,
+          "motion": "retrograde",
+          "utc": "2270-09-02T20:22:44.689Z"
+        },
+        {
+          "jd_ut": 2550483.336023668,
+          "motion": "direct",
+          "utc": "2270-11-19T20:03:52.445Z"
+        }
+      ]
+    },
+    {
+      "first_direct_ingress_jd_ut": 2556829.015024527,
+      "first_direct_ingress_utc": "2288-04-04T12:21:38.119Z",
+      "next_sign_first_direct_ingress_jd_ut": 2565295.0945935287,
+      "next_sign_first_direct_ingress_utc": "2311-06-10T14:16:12.881Z",
+      "shell_id": "Z23",
+      "shell_sign_id": "Z23.12",
+      "sign_name": "Pisces",
+      "sign_ordinal": 12,
+      "sign_start_degree": 330,
+      "transition_crossing_count": 5,
+      "transition_crossings": [
+        {
+          "jd_ut": 2556829.015024527,
+          "motion": "direct",
+          "utc": "2288-04-04T12:21:38.119Z"
+        },
+        {
+          "jd_ut": 2556944.6552358195,
+          "motion": "retrograde",
+          "utc": "2288-07-29T03:43:32.375Z"
+        },
+        {
+          "jd_ut": 2557142.7001707256,
+          "motion": "direct",
+          "utc": "2289-02-12T04:48:14.751Z"
+        },
+        {
+          "jd_ut": 2557383.6427003406,
+          "motion": "retrograde",
+          "utc": "2289-10-11T03:25:29.309Z"
+        },
+        {
+          "jd_ut": 2557447.9946094714,
+          "motion": "direct",
+          "utc": "2289-12-14T11:52:14.258Z"
+        }
+      ]
+    }
+  ],
+  "schema_version": "1.0.0",
+  "scope": "Z21.01 through Z23.12"
+}
