@@ -7,6 +7,11 @@ on:
     paths:
       - ".github/workflows/pass5-temporal-shell-tables.yml"
       - "tools/pass5/generate_temporal_shell_tables.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/pass5-temporal-shell-tables.yml"
+      - "tools/pass5/generate_temporal_shell_tables.py"
 
 permissions:
   contents: write
@@ -58,7 +63,16 @@ jobs:
       - name: Show Z21-Z23 shell membership
         run: cat tools/pass5/temporal-shells/temporal-shell-z21-z23-summary.json
 
+      - name: Upload canonical shell tables
+        uses: actions/upload-artifact@v4
+        with:
+          name: pass5-temporal-shell-tables
+          if-no-files-found: error
+          retention-days: 14
+          path: tools/pass5/temporal-shells/
+
       - name: Commit canonical tables
+        if: github.event_name == 'push'
         run: |
           git config user.name "orbo-forge"
           git config user.email "orbo-forge@users.noreply.github.com"
