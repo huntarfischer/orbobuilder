@@ -1,0 +1,27 @@
+{
+  "expected_row_count": 420,
+  "failures": [],
+  "family": "Neptunian Wave",
+  "first_shell": "W0",
+  "last_shell": "W34",
+  "law": "Shell.sign uses 01-12 Aries-Pisces; first direct sign ingress begins stable ownership and retrograde recrossings remain transition metadata.",
+  "planet": "Neptune",
+  "prefix": "W",
+  "row_count": 420,
+  "shell_count": 35,
+  "sign_numbering": {
+    "01": "Aries",
+    "02": "Taurus",
+    "03": "Gemini",
+    "04": "Cancer",
+    "05": "Leo",
+    "06": "Virgo",
+    "07": "Libra",
+    "08": "Scorpio",
+    "09": "Sagittarius",
+    "10": "Capricorn",
+    "11": "Aquarius",
+    "12": "Pisces"
+  },
+  "status": "PASS"
+}

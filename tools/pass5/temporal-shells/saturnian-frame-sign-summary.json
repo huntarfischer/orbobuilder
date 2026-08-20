@@ -1,0 +1,27 @@
+{
+  "expected_row_count": 2376,
+  "failures": [],
+  "family": "Saturnian Frame",
+  "first_shell": "F0",
+  "last_shell": "F197",
+  "law": "Shell.sign uses 01-12 Aries-Pisces; first direct sign ingress begins stable ownership and retrograde recrossings remain transition metadata.",
+  "planet": "Saturn",
+  "prefix": "F",
+  "row_count": 2376,
+  "shell_count": 198,
+  "sign_numbering": {
+    "01": "Aries",
+    "02": "Taurus",
+    "03": "Gemini",
+    "04": "Cancer",
+    "05": "Leo",
+    "06": "Virgo",
+    "07": "Libra",
+    "08": "Scorpio",
+    "09": "Sagittarius",
+    "10": "Capricorn",
+    "11": "Aquarius",
+    "12": "Pisces"
+  },
+  "status": "PASS"
+}
