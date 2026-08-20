@@ -22,7 +22,8 @@ let package = Package(
         .target(
             name: "OrboCore",
             resources: [
-                .copy("Geoplacement/Resources/geoplacement-atlas-v1.js")
+                .copy("Geoplacement/Resources/geoplacement-atlas-v1.js"),
+                .copy("Aion/Resources")
             ]
         ),
         .executableTarget(
