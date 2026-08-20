@@ -1,0 +1,38 @@
+name: Pass 5 Z23 Eclipse Contract Audit
+
+on:
+  pull_request:
+    branches:
+      - agent/p22-duplicate-cleanup-staging
+    paths:
+      - ".github/workflows/pass5-z23-eclipse-audit.yml"
+
+jobs:
+  audit-z22-eclipse-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Orbo
+        uses: actions/checkout@v4
+      - name: Audit frozen Z22 eclipse artifact
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,collections
+          p='tools/pass5/p22-data/eclipse-table.csv.gz'
+          with gzip.open(p,'rt',newline='') as f:
+              r=csv.DictReader(f)
+              rows=list(r)
+          print('header=',r.fieldnames)
+          print('rows=',len(rows))
+          print('sample-first=')
+          for x in rows[:5]: print(x)
+          print('sample-last=')
+          for x in rows[-5:]: print(x)
+          for field in r.fieldnames:
+              vals=collections.Counter(x[field] for x in rows)
+              if len(vals)<=20:
+                  print(field,dict(vals))
+          for candidate in ('eclipseType','kind','type','family','eventType'):
+              if candidate in r.fieldnames:
+                  print(candidate,collections.Counter(x[candidate] for x in rows))
+          print('PASS Z22 eclipse artifact audit')
+          PY
