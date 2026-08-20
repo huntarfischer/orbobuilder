@@ -79,7 +79,7 @@ The frozen Z22 relationship tables remain the topology and artifact-contract ref
 
 This historical interpolation/grid behavior is not propagated into newly manufactured neighboring Zeitgeists.
 
-For Z23 and later neighboring manufacture, the governing law is:
+For neighboring manufacture, including Z21 and Z23, the governing law is:
 
 1. detect the same oriented Ring crossing topology used by Z22;
 2. refine the crossing against pinned Swiss/DE441 until the celestial aspect residual converges;
@@ -98,10 +98,40 @@ Every frozen neighboring-Z relationship row must satisfy:
 
 `exactAspectResidualArcSeconds < 0.001`
 
-The Z23 production repair tightened root refinement rather than weakening this gate. The accepted Z23 manufacture reached maximum residuals of:
+The Z23 production repair tightened root refinement rather than weakening this gate. That corrected Forge was then reused unchanged for Z21.
 
-- major: 0.000108 arcseconds
-- minor: 0.000014 arcseconds
+Accepted maximum residuals:
+
+- Z21 major: 0.000014 arcseconds
+- Z21 minor: 0.000014 arcseconds
+- Z23 major: 0.000108 arcseconds
+- Z23 minor: 0.000014 arcseconds
+
+## Z21 frozen reference
+
+Canonical Z21 relationship data lives at:
+
+`tools/pass5/zeitgeist-relationship-data/z21/`
+
+Owner span:
+
+`1577-05-05T05:46:50.976Z` to `1822-04-16T13:54:20.135Z`, half-open.
+
+Frozen row counts:
+
+- major: 309,570
+- minor: 463,257
+- total: 772,827
+
+No duplicate-source rows were removed and no repeated stored celestial keys required a recurrence ordinal greater than zero in the Z21 manufacture. Major relationships populated all 55 body pairs; the minor family had events in 54 body pairs.
+
+Frozen file hashes:
+
+- major gzip: `ed5adc0a8e6de347a787090a78b5ede0af9f3636c521d0351ab29d81c80d42cc`
+- minor gzip: `1ac716e07daff4fbbc70d3f66a08c30bdbc91b94b6e0c28132e784000b93b9d4`
+- manifest: `5140e8886bb142f17fb211ba17c5a48fd73fd292dd1be26b133aa788f80c6579`
+
+The Z21 freeze commit is `eb7be0c` on `agent/p22-duplicate-cleanup-staging`.
 
 ## Z23 frozen reference
 
