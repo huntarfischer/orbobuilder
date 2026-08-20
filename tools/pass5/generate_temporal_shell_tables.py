@@ -12,6 +12,7 @@ Pisces->Aries crossing in that body's Aries-transition cluster; later retrograde
 recrossings belong to the same numbered shell.
 
 Canonical manufacture requires official Swiss-file mode and aborts on Moshier fallback.
+This file is executed by pass5-temporal-shell-tables.yml against huntarfischer/swisseph.
 """
 from __future__ import annotations
 
@@ -179,17 +180,9 @@ def refine_station(swiss: SwissC, body: int, lo: float, hi: float) -> float:
 
 
 def transition_shadow(swiss: SwissC, body: int, first: float, final: float) -> tuple[float | None, str | None, float | None]:
-    """Replicate the Pluto-table transition shadow where a return to Pisces occurs.
-
-    The floor is the deepest Pisces longitude reached at the direct station after a
-    retrograde 0-Aries recrossing. Pre-shadow start is the earlier direct passage over
-    that same longitude before first ingress. Returns nulls when the transition never
-    returns to Pisces.
-    """
+    """Replicate the Pluto-table transition shadow where a return to Pisces occurs."""
     if final <= first + 1e-7:
         return None, None, None
-
-    # Find retrograde->direct stations between first and final and choose deepest Pisces floor.
     candidates = []
     step = 2.0
     t0 = first
@@ -207,8 +200,6 @@ def transition_shadow(swiss: SwissC, body: int, first: float, final: float) -> t
         return None, None, None
     _, floor_lon, _ = min(candidates, key=lambda x: x[0])
     target = signed_zero(floor_lon)
-
-    # Find the earlier direct passage over the floor before first Aries ingress.
     hi = first
     fhi = signed_zero(swiss.state(hi - 1e-6, body)[0]) - target
     lo = hi - 2.0
@@ -256,7 +247,6 @@ def manufacture_family(swiss: SwissC, prefix: str, cfg: dict, scan_end: float) -
     for ordinal in range(len(qualifying) - 1):
         first, final, transition = qualifying[ordinal]
         next_first = qualifying[ordinal + 1][0]
-        # Keep every numbered shell through the one intersecting Z23; once start is beyond Z24, stop.
         if first["jd_ut"] >= Z_BOUNDS["Z23"][1]:
             break
         pre_jd, pre_utc, floor = transition_shadow(swiss, cfg["body"], first["jd_ut"], final["jd_ut"])
@@ -334,7 +324,6 @@ def main() -> int:
 
     files = verify_ephe(args.ephe_dir)
     swiss = SwissC(args.library, args.ephe_dir)
-    # Need a full Neptune boundary after Z24 to close the last shell intersecting Z23.
     scan_end = Z_BOUNDS["Z23"][1] + 190 * 365.25
     rows_by_prefix = {}
     provenance = {
