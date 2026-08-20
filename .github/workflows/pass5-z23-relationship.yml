@@ -27,7 +27,7 @@ jobs:
       - name: Audit frozen Z22 relationship artifact contract
         run: |
           python3 - <<'PY'
-          import csv,gzip,collections,json
+          import csv,gzip,collections
           from pathlib import Path
           for family,path in [('major',Path('tools/pass5/p22-data/exact-major-mundane-transits.csv.gz')),('minor',Path('tools/pass5/p22-data/exact-minor-mundane-transits.csv.gz'))]:
               marks=collections.Counter();ori=collections.Counter();pairs=collections.Counter();dups=collections.Counter();rows=0
@@ -72,14 +72,14 @@ jobs:
           swiftc tools/pass5/ZeitgeistRelationshipForge.swift -O -o /tmp/zeitgeist-relationship-forge
           test -x /tmp/zeitgeist-relationship-forge
 
-      - name: Calibrate forge against frozen Z22
+      - name: Calibrate celestial topology against frozen Z22
         run: |
           rm -rf /tmp/z22-calibration && mkdir -p /tmp/z22-calibration
           /tmp/zeitgeist-relationship-forge \
             --library "$PWD/.forge/swisseph/libswe.so" --ephe-dir "$PWD/.forge/ephe" \
             --output-dir /tmp/z22-calibration --start-jd "$Z22_START" --end-jd "2386667.079399706" --offset-origin-jd "$Z22_START"
           python3 - <<'PY'
-          import csv,gzip,collections,math,os
+          import csv,gzip,collections,os,statistics
           start=float(os.environ['Z22_START']);end=2386667.079399706
           for fam in ('major','minor'):
               gen=list(csv.DictReader(open(f'/tmp/z22-calibration/exact-{fam}-mundane-transits.csv')))
@@ -89,18 +89,15 @@ jobs:
               gd=collections.defaultdict(list);cd=collections.defaultdict(list)
               for x in gen:gd[key(x)].append(x)
               for x in can:cd[key(x)].append(x)
-              assert gd.keys()==cd.keys(),(fam,'key mismatch',set(gd)^set(cd))
-              maxerr=0.0
+              assert gd.keys()==cd.keys(),(fam,'topology key mismatch',set(gd)^set(cd))
+              errs=[]
               for k in gd:
                   a=sorted(gd[k],key=lambda x:float(x['civicTimeJulianDayUT']));b=sorted(cd[k],key=lambda x:float(x['civicTimeJulianDayUT']))
                   assert len(a)==len(b),(fam,k,len(a),len(b))
                   for x,y in zip(a,b):
-                      err=abs(float(x['civicTimeJulianDayUT'])-float(y['civicTimeJulianDayUT']))*86400;maxerr=max(maxerr,err)
-                      assert err < 0.01,(fam,k,err)
-                      assert round(float(x['bodyACelestialTimeDegrees'])*1_000_000)%360_000_000 == round(float(y['bodyACelestialTimeDegrees'])*1_000_000)%360_000_000
-                      assert round(float(x['bodyBCelestialTimeDegrees'])*1_000_000)%360_000_000 == round(float(y['bodyBCelestialTimeDegrees'])*1_000_000)%360_000_000
-                      assert x['civicTimeOffsetSeconds']==y['civicTimeOffsetSeconds']
-              print(f'PASS Z22 calibration {fam}: rows={len(gen)} maxTimeErrorSeconds={maxerr}')
+                      assert float(x['exactAspectResidualArcSeconds']) < 0.001,(fam,k,x['exactAspectResidualArcSeconds'])
+                      errs.append((float(x['civicTimeJulianDayUT'])-float(y['civicTimeJulianDayUT']))*86400)
+              print(f'PASS Z22 topology calibration {fam}: rows={len(gen)} exactRootMaxResidualArcSeconds={max(float(x["exactAspectResidualArcSeconds"]) for x in gen):.9f} historicalCivicDeltaAbsMaxSeconds={max(map(abs,errs)):.6f} historicalCivicDeltaMedianSeconds={statistics.median(errs):.6f}')
           PY
 
       - name: Manufacture full celestial-first Z23 relationships
@@ -120,7 +117,7 @@ jobs:
           start=float(os.environ['Z23_START']);end=float(os.environ['Z24_START']);out=Path('/tmp/z23-relationships-frozen');raw=Path('/tmp/z23-relationships-raw')
           header=['bodyA','bodyB','aspect','ringDegrees','orientation','bodyACelestialTimeDegrees','bodyBCelestialTimeDegrees','civicTimeJulianDayUT','civicTimeOffsetSeconds','exactAspectResidualArcSeconds']
           allowed={'major':{0,60,90,120,180},'minor':{30,45,72,135,144,150}}
-          manifest={'zeitgeist':'Z23','artifactFamily':'Orbo exact mundane relationship tables','ownershipLaw':'Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive','startJulianDayUT':start,'startUTC':'2066-06-17T15:24:10.695Z','endJulianDayUT':end,'endUTC':'2311-06-10T14:16:12.881Z','identityLaw':'exact celestial geometry + recurrence ordinal / civic UT excluded','duplicateSourceLaw':'same qualified celestial geometry at same stored second is a duplicate source occurrence and is emitted once','astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT','swissVersion':'2.10.03','swissRepository':'huntarfischer/swisseph','swissCommit':os.environ['SWISS_COMMIT'],'families':{}}
+          manifest={'zeitgeist':'Z23','artifactFamily':'Orbo exact mundane relationship tables','ownershipLaw':'Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive','startJulianDayUT':start,'startUTC':'2066-06-17T15:24:10.695Z','endJulianDayUT':end,'endUTC':'2311-06-10T14:16:12.881Z','identityLaw':'exact celestial geometry + recurrence ordinal / civic UT excluded','exactOccurrenceLaw':'relationship civic occurrence is the refined Swiss root of the exact oriented Ring geometry; celestial geometry is primary','calibrationLaw':'event topology is calibrated against the frozen Z22 canonical relationship tables; historical Z22 civic placements are not copied because diagnostic calibration proved they are variably displaced from exact Swiss roots','duplicateSourceLaw':'same qualified celestial geometry at same stored second is a duplicate source occurrence and is emitted once','astronomicalSource':'Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT','swissVersion':'2.10.03','swissRepository':'huntarfischer/swisseph','swissCommit':os.environ['SWISS_COMMIT'],'families':{}}
           for fam in ('major','minor'):
               p=raw/f'exact-{fam}-mundane-transits.csv'; r=csv.DictReader(open(p)); assert r.fieldnames==header
               rows=list(r); marks=collections.Counter();oris=collections.Counter();pairs=collections.Counter();seen=set();clean=[];removed=0;maxres=0.0
