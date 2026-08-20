@@ -4,6 +4,8 @@
 Adds the full long-range lunar DE441 dependency set required by Swiss C and scans one
 transition-cluster before Z0 so a post-Z0 recrossing from a pre-Z0 cycle can never be
 misnumbered W0/R0/F0.
+
+Qualification marker: v2.
 """
 from __future__ import annotations
 
