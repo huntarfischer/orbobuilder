@@ -1,0 +1,41 @@
+{
+  "artifactFamily": "Orbo celestial-first eclipse table",
+  "astronomicalSource": "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT",
+  "centrality": {
+    "": 597,
+    "central": 376,
+    "noncentral": 212
+  },
+  "duplicateSourceRows": 0,
+  "endJulianDayUT": 2565295.0945935287,
+  "endUTC": "2311-06-10T14:16:12.881Z",
+  "files": [
+    {
+      "bytes": 64965,
+      "path": "eclipse-table.csv.gz",
+      "sha256": "d5b486cd9aa1860bcac5d9bf48269384396e36f35afa8d9d49666782a6b7438f"
+    }
+  ],
+  "identityLaw": "solar = exact Sun-Moon conjunction; lunar = exact Sun-Moon opposition; eclipse degree primary; civic UT identifies occurrence",
+  "kinds": {
+    "lunar": 597,
+    "solar": 588
+  },
+  "occurrenceDiscoveryLaw": "actual eclipse occurrences discovered by Swiss global eclipse search; exact celestial phase independently refined",
+  "ownershipLaw": "Z23 first Pluto Aries ingress inclusive to Z24 first Pluto Aries ingress exclusive",
+  "phaseResidualGateArcSeconds": 0.001,
+  "rows": 1185,
+  "startJulianDayUT": 2475819.1417904533,
+  "startUTC": "2066-06-17T15:24:10.695Z",
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissVersion": "2.10.03",
+  "types": {
+    "annular": 206,
+    "hybrid": 9,
+    "partial": 422,
+    "penumbral": 219,
+    "total": 329
+  },
+  "zeitgeist": "Z23"
+}
