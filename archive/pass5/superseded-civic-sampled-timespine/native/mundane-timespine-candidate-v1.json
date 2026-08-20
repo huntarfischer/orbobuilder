@@ -1,0 +1,25 @@
+{
+  "status": "position-first-packed-candidate",
+  "codec": 4,
+  "astroDNACodec": 4,
+  "representation": "separate stamped positions + exact station chronologies + second-delta packed body files + local cubic reads",
+  "positionUnitsPerDegree": 3600000,
+  "supportedStartJulianDay": 2341972.5,
+  "denseStartJulianDay": 2433282.5,
+  "denseEndJulianDay": 2469807.5,
+  "supportedEndJulianDay": 2506331.5,
+  "estimatedPositionPayloadBytes": 47080276,
+  "profiles": [
+    { "body": "Sun", "edgeSampleDays": 2.0, "coreSampleDays": 1.0 },
+    { "body": "Moon", "edgeSampleDays": 0.25, "coreSampleDays": 0.125 },
+    { "body": "Mercury", "edgeSampleDays": 0.08333333333333333, "coreSampleDays": 0.020833333333333332 },
+    { "body": "Venus", "edgeSampleDays": 0.25, "coreSampleDays": 0.0625 },
+    { "body": "Mars", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 },
+    { "body": "Jupiter", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 },
+    { "body": "Saturn", "edgeSampleDays": 1.0, "coreSampleDays": 0.125 },
+    { "body": "Uranus", "edgeSampleDays": 0.25, "coreSampleDays": 0.0625 },
+    { "body": "Neptune", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 },
+    { "body": "Pluto", "edgeSampleDays": 0.5, "coreSampleDays": 0.125 },
+    { "body": "True North Node", "edgeSampleDays": 0.125, "coreSampleDays": 0.020833333333333332 }
+  ]
+}
