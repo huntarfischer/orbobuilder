@@ -1,0 +1,39 @@
+name: Phase F Aion Qualification
+
+on:
+  push:
+    branches: [phase-f-aion]
+    paths:
+      - "native/OrboCore/Sources/OrboCore/Aion/**"
+      - "native/OrboCore/Tests/OrboCoreTests/AionTests.swift"
+      - "tools/pass5/generate_aion_runtime_index.py"
+      - ".github/workflows/phase-f-aion-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate compact Aion runtime index
+        run: |
+          python tools/pass5/generate_aion_runtime_index.py \
+            --source-dir tools/pass5/temporal-shells \
+            --output /tmp/aion-shell-sign-index-v1.json
+          test -s /tmp/aion-shell-sign-index-v1.json
+          python - <<'PY'
+          import json
+          p = "/tmp/aion-shell-sign-index-v1.json"
+          d = json.load(open(p))
+          print({k: len(v) for k, v in d["families"].items()})
+          assert set(d["families"]) == {"F", "R", "W", "Z"}
+          PY
+
+      - name: Run accumulated OrboCore tests
+        run: swift test --package-path native/OrboCore
