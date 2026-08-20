@@ -1,5 +1,6 @@
 name: Pass 5 Temporal Shell Tables
 
+# PR qualification intentionally exercises the exact same manufacturer as canonical push.
 on:
   workflow_dispatch:
   push:
