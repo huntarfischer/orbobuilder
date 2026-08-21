@@ -184,23 +184,35 @@ no sign, house, ruler, or other astrological meaning is added
 
 ## Goal
 
-Fill the existing Stage 0 `DegreeGrid` with the Clotho threads already addressed to it.
+Allot the complete Clotho natal thread packet into a fresh Stage 0 `DegreeGrid`.
 
-Lachesis receives only the existing degree grid and Clotho's source packet. She does not receive the Moirai recipe, recalculate thread positions, or derive additional astrological meaning.
+For the Moirai MVP, the canonical construction path is deliberately narrow:
+
+```text
+fresh DegreeGrid
+    +
+complete ClothoSourcePacket
+    ↓
+LACHESIS
+    ↓
+completed natal DegreeGrid
+```
+
+Lachesis receives only the fresh degree grid and Clotho's complete source packet. She does not receive the Moirai recipe, recalculate thread positions, or derive additional astrological meaning.
 
 ```text
 INPUT
-DegreeGrid
-ClothoSourcePacket
+fresh DegreeGrid
+complete ClothoSourcePacket
 
 LACHESIS
-for each existing DegreeCell:
-    preserves valid existing allotments
-    allots every new Clotho thread whose supplied DegreeAddress matches that cell
+for each ClothoThread:
+    allots it into the existing DegreeCell
+    identified by its supplied DegreeAddress
 
 OUTPUT
 the same DegreeGrid type
-with Clotho threads allotted into its existing cells
+with the complete natal thread packet allotted
 ```
 
 A `DegreeCell` carries:
@@ -214,16 +226,16 @@ The cell remains whole-degree. Each allotted thread still carries its exact `Rin
 
 Lachesis is the sole allotment authority for Clotho threads. She trusts the `DegreeAddress` Clotho supplied. She does not call Ring to recalculate the address and does not consult Tympan, Mater, Arc, or other authorities in this stage.
 
-Lachesis may receive a grid that already contains valid allotments. Re-allotting the same authoritative thread is idempotent. A conflicting thread for a gene already allotted is invalid rather than silently replacing existing truth.
+The current implementation also safely accepts already-valid allotments and is idempotent when given the same authoritative thread again. That behavior remains available, but it is not part of the required Moirai MVP contract and must not be treated as the canonical construction path. Incremental or partial allotment semantics are deferred until a later stage actually requires them.
 
 This stage does not define or persist the final Loom.
 
 ## Stage 2 gate
 
-Prove:
+Prove the canonical MVP path:
 
 ```text
-the grid remains exactly 360 cells in canonical 0...359 order
+a fresh grid begins with exactly 360 canonical cells
 all 12 Clotho threads are allotted
 each thread appears exactly once
 each thread appears only in its supplied DegreeAddress
@@ -231,12 +243,11 @@ multiple threads may share one existing cell
 empty cells remain valid
 exact RingFineState survives unchanged to the arcsecond
 Lachesis does not change thread identity or address
-same empty grid + same Clotho packet produces the same allotted grid
-an already allotted grid may be given back to Lachesis
-re-allotting the same threads does not duplicate them
-valid existing allotments are preserved
+same fresh grid + same complete Clotho packet produces the same allotted grid
 no sign, house, ruler, aspect, or other astrological meaning is added
 ```
+
+Existing tests may continue to prove the implementation's idempotent handling of already-valid allotments, but that behavior is supporting proof rather than an MVP requirement.
 
 ---
 
@@ -329,7 +340,7 @@ CLOTHO
 creates exact natal threads and simultaneously records the minimal Moirai recipe.
 
 LACHESIS
-allots the threads into the existing degree cells without changing them.
+allots the complete thread packet into a fresh degree grid without changing the threads.
 
 ATROPOS
 checks the completed allotment against the recipe and seals only a faithful grid.
