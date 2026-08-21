@@ -192,10 +192,11 @@ final class OrboSpineContractTests: XCTestCase {
 
             let product = try MundaneTimespineForge.manufacture(plan: plan, reference: reference)
             let body = try XCTUnwrap(product.body(.sun))
+            let last = try XCTUnwrap(body.occurrences.last)
             XCTAssertEqual(body.occurrences.count, expectedCount, "support \(resolution)")
             XCTAssertEqual(body.occurrences.first?.focalCelestialTick, 0, "support \(resolution)")
-            XCTAssertEqual(body.occurrences.last?.focalCelestialTick, expectedCount - 1, "support \(resolution)")
-            XCTAssertEqual(body.occurrences.last?.focalCelestialDegrees, Double(expectedCount - 1) * resolution, accuracy: 1e-12)
+            XCTAssertEqual(last.focalCelestialTick, expectedCount - 1, "support \(resolution)")
+            XCTAssertEqual(last.focalCelestialDegrees, Double(expectedCount - 1) * resolution, accuracy: 1e-12)
         }
     }
 
