@@ -103,11 +103,11 @@ each cell contains only its degree address
 
 ## Goal
 
-Define the smallest birth-chart input Clotho needs to gather the natal facts that Lachesis will allot onto the 360-degree grid.
+Define the smallest birth-chart input Clotho needs to create the natal threads that Lachesis will allot onto the 360-degree grid.
 
 Clotho receives input. She does not expose a query surface and she does not derive astrological meaning.
 
-For the MVP, the input is the native birth chart through its canonical natal AstroDNA. Clotho walks the twelve canonical AstroDNA genes, preserves each gene's exact Ring fine state, and attaches the whole-degree `DegreeAddress` supplied by Ring's existing exact-to-coarse projection.
+For the MVP, the input is the native birth chart through its canonical natal AstroDNA. Clotho walks the twelve canonical AstroDNA genes. For each gene she creates one thread containing the gene identity, the exact `RingFineState`, and the matching whole-degree `DegreeAddress` supplied by Ring's existing exact-to-coarse projection.
 
 ```text
 INPUT
@@ -115,18 +115,21 @@ natal AstroDNA
 
 CLOTHO
 for each canonical gene:
+    creates one thread
     preserves gene identity
-    preserves exact RingFineState
+    preserves exact RingFineState to arcsecond precision
     takes Ring's whole-degree projection
     attaches the matching DegreeAddress
 
 OUTPUT
-12 degree-addressed natal facts for Lachesis
+12 Clotho threads for Lachesis
 ```
 
-Clotho does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot facts into the degree grid, answer degree queries, or write the Loom.
+Only Clotho creates Clotho threads or a Clotho source packet. Downstream code may read them but cannot construct arbitrary thread/packet values through the public API.
 
-The whole degree is an address for the Stage 0 grid. The exact `RingFineState` remains attached to the natal fact so the coarse grid address never replaces the authoritative positional identity.
+Clotho does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot threads into the degree grid, answer degree queries, or write the Loom.
+
+The whole degree is only the address for the Stage 0 grid. The exact `RingFineState` travels with the thread and remains authoritative at arcsecond precision. Lachesis may therefore use the whole-degree address for placement while retaining the exact position for later allotment work that requires finer precision.
 
 The source packet is an in-memory handoff for the MVP and is not a persisted or Codable artifact.
 
@@ -136,15 +139,17 @@ Prove:
 
 ```text
 natal AstroDNA is the input
-exactly 12 natal facts are emitted
-facts remain in canonical AstroDNA gene order
-each exact RingFineState is preserved unchanged
+exactly 12 Clotho threads are created
+threads remain in canonical AstroDNA gene order
+each exact RingFineState is preserved unchanged to the arcsecond
 each DegreeAddress matches RingFineState.coarseState.degree
+sub-degree precision does not alter the containing DegreeAddress
 retrograde motion does not change the 0...359 DegreeAddress
-multiple genes may share one DegreeAddress
+multiple genes may share one DegreeAddress while retaining distinct exact states
 Clotho does not alter the Stage 0 DegreeGrid
 same natal AstroDNA produces the same packet
 no sign, house, ruler, or other astrological meaning is added
+only Clotho constructs threads and packets through the public API
 ```
 
 ---
