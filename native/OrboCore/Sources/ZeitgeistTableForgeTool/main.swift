@@ -533,9 +533,9 @@ private func run() throws {
     print("source=\(artifact.astronomicalSource) / \(swiss.version)")
     print("rows=\(rows.count)")
     print("Z0 firstAriesIngress=\(rows[0].firstAriesIngressUTC)")
-    print("Z22 firstAriesIngress=\(z22.firstAriesIngressUTC) oldP22StartDeltaSeconds=\(String(format: \"%.3f\", oldStartDelta))")
-    print("Z23 firstAriesIngress=\(z23.firstAriesIngressUTC) oldP22EndDeltaSeconds=\(String(format: \"%.3f\", oldEndFromZ23First))")
-    print("Z23 finalPiscesEgress=\(z23.finalPiscesEgressUTC) oldP22EndDeltaSeconds=\(String(format: \"%.3f\", oldEndFromZ23Final))")
+    print("Z22 firstAriesIngress=\(z22.firstAriesIngressUTC) oldP22StartDeltaSeconds=\(String(format: "%.3f", oldStartDelta))")
+    print("Z23 firstAriesIngress=\(z23.firstAriesIngressUTC) oldP22EndDeltaSeconds=\(String(format: "%.3f", oldEndFromZ23First))")
+    print("Z23 finalPiscesEgress=\(z23.finalPiscesEgressUTC) oldP22EndDeltaSeconds=\(String(format: "%.3f", oldEndFromZ23Final))")
     print("json=\(arguments.jsonOutput)")
     print("csv=\(arguments.csvOutput)")
 }
