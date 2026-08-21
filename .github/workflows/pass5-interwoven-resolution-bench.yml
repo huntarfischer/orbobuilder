@@ -2,6 +2,11 @@ name: Pass 5 Interwoven Resolution Bench
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - sequester/superseded-timespine
+    paths:
+      - ".github/workflows/pass5-interwoven-resolution-bench.yml"
 
 permissions:
   contents: read
