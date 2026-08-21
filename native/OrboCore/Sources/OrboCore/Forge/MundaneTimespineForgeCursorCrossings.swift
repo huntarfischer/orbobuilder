@@ -95,10 +95,7 @@ extension MundaneTimespineForge.Cursor {
         if abs(delta) < 1e-14 { return }
 
         let direction: MundaneCelestialSequenceDirection = delta > 0 ? .increasing : .decreasing
-        let scale = Int((1 / resolution).rounded())
-        guard scale > 0, abs(Double(scale) * resolution - 1) < 1e-9 else {
-            throw MundaneTimespineForgeError.unsupportedResolution(body: body, resolution: resolution)
-        }
+        let ticksPerCircle = try Self.ticksPerCircle(body: body, resolution: resolution)
 
         if direction == .increasing {
             let first = Int(floor(loUnwrapped / resolution)) + 1
@@ -109,7 +106,7 @@ extension MundaneTimespineForge.Cursor {
                         reference: reference,
                         body: body,
                         targetUnwrapped: Double(k) * resolution,
-                        tick: Self.mod(k, 360 * scale),
+                        tick: Self.mod(k, ticksPerCircle),
                         direction: direction,
                         loJD: loJD,
                         hiJD: hiJD,
@@ -127,7 +124,7 @@ extension MundaneTimespineForge.Cursor {
                         reference: reference,
                         body: body,
                         targetUnwrapped: Double(k) * resolution,
-                        tick: Self.mod(k, 360 * scale),
+                        tick: Self.mod(k, ticksPerCircle),
                         direction: direction,
                         loJD: loJD,
                         hiJD: hiJD,
