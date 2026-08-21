@@ -169,4 +169,4 @@ native/OrboCore/Sources/OrboCore/Connectome/DegreeGrid.swift
 native/OrboCore/Tests/OrboCoreTests/Connectome/LachesisStage2Tests.swift
 ```
 
-Stage 2 status: BUILT / AWAITING REVIEW.
+Stage 2 status: COMPLETE / REVIEWED.
