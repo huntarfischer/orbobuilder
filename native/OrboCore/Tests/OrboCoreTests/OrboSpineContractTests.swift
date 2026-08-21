@@ -13,6 +13,18 @@ final class OrboSpineContractTests: XCTestCase {
         }
     }
 
+    private struct ConstantPlutoReference: ForgeEphemerisReference {
+        let longitude: Double
+        let speed: Double
+
+        func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneForgeState {
+            MundaneForgeState(
+                longitudeDegrees: longitude,
+                longitudinalSpeedDegreesPerDay: speed
+            )!
+        }
+    }
+
     func testCanonicalElevenAndSupportLaw() {
         XCTAssertEqual(OrboSpineContract.identity, "OrboSpine")
         XCTAssertEqual(OrboSpineContract.canonicalBodies, MundaneBody.canonicalOrder)
@@ -232,6 +244,50 @@ final class OrboSpineContractTests: XCTestCase {
                 error as? MundaneTimespineForgeError,
                 .unsupportedResolution(body: .sun, resolution: 7)
             )
+        }
+    }
+
+    func testManufactureContractOwnsExactlyZ21ThroughZ23() {
+        let spans = OrboSpineManufactureContract.zeitgeists
+        XCTAssertEqual(spans.map { $0.shell.description }, ["Z21", "Z22", "Z23"])
+        XCTAssertEqual(spans.count, 3)
+        XCTAssertEqual(OrboSpineManufactureContract.supportedStart, spans[0].start)
+        XCTAssertEqual(OrboSpineManufactureContract.supportedEnd, spans[2].end)
+        XCTAssertEqual(spans[0].end, spans[1].start)
+        XCTAssertEqual(spans[1].end, spans[2].start)
+        XCTAssertEqual(spans[0].startUTC, "1577-05-05T05:46:50.976Z")
+        XCTAssertEqual(spans[0].endUTC, "1822-04-16T13:54:20.135Z")
+        XCTAssertEqual(spans[1].endUTC, "2066-06-17T15:24:10.695Z")
+        XCTAssertEqual(spans[2].endUTC, "2311-06-10T14:16:12.881Z")
+        XCTAssertEqual(OrboSpineManufactureContract.zeitgeistBoundaryJulianDays.count, 4)
+    }
+
+    func testManufactureContractUsesFrozenAuthorityAndElevenSupportLaw() {
+        XCTAssertTrue(OrboSpineManufactureContract.astronomicalSource.contains("DE441"))
+        XCTAssertEqual(OrboSpineManufactureContract.canonicalAstronomicalSourceVersion, "2.10.03")
+        XCTAssertEqual(
+            OrboSpineManufactureContract.celestialSupportDegrees,
+            OrboSpineContract.celestialSupportDegrees
+        )
+        XCTAssertEqual(
+            Set(OrboSpineManufactureContract.scanStepDays.keys),
+            Set(MundaneBody.canonicalOrder)
+        )
+    }
+
+    func testManufactureContractRequiresDirectPlutoZeroAriesAtAllFourFences() throws {
+        XCTAssertNoThrow(
+            try OrboSpineManufactureContract.validateZeitgeistBoundaries(
+                reference: ConstantPlutoReference(longitude: 0, speed: 0.01)
+            )
+        )
+
+        XCTAssertThrowsError(
+            try OrboSpineManufactureContract.validateZeitgeistBoundaries(
+                reference: ConstantPlutoReference(longitude: 1, speed: 0.01)
+            )
+        ) { error in
+            XCTAssertEqual(error as? OrboSpineManufactureError, .zeitgeistBoundaryMismatch(21))
         }
     }
 }
