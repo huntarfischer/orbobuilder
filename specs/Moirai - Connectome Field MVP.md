@@ -103,30 +103,49 @@ each cell contains only its degree address
 
 ## Goal
 
-Define the smallest birth-chart input Clotho needs to gather the first authoritative native facts.
+Define the smallest birth-chart input Clotho needs to gather the natal facts that Lachesis will allot onto the 360-degree grid.
 
-Clotho receives input. She does not expose a query surface.
+Clotho receives input. She does not expose a query surface and she does not derive astrological meaning.
 
-For the MVP, the first input is the native birth chart through its canonical natal AstroDNA. Clotho reads only the authoritative facts required for the next stage and gathers them into a source packet.
+For the MVP, the input is the native birth chart through its canonical natal AstroDNA. Clotho walks the twelve canonical AstroDNA genes, preserves each gene's exact Ring fine state, and attaches the whole-degree `DegreeAddress` supplied by Ring's existing exact-to-coarse projection.
 
 ```text
 INPUT
 natal AstroDNA
 
 CLOTHO
-gathers required authoritative facts
+for each canonical gene:
+    preserves gene identity
+    preserves exact RingFineState
+    takes Ring's whole-degree projection
+    attaches the matching DegreeAddress
 
 OUTPUT
-source packet for Lachesis
+12 degree-addressed natal facts for Lachesis
 ```
 
-The degree grid remains unchanged. Clotho does not allot facts to degrees, answer degree queries, or write the Loom.
+Clotho does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot facts into the degree grid, answer degree queries, or write the Loom.
 
-The exact contents of the first source packet should remain as small as possible and be limited to what Lachesis needs for the first allotment pass.
+The whole degree is an address for the Stage 0 grid. The exact `RingFineState` remains attached to the natal fact so the coarse grid address never replaces the authoritative positional identity.
+
+The source packet is an in-memory handoff for the MVP and is not a persisted or Codable artifact.
 
 ## Stage 1 gate
 
-Clotho can accept canonical natal AstroDNA as input and produce a complete source packet sufficient for MVP Lachesis without requiring Lachesis to return to AstroDNA or the original authorities.
+Prove:
+
+```text
+natal AstroDNA is the input
+exactly 12 natal facts are emitted
+facts remain in canonical AstroDNA gene order
+each exact RingFineState is preserved unchanged
+each DegreeAddress matches RingFineState.coarseState.degree
+retrograde motion does not change the 0...359 DegreeAddress
+multiple genes may share one DegreeAddress
+Clotho does not alter the Stage 0 DegreeGrid
+same natal AstroDNA produces the same packet
+no sign, house, ruler, or other astrological meaning is added
+```
 
 ---
 
