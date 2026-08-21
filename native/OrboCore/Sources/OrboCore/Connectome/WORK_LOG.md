@@ -59,7 +59,7 @@ Stage 0 status: COMPLETE / REVIEWED.
 
 ## 2026-08-20 — Stage 1 / Clotho
 
-Clotho takes canonical natal AstroDNA as input and gathers the twelve natal threads in the same 0...359 degree-address language used by the Stage 0 grid.
+Clotho takes canonical natal AstroDNA as input and creates the twelve natal threads Lachesis will receive.
 
 Implemented:
 
@@ -68,31 +68,34 @@ Natal AstroDNA
       ↓
     Clotho
       ↓
-12 ClothoNatalFact values
-    gene identity
+12 Clotho threads
+
+Each thread:
+    AstroDNAGene identity
     exact RingFineState
     DegreeAddress 0...359
-      ↓
-ClothoSourcePacket
 ```
 
-Clotho does not derive astrological meaning. She does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot facts into the grid, answer degree queries, or write the Loom.
+The whole-degree address is only the join key into the Stage 0 grid. The exact Ring fine state remains attached and authoritative down to the arcsecond so later allotment can retain sub-degree precision where needed.
 
-The whole-degree address comes from Ring's existing `RingFineState.coarseState.degree` projection. The exact Ring fine state is preserved unchanged alongside that address, so the grid address never replaces the authoritative positional identity.
+Clotho does not name signs, assign houses, consult Tympan or Mater, derive astrological meaning, allot into the degree grid, answer degree queries, or write the Loom.
 
-The Stage 1 source packet is an in-memory handoff and is not Codable or persisted.
+Thread and packet construction is not public. Clotho is the construction door; downstream code can read the resulting values but cannot manufacture arbitrary threads through the public API.
+
+Proof uses the native's known natal positions at degree/minute precision and additional second-level fixtures to prove that arcseconds survive unchanged while the degree address remains the same.
 
 Proof covers:
 
 ```text
 natal AstroDNA is the input
-exactly 12 natal facts are emitted
+exactly 12 threads are created
 canonical AstroDNA gene order is preserved
-exact RingFineState values are preserved unchanged
-each DegreeAddress matches RingFineState.coarseState.degree
-retrograde motion preserves the same 0...359 DegreeAddress
-multiple genes may share one DegreeAddress
-Clotho does not alter the Stage 0 DegreeGrid
+exact RingFineState is preserved unchanged
+whole-degree DegreeAddress matches Ring projection
+sub-degree minute/second precision survives
+retrograde motion does not change DegreeAddress
+multiple genes may share a degree while retaining distinct exact states
+Clotho does not mutate the Stage 0 grid
 same natal AstroDNA gives the same packet
 ```
 
@@ -103,4 +106,4 @@ native/OrboCore/Sources/OrboCore/Connectome/Clotho.swift
 native/OrboCore/Tests/OrboCoreTests/Connectome/ClothoStage1Tests.swift
 ```
 
-Stage 1 status: BUILT / AWAITING REVIEW.
+Stage 1 status: BUILT / AWAITING FINAL REVIEW.
