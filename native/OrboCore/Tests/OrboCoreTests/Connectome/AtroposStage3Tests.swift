@@ -108,7 +108,7 @@ final class AtroposStage3Tests: XCTestCase {
         )
     }
 
-    func testAtroposRejectsDegreeAddressMismatchBetweenRecipeAndAllotment() throws {
+    func testAtroposRejectsDifferentProductionAtAnotherDegreeBeforeSealing() throws {
         let original = Clotho.gather(from: try natalDNA())
         let changedSun = NatalPosition(
             degree: 22,
@@ -121,8 +121,10 @@ final class AtroposStage3Tests: XCTestCase {
         )
         let changedGrid = Lachesis.allot(changed.packet, into: DegreeGrid())
 
-        let result = Atropos.inspect(recipe: original.recipe, grid: changedGrid)
-        XCTAssertEqual(result, .failure(.exactStateMismatch(.sun)))
+        XCTAssertEqual(
+            Atropos.inspect(recipe: original.recipe, grid: changedGrid),
+            .failure(.exactStateMismatch(.sun))
+        )
     }
 
     func testSameRecipeAndGridProduceSameInspectionResult() throws {
