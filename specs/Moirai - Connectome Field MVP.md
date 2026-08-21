@@ -103,15 +103,30 @@ each cell contains only its degree address
 
 ## Goal
 
-Build the smallest source/query surface that can supply authoritative birth-chart-derived facts for the completed degree grid.
+Define the smallest birth-chart input Clotho needs to gather the first authoritative native facts.
 
-Clotho gathers. She does not allot.
+Clotho receives input. She does not expose a query surface.
 
-The exact MVP source packet is defined after Stage 0, against the actual degree grid rather than in advance.
+For the MVP, the first input is the native birth chart through its canonical natal AstroDNA. Clotho reads only the authoritative facts required for the next stage and gathers them into a source packet.
+
+```text
+INPUT
+natal AstroDNA
+
+CLOTHO
+gathers required authoritative facts
+
+OUTPUT
+source packet for Lachesis
+```
+
+The degree grid remains unchanged. Clotho does not allot facts to degrees, answer degree queries, or write the Loom.
+
+The exact contents of the first source packet should remain as small as possible and be limited to what Lachesis needs for the first allotment pass.
 
 ## Stage 1 gate
 
-Clotho can persist a complete source packet sufficient for MVP Lachesis without requiring Lachesis to return to the original authorities.
+Clotho can accept canonical natal AstroDNA as input and produce a complete source packet sufficient for MVP Lachesis without requiring Lachesis to return to AstroDNA or the original authorities.
 
 ---
 
