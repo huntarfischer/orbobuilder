@@ -134,4 +134,17 @@ final class LachesisStage2Tests: XCTestCase {
 
         XCTAssertEqual(first, second)
     }
+
+    func testLachesisMayAllotIntoAnAlreadyAllottedGridWithoutDuplication() throws {
+        let packet = Clotho.gather(from: try natalDNA())
+        let once = Lachesis.allot(packet, into: DegreeGrid())
+        let twice = Lachesis.allot(packet, into: once)
+
+        XCTAssertEqual(twice, once)
+        XCTAssertEqual(twice.cells.flatMap(\.threads).count, AstroDNA.geneCount)
+
+        for thread in packet.threads {
+            XCTAssertEqual(twice.cells.flatMap(\.threads).filter { $0 == thread }.count, 1)
+        }
+    }
 }
