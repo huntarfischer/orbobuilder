@@ -87,7 +87,7 @@ private final class Swiss {
     private let juldayFunction: SweJulday
     private let revjulFunction: SweRevjul
 
-    let version: String
+    var version: String = ""
 
     init(library: String, epheDirectory: String) throws {
         guard let handle = dlopen(library, RTLD_NOW | RTLD_LOCAL) else {
