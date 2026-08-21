@@ -1,0 +1,376 @@
+{
+  "anchorsCompleted": [
+    "Saturn"
+  ],
+  "expectedAnchors": [
+    "Pluto",
+    "Neptune",
+    "Uranus",
+    "Saturn"
+  ],
+  "matrixResult": "failure",
+  "sourceCommit": "cf2f2490f5d1b8ff19ea6d8a59425c2ef218f42b",
+  "status": "combined learning benchmark; no Timespine representation canonized",
+  "summaries": [
+    {
+      "anchor": "Saturn",
+      "anchorBodyID": 6,
+      "astronomicalSource": {
+        "commit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+        "ephemerisFiles": {
+          "semo_12.se1": {
+            "bytes": 1305932,
+            "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61"
+          },
+          "semo_18.se1": {
+            "bytes": 1304771,
+            "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7"
+          },
+          "sepl_12.se1": {
+            "bytes": 483743,
+            "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d"
+          },
+          "sepl_18.se1": {
+            "bytes": 484061,
+            "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66"
+          }
+        },
+        "modeRequired": "Swiss-file mode; Moshier forbidden",
+        "repository": "https://github.com/huntarfischer/swisseph.git",
+        "swissVersion": "2.10.03"
+      },
+      "candidateResolutionsDegrees": [
+        0.1,
+        0.05
+      ],
+      "canonicalCompanionResolutionDegrees": {
+        "Jupiter": 0.1,
+        "Mars": 1.0,
+        "Mercury": 1.0,
+        "Moon": 1.0,
+        "Neptune": 0.1,
+        "NorthNode": 0.1,
+        "Pluto": 0.1,
+        "Saturn": 0.1,
+        "Sun": 1.0,
+        "Uranus": 0.1,
+        "Venus": 1.0
+      },
+      "coordinateContract": "geocentric tropical apparent ecliptic longitude, UT; true/osculating North Node",
+      "expectedCurrent0_1Rows": 62000,
+      "finestExactStateArtifact": {
+        "bytes": 13643088,
+        "contents": "Every finest anchor crossing with exact simultaneous eleven-body longitude and motion plus Z/W/R/F Shell.sign address.",
+        "path": "saturn-finest-rungs.csv.gz",
+        "sha256": "2c63d9e4e08ecceb3d085cf704e68942151165e9fb62af4bd5c1409728f1e946"
+      },
+      "finestResolutionDegrees": 0.05,
+      "finestRungCount": 123976,
+      "generatedCurrent0_1Rows": 62000,
+      "purpose": "Measure asymmetric slow-body rung density and marginal exclusion power after Chronos shell narrowing.",
+      "results": [
+        {
+          "chronosAndAnchorStages": [
+            {
+              "averageLog2Candidates": 15.919980595048962,
+              "expectedCandidateCount": 62000.0,
+              "groups": 1,
+              "maxCandidateCount": 62000,
+              "p50CandidateCount": 62000,
+              "p90CandidateCount": 62000,
+              "p99CandidateCount": 62000,
+              "rows": 62000,
+              "stage": "unfiltered",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 12.420469732034135,
+              "entropyBitsRemoved": 3.4995108630148266,
+              "expectedCandidateCount": 5774.78935483871,
+              "expectedCandidateReductionFraction": 0.9068582362122789,
+              "groups": 12,
+              "maxCandidateCount": 7930,
+              "p50CandidateCount": 5868,
+              "p90CandidateCount": 7930,
+              "p99CandidateCount": 7930,
+              "rows": 62000,
+              "stage": "Z.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 11.311026704623066,
+              "entropyBitsRemoved": 1.1094430274110696,
+              "expectedCandidateCount": 2765.457225806452,
+              "expectedCandidateReductionFraction": 0.5211154804305946,
+              "groups": 30,
+              "maxCandidateCount": 3623,
+              "p50CandidateCount": 3140,
+              "p90CandidateCount": 3524,
+              "p99CandidateCount": 3623,
+              "rows": 62000,
+              "stage": "+W.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 10.206797894536152,
+              "entropyBitsRemoved": 1.104228810086914,
+              "expectedCandidateCount": 1314.1582903225806,
+              "expectedCandidateReductionFraction": 0.5247952931402327,
+              "groups": 65,
+              "maxCandidateCount": 2015,
+              "p50CandidateCount": 1410,
+              "p90CandidateCount": 1843,
+              "p99CandidateCount": 2015,
+              "rows": 62000,
+              "stage": "+R.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 8.863560167291295,
+              "entropyBitsRemoved": 1.3432377272448566,
+              "expectedCandidateCount": 510.1106129032258,
+              "expectedCandidateReductionFraction": 0.6118347259537424,
+              "groups": 165,
+              "maxCandidateCount": 717,
+              "p50CandidateCount": 568,
+              "p90CandidateCount": 702,
+              "p99CandidateCount": 717,
+              "rows": 62000,
+              "stage": "+F.sign",
+              "uniqueRowFraction": 1.6129032258064517e-05,
+              "uniqueRows": 1
+            },
+            {
+              "averageLog2Candidates": 1.0105109899065303,
+              "entropyBitsRemoved": 7.853049177384765,
+              "expectedCandidateCount": 2.235193548387097,
+              "expectedCandidateReductionFraction": 0.995618217908336,
+              "groups": 34897,
+              "maxCandidateCount": 3,
+              "p50CandidateCount": 3,
+              "p90CandidateCount": 3,
+              "p99CandidateCount": 3,
+              "rows": 62000,
+              "stage": "+Saturn@0.1deg",
+              "uniqueRowFraction": 0.30616129032258066,
+              "uniqueRows": 18982
+            },
+            {
+              "averageLog2Candidates": 0.3609032258064516,
+              "entropyBitsRemoved": 0.6496077641000787,
+              "expectedCandidateCount": 1.3609032258064515,
+              "expectedCandidateReductionFraction": 0.39114747947063844,
+              "groups": 50812,
+              "maxCandidateCount": 2,
+              "p50CandidateCount": 1,
+              "p90CandidateCount": 2,
+              "p99CandidateCount": 2,
+              "rows": 62000,
+              "stage": "+Saturn.motion",
+              "uniqueRowFraction": 0.6390967741935484,
+              "uniqueRows": 39624
+            }
+          ],
+          "greedyResidualBodyOrder": [
+            {
+              "averageLog2Candidates": 0.0,
+              "body": "Mars",
+              "bodyResolutionDegrees": 1.0,
+              "entropyBitsRemoved": 0.3609032258064516,
+              "expectedCandidateCount": 1.0,
+              "expectedCandidateReductionFraction": 0.2651938939982933,
+              "groups": 62000,
+              "maxCandidateCount": 1,
+              "p50CandidateCount": 1,
+              "p90CandidateCount": 1,
+              "p99CandidateCount": 1,
+              "rows": 62000,
+              "stage": "+Mars@canonical",
+              "uniqueRowFraction": 1.0,
+              "uniqueRows": 62000
+            }
+          ],
+          "resolutionDegrees": 0.1,
+          "rowCount": 62000,
+          "storage": {
+            "incrementalRowsVsCurrent0_1": 0,
+            "naiveAnchorJDBytes": 496000,
+            "naiveFullElevenLongitudeFloat64Bytes": 5456000,
+            "naiveFullElevenLongitudePlusMotionBytes": 5580000,
+            "naiveTenUInt32CrossReferenceBytes": 2480000,
+            "note": "Logical comparison only; not a serialization proposal.",
+            "rowCount": 62000
+          }
+        },
+        {
+          "chronosAndAnchorStages": [
+            {
+              "averageLog2Candidates": 16.919701336724856,
+              "expectedCandidateCount": 123976.0,
+              "groups": 1,
+              "maxCandidateCount": 123976,
+              "p50CandidateCount": 123976,
+              "p90CandidateCount": 123976,
+              "p99CandidateCount": 123976,
+              "rows": 123976,
+              "stage": "unfiltered",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 13.420261103884961,
+              "entropyBitsRemoved": 3.499440232839895,
+              "expectedCandidateCount": 11548.41753242563,
+              "expectedCandidateReductionFraction": 0.9068495714297474,
+              "groups": 12,
+              "maxCandidateCount": 15860,
+              "p50CandidateCount": 11735,
+              "p90CandidateCount": 15860,
+              "p99CandidateCount": 15860,
+              "rows": 123976,
+              "stage": "Z.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 12.310895121356374,
+              "entropyBitsRemoved": 1.1093659825285869,
+              "expectedCandidateCount": 5530.665064205976,
+              "expectedCandidateReductionFraction": 0.5210889242030796,
+              "groups": 30,
+              "maxCandidateCount": 7250,
+              "p50CandidateCount": 6284,
+              "p90CandidateCount": 7044,
+              "p99CandidateCount": 7250,
+              "rows": 123976,
+              "stage": "+W.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 11.206690300870894,
+              "entropyBitsRemoved": 1.1042048204854797,
+              "expectedCandidateCount": 2628.346389623798,
+              "expectedCandidateReductionFraction": 0.5247684755610592,
+              "groups": 65,
+              "maxCandidateCount": 4030,
+              "p50CandidateCount": 2821,
+              "p90CandidateCount": 3684,
+              "p99CandidateCount": 4030,
+              "rows": 123976,
+              "stage": "+R.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 9.863196384294227,
+              "entropyBitsRemoved": 1.3434939165766675,
+              "expectedCandidateCount": 1020.0137607278829,
+              "expectedCandidateReductionFraction": 0.6119180619591469,
+              "groups": 165,
+              "maxCandidateCount": 1433,
+              "p50CandidateCount": 1138,
+              "p90CandidateCount": 1402,
+              "p99CandidateCount": 1433,
+              "rows": 123976,
+              "stage": "+F.sign",
+              "uniqueRowFraction": 0.0,
+              "uniqueRows": 0
+            },
+            {
+              "averageLog2Candidates": 1.0103130344654634,
+              "entropyBitsRemoved": 8.852883349828764,
+              "expectedCandidateCount": 2.2349486997483385,
+              "expectedCandidateReductionFraction": 0.9978089033836627,
+              "groups": 69791,
+              "maxCandidateCount": 3,
+              "p50CandidateCount": 3,
+              "p90CandidateCount": 3,
+              "p99CandidateCount": 3,
+              "rows": 123976,
+              "stage": "+Saturn@0.05deg",
+              "uniqueRowFraction": 0.30629315351358327,
+              "uniqueRows": 37973
+            },
+            {
+              "averageLog2Candidates": 0.36082790217461447,
+              "entropyBitsRemoved": 0.6494851322908489,
+              "expectedCandidateCount": 1.3608279021746144,
+              "expectedCandidateReductionFraction": 0.39111447957268664,
+              "groups": 101609,
+              "maxCandidateCount": 2,
+              "p50CandidateCount": 1,
+              "p90CandidateCount": 2,
+              "p99CandidateCount": 2,
+              "rows": 123976,
+              "stage": "+Saturn.motion",
+              "uniqueRowFraction": 0.6391720978253855,
+              "uniqueRows": 79242
+            }
+          ],
+          "greedyResidualBodyOrder": [
+            {
+              "averageLog2Candidates": 0.0,
+              "body": "Mars",
+              "bodyResolutionDegrees": 1.0,
+              "entropyBitsRemoved": 0.36082790217461447,
+              "expectedCandidateCount": 1.0,
+              "expectedCandidateReductionFraction": 0.2651532215043565,
+              "groups": 123976,
+              "maxCandidateCount": 1,
+              "p50CandidateCount": 1,
+              "p90CandidateCount": 1,
+              "p99CandidateCount": 1,
+              "rows": 123976,
+              "stage": "+Mars@canonical",
+              "uniqueRowFraction": 1.0,
+              "uniqueRows": 123976
+            }
+          ],
+          "resolutionDegrees": 0.05,
+          "rowCount": 123976,
+          "storage": {
+            "incrementalRowsVsCurrent0_1": 61976,
+            "naiveAnchorJDBytes": 991808,
+            "naiveFullElevenLongitudeFloat64Bytes": 10909888,
+            "naiveFullElevenLongitudePlusMotionBytes": 11157840,
+            "naiveTenUInt32CrossReferenceBytes": 4959040,
+            "note": "Logical comparison only; not a serialization proposal.",
+            "rowCount": 123976
+          }
+        }
+      ],
+      "scanStepDays": 0.2,
+      "shellInputs": {
+        "F": {
+          "path": "tools/pass5/temporal-shells/saturnian-frame-sign-table.csv",
+          "sha256": "5465d83cbbe6619f8c307cc36eca58faba2dd8e08d98e8049cd7302ea5eae875"
+        },
+        "R": {
+          "path": "tools/pass5/temporal-shells/uranian-revolt-sign-table.csv",
+          "sha256": "9704ad6ac1d07a96972eac68d82cef2ea7cbd8505e29c4b3644dde03d8c0a087"
+        },
+        "W": {
+          "path": "tools/pass5/temporal-shells/neptunian-wave-sign-table.csv",
+          "sha256": "af401be31317e1007604e22248370da906141a5f5e8020bd172653da44756abc"
+        },
+        "Z": {
+          "path": "tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv",
+          "sha256": "279be3add7430c6c24c97fb173423f41b02b43cb20960272a4ed8b6080ca7e51"
+        }
+      },
+      "sourceOrboCommit": "cf2f2490f5d1b8ff19ea6d8a59425c2ef218f42b",
+      "status": "learning benchmark; no Timespine representation canonized",
+      "swissCalculationCalls": 4909048,
+      "z22": {
+        "endJDUTExclusive": 2475819.1417904533,
+        "startJDUT": 2386637.0793997087
+      }
+    }
+  ],
+  "workflowStatus": "partial"
+}

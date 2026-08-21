@@ -1,0 +1,15 @@
+{
+  "anchorsCompleted": [
+    "Saturn"
+  ],
+  "expectedAnchors": [
+    "Pluto",
+    "Neptune",
+    "Uranus",
+    "Saturn"
+  ],
+  "matrixResult": "failure",
+  "resultPath": "tools/pass5/interwoven-resolution-results/combined-summary.json",
+  "sourceCommit": "cf2f2490f5d1b8ff19ea6d8a59425c2ef218f42b",
+  "workflowStatus": "partial"
+}
