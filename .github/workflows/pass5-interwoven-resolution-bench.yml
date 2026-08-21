@@ -9,7 +9,7 @@ on:
       - ".github/workflows/pass5-interwoven-resolution-bench.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pass5-interwoven-resolution-bench
@@ -172,8 +172,13 @@ jobs:
           lib = ctypes.CDLL(str(ROOT / ".forge" / "swisseph" / "libswe.dylib"))
           lib.swe_set_ephe_path.argtypes = [ctypes.c_char_p]
           lib.swe_set_ephe_path.restype = None
-          lib.swe_calc_ut.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_int,
-                                      ctypes.POINTER(ctypes.c_double), ctypes.c_char_p]
+          lib.swe_calc_ut.argtypes = [
+              ctypes.c_double,
+              ctypes.c_int,
+              ctypes.c_int,
+              ctypes.POINTER(ctypes.c_double),
+              ctypes.c_char_p,
+          ]
           lib.swe_calc_ut.restype = ctypes.c_int
           lib.swe_version.argtypes = [ctypes.c_char_p]
           lib.swe_version.restype = ctypes.c_char_p
@@ -202,12 +207,22 @@ jobs:
               global swiss_calls
               xx = (ctypes.c_double * 6)()
               err = ctypes.create_string_buffer(256)
-              returned = lib.swe_calc_ut(jd, body_id, SEFLG_SWIEPH | SEFLG_SPEED, xx, err)
+              returned = lib.swe_calc_ut(
+                  jd,
+                  body_id,
+                  SEFLG_SWIEPH | SEFLG_SPEED,
+                  xx,
+                  err,
+              )
               swiss_calls += 1
               if returned < 0:
-                  raise RuntimeError(f"swe_calc_ut failed body={body_id} jd={jd}: {err.value.decode(errors='replace')}")
+                  raise RuntimeError(
+                      f"swe_calc_ut failed body={body_id} jd={jd}: {err.value.decode(errors='replace')}"
+                  )
               if not (returned & SEFLG_SWIEPH) or (returned & SEFLG_MOSEPH):
-                  raise RuntimeError(f"Swiss-file mode required body={body_id} jd={jd}; flags={returned}")
+                  raise RuntimeError(
+                      f"Swiss-file mode required body={body_id} jd={jd}; flags={returned}"
+                  )
               return normalize(xx[0]), float(xx[3])
 
           def sha256(path):
@@ -238,7 +253,9 @@ jobs:
                       raise RuntimeError(f"No shell row in {self.path} at jd={jd}")
                   start, end, shell_sign_id = self.rows[i]
                   if not (start <= jd < end):
-                      raise RuntimeError(f"Shell gap in {self.path} at jd={jd}; row={shell_sign_id} {start}..{end}")
+                      raise RuntimeError(
+                          f"Shell gap in {self.path} at jd={jd}; row={shell_sign_id} {start}..{end}"
+                      )
                   return shell_sign_id
 
           shell_paths = {
@@ -263,7 +280,9 @@ jobs:
               if abs(fhi) < 1e-13:
                   return hi_jd
               if flo * fhi > 0:
-                  raise RuntimeError(f"Unbracketed crossing target={target} lo={flo} hi={fhi}")
+                  raise RuntimeError(
+                      f"Unbracketed crossing target={target} lo={flo} hi={fhi}"
+                  )
               lo = lo_jd
               hi = hi_jd
               for _ in range(24):
@@ -283,8 +302,14 @@ jobs:
               return int(math.floor((normalize(longitude) + 1e-10) / step)) % ticks
 
           header = [
-              "jd_ut", "anchor_tick_unwrapped", "anchor_degree", "anchor_motion",
-              "Z_sign", "W_sign", "R_sign", "F_sign",
+              "jd_ut",
+              "anchor_tick_unwrapped",
+              "anchor_degree",
+              "anchor_motion",
+              "Z_sign",
+              "W_sign",
+              "R_sign",
+              "F_sign",
           ]
           for body in BODY_NAMES:
               header += [f"{body}_longitude", f"{body}_motion"]
@@ -326,20 +351,31 @@ jobs:
                   target_units = grid_index * FINEST_UNITS
 
                   row = [
-                      f"{hit_jd:.12f}", grid_index, f"{normalize(grid_index * FINEST):.8f}",
+                      f"{hit_jd:.12f}",
+                      grid_index,
+                      f"{normalize(grid_index * FINEST):.8f}",
                       "retrograde" if motion else "direct",
-                      shell_ids["Z"], shell_ids["W"], shell_ids["R"], shell_ids["F"],
+                      shell_ids["Z"],
+                      shell_ids["W"],
+                      shell_ids["R"],
+                      shell_ids["F"],
                   ]
                   for name in BODY_NAMES:
                       lon, speed = sky[name]
-                      row += [f"{lon:.12f}", "retrograde" if speed < 0 else "direct"]
+                      row += [
+                          f"{lon:.12f}",
+                          "retrograde" if speed < 0 else "direct",
+                      ]
                   writer.writerow(row)
 
                   records.append((
                       hit_jd,
                       target_units,
                       motion,
-                      shell_ids["Z"], shell_ids["W"], shell_ids["R"], shell_ids["F"],
+                      shell_ids["Z"],
+                      shell_ids["W"],
+                      shell_ids["R"],
+                      shell_ids["F"],
                       bins,
                   ))
 
@@ -364,7 +400,13 @@ jobs:
 
                   for grid_index in indices:
                       target = grid_index * FINEST
-                      hit_jd = solve_crossing(prev_jd, current_jd, prev_lon, prev_unwrapped, target)
+                      hit_jd = solve_crossing(
+                          prev_jd,
+                          current_jd,
+                          prev_lon,
+                          prev_unwrapped,
+                          target,
+                      )
                       emit_hit(grid_index, hit_jd)
 
                   prev_jd = current_jd
@@ -419,10 +461,13 @@ jobs:
           def with_delta(label, current, previous=None):
               result = {"stage": label, **current}
               if previous is not None and previous["rows"]:
-                  result["entropyBitsRemoved"] = previous["averageLog2Candidates"] - current["averageLog2Candidates"]
+                  result["entropyBitsRemoved"] = (
+                      previous["averageLog2Candidates"] - current["averageLog2Candidates"]
+                  )
                   if previous["expectedCandidateCount"]:
                       result["expectedCandidateReductionFraction"] = 1.0 - (
-                          current["expectedCandidateCount"] / previous["expectedCandidateCount"]
+                          current["expectedCandidateCount"]
+                          / previous["expectedCandidateCount"]
                       )
               return result
 
@@ -432,14 +477,18 @@ jobs:
           for candidate in sorted(CANDIDATES, reverse=True):
               candidate_units = round(candidate * UNITS_PER_DEGREE)
               if candidate_units % FINEST_UNITS != 0:
-                  raise RuntimeError(f"Candidate {candidate} is not an integer multiple of finest {FINEST}")
+                  raise RuntimeError(
+                      f"Candidate {candidate} is not an integer multiple of finest {FINEST}"
+                  )
               selected = [r for r in records if r[1] % candidate_units == 0]
               if not selected:
                   raise RuntimeError(f"No rows for candidate {candidate}")
               if abs(candidate - 0.1) < 1e-12:
                   baseline_rows = len(selected)
 
-              ticks_per_circle = round(360.0 * UNITS_PER_DEGREE / candidate_units)
+              ticks_per_circle = round(
+                  360.0 * UNITS_PER_DEGREE / candidate_units
+              )
               body_index = {name: i for i, name in enumerate(BODY_NAMES)}
 
               def anchor_tick(r):
@@ -462,7 +511,10 @@ jobs:
               key_functions = []
               for label, fn in stage_specs:
                   key_functions.append(fn)
-                  m = metrics([tuple(f(r) for f in key_functions) for r in selected])
+                  m = metrics([
+                      tuple(f(r) for f in key_functions)
+                      for r in selected
+                  ])
                   stages.append(with_delta(label, m, previous))
                   previous = m
 
@@ -477,10 +529,17 @@ jobs:
                       keys = []
                       for r in selected:
                           base = tuple(f(r) for f in key_functions)
-                          extras = tuple(r[7][body_index[n]] for n in chosen)
+                          extras = tuple(
+                              r[7][body_index[n]]
+                              for n in chosen
+                          )
                           keys.append(base + extras + (r[7][idx],))
                       m = metrics(keys)
-                      score = (m["averageLog2Candidates"], m["expectedCandidateCount"], name)
+                      score = (
+                          m["averageLog2Candidates"],
+                          m["expectedCandidateCount"],
+                          name,
+                      )
                       if best is None or score < best[0]:
                           best = (score, name, m)
                   _, name, m = best
@@ -495,11 +554,18 @@ jobs:
               row_count = len(selected)
               storage = {
                   "rowCount": row_count,
-                  "incrementalRowsVsCurrent0_1": None if baseline_rows is None else row_count - baseline_rows,
+                  "incrementalRowsVsCurrent0_1": None,
                   "naiveAnchorJDBytes": row_count * 8,
-                  "naiveFullElevenLongitudeFloat64Bytes": row_count * len(BODY_NAMES) * 8,
-                  "naiveFullElevenLongitudePlusMotionBytes": row_count * (len(BODY_NAMES) * 8 + math.ceil(len(BODY_NAMES) / 8)),
-                  "naiveTenUInt32CrossReferenceBytes": row_count * (len(BODY_NAMES) - 1) * 4,
+                  "naiveFullElevenLongitudeFloat64Bytes": (
+                      row_count * len(BODY_NAMES) * 8
+                  ),
+                  "naiveFullElevenLongitudePlusMotionBytes": (
+                      row_count
+                      * (len(BODY_NAMES) * 8 + math.ceil(len(BODY_NAMES) / 8))
+                  ),
+                  "naiveTenUInt32CrossReferenceBytes": (
+                      row_count * (len(BODY_NAMES) - 1) * 4
+                  ),
                   "note": "Logical comparison only; not a serialization proposal.",
               }
 
@@ -512,18 +578,26 @@ jobs:
               })
 
           if baseline_rows is None:
-              raise RuntimeError("Every anchor benchmark must include the current 0.1-degree baseline")
+              raise RuntimeError(
+                  "Every anchor benchmark must include the current 0.1-degree baseline"
+              )
           if baseline_rows != EXPECTED_BASELINE_ROWS:
               raise RuntimeError(
-                  f"0.1-degree baseline mismatch for {ANCHOR_NAME}: generated={baseline_rows} expected={EXPECTED_BASELINE_ROWS}"
+                  f"0.1-degree baseline mismatch for {ANCHOR_NAME}: "
+                  f"generated={baseline_rows} expected={EXPECTED_BASELINE_ROWS}"
               )
 
           for result in results:
-              result["storage"]["incrementalRowsVsCurrent0_1"] = result["rowCount"] - baseline_rows
+              result["storage"]["incrementalRowsVsCurrent0_1"] = (
+                  result["rowCount"] - baseline_rows
+              )
 
           ephe = {}
           for path in sorted((ROOT / ".forge" / "ephe").glob("*.se1")):
-              ephe[path.name] = {"bytes": path.stat().st_size, "sha256": sha256(path)}
+              ephe[path.name] = {
+                  "bytes": path.stat().st_size,
+                  "sha256": sha256(path),
+              }
 
           shell_provenance = {
               family: {
@@ -535,7 +609,10 @@ jobs:
 
           summary = {
               "status": "learning benchmark; no Timespine representation canonized",
-              "purpose": "Measure asymmetric slow-body rung density and marginal exclusion power after Chronos shell narrowing.",
+              "purpose": (
+                  "Measure asymmetric slow-body rung density and marginal exclusion "
+                  "power after Chronos shell narrowing."
+              ),
               "sourceOrboCommit": os.environ.get("GITHUB_SHA"),
               "astronomicalSource": {
                   "repository": SWISS_REPO,
@@ -544,8 +621,14 @@ jobs:
                   "modeRequired": "Swiss-file mode; Moshier forbidden",
                   "ephemerisFiles": ephe,
               },
-              "coordinateContract": "geocentric tropical apparent ecliptic longitude, UT; true/osculating North Node",
-              "z22": {"startJDUT": Z22_START, "endJDUTExclusive": Z22_END},
+              "coordinateContract": (
+                  "geocentric tropical apparent ecliptic longitude, UT; "
+                  "true/osculating North Node"
+              ),
+              "z22": {
+                  "startJDUT": Z22_START,
+                  "endJDUTExclusive": Z22_END,
+              },
               "anchor": ANCHOR_NAME,
               "anchorBodyID": ANCHOR_ID,
               "finestResolutionDegrees": FINEST,
@@ -558,7 +641,10 @@ jobs:
                   "path": exact_csv_gz.name,
                   "bytes": exact_csv_gz.stat().st_size,
                   "sha256": sha256(exact_csv_gz),
-                  "contents": "Every finest anchor crossing with exact simultaneous eleven-body longitude and motion plus Z/W/R/F Shell.sign address.",
+                  "contents": (
+                      "Every finest anchor crossing with exact simultaneous eleven-body "
+                      "longitude and motion plus Z/W/R/F Shell.sign address."
+                  ),
               },
               "shellInputs": shell_provenance,
               "canonicalCompanionResolutionDegrees": CANONICAL_RESOLUTION,
@@ -576,7 +662,10 @@ jobs:
               "finestRungCount": len(records),
               "swissCalculationCalls": swiss_calls,
               "exactStateGzipBytes": exact_csv_gz.stat().st_size,
-              "candidateRows": {str(r["resolutionDegrees"]): r["rowCount"] for r in results},
+              "candidateRows": {
+                  str(r["resolutionDegrees"]): r["rowCount"]
+                  for r in results
+              },
               "finalUniqueFractions": {
                   str(r["resolutionDegrees"]): (
                       r["greedyResidualBodyOrder"][-1]["uniqueRowFraction"]
@@ -598,52 +687,110 @@ jobs:
           retention-days: 14
 
   combine:
-    name: Combine interwoven benchmark summaries
+    name: Persist interwoven benchmark summaries
     needs: asymmetric-rungs
     if: always() && !cancelled()
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
+      - name: Checkout Orbo benchmark branch
+        uses: actions/checkout@v4
+
       - name: Download completed benchmark artifacts
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: interwoven-resolution-*
           path: .forge/interwoven-results
 
-      - name: Build combined summary
+      - name: Build persistent benchmark result set
         shell: bash
+        env:
+          MATRIX_RESULT: ${{ needs.asymmetric-rungs.result }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
+          import os
+          import shutil
           from pathlib import Path
 
-          root = Path('.forge/interwoven-results')
-          summaries = []
-          for path in sorted(root.rglob('summary.json')):
-              with path.open() as fh:
-                  summaries.append(json.load(fh))
-          if not summaries:
-              raise SystemExit('No completed benchmark summaries were downloaded')
+          source = Path('.forge/interwoven-results')
+          persist = Path('.forge/interwoven-persist')
+          anchors_dir = persist / 'anchors'
+          anchors_dir.mkdir(parents=True, exist_ok=True)
 
-          out = {
+          summaries = []
+          if source.exists():
+              for path in sorted(source.rglob('summary.json')):
+                  with path.open() as fh:
+                      summary = json.load(fh)
+                  summaries.append(summary)
+                  target = anchors_dir / f"{summary['anchor'].lower()}-summary.json"
+                  target.write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
+
+          completed = [s['anchor'] for s in summaries]
+          expected = ['Pluto', 'Neptune', 'Uranus', 'Saturn']
+          matrix_result = os.environ.get('MATRIX_RESULT', 'unknown')
+          if matrix_result == 'success' and sorted(completed) == sorted(expected):
+              overall = 'success'
+          elif completed:
+              overall = 'partial'
+          else:
+              overall = 'failed'
+
+          combined = {
               'status': 'combined learning benchmark; no Timespine representation canonized',
-              'anchorsCompleted': [s['anchor'] for s in summaries],
+              'workflowStatus': overall,
+              'matrixResult': matrix_result,
+              'sourceCommit': os.environ.get('GITHUB_SHA'),
+              'expectedAnchors': expected,
+              'anchorsCompleted': completed,
               'summaries': summaries,
           }
-          target = root / 'combined-summary.json'
-          target.write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
-          print(json.dumps({
-              'anchorsCompleted': out['anchorsCompleted'],
-              'combinedSummary': str(target),
-          }, indent=2))
+          (persist / 'combined-summary.json').write_text(
+              json.dumps(combined, indent=2, sort_keys=True) + '\n'
+          )
+
+          status = {
+              'workflowStatus': overall,
+              'matrixResult': matrix_result,
+              'sourceCommit': os.environ.get('GITHUB_SHA'),
+              'expectedAnchors': expected,
+              'anchorsCompleted': completed,
+              'resultPath': 'tools/pass5/interwoven-resolution-results/combined-summary.json',
+          }
+          (persist / 'workflow-status.json').write_text(
+              json.dumps(status, indent=2, sort_keys=True) + '\n'
+          )
+          print(json.dumps(status, indent=2, sort_keys=True))
           PY
+
+      - name: Persist benchmark summaries to sequester branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="sequester/superseded-timespine"
+          git fetch origin "$branch"
+          git checkout -B "$branch" "origin/$branch"
+
+          rm -rf tools/pass5/interwoven-resolution-results
+          mkdir -p tools/pass5/interwoven-resolution-results
+          cp -R .forge/interwoven-persist/. tools/pass5/interwoven-resolution-results/
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- tools/pass5/interwoven-resolution-results
+          if ! git diff --cached --quiet; then
+            git commit -m "record interwoven resolution benchmark results"
+            git push origin HEAD:"$branch"
+          fi
 
       - name: Upload combined benchmark summary
         uses: actions/upload-artifact@v4
         with:
           name: interwoven-resolution-combined-summary
-          path: .forge/interwoven-results/combined-summary.json
+          path: .forge/interwoven-persist/
           if-no-files-found: error
           retention-days: 14
