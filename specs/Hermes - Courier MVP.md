@@ -1,5 +1,9 @@
 # Hermes - Courier MVP
 
+**Status: FROZEN / PROVEN**
+
+Hermes v1 is complete. Stages 0-4 passed 28 Hermes tests, and the full OrboCore suite passed after Stage 4. No further Hermes work belongs in this MVP without a new explicit requirement.
+
 ## Purpose
 
 Prove one thing:
@@ -137,7 +141,7 @@ If Hestia later rejects a tapestry made by the Moirai, Hestia calls Hermes and a
 
 ## Dummy proving suite
 
-The MVP should prove:
+The MVP proved:
 
 ```text
 valid parcel reaches dummy service
@@ -162,9 +166,9 @@ No full Hestia implementation.
 No astrology knowledge inside Hermes.
 No redesign of Clotho, Lachesis, or Atropos for Hermes.
 
-## MVP acceptance criterion
+## Frozen acceptance record
 
-Hermes v1 is complete when a dummy ticket can truthfully record:
+Hermes v1 can truthfully record:
 
 ```text
 I delivered this parcel to the service.
