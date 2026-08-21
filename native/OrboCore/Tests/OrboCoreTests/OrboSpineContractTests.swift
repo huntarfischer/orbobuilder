@@ -2,6 +2,17 @@ import XCTest
 @testable import OrboCore
 
 final class OrboSpineContractTests: XCTestCase {
+    private struct LinearForgeReference: ForgeEphemerisReference {
+        let origin: Double
+
+        func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneForgeState {
+            MundaneForgeState(
+                longitudeDegrees: julianDay.value - origin,
+                longitudinalSpeedDegreesPerDay: 1
+            )!
+        }
+    }
+
     func testCanonicalElevenAndSupportLaw() {
         XCTAssertEqual(OrboSpineContract.identity, "OrboSpine")
         XCTAssertEqual(OrboSpineContract.canonicalBodies, MundaneBody.canonicalOrder)
@@ -143,5 +154,83 @@ final class OrboSpineContractTests: XCTestCase {
             .resonance, .safeNonResonance, .falseResonance,
         ])
         XCTAssertEqual(AstroDNA.codec, 4)
+    }
+
+    func testForgeAcceptsEveryFinalOrboSpineSupportGrid() throws {
+        let start = JulianDay(10_000)!
+        let end = JulianDay(10_040)!
+        let reference = LinearForgeReference(origin: start.value)
+        let supports: [(Double, Int)] = [
+            (10, 4),
+            (1, 40),
+            (0.5, 80),
+            (0.2, 200),
+            (0.1, 400),
+        ]
+
+        for (resolution, expectedCount) in supports {
+            let contract = try XCTUnwrap(MundaneTimespineBodyContract(
+                body: .sun,
+                celestialResolutionDegrees: resolution,
+                markerBodies: [],
+                constructionRecordCount: expectedCount
+            ))
+            let bodyPlan = try XCTUnwrap(MundaneTimespineForgeBodyPlan(
+                contract: contract,
+                scanStepDays: 0.25
+            ))
+            let plan = try XCTUnwrap(MundaneTimespineForgePlan(
+                spanName: "OrboSpine support fixture",
+                astronomicalSource: "deterministic XCTest sky",
+                astronomicalSourceVersion: "1",
+                supportedStart: start,
+                supportedEnd: end,
+                bodyPlans: [bodyPlan],
+                verifiesConstructionRecordCounts: true,
+                verifiesMarkerUniqueness: true
+            ))
+
+            let product = try MundaneTimespineForge.manufacture(plan: plan, reference: reference)
+            let body = try XCTUnwrap(product.body(.sun))
+            XCTAssertEqual(body.occurrences.count, expectedCount, "support \(resolution)")
+            XCTAssertEqual(body.occurrences.first?.focalCelestialTick, 0, "support \(resolution)")
+            XCTAssertEqual(body.occurrences.last?.focalCelestialTick, expectedCount - 1, "support \(resolution)")
+            XCTAssertEqual(body.occurrences.last?.focalCelestialDegrees, Double(expectedCount - 1) * resolution, accuracy: 1e-12)
+        }
+    }
+
+    func testForgeRejectsGridThatDoesNotPartitionCircle() throws {
+        let start = JulianDay(20_000)!
+        let end = JulianDay(20_010)!
+        let contract = try XCTUnwrap(MundaneTimespineBodyContract(
+            body: .sun,
+            celestialResolutionDegrees: 7,
+            markerBodies: [],
+            constructionRecordCount: 2
+        ))
+        let bodyPlan = try XCTUnwrap(MundaneTimespineForgeBodyPlan(
+            contract: contract,
+            scanStepDays: 0.25
+        ))
+        let plan = try XCTUnwrap(MundaneTimespineForgePlan(
+            spanName: "invalid support fixture",
+            astronomicalSource: "deterministic XCTest sky",
+            astronomicalSourceVersion: "1",
+            supportedStart: start,
+            supportedEnd: end,
+            bodyPlans: [bodyPlan]
+        ))
+
+        XCTAssertThrowsError(
+            try MundaneTimespineForge.manufacture(
+                plan: plan,
+                reference: LinearForgeReference(origin: start.value)
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? MundaneTimespineForgeError,
+                .unsupportedResolution(body: .sun, resolution: 7)
+            )
+        }
     }
 }
