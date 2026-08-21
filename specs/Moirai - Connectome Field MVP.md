@@ -14,7 +14,7 @@ HERMES
 Ticket: natal AstroDNA + expected outcome
     ↓
 CLOTHO
-creates natal threads and registers a MoiraiRecipe
+creates natal threads and records a MoiraiRecipe
     ↓                    ↓
 LACHESIS             ATROPOS
 allots threads        holds recipe
@@ -49,6 +49,13 @@ This pass does not add:
 - electional
 - synastry
 - final packing or performance optimization
+- generic recipe infrastructure
+- recipe versioning
+- recipe provenance metadata
+- recipe checksums or fingerprints
+- chart identity or ticket identity inside the recipe
+- requested outcome inside the recipe
+- expected grid shape or cell counts inside the recipe
 
 ---
 
@@ -93,11 +100,11 @@ each fresh cell has its degree address and no allotted threads
 
 ## Goal
 
-Create the natal threads Lachesis will allot and, in the same gathering operation, register the recipe Atropos will later use to check the work.
+Create the natal threads Lachesis will allot and, in the same gathering operation, record the minimal recipe Atropos will later use to check the work.
 
 For the MVP, Clotho receives canonical natal AstroDNA. For each canonical gene she creates one thread containing gene identity, exact `RingFineState`, and the matching whole-degree `DegreeAddress` supplied by Ring's existing exact-to-coarse projection.
 
-At that same moment she records the same production facts in a `MoiraiRecipeEntry`.
+At that same moment she records the same three production facts in one `MoiraiRecipeEntry`.
 
 ```text
 INPUT
@@ -116,15 +123,33 @@ ClothoOutput
 
 The packet and recipe come from the same gathering operation. Clotho does not make a second pass later to reconstruct the recipe.
 
-`ClothoThread` and `MoiraiRecipeEntry` intentionally carry the same three facts for different purposes:
+### MVP recipe contract
+
+The Moirai recipe answers only one question:
+
+> What exactly did Clotho hand to Lachesis?
+
+For this MVP, the recipe contains exactly 12 entries, one per canonical AstroDNA gene.
+
+Each entry contains only:
 
 ```text
 gene
-exact RingFineState
+exactState
 degreeAddress
 ```
 
-The thread is the material Lachesis allots. The recipe is the production specification Atropos checks against. The recipe is not another astrological authority.
+`ClothoThread` and `MoiraiRecipeEntry` intentionally carry those same three facts for different purposes:
+
+```text
+ClothoThread
+    material Lachesis allots
+
+MoiraiRecipeEntry
+    Clotho's immutable record of that thread for Atropos
+```
+
+The recipe is not another astrological authority, a second chart, a Hermes ticket, or a general request object. It carries no requested outcome, chart identity, provenance, checksum, version, grid metadata, Loom information, governance, or interpretation instructions in the MVP.
 
 Clotho is the sole construction authority for Clotho threads, source packets, and Moirai recipes.
 
@@ -146,7 +171,8 @@ sub-degree precision does not alter the containing DegreeAddress
 retrograde motion does not change the 0...359 DegreeAddress
 multiple genes may share one DegreeAddress while retaining distinct exact states
 Clotho does not alter the Stage 0 DegreeGrid
-exactly one recipe entry is recorded for each thread
+exactly 12 recipe entries are recorded
+exactly one recipe entry is recorded for each canonical gene
 recipe entry facts match the thread facts from the same gathering operation
 same natal AstroDNA produces the same ClothoOutput
 no sign, house, ruler, or other astrological meaning is added
@@ -218,7 +244,7 @@ no sign, house, ruler, aspect, or other astrological meaning is added
 
 ## Goal
 
-Perform the Moirai's internal quality check by comparing the finished allotment from Lachesis against the `MoiraiRecipe` Clotho registered, and seal only a faithful result.
+Perform the Moirai's internal quality check by comparing the finished allotment from Lachesis against the minimal `MoiraiRecipe` Clotho recorded, and seal only a faithful result.
 
 Atropos answers one question:
 
@@ -234,8 +260,7 @@ INPUT B
 DegreeGrid from Lachesis
 
 ATROPOS
-validate structure
-compare recipe to allotted threads
+compare recipe entries to allotted threads
 
 FAIL
 AtroposFailure
@@ -244,32 +269,24 @@ PASS
 AtroposPackage containing the exact supplied DegreeGrid
 ```
 
-### Atropos checks
+### Atropos checks for the MVP
+
+For every canonical gene:
 
 ```text
-GRID
-exactly 360 canonical cells
-
-RECIPE
-exactly 12 canonical genes
-one entry per gene
-
-ALLOTMENT
-exactly 12 canonical genes
-one thread per gene
-
-FIDELITY
-for every gene:
-    recipe exactState == allotted thread exactState
-    recipe degreeAddress == allotted thread degreeAddress
-    allotted thread is in the matching DegreeCell
+recipe gene == allotted thread gene
+recipe exactState == allotted thread exactState
+recipe degreeAddress == allotted thread degreeAddress
+allotted thread occupies that DegreeCell
 ```
+
+She also requires one allotted thread for each recipe entry and no duplicate canonical gene allotments.
 
 Atropos compares by gene identity, not by array position.
 
 Atropos does not derive a new degree from `RingFineState`, consult AstroDNA, call Ring, consult Tympan, Mater, or Arc, repair a thread, replace a thread, or re-allot anything. A mismatch is reported as deterministic failure data rather than repaired.
 
-Only Atropos creates `AtroposPackage`. The package contains the same `DegreeGrid` Lachesis supplied. The seal means only that the grid faithfully matches Clotho's registered Moirai recipe.
+Only Atropos creates `AtroposPackage`. The package contains the same `DegreeGrid` Lachesis supplied. The seal means only that the allotted threads faithfully match Clotho's recorded Moirai recipe.
 
 Stage 3 stops at a package ready for Hermes. It does not invent Hermes's callback or final ticket-matching mechanics.
 
@@ -309,7 +326,7 @@ STAGE 0
 360 degree places exist.
 
 CLOTHO
-creates exact natal threads and simultaneously registers their Moirai recipe.
+creates exact natal threads and simultaneously records the minimal Moirai recipe.
 
 LACHESIS
 allots the threads into the existing degree cells without changing them.
