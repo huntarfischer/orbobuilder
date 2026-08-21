@@ -304,7 +304,7 @@ private struct FoundationLabView: View {
                 readout("owner", "MundaneTimespineForge")
                 readout("language", "native Swift")
                 readout("deep source", "Ephemeris -> Forge only")
-                readout("P22 recipe", "MundaneTimespineP22ForgeRecipe")
+                readout("Z22 recipe", "canonical Z22 construction recipe")
                 readout("law", "celestial occurrence <-> civic UT")
                 readout("runtime oracle", "no")
 
@@ -337,7 +337,7 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("POLLUX / DIOSCURI I")
-                readout("current scope", "existing P22 machinery")
+                readout("current scope", "existing Z22 machinery")
                 readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Pollux.role)
                 readout("nature", Pollux.nature)
@@ -356,7 +356,7 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("CASTOR / DIOSCURI II")
-                readout("current scope", "existing P22 machinery")
+                readout("current scope", "existing Z22 machinery")
                 readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Castor.role)
                 readout("nature", Castor.nature)
@@ -376,7 +376,7 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("DIOSCURI / RESONANCE")
-                readout("current scope", "existing P22 implementation")
+                readout("current scope", "existing Z22 implementation")
                 readout("OrboSpine role", "certification + maintenance resonance")
                 readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Dioscuri.authorityRole)
@@ -403,14 +403,14 @@ private struct FoundationLabView: View {
                 readout("divergence", Dioscuri.divergencePolicy)
                 readout("verdict target", Dioscuri.verdictTarget)
                 readout("seal authority", Dioscuri.sealAuthority)
-                readout("P22 certification", "candidate preserved / verdict pending")
+                readout("Z22 certification", "candidate preserved / verdict pending")
 
                 Divider()
 
-                sectionTitle("P22 CONSTRUCTION SUBSTRATE")
+                sectionTitle("Z22 CONSTRUCTION SUBSTRATE")
                 readout("role", "historical construction specimen / audit evidence")
                 readout("status", "preserved / not the final OrboSpine support law")
-                readout("span", MundaneTimespineP22.spanName)
+                readout("span", "Z22 Pluto Zeitgeist")
                 readout("start", MundaneTimespineP22.startUTC)
                 readout("end exclusive", MundaneTimespineP22.endUTC)
                 readout("bodies", "\(MundaneTimespineP22.profiles.count)")
@@ -419,7 +419,7 @@ private struct FoundationLabView: View {
                 readout("retro passages", "\(MundaneTimespineP22ForgeRecipe.canonicalRetrogradePassageCount)")
                 readout("relationships", "\(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows)")
                 readout("eclipses", "\(MundaneTimespineP22CanonicalInputs.expectedEclipseRows)")
-                readout("civic offset", "\(MundaneTimespineP22.civicOffsetBitsRequired) bits from P22 start")
+                readout("civic offset", "\(MundaneTimespineP22.civicOffsetBitsRequired) bits from Z22 start")
                 readout("civic authority", "integer seconds / \(MundaneTimespineP22CivicSerialization.auditLaw)")
                 readout("motion tables", "stations · retrograde passages · retrograde crossings")
                 readout("Node", "True North Node / direct-retrograde user terminology")
@@ -437,7 +437,7 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("P22 UNIVERSAL CELESTIAL EVENTS")
+                sectionTitle("Z22 UNIVERSAL CELESTIAL EVENTS")
                 readout("law", MundaneTimespineP22.universalEventsAreCelestialTimeFirst ? "celestial-time-first" : "INVALID")
                 readout("eclipses", "\(eclipseContract.constructionRecordCount)")
                 readout("exact major", "\(majorRelationshipContract.constructionRecordCount)")
@@ -453,8 +453,8 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("P22 STORAGE / READER")
-                readout("scope", "P22 storage architecture / not final Pass D image")
+                sectionTitle("Z22 STORAGE / READER")
+                readout("scope", "Z22 storage architecture / not final Pass D image")
                 readout("artifact family", MundaneTimespineStorageFormat.identifier)
                 readout("storage version", "\(MundaneTimespineStorageFormat.version)")
                 readout("legacy readable", "ORBOTS01 / v\(MundaneTimespineStorageFormat.legacyVersion)")
@@ -466,7 +466,7 @@ private struct FoundationLabView: View {
                 readout("relationships", "implemented / read-time filters")
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
-                readout("shipping P22", "not installed")
+                readout("shipping Z22", "not installed")
                 readout("OrboSpine runtime", "Pass D / not begun")
                 readout("proof authority", "OrboCoreTests")
 
