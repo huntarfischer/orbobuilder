@@ -62,58 +62,39 @@ This pass does not add:
 
 ---
 
-# Stage 0 - The Grid
+# Stage 0 - The Degree Grid
 
 ## Goal
 
-Build the durable 360-cell Loom before deciding what will fill it.
-
-Stage 0 creates one native Field address type:
+Define only the 360 zodiacal degree addresses.
 
 ```text
-FieldAddress
+DegreeAddress
 0 ... 359
+
+DegreeCell
+address only
+
+DegreeGrid
+exactly 360 cells
 ```
 
-and one Loom containing exactly 360 stable cells:
+Stage 0 does not define the Loom, Field contents, construction state, persistence, threads, allotments, governance, Arc data, or birth-chart facts.
 
-```text
-Loom
-└── cells[0...359]
-```
-
-A cell initially needs only its address.
-
-The whole-degree cell is an indexing address, not Orbo's positional authority. Exact coordinates added later must retain their own precision inside or alongside the cell they belong to.
-
-Stage 0 does not define threads, allotments, governance, Arc data, or source facts.
-
-## Persistence
-
-Stage 0 needs only:
-
-```text
-Loom schema / codec
-construction state
-360-cell grid
-deterministic encode / decode
-```
-
-The artifact checksum is external to the encoded Loom rather than self-referential.
+The degree grid is an index only. It does not replace exact positional precision.
 
 ## Stage 0 gate
 
 Prove:
 
 ```text
+addresses accept only 0...359
+exactly 360 canonical addresses
 exactly 360 cells
-addresses exactly 0...359
 no duplicates
 no missing addresses
-stable cell identity
-whole-degree address is not positional authority
-encode → destroy from memory → decode preserves the Loom
-same input → same encoded bytes
+canonical order is 0...359
+each cell contains only its degree address
 ```
 
 ---
@@ -122,11 +103,11 @@ same input → same encoded bytes
 
 ## Goal
 
-Build the smallest source/query surface that can supply authoritative facts to the completed grid.
+Build the smallest source/query surface that can supply authoritative birth-chart-derived facts for the completed degree grid.
 
 Clotho gathers. She does not allot.
 
-The exact MVP source packet is defined after Stage 0, against the actual Loom rather than in advance.
+The exact MVP source packet is defined after Stage 0, against the actual degree grid rather than in advance.
 
 ## Stage 1 gate
 
@@ -171,7 +152,7 @@ native/OrboCore/Sources/OrboCore/Connectome/
 native/OrboCore/Tests/OrboCoreTests/Connectome/
 ```
 
-Reuse existing native OrboCore vocabulary wherever possible. Stage 0 should add only what the 360-cell Loom itself requires.
+Reuse existing native OrboCore vocabulary wherever possible. Stage 0 adds only the 360-degree grid.
 
 ---
 
@@ -191,4 +172,4 @@ ATROPOS
 seals and serves the finished Loom.
 ```
 
-> **Build the grid first. Gather only what it needs. Allot once. Persist. Seal. Read.**
+> **Build the degree grid first. Gather only what it needs. Allot once. Persist. Seal. Read.**
