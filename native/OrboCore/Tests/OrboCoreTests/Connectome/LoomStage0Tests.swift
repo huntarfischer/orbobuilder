@@ -43,7 +43,7 @@ final class LoomStage0Tests: XCTestCase {
     }
 
     func testSameLoomAlwaysEncodesToSameBytes() throws {
-        XCTAssertEqual(try Loom().encoded(), Loom().encoded())
+        XCTAssertEqual(try Loom().encoded(), try Loom().encoded())
     }
 
     func testDecodeRejectsMissingOrDuplicateCells() throws {
