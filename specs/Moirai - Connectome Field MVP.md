@@ -14,7 +14,7 @@ CLOTHO
 creates natal threads once
     ↓
 LACHESIS
-allots those threads once
+allots those threads
     ↓
 ATROPOS
 validates and serves the finished structure
@@ -148,7 +148,8 @@ ClothoSourcePacket
 
 LACHESIS
 for each existing DegreeCell:
-    allots every Clotho thread whose supplied DegreeAddress matches that cell
+    preserves valid existing allotments
+    allots every new Clotho thread whose supplied DegreeAddress matches that cell
 
 OUTPUT
 the same DegreeGrid type
@@ -167,6 +168,8 @@ The cell remains whole-degree. Each allotted thread still carries its exact `Rin
 
 Lachesis is the sole allotment authority for Clotho threads. She trusts the `DegreeAddress` Clotho supplied. She does not call Ring to recalculate the address and does not consult Tympan, Mater, Arc, or other authorities in this stage.
 
+Lachesis is not defined as an empty-grid-only operation. She may receive a grid that already contains valid allotments. Existing threads must already occupy their supplied DegreeAddress and remain unique by natal gene. Re-allotting the same authoritative thread is idempotent: it preserves the existing allotment rather than duplicating it. A conflicting thread for a gene already allotted is invalid rather than silently replacing the existing thread.
+
 This stage does not define or persist the final Loom. It proves the first allotment operation on the grid that already exists.
 
 ## Stage 2 gate
@@ -176,13 +179,16 @@ Prove:
 ```text
 the grid remains exactly 360 cells in canonical 0...359 order
 all 12 Clotho threads are allotted
- each thread appears exactly once
+each thread appears exactly once
 each thread appears only in its supplied DegreeAddress
 multiple threads may share one existing cell
 empty cells remain valid
 exact RingFineState survives unchanged to the arcsecond
 Lachesis does not change thread identity or address
 same empty grid + same Clotho packet produces the same allotted grid
+an already allotted grid may be given back to Lachesis
+re-allotting the same threads does not duplicate them
+valid existing allotments are preserved
 no sign, house, ruler, aspect, or other astrological meaning is added
 ```
 
