@@ -155,17 +155,14 @@ extension MundaneTimespineForge.Cursor {
         raw.initialState = startState
 
         let resolution = bodyPlan.contract.celestialResolutionDegrees
-        let scale = Int((1 / resolution).rounded())
-        guard scale > 0, abs(Double(scale) * resolution - 1) < 1e-9 else {
-            throw MundaneTimespineForgeError.unsupportedResolution(body: body, resolution: resolution)
-        }
+        let ticksPerCircle = try Self.ticksPerCircle(body: body, resolution: resolution)
         let scaled = startState.longitudeDegrees / resolution
         let nearest = Int(scaled.rounded())
         if abs(scaled - Double(nearest)) < 1e-7 {
             raw.selected.append(
                 RawCrossing(
                     julianDay: plan.supportedStart,
-                    tick: Self.mod(nearest, 360 * scale),
+                    tick: Self.mod(nearest, ticksPerCircle),
                     direction: .from(speed: startState.longitudinalSpeedDegreesPerDay)
                 )
             )
