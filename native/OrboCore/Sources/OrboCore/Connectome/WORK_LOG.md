@@ -80,7 +80,7 @@ The whole-degree address is only the join key into the Stage 0 grid. The exact R
 
 Clotho does not name signs, assign houses, consult Tympan or Mater, derive astrological meaning, allot into the degree grid, answer degree queries, or write the Loom.
 
-Thread and packet construction is not public. Clotho is the construction door; downstream code can read the resulting values but cannot manufacture arbitrary threads through the public API.
+Clotho is the sole construction authority for threads. Downstream Orbo code can read the resulting values but cannot manufacture arbitrary threads.
 
 Proof uses the native's known natal positions at degree/minute precision and additional second-level fixtures to prove that arcseconds survive unchanged while the degree address remains the same.
 
@@ -106,4 +106,4 @@ native/OrboCore/Sources/OrboCore/Connectome/Clotho.swift
 native/OrboCore/Tests/OrboCoreTests/Connectome/ClothoStage1Tests.swift
 ```
 
-Stage 1 status: BUILT / AWAITING FINAL REVIEW.
+Stage 1 status: COMPLETE / REVIEWED.
