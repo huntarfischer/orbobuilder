@@ -1,0 +1,633 @@
+name: Pass 5 Interwoven Resolution Bench
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pass5-interwoven-resolution-bench
+  cancel-in-progress: false
+
+env:
+  SWISS_REPO: https://github.com/huntarfischer/swisseph.git
+  SWISS_RAW_BASE: https://raw.githubusercontent.com/huntarfischer/swisseph
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+  Z22_START_JD: "2386637.0793997087"
+  Z22_END_JD: "2475819.1417904533"
+
+jobs:
+  asymmetric-rungs:
+    name: ${{ matrix.anchor }} asymmetric rungs
+    runs-on: macos-15
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - anchor: Pluto
+            body_id: 9
+            finest: "0.01"
+            candidates: "0.10,0.05,0.02,0.01"
+            scan_step_days: "0.25"
+          - anchor: Neptune
+            body_id: 8
+            finest: "0.02"
+            candidates: "0.10,0.05,0.02"
+            scan_step_days: "0.25"
+          - anchor: Uranus
+            body_id: 7
+            finest: "0.02"
+            candidates: "0.10,0.05,0.02"
+            scan_step_days: "0.20"
+          - anchor: Saturn
+            body_id: 6
+            finest: "0.05"
+            candidates: "0.10,0.05"
+            scan_step_days: "0.20"
+
+    steps:
+      - name: Checkout Orbo benchmark branch
+        uses: actions/checkout@v4
+
+      - name: Build pinned Swiss C from Orbo fork
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .forge/swisseph
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin "$SWISS_REPO"
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          test "$(git -C .forge/swisseph rev-parse HEAD)" = "$SWISS_COMMIT"
+          make -C .forge/swisseph libswe.dylib
+          test -f .forge/swisseph/libswe.dylib
+
+      - name: Fetch pinned DE441 ephemeris segments from Orbo fork
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .forge/ephe
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
+            curl --fail --location --retry 4 --retry-all-errors \
+              "$SWISS_RAW_BASE/$SWISS_COMMIT/ephe/$file" \
+              --output ".forge/ephe/$file"
+            head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
+          done
+          shasum -a 256 .forge/ephe/*.se1
+
+      - name: Verify Chronos shell inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv
+          test -f tools/pass5/temporal-shells/neptunian-wave-sign-table.csv
+          test -f tools/pass5/temporal-shells/uranian-revolt-sign-table.csv
+          test -f tools/pass5/temporal-shells/saturnian-frame-sign-table.csv
+
+      - name: Run asymmetric interwoven benchmark
+        shell: bash
+        env:
+          ANCHOR_NAME: ${{ matrix.anchor }}
+          ANCHOR_ID: ${{ matrix.body_id }}
+          FINEST_DEGREES: ${{ matrix.finest }}
+          CANDIDATE_DEGREES: ${{ matrix.candidates }}
+          SCAN_STEP_DAYS: ${{ matrix.scan_step_days }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import bisect
+          import csv
+          import ctypes
+          import gzip
+          import hashlib
+          import json
+          import math
+          import os
+          import statistics
+          from collections import Counter
+          from pathlib import Path
+
+          ROOT = Path.cwd()
+          OUT = ROOT / ".forge" / "interwoven" / os.environ["ANCHOR_NAME"]
+          OUT.mkdir(parents=True, exist_ok=True)
+
+          SWISS_COMMIT = os.environ["SWISS_COMMIT"]
+          SWISS_REPO = os.environ["SWISS_REPO"]
+          Z22_START = float(os.environ["Z22_START_JD"])
+          Z22_END = float(os.environ["Z22_END_JD"])
+          ANCHOR_NAME = os.environ["ANCHOR_NAME"]
+          ANCHOR_ID = int(os.environ["ANCHOR_ID"])
+          FINEST = float(os.environ["FINEST_DEGREES"])
+          CANDIDATES = [float(x) for x in os.environ["CANDIDATE_DEGREES"].split(",")]
+          SCAN_STEP = float(os.environ["SCAN_STEP_DAYS"])
+          UNITS_PER_DEGREE = 10000
+          FINEST_UNITS = round(FINEST * UNITS_PER_DEGREE)
+
+          BODY_IDS = {
+              "Sun": 0,
+              "Moon": 1,
+              "Mercury": 2,
+              "Venus": 3,
+              "Mars": 4,
+              "Jupiter": 5,
+              "Saturn": 6,
+              "Uranus": 7,
+              "Neptune": 8,
+              "Pluto": 9,
+              "NorthNode": 11,
+          }
+          BODY_NAMES = list(BODY_IDS)
+          CANONICAL_RESOLUTION = {
+              "Sun": 1.0,
+              "Moon": 1.0,
+              "Mercury": 1.0,
+              "Venus": 1.0,
+              "Mars": 1.0,
+              "Jupiter": 0.1,
+              "Saturn": 0.1,
+              "Uranus": 0.1,
+              "Neptune": 0.1,
+              "Pluto": 0.1,
+              "NorthNode": 0.1,
+          }
+
+          SEFLG_SWIEPH = 2
+          SEFLG_MOSEPH = 4
+          SEFLG_SPEED = 256
+
+          lib = ctypes.CDLL(str(ROOT / ".forge" / "swisseph" / "libswe.dylib"))
+          lib.swe_set_ephe_path.argtypes = [ctypes.c_char_p]
+          lib.swe_set_ephe_path.restype = None
+          lib.swe_calc_ut.argtypes = [ctypes.c_double, ctypes.c_int, ctypes.c_int,
+                                      ctypes.POINTER(ctypes.c_double), ctypes.c_char_p]
+          lib.swe_calc_ut.restype = ctypes.c_int
+          lib.swe_version.argtypes = [ctypes.c_char_p]
+          lib.swe_version.restype = ctypes.c_char_p
+          lib.swe_set_ephe_path(str(ROOT / ".forge" / "ephe").encode())
+          version_buf = ctypes.create_string_buffer(256)
+          lib.swe_version(version_buf)
+          SWISS_VERSION = version_buf.value.decode(errors="replace")
+
+          swiss_calls = 0
+
+          def normalize(value):
+              r = math.fmod(value, 360.0)
+              if r < 0:
+                  r += 360.0
+              return 0.0 if r == 360.0 else r
+
+          def shortest_delta(a, b):
+              d = normalize(b) - normalize(a)
+              if d > 180.0:
+                  d -= 360.0
+              elif d < -180.0:
+                  d += 360.0
+              return d
+
+          def state(body_id, jd):
+              global swiss_calls
+              xx = (ctypes.c_double * 6)()
+              err = ctypes.create_string_buffer(256)
+              returned = lib.swe_calc_ut(jd, body_id, SEFLG_SWIEPH | SEFLG_SPEED, xx, err)
+              swiss_calls += 1
+              if returned < 0:
+                  raise RuntimeError(f"swe_calc_ut failed body={body_id} jd={jd}: {err.value.decode(errors='replace')}")
+              if not (returned & SEFLG_SWIEPH) or (returned & SEFLG_MOSEPH):
+                  raise RuntimeError(f"Swiss-file mode required body={body_id} jd={jd}; flags={returned}")
+              return normalize(xx[0]), float(xx[3])
+
+          def sha256(path):
+              h = hashlib.sha256()
+              with open(path, "rb") as fh:
+                  for chunk in iter(lambda: fh.read(1 << 20), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          class ShellIndex:
+              def __init__(self, path):
+                  self.path = Path(path)
+                  rows = []
+                  with self.path.open(newline="") as fh:
+                      for row in csv.DictReader(fh):
+                          rows.append((
+                              float(row["first_direct_ingress_jd_ut"]),
+                              float(row["next_sign_first_direct_ingress_jd_ut"]),
+                              row["shell_sign_id"],
+                          ))
+                  rows.sort(key=lambda x: x[0])
+                  self.rows = rows
+                  self.starts = [r[0] for r in rows]
+
+              def at(self, jd):
+                  i = bisect.bisect_right(self.starts, jd) - 1
+                  if i < 0:
+                      raise RuntimeError(f"No shell row in {self.path} at jd={jd}")
+                  start, end, shell_sign_id = self.rows[i]
+                  if not (start <= jd < end):
+                      raise RuntimeError(f"Shell gap in {self.path} at jd={jd}; row={shell_sign_id} {start}..{end}")
+                  return shell_sign_id
+
+          shell_paths = {
+              "Z": ROOT / "tools/pass5/temporal-shells/plutonian-zeitgeist-sign-table-z21-z23.csv",
+              "W": ROOT / "tools/pass5/temporal-shells/neptunian-wave-sign-table.csv",
+              "R": ROOT / "tools/pass5/temporal-shells/uranian-revolt-sign-table.csv",
+              "F": ROOT / "tools/pass5/temporal-shells/saturnian-frame-sign-table.csv",
+          }
+          shells = {k: ShellIndex(v) for k, v in shell_paths.items()}
+
+          def solve_crossing(lo_jd, hi_jd, lo_lon, lo_unwrapped, target):
+              def local_value(jd):
+                  lon, _ = state(ANCHOR_ID, jd)
+                  return lo_unwrapped + shortest_delta(lo_lon, lon)
+
+              flo = lo_unwrapped - target
+              hi_lon, _ = state(ANCHOR_ID, hi_jd)
+              hi_unwrapped = lo_unwrapped + shortest_delta(lo_lon, hi_lon)
+              fhi = hi_unwrapped - target
+              if abs(flo) < 1e-13:
+                  return lo_jd
+              if abs(fhi) < 1e-13:
+                  return hi_jd
+              if flo * fhi > 0:
+                  raise RuntimeError(f"Unbracketed crossing target={target} lo={flo} hi={fhi}")
+              lo = lo_jd
+              hi = hi_jd
+              for _ in range(32):
+                  mid = (lo + hi) / 2.0
+                  fm = local_value(mid) - target
+                  if flo * fm <= 0:
+                      hi = mid
+                      fhi = fm
+                  else:
+                      lo = mid
+                      flo = fm
+              return (lo + hi) / 2.0
+
+          def canonical_bin(name, longitude):
+              step = CANONICAL_RESOLUTION[name]
+              ticks = round(360.0 / step)
+              return int(math.floor((normalize(longitude) + 1e-10) / step)) % ticks
+
+          header = [
+              "jd_ut", "anchor_tick_unwrapped", "anchor_degree", "anchor_motion",
+              "Z_sign", "W_sign", "R_sign", "F_sign",
+          ]
+          for body in BODY_NAMES:
+              header += [f"{body}_longitude", f"{body}_motion"]
+
+          exact_csv_gz = OUT / f"{ANCHOR_NAME.lower()}-finest-rungs.csv.gz"
+          records = []
+          last_hit = None
+
+          with gzip.open(exact_csv_gz, "wt", newline="", compresslevel=6) as gz:
+              writer = csv.writer(gz)
+              writer.writerow(header)
+
+              prev_jd = Z22_START
+              prev_lon, _ = state(ANCHOR_ID, prev_jd)
+              prev_unwrapped = prev_lon
+
+              nearest_idx = round(prev_unwrapped / FINEST)
+              if abs(prev_unwrapped - nearest_idx * FINEST) < 1e-7:
+                  initial_hits = [(nearest_idx, Z22_START)]
+              else:
+                  initial_hits = []
+
+              def emit_hit(grid_index, hit_jd):
+                  nonlocal last_hit
+                  if hit_jd >= Z22_END - 1e-9:
+                      return
+                  if last_hit is not None and abs(hit_jd - last_hit) < 1e-8:
+                      return
+                  last_hit = hit_jd
+
+                  sky = {}
+                  for name, body_id in BODY_IDS.items():
+                      lon, speed = state(body_id, hit_jd)
+                      sky[name] = (lon, speed)
+                  anchor_lon, anchor_speed = sky[ANCHOR_NAME]
+                  shell_ids = {k: index.at(hit_jd) for k, index in shells.items()}
+                  bins = tuple(canonical_bin(name, sky[name][0]) for name in BODY_NAMES)
+                  motion = 1 if anchor_speed < 0 else 0
+                  target_units = grid_index * FINEST_UNITS
+
+                  row = [
+                      f"{hit_jd:.12f}", grid_index, f"{normalize(grid_index * FINEST):.8f}",
+                      "retrograde" if motion else "direct",
+                      shell_ids["Z"], shell_ids["W"], shell_ids["R"], shell_ids["F"],
+                  ]
+                  for name in BODY_NAMES:
+                      lon, speed = sky[name]
+                      row += [f"{lon:.12f}", "retrograde" if speed < 0 else "direct"]
+                  writer.writerow(row)
+
+                  records.append((
+                      hit_jd,
+                      target_units,
+                      motion,
+                      shell_ids["Z"], shell_ids["W"], shell_ids["R"], shell_ids["F"],
+                      bins,
+                  ))
+
+              for grid_index, hit_jd in initial_hits:
+                  emit_hit(grid_index, hit_jd)
+
+              while prev_jd < Z22_END:
+                  current_jd = min(prev_jd + SCAN_STEP, Z22_END)
+                  current_lon, _ = state(ANCHOR_ID, current_jd)
+                  current_unwrapped = prev_unwrapped + shortest_delta(prev_lon, current_lon)
+
+                  if current_unwrapped > prev_unwrapped + 1e-13:
+                      first = math.floor(prev_unwrapped / FINEST) + 1
+                      last = math.floor(current_unwrapped / FINEST + 1e-12)
+                      indices = range(first, last + 1)
+                  elif current_unwrapped < prev_unwrapped - 1e-13:
+                      first = math.ceil(prev_unwrapped / FINEST) - 1
+                      last = math.ceil(current_unwrapped / FINEST - 1e-12)
+                      indices = range(first, last - 1, -1)
+                  else:
+                      indices = ()
+
+                  for grid_index in indices:
+                      target = grid_index * FINEST
+                      hit_jd = solve_crossing(prev_jd, current_jd, prev_lon, prev_unwrapped, target)
+                      emit_hit(grid_index, hit_jd)
+
+                  prev_jd = current_jd
+                  prev_lon = current_lon
+                  prev_unwrapped = current_unwrapped
+
+          if not records:
+              raise RuntimeError("No finest-grid rungs were produced")
+
+          def candidate_size_quantile(counts, q):
+              weighted = sorted((size, size) for size in counts.values())
+              target = q * sum(weight for _, weight in weighted)
+              seen = 0
+              for size, weight in weighted:
+                  seen += weight
+                  if seen >= target:
+                      return size
+              return weighted[-1][0]
+
+          def metrics(keys):
+              counts = Counter(keys)
+              n = sum(counts.values())
+              if n == 0:
+                  return {
+                      "rows": 0,
+                      "groups": 0,
+                      "uniqueRows": 0,
+                      "uniqueRowFraction": 0.0,
+                      "expectedCandidateCount": 0.0,
+                      "averageLog2Candidates": 0.0,
+                      "p50CandidateCount": 0,
+                      "p90CandidateCount": 0,
+                      "p99CandidateCount": 0,
+                      "maxCandidateCount": 0,
+                  }
+              unique_rows = sum(1 for size in counts.values() if size == 1)
+              expected = sum(size * size for size in counts.values()) / n
+              avg_log = sum(size * math.log2(size) for size in counts.values()) / n
+              return {
+                  "rows": n,
+                  "groups": len(counts),
+                  "uniqueRows": unique_rows,
+                  "uniqueRowFraction": unique_rows / n,
+                  "expectedCandidateCount": expected,
+                  "averageLog2Candidates": avg_log,
+                  "p50CandidateCount": candidate_size_quantile(counts, 0.50),
+                  "p90CandidateCount": candidate_size_quantile(counts, 0.90),
+                  "p99CandidateCount": candidate_size_quantile(counts, 0.99),
+                  "maxCandidateCount": max(counts.values()),
+              }
+
+          def with_delta(label, current, previous=None):
+              result = {"stage": label, **current}
+              if previous is not None and previous["rows"]:
+                  result["entropyBitsRemoved"] = previous["averageLog2Candidates"] - current["averageLog2Candidates"]
+                  if previous["expectedCandidateCount"]:
+                      result["expectedCandidateReductionFraction"] = 1.0 - (
+                          current["expectedCandidateCount"] / previous["expectedCandidateCount"]
+                      )
+              return result
+
+          results = []
+          baseline_rows = None
+
+          for candidate in sorted(CANDIDATES, reverse=True):
+              candidate_units = round(candidate * UNITS_PER_DEGREE)
+              if candidate_units % FINEST_UNITS != 0:
+                  raise RuntimeError(f"Candidate {candidate} is not an integer multiple of finest {FINEST}")
+              selected = [r for r in records if r[1] % candidate_units == 0]
+              if not selected:
+                  raise RuntimeError(f"No rows for candidate {candidate}")
+              if abs(candidate - 0.1) < 1e-12:
+                  baseline_rows = len(selected)
+
+              ticks_per_circle = round(360.0 * UNITS_PER_DEGREE / candidate_units)
+              body_index = {name: i for i, name in enumerate(BODY_NAMES)}
+
+              def anchor_tick(r):
+                  return (r[1] // candidate_units) % ticks_per_circle
+
+              stage_key_parts = []
+              stages = []
+
+              unfiltered = metrics([0 for _ in selected])
+              stages.append(with_delta("unfiltered", unfiltered))
+              previous = unfiltered
+
+              stage_specs = [
+                  ("Z.sign", lambda r: r[3]),
+                  ("+W.sign", lambda r: r[4]),
+                  ("+R.sign", lambda r: r[5]),
+                  ("+F.sign", lambda r: r[6]),
+                  (f"+{ANCHOR_NAME}@{candidate:g}deg", anchor_tick),
+                  (f"+{ANCHOR_NAME}.motion", lambda r: r[2]),
+              ]
+
+              key_functions = []
+              for label, fn in stage_specs:
+                  key_functions.append(fn)
+                  m = metrics([tuple(f(r) for f in key_functions) for r in selected])
+                  stages.append(with_delta(label, m, previous))
+                  previous = m
+
+              remaining = [name for name in BODY_NAMES if name != ANCHOR_NAME]
+              greedy = []
+              chosen = []
+
+              while remaining and previous["uniqueRowFraction"] < 1.0:
+                  best = None
+                  for name in remaining:
+                      idx = body_index[name]
+                      keys = []
+                      for r in selected:
+                          base = tuple(f(r) for f in key_functions)
+                          extras = tuple(r[7][body_index[n]] for n in chosen)
+                          keys.append(base + extras + (r[7][idx],))
+                      m = metrics(keys)
+                      score = (m["averageLog2Candidates"], m["expectedCandidateCount"], name)
+                      if best is None or score < best[0]:
+                          best = (score, name, m)
+                  _, name, m = best
+                  entry = with_delta(f"+{name}@canonical", m, previous)
+                  entry["body"] = name
+                  entry["bodyResolutionDegrees"] = CANONICAL_RESOLUTION[name]
+                  greedy.append(entry)
+                  chosen.append(name)
+                  remaining.remove(name)
+                  previous = m
+
+              row_count = len(selected)
+              storage = {
+                  "rowCount": row_count,
+                  "incrementalRowsVsCurrent0_1": None if baseline_rows is None else row_count - baseline_rows,
+                  "naiveAnchorJDBytes": row_count * 8,
+                  "naiveFullElevenLongitudeFloat64Bytes": row_count * len(BODY_NAMES) * 8,
+                  "naiveFullElevenLongitudePlusMotionBytes": row_count * (len(BODY_NAMES) * 8 + math.ceil(len(BODY_NAMES) / 8)),
+                  "naiveTenUInt32CrossReferenceBytes": row_count * (len(BODY_NAMES) - 1) * 4,
+                  "note": "Logical comparison only; not a serialization proposal.",
+              }
+
+              results.append({
+                  "resolutionDegrees": candidate,
+                  "rowCount": row_count,
+                  "chronosAndAnchorStages": stages,
+                  "greedyResidualBodyOrder": greedy,
+                  "storage": storage,
+              })
+
+          # Fill incremental rows after the actual 0.1 baseline is known.
+          if baseline_rows is not None:
+              for result in results:
+                  result["storage"]["incrementalRowsVsCurrent0_1"] = result["rowCount"] - baseline_rows
+
+          ephe = {}
+          for path in sorted((ROOT / ".forge" / "ephe").glob("*.se1")):
+              ephe[path.name] = {"bytes": path.stat().st_size, "sha256": sha256(path)}
+
+          shell_provenance = {
+              family: {
+                  "path": str(path.relative_to(ROOT)),
+                  "sha256": sha256(path),
+              }
+              for family, path in shell_paths.items()
+          }
+
+          summary = {
+              "status": "learning benchmark; no Timespine representation canonized",
+              "purpose": "Measure asymmetric slow-body rung density and marginal exclusion power after Chronos shell narrowing.",
+              "sourceOrboCommit": os.environ.get("GITHUB_SHA"),
+              "astronomicalSource": {
+                  "repository": SWISS_REPO,
+                  "commit": SWISS_COMMIT,
+                  "swissVersion": SWISS_VERSION,
+                  "modeRequired": "Swiss-file mode; Moshier forbidden",
+                  "ephemerisFiles": ephe,
+              },
+              "coordinateContract": "geocentric tropical apparent ecliptic longitude, UT; true/osculating North Node",
+              "z22": {"startJDUT": Z22_START, "endJDUTExclusive": Z22_END},
+              "anchor": ANCHOR_NAME,
+              "anchorBodyID": ANCHOR_ID,
+              "finestResolutionDegrees": FINEST,
+              "candidateResolutionsDegrees": CANDIDATES,
+              "scanStepDays": SCAN_STEP,
+              "finestRungCount": len(records),
+              "finestExactStateArtifact": {
+                  "path": exact_csv_gz.name,
+                  "bytes": exact_csv_gz.stat().st_size,
+                  "sha256": sha256(exact_csv_gz),
+                  "contents": "Every finest anchor crossing with exact simultaneous eleven-body longitude and motion plus Z/W/R/F Shell.sign address.",
+              },
+              "shellInputs": shell_provenance,
+              "canonicalCompanionResolutionDegrees": CANONICAL_RESOLUTION,
+              "swissCalculationCalls": swiss_calls,
+              "results": results,
+          }
+
+          with (OUT / "summary.json").open("w") as fh:
+              json.dump(summary, fh, indent=2, sort_keys=True)
+              fh.write("\n")
+
+          print(json.dumps({
+              "anchor": ANCHOR_NAME,
+              "finestRungCount": len(records),
+              "swissCalculationCalls": swiss_calls,
+              "exactStateGzipBytes": exact_csv_gz.stat().st_size,
+              "candidateRows": {str(r["resolutionDegrees"]): r["rowCount"] for r in results},
+              "finalUniqueFractions": {
+                  str(r["resolutionDegrees"]): (
+                      r["greedyResidualBodyOrder"][-1]["uniqueRowFraction"]
+                      if r["greedyResidualBodyOrder"]
+                      else r["chronosAndAnchorStages"][-1]["uniqueRowFraction"]
+                  )
+                  for r in results
+              },
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload ${{ matrix.anchor }} benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: interwoven-resolution-${{ matrix.anchor }}
+          path: .forge/interwoven/${{ matrix.anchor }}/
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 14
+
+  combine:
+    name: Combine interwoven benchmark summaries
+    needs: asymmetric-rungs
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download completed benchmark artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: interwoven-resolution-*
+          path: .forge/interwoven-results
+
+      - name: Build combined summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.forge/interwoven-results')
+          summaries = []
+          for path in sorted(root.rglob('summary.json')):
+              with path.open() as fh:
+                  summaries.append(json.load(fh))
+          if not summaries:
+              raise SystemExit('No completed benchmark summaries were downloaded')
+
+          out = {
+              'status': 'combined learning benchmark; no Timespine representation canonized',
+              'anchorsCompleted': [s['anchor'] for s in summaries],
+              'summaries': summaries,
+          }
+          target = root / 'combined-summary.json'
+          target.write_text(json.dumps(out, indent=2, sort_keys=True) + '\n')
+          print(json.dumps({
+              'anchorsCompleted': out['anchorsCompleted'],
+              'combinedSummary': str(target),
+          }, indent=2))
+          PY
+
+      - name: Upload combined benchmark summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: interwoven-resolution-combined-summary
+          path: .forge/interwoven-results/combined-summary.json
+          if-no-files-found: error
+          retention-days: 14
