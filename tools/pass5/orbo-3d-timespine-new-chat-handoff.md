@@ -1,6 +1,6 @@
 # Orbo 3D Mundane Timespine Build Handoff
 
-Status: authoritative branch handoff after the Round 5 architecture, Pass A audit, continuous-degree correction, and Terra Marrow study.
+Status: authoritative branch handoff after the Round 5 architecture, Pass A audit, continuous-degree correction, Terra Marrow study, Pass A.5 shell import, and Pass B OrboSpine type contract.
 
 ## Repository
 
@@ -248,7 +248,7 @@ They are independent half-open interval systems:
 
 A later Chronos may navigate by shell intervals, but Chronos does not own shell truth.
 
-The finished canonical temporal-shell work exists on `main` but is absent from this build branch. The next approved integration pass is **Pass A.5**, which should selectively bring only that finished shell work onto this branch. Do not merge all of `main`.
+Pass A.5 selectively imported the finished canonical temporal-shell work from `main` onto this feature branch. No wholesale merge of `main` was performed.
 
 ---
 
@@ -358,7 +358,7 @@ Important findings:
 - Forge/Hephaestus and Dioscuri machinery are substantial and reusable after ownership corrections
 - Z21, Z22, and Z23 body, motion, Ring, eclipse, and related canonical source material already exists
 - the last recorded P22 native proof status is failure, so do not describe the current substrate as fully sealed/green
-- canonical finished temporal-shell work is on `main`, absent from this feature branch
+- Pass A.5 selectively imported the finished canonical temporal-shell work from `main`
 - Chronos and Horae are not currently implemented natively and are no longer Pass 5 implementation targets
 
 ---
@@ -367,9 +367,9 @@ Important findings:
 
 ```text
 A     repo/owner audit                           DONE
-A.5   selectively adopt finished shell work     NEXT
-B     final OrboSpine laws/types
-C     canonical Z21-Z23 manufacture
+A.5   selectively adopt finished shell work     DONE
+B     final OrboSpine laws/types                 DONE
+C     canonical Z21-Z23 manufacture              NEXT
 D     compact indexes/runtime image
 E     Dioscuri certification
 F     three-Z adversarial proof
@@ -380,7 +380,7 @@ Pass 5 ends at the Hephaestus seal.
 
 ### Pass B scope
 
-Pass B should establish only:
+Pass B establishes:
 
 - canonical Eleven identity
 - continuous directional degree
@@ -389,12 +389,16 @@ Pass B should establish only:
 - exact station topology
 - occurrence/reach identity
 - Terra Marrow
+- Ring occurrence seam
+- F/R/W/Z shell identity seam
 - auxiliary socket
 - ChronosPort
 - HoraePort
 - ClothoPort
+- Hephaestus/Dioscuri lifecycle boundaries
+- AstroDNA Codec 4 isolation
 
-Do not implement Chronos, Horae, Clotho, Horizon, Natal Spine, Synchronic Spine, or Auxiliary Pack 1.
+Pass B does not implement Chronos, Horae, Clotho, Horizon, Natal Spine, Synchronic Spine, or Auxiliary Pack 1.
 
 ### Pass C scope
 
@@ -455,4 +459,4 @@ but never reuse Codec 4 as a Timespine identity.
 
 No astrology glyphs or emojis in source artifacts.
 
-Next action after this handoff/pre-work is **Pass A.5 only**, subject to explicit user approval.
+Next action is **Pass C canonical Z21-Z23 manufacture**, subject to explicit user approval.
