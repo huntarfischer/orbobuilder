@@ -2,10 +2,18 @@ import Foundation
 
 extension MundaneTimespineForge.Cursor {
     func makeWholeDegreeRows() throws -> [MundaneBody: [RawCrossing]] {
+        let markerBodiesNeeded = Set(
+            plan.bodyPlans.flatMap { $0.contract.markerBodies }
+        )
         var result: [MundaneBody: [RawCrossing]] = [:]
+
         for bodyPlan in plan.bodyPlans {
             let contract = bodyPlan.contract
-            guard let raw = rawByBody[contract.body] else { throw MundaneTimespineForgeError.malformedPlan }
+            guard markerBodiesNeeded.contains(contract.body) else { continue }
+            guard let raw = rawByBody[contract.body] else {
+                throw MundaneTimespineForgeError.malformedPlan
+            }
+
             let scale = Int((1 / contract.celestialResolutionDegrees).rounded())
             guard scale > 0,
                   abs(Double(scale) * contract.celestialResolutionDegrees - 1) < 1e-9 else {
@@ -14,6 +22,7 @@ extension MundaneTimespineForge.Cursor {
                     resolution: contract.celestialResolutionDegrees
                 )
             }
+
             if scale == 1 {
                 result[contract.body] = raw.selected
             } else {
@@ -28,6 +37,27 @@ extension MundaneTimespineForge.Cursor {
             }
         }
         return result
+    }
+
+    static func ticksPerCircle(
+        body: MundaneBody,
+        resolution: Double
+    ) throws -> Int {
+        guard resolution.isFinite, resolution > 0, resolution <= 360 else {
+            throw MundaneTimespineForgeError.unsupportedResolution(
+                body: body,
+                resolution: resolution
+            )
+        }
+        let ticks = Int((360 / resolution).rounded())
+        guard ticks > 0,
+              abs(Double(ticks) * resolution - 360) < 1e-9 else {
+            throw MundaneTimespineForgeError.unsupportedResolution(
+                body: body,
+                resolution: resolution
+            )
+        }
+        return ticks
     }
 
     static func simultaneousWholeDegreeCells(
