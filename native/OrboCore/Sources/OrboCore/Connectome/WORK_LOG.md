@@ -133,7 +133,11 @@ threads[]
 
 A fresh `DegreeGrid()` still contains 360 canonical cells with empty thread arrays. Lachesis is the only construction path in this stage that creates cells containing allotted Clotho threads.
 
-Lachesis does not calculate degree addresses. She groups threads only by the `DegreeAddress` Clotho supplied and places each complete thread into the matching existing cell. The exact `RingFineState` remains unchanged, retaining arcsecond precision inside the whole-degree cell.
+Lachesis does not calculate degree addresses. She uses only the `DegreeAddress` Clotho supplied and places each complete thread into the matching existing cell. The exact `RingFineState` remains unchanged, retaining arcsecond precision inside the whole-degree cell.
+
+The initial Stage 2 implementation required the input grid to be completely empty. Review identified that as too narrow: it would make Lachesis a one-shot empty-grid filler rather than the owner of allotment. That restriction has been removed.
+
+Lachesis may now receive a grid that already contains valid Clotho-thread allotments. Existing allotments are validated before use: every thread must already occupy its supplied degree address and natal genes must be unique across the grid. Re-allotting the same authoritative thread is idempotent and does not duplicate it. A conflicting thread for a gene already allotted is rejected rather than replacing the existing truth.
 
 Lachesis does not consult Ring to recalculate position and does not consult Tympan, Mater, Arc, or other authorities for meaning in this stage.
 
@@ -153,6 +157,9 @@ exact RingFineState survives unchanged to the arcsecond
 whole-degree cell retains sub-degree thread precision
 thread identity and address are unchanged
 same empty grid + same packet gives the same result
+an already allotted grid can be passed back to Lachesis
+re-allotting the same packet is idempotent
+existing valid allotments are preserved without duplication
 ```
 
 Current implementation:
