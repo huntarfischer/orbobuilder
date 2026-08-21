@@ -5,51 +5,98 @@ Status: frozen architecture after Round 5. Build branch only. No production impl
 ## Core coordinate
 
 ```text
-(body, state, UT)
+(body, directionalDegree, UT)
 ```
 
 - `body`: one of the 11 mundane celestial tracts.
-- `state`: `0...719` directional whole-degree index.
-  - `0...359` = increasing/direct lane.
-  - `360...719` = decreasing/retrograde lane.
+- `directionalDegree`: continuous directional zodiac degree in `[0, 720)`.
+  - `[0, 360)` = increasing/direct lane.
+  - `[360, 720)` = decreasing/retrograde lane.
 - `UT`: continuous civic-time Bone shared by every tract.
 
-`state % 360` gives the physical zodiac degree. Sign and degree are views, not separate stored indexing dimensions.
+The coordinate is expressed in degrees, including fractional degrees.
 
-Fractional longitude is refinement inside the indexed state, not another global axis.
+```text
+physicalDegree = directionalDegree % 360
+isDecreasing   = directionalDegree >= 360
+```
+
+Examples:
+
+```text
+19.372 degrees increasing  -> 19.372
+19.372 degrees decreasing  -> 379.372
+359.8 degrees increasing   -> 359.8
+359.8 degrees decreasing   -> 719.8
+```
+
+Sign and degree-in-sign are views of `physicalDegree`, not separate stored indexing dimensions.
+
+### Whole-degree navigation projection
+
+The proven 720-cell navigation system remains, but it is a projection of the continuous degree coordinate rather than the coordinate itself.
+
+```text
+navigationCell = floor(directionalDegree)
+```
+
+Therefore:
+
+```text
+0...359   = increasing/direct whole-degree cells
+360...719 = decreasing/retrograde whole-degree cells
+```
+
+The cell is a coarse navigation grip. Decimal degree precision remains in `directionalDegree`.
 
 ## Station rule
 
 A station is an exact zero-speed boundary between directional lanes.
 
-Store the exact station longitude as the astronomical fact. Derive its 0...719 navigation state from the lane entered after the station, using the same half-open ownership law as other temporal boundaries:
+Store the exact station longitude as the astronomical fact. Derive its directional degree from the lane entered after the station, using the same half-open ownership law as other temporal boundaries:
 
 ```text
-direct station      -> 0...359
-retrograde station  -> 360...719
+if laneAfter == increasing:
+    directionalDegree = normalizedExactLongitude
+
+if laneAfter == decreasing:
+    directionalDegree = normalizedExactLongitude + 360
 ```
 
-Thus a retrograde station at physical 19 degrees indexes to state 379; a direct station at physical 19 degrees indexes to state 19. UT never reverses. Only the body's state direction changes.
+Its whole-degree navigation cell is then:
+
+```text
+navigationCell = floor(directionalDegree)
+```
+
+Thus a retrograde station at exact physical longitude `19.372 degrees` has directional degree `379.372` and navigation cell `379`; a direct station at the same physical longitude has directional degree `19.372` and navigation cell `19`.
+
+UT never reverses. Longitude remains continuous. Only the body's directional lane changes.
 
 ## Geometry
 
 - Bone = continuous UT axis.
 - Tract = one body's celestial path through the Bone.
-- Regular celestial grips = the 720 directional whole-degree states.
+- Directional degree = continuous celestial position on a tract with direction encoded in the lane.
+- Regular celestial grips = the 720 projected whole-degree navigation cells.
 - Horae = the fixed-UT synchronization plane across all tracts.
 - Astrolabe = top-down projection of that Horae plane.
 - Ring contact = lateral exact relationship between two tracts at one UT.
-- Dioscuri resonance = path independence through the same `(body, state, UT)` occurrence.
+- Dioscuri resonance = path independence through the same `(body, directionalDegree, UT)` occurrence.
 
 ## Primary entrances
 
 All three routes must resolve the same occurrence:
 
 ```text
-body -> state -> UT
-state -> body -> UT
-UT -> body -> state
+body -> directional degree -> UT
+
+directional degree -> body -> UT
+
+UT -> body -> directional degree
 ```
+
+Whole-degree queries may enter through the projected navigation cell and resolve to the containing directional-degree occurrence or reach.
 
 Ring relationships provide a fourth lateral entrance into the same coordinate structure.
 
@@ -69,9 +116,13 @@ Pluto        0.1 degree
 NorthNode    0.1 degree
 ```
 
-The 0...719 state index remains whole-degree even when a tract is supported more finely or more sparsely. Body-specific support density is not the indexing resolution.
+The continuous `[0, 720)` directional-degree coordinate is independent of stored tract density.
 
-Every reversible body's selected support divides 1 degree exactly, preserving direct whole-degree state crossings for both directional lanes. Do not coarsen merely to save rows unless the entire body/state/UT navigation contract remains superior.
+The projected 720 whole-degree navigation cells also remain independent of stored tract density.
+
+Body-specific support density is therefore neither the coordinate precision nor the navigation-cell resolution.
+
+Every reversible body's selected support divides 1 degree exactly, preserving direct whole-degree navigation crossings for both directional lanes. Do not coarsen merely to save rows unless the entire body/directional-degree/UT navigation contract remains superior.
 
 ## Motion ownership
 
@@ -133,30 +184,34 @@ A solar or lunar eclipse is metadata keyed to the qualifying exact Sun-Moon conj
 
 ## Dioscuri
 
-Castor traverses from civic time into celestial state:
+Castor traverses from civic time into celestial position:
 
 ```text
-UT -> body -> state
+UT -> body -> directional degree
 ```
 
 Pollux traverses from celestial structure toward civic occurrence:
 
 ```text
-body/state/relations -> UT
+body/directional degree/relations -> UT
 ```
+
+Whole-degree navigation may use the projected 720-cell index on either route.
 
 Resonance means independent routes identify the same coordinate to the fidelity requested by the caller. Safe non-resonance is valid. False resonance is failure.
 
 ## Round 5 architectural result
 
-The 3D coordinate/index architecture passed the Round 5 read-only tests:
+The 3D coordinate/index architecture passed the Round 5 read-only tests.
 
-- `(body,state)` and `(state,body)` indexes agreed with zero disagreements across 1,540,586 Ring endpoints.
-- the contact corpus occupied all 7,200 theoretically expected body/state cells: Sun and Moon 360 each, each reversible body 720.
+Those tests used the whole-degree navigation projection, which remains valid under the continuous directional-degree coordinate:
+
+- `(body,navigationCell)` and `(navigationCell,body)` indexes agreed with zero disagreements across 1,540,586 Ring endpoints.
+- the contact corpus occupied all 7,200 theoretically expected body/navigation cells: Sun and Moon 360 each, each reversible body 720.
 - pair chronology remained cheap for angle-specific navigation.
 - per-body Ring endpoint indexes remained unnecessary.
 - eclipse normalization and shell-address derivation remained valid.
-- top-down `state % 360` projection reproduced the Astrolabe geometry in the operational test.
+- top-down `directionalDegree % 360` projection preserves the Astrolabe geometry; the previous whole-degree test was its coarse-cell projection.
 
 ## Remaining seal
 
