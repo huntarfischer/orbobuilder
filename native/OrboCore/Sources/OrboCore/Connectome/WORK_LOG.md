@@ -59,7 +59,7 @@ Stage 0 status: COMPLETE / REVIEWED.
 
 ## 2026-08-20 — Stage 1 / Clotho
 
-Clotho now takes natal AstroDNA as input and gathers the minimum authoritative fact needed for the first Lachesis allotment.
+Clotho takes canonical natal AstroDNA as input and gathers the twelve natal threads in the same 0...359 degree-address language used by the Stage 0 grid.
 
 Implemented:
 
@@ -68,24 +68,32 @@ Natal AstroDNA
       ↓
     Clotho
       ↓
+12 ClothoNatalFact values
+    gene identity
+    exact RingFineState
+    DegreeAddress 0...359
+      ↓
 ClothoSourcePacket
-    risingSign
 ```
 
-Clotho does not query the degree grid, answer degree questions, allot facts, or write the Loom.
+Clotho does not derive astrological meaning. She does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot facts into the grid, answer degree queries, or write the Loom.
 
-The Stage 1 packet contains only the natal rising sign projected from the authoritative Ascendant gene in AstroDNA.
+The whole-degree address comes from Ring's existing `RingFineState.coarseState.degree` projection. The exact Ring fine state is preserved unchanged alongside that address, so the grid address never replaces the authoritative positional identity.
+
+The Stage 1 source packet is an in-memory handoff and is not Codable or persisted.
 
 Proof covers:
 
 ```text
 natal AstroDNA is the input
-correct rising sign is gathered
-packet contains only risingSign
+exactly 12 natal facts are emitted
+canonical AstroDNA gene order is preserved
+exact RingFineState values are preserved unchanged
+each DegreeAddress matches RingFineState.coarseState.degree
+retrograde motion preserves the same 0...359 DegreeAddress
+multiple genes may share one DegreeAddress
+Clotho does not alter the Stage 0 DegreeGrid
 same natal AstroDNA gives the same packet
-different rising signs give different packets
-Ascendant degree changes within one sign do not change the MVP packet
-packet round-trips without retaining natal AstroDNA
 ```
 
 Current implementation:
