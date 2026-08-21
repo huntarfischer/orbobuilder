@@ -11,7 +11,7 @@ DegreeAddress
 0...359 only
 
 DegreeCell
-address only
+address only at fresh construction
 
 DegreeGrid
 exactly 360 cells in canonical order
@@ -25,18 +25,16 @@ exactly 360 addresses
 canonical 0...359 order
 no duplicate addresses
 exactly one cell per address
-cell contains only its degree address
+fresh cells contain no allotted threads
 ```
 
 Explicitly excluded from Stage 0:
 
 ```text
-Field terminology
-Loom structure
+final Loom structure
 construction state
 codec / persistence
-birth-chart facts
-threads
+birth-chart meaning
 allotments
 governance
 Arc
@@ -107,3 +105,61 @@ native/OrboCore/Tests/OrboCoreTests/Connectome/ClothoStage1Tests.swift
 ```
 
 Stage 1 status: COMPLETE / REVIEWED.
+
+## 2026-08-20 — Stage 2 / Lachesis
+
+Lachesis fills the existing Stage 0 `DegreeGrid` with the Clotho threads already addressed to it.
+
+Implemented:
+
+```text
+DegreeGrid
+    +
+ClothoSourcePacket
+    ↓
+Lachesis
+    ↓
+same DegreeGrid type
+360 existing DegreeCells
+threads allotted into matching cells
+```
+
+`DegreeCell` now carries:
+
+```text
+address
+threads[]
+```
+
+A fresh `DegreeGrid()` still contains 360 canonical cells with empty thread arrays. Lachesis is the only construction path in this stage that creates cells containing allotted Clotho threads.
+
+Lachesis does not calculate degree addresses. She groups threads only by the `DegreeAddress` Clotho supplied and places each complete thread into the matching existing cell. The exact `RingFineState` remains unchanged, retaining arcsecond precision inside the whole-degree cell.
+
+Lachesis does not consult Ring to recalculate position and does not consult Tympan, Mater, Arc, or other authorities for meaning in this stage.
+
+Proof uses the same natal thread set used for Clotho, including second-level precision and the shared Mars / North Node degree.
+
+Proof covers:
+
+```text
+grid remains exactly 360 cells
+canonical 0...359 cell order remains
+all 12 Clotho threads are allotted
+allotted threads appear exactly once
+each thread appears only at its supplied DegreeAddress
+multiple threads may share one existing cell
+empty cells remain valid
+exact RingFineState survives unchanged to the arcsecond
+whole-degree cell retains sub-degree thread precision
+thread identity and address are unchanged
+same empty grid + same packet gives the same result
+```
+
+Current implementation:
+
+```text
+native/OrboCore/Sources/OrboCore/Connectome/DegreeGrid.swift
+native/OrboCore/Tests/OrboCoreTests/Connectome/LachesisStage2Tests.swift
+```
+
+Stage 2 status: BUILT / AWAITING REVIEW.
