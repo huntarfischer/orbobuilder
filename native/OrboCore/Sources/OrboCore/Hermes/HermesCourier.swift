@@ -133,6 +133,30 @@ public struct HermesCourier: Sendable {
         )
     }
 
+    public mutating func recordReceipt(_ receipt: HermesReceipt) throws {
+        guard let ticket = tickets[receipt.ticketID] else { throw Failure.unknownTicket }
+        guard acceptedReturnParcels[ticket.ticketID] == receipt.parcelID,
+              manifest.events(for: ticket.ticketID).last?.kind == .deliveredToAddressee else {
+            throw Failure.invalidState
+        }
+        guard receipt.recipient == ticket.finalAddressee else {
+            throw Failure.finalAddresseeMismatch
+        }
+
+        try append(
+            ticketID: ticket.ticketID,
+            kind: .receiptRecorded,
+            occurredAt: receipt.receivedAt,
+            parcelID: receipt.parcelID
+        )
+        try append(
+            ticketID: ticket.ticketID,
+            kind: .resolved,
+            occurredAt: receipt.receivedAt,
+            parcelID: receipt.parcelID
+        )
+    }
+
     private mutating func append(
         ticketID: HermesTicketID,
         kind: HermesManifestEventKind,
