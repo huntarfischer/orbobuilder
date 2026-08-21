@@ -122,9 +122,13 @@ thread occupies the matching DegreeCell
 
 She compares only. She does not consult AstroDNA, recalculate a degree from Ring fine state, call Ring, consult Tympan/Mater/Arc, repair, replace, or re-allot work.
 
-A mismatch is returned as `AtroposFailure`; it is not repaired. On success only Atropos can create `AtroposPackage`, which contains the exact `DegreeGrid` Lachesis supplied.
+A mismatch is returned as `AtroposFailure`; it is not repaired. Failure cases now preserve which side of the comparison failed: recipe missing/duplicate genes are distinct from allotment missing/duplicate genes. Exact-state mismatch, degree-address mismatch, wrong-cell placement, invalid counts, and non-canonical grid remain separate deterministic failures.
+
+On success only Atropos can create `AtroposPackage`, which contains the exact `DegreeGrid` Lachesis supplied. The package remains intentionally minimal for MVP: no metadata, timestamp, checksum, recipe copy, ticket identity, or Hermes mechanics are added.
 
 This stage intentionally stops before Hermes. Architecturally the sealed package is ready for Hermes, who will later compare it against the original ticket of chart + expected outcome. Hermes callback/rendezvous mechanics are not designed here.
+
+The current Stage 3 tests prove the happy path, preservation, shared-degree occupancy, empty cells, exact-state disagreement, changed production, and deterministic inspection. Deeper corruption-path tests for malformed recipe/grid construction are explicitly deferred until after the Sisters are installed; no production authority boundary was weakened solely to manufacture those test fixtures.
 
 Current implementation:
 
@@ -133,4 +137,15 @@ native/OrboCore/Sources/OrboCore/Connectome/Atropos.swift
 native/OrboCore/Tests/OrboCoreTests/Connectome/AtroposStage3Tests.swift
 ```
 
-Stage 3 status: BUILT / AWAITING REVIEW.
+Stage 3 status: COMPLETE / REVIEWED.
+
+## Moirai MVP status
+
+```text
+Stage 0  DegreeGrid    COMPLETE / REVIEWED
+Stage 1  Clotho        COMPLETE / REVIEWED
+Stage 2  Lachesis      COMPLETE / REVIEWED
+Stage 3  Atropos       COMPLETE / REVIEWED
+```
+
+Next gate: pull once, run the full native Xcode test suite, and fix only integration/compiler failures before declaring the Moirai MVP installed.
