@@ -290,4 +290,32 @@ final class OrboSpineContractTests: XCTestCase {
             XCTAssertEqual(error as? OrboSpineManufactureError, .zeitgeistBoundaryMismatch(21))
         }
     }
+
+    func testFinalForgePlanUsesElevenSupportLawWithoutP22MarkersOrFrozenCounts() {
+        let plan = OrboSpineManufactureContract.forgePlan(astronomicalSourceVersion: "fixture")
+        XCTAssertEqual(plan.spanName, "OrboSpine Z21-Z23")
+        XCTAssertEqual(plan.supportedStart, OrboSpineManufactureContract.supportedStart)
+        XCTAssertEqual(plan.supportedEnd, OrboSpineManufactureContract.supportedEnd)
+        XCTAssertEqual(plan.bodyPlans.map { $0.contract.body }, MundaneBody.canonicalOrder)
+        XCTAssertEqual(
+            plan.bodyPlans.map { $0.contract.celestialResolutionDegrees },
+            MundaneBody.canonicalOrder.map { OrboSpineContract.supportDegrees(for: $0) }
+        )
+        XCTAssertTrue(plan.bodyPlans.allSatisfy { $0.contract.markerBodies.isEmpty })
+        XCTAssertFalse(plan.verifiesConstructionRecordCounts)
+        XCTAssertFalse(plan.verifiesMarkerUniqueness)
+        XCTAssertEqual(plan.astronomicalSource, OrboSpineManufactureContract.astronomicalSource)
+        XCTAssertEqual(plan.astronomicalSourceVersion, "fixture")
+    }
+
+    func testFinalCelestialManufactureFailsBeforeForgeWhenZeitgeistFenceIsFalse() {
+        XCTAssertThrowsError(
+            try OrboSpineManufactureContract.manufactureCelestialTracts(
+                astronomicalSourceVersion: "fixture",
+                reference: ConstantPlutoReference(longitude: 1, speed: 0.01)
+            )
+        ) { error in
+            XCTAssertEqual(error as? OrboSpineManufactureError, .zeitgeistBoundaryMismatch(21))
+        }
+    }
 }
