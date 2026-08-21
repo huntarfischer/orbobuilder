@@ -16,6 +16,9 @@ private struct FoundationLabView: View {
     private let ascendantLongitude = CelestialLongitude(220)!
     private let civilDate = CivilDate(year: 1985, month: 4, day: 10)!
     private let civilClock = CivilClockTime(hour: 20, minute: 16)!
+    private let spinePorts = OrboSpinePorts()
+    private let sampleDirectDegree = OrboSpineDirectionalDegree(19.372)!
+    private let sampleRetrogradeDegree = OrboSpineDirectionalDegree(physicalDegrees: 19.372, motion: .retrograde)!
     private let labAstroDNA = AstroDNA(rawSequence: [
         40_123,
         997_654,
@@ -81,14 +84,105 @@ private struct FoundationLabView: View {
         ).count
     }
 
+    private var shellAddressLaw: String {
+        OrboSpineShellFamily.allCases.map(\.rawValue).joined(separator: ".")
+    }
+
+    private var auxiliaryPackOneText: String {
+        OrboSpineAuxiliaryIntent.firstPack
+            .map(auxiliaryFactorName)
+            .joined(separator: " + ")
+    }
+
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 18) {
                 Text("ORBO LAB")
                     .font(.title2.monospaced().weight(.semibold))
 
-                Text("PHASE 1b / OVUM CONSTRUCTION")
+                Text("MUNDANE TIMESPINE / PASS B NATIVE PROVEN")
                     .font(.caption.monospaced())
+
+                Divider()
+
+                sectionTitle("ORBOSPINE")
+                readout("identity", OrboSpineContract.identity)
+                readout("class", "Mundane Timespine")
+                readout("build state", "A + A.5 + B complete")
+                readout("native proof", "10 / 10 OrboSpine contract tests")
+                readout("next", "Pass C / canonical manufacture")
+                readout("celestial core", "\(OrboSpineContract.canonicalBodies.count) canonical tracts")
+                readout("coordinate", "continuous directional degree [0,720)")
+                readout("direct lane", "[0,360) increasing")
+                readout("retro lane", "[360,720) decreasing")
+                readout("navigation", "720 whole-degree cells")
+                readout(
+                    "direct sample",
+                    String(format: "19.372 -> %.3f / cell %d", sampleDirectDegree.degrees, sampleDirectDegree.navigationCell)
+                )
+                readout(
+                    "retro sample",
+                    String(format: "19.372 -> %.3f / cell %d", sampleRetrogradeDegree.degrees, sampleRetrogradeDegree.navigationCell)
+                )
+                readout("South Node", "derived +180 degrees / not an independent tract")
+                readout("native place", "absent")
+
+                Divider()
+
+                sectionTitle("CELESTIAL TRACTS")
+                ForEach(OrboSpineContract.canonicalBodies, id: \.self) { body in
+                    readout(
+                        body.displayName,
+                        "support \(supportDegreeText(OrboSpineContract.supportDegrees(for: body)))"
+                    )
+                }
+                readout("manufacture", "pending Pass C")
+
+                Divider()
+
+                sectionTitle("TERRA MARROW")
+                readout("identity", "Earth reference-frame marrow")
+                readout("coordinate", "turn + tilt + UT")
+                readout("turn", "Greenwich sidereal orientation / ARMC")
+                readout("tilt", "true ecliptic obliquity")
+                readout("support", "\(TerraMarrowContract.supportIntervalSeconds / 3_600) hours")
+                readout("refinement", TerraMarrowContract.refinementLaw.rawValue)
+                readout(
+                    "source seams",
+                    TerraMarrowContract.sourceModelSeamYears.map(String.init).joined(separator: " / ")
+                )
+                readout("place", "none")
+                readout("manufacture", "pending Pass C")
+
+                Divider()
+
+                sectionTitle("TEMPORAL SHELLS")
+                readout("Frame", "Saturn / F")
+                readout("Revolt", "Uranus / R")
+                readout("Wave", "Neptune / W")
+                readout("Zeitgeist", "Pluto / Z")
+                readout("address", shellAddressLaw)
+                readout("ownership", "independent half-open intervals")
+                readout("substrate", "A.5 imported / canonical tables present")
+                readout("Chronos", "future navigator / not truth owner")
+                readout("OrboSpine image", "not manufactured yet")
+
+                Divider()
+
+                sectionTitle("AUXILIARY SOCKET")
+                readout("state", "empty")
+                readout("core broadened", "no")
+                readout("intended pack 1", auxiliaryPackOneText)
+                readout("Ring membership", "separate policy / not automatic")
+                readout("manufacture", "not part of Pass 5 C")
+
+                Divider()
+
+                sectionTitle("ORBOSPINE PORTS")
+                readout("ChronosPort", "\(String(describing: type(of: spinePorts.chronos))) / neutral")
+                readout("HoraePort", "\(String(describing: type(of: spinePorts.horae))) / neutral")
+                readout("ClothoPort", "\(String(describing: type(of: spinePorts.clotho))) / neutral")
+                readout("behavior", "none defined in Pass 5")
 
                 Divider()
 
@@ -201,52 +295,50 @@ private struct FoundationLabView: View {
                 readout("Node motion", labAstroDNA.motion(of: .northNode).rawValue)
                 readout("South Node", String(format: "%.6f", labAstroDNA.southNodeLongitude.degrees))
                 readout("degree projection", labAstroDNA.degreeSequenceString)
+                readout("Timespine codec", "none / AstroDNA codec remains isolated")
 
                 Divider()
 
-                sectionTitle("FORGE")
-                readout("role", "generic apparatus")
+                sectionTitle("FORGE / APPARATUS")
+                readout("role", "generic astronomical apparatus")
                 readout("owner", "MundaneTimespineForge")
                 readout("language", "native Swift")
                 readout("deep source", "Ephemeris -> Forge only")
                 readout("P22 recipe", "MundaneTimespineP22ForgeRecipe")
-                readout("P22 boundary", "direct Pluto 0 Aries -> direct Pluto 0 Aries")
                 readout("law", "celestial occurrence <-> civic UT")
                 readout("runtime oracle", "no")
 
                 Divider()
 
-                sectionTitle("HEPHAESTUS")
-                readout("role", "fabricator")
+                sectionTitle("HEPHAESTUS / SPINE FORGE")
+                readout("role", "Spine forge + final fabrication seal")
                 readout("owner", "OrboCore / Hephaestus")
-                readout("Forge", "generic apparatus")
-                readout("recipe contract", "native Swift")
+                readout("apparatus", "Forge")
+                readout(
+                    "lifecycle",
+                    OrboSpineLifecycleBoundary.allCases.map(\.rawValue).joined(separator: " -> ")
+                )
+                readout("candidate", "Hephaestus manufactures")
+                readout("certification", "Dioscuri independently resonate")
+                readout("final seal", "Hephaestus after certification")
+                readout("maintenance", "Dioscuri resonance after seal")
+                readout("runtime query", "none")
                 readout("make", Hephaestus.fabricationRole)
-                readout("candidate", "immutable artifact")
                 readout("identity", Hephaestus.candidateIdentityAlgorithm)
                 readout("rehydration", Hephaestus.candidateRehydrationLaw)
-                readout("resonance", Hephaestus.resonanceAuthority)
-                readout("contract", MundaneTimespineP22ForgeRecipe.resonanceContract.description)
-                readout("complete", Hephaestus.completionRole)
                 readout("overrule", Hephaestus.overruleRole)
                 readout("seal", "deterministic sidecar / \(HephaestusSeal.identityAlgorithm)")
                 readout("seal mutation", Hephaestus.sealMutationRole)
                 readout("quarantine", Hephaestus.quarantineLaw)
-                readout("query role", Hephaestus.queryRole)
                 readout("interpretive", Hephaestus.interpretationRole)
-                readout("runtime role", Hephaestus.runtimeRole)
-                readout("P22 recipe", MundaneTimespineP22ForgeRecipe.recipeIdentifier)
-                readout("P22 recipe ver", "\(MundaneTimespineP22ForgeRecipe.recipeVersion)")
-                readout("P22 inputs", "\(MundaneTimespineP22CanonicalInputs.all.count) frozen gzip artifacts / SHA-256")
-                readout("P22 source", "DE441 / Swiss \(MundaneTimespineP22CanonicalInputs.astronomicalSourceVersion)")
-                readout("P22 assembly", "native Swift / persisted canonical matter")
-                readout("P22 candidate", "813dde4dd5fa... / 22,729,389 bytes / preserved")
-                readout("P22 restart", "p22-certify / assembly + manufacture skipped")
-                readout("P22 seal", "unavailable / certification pending")
+                readout("OrboSpine C", "not begun")
+                readout("OrboSpine seal", "not available before Pass G")
 
                 Divider()
 
                 sectionTitle("POLLUX / DIOSCURI I")
+                readout("current scope", "existing P22 machinery")
+                readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Pollux.role)
                 readout("nature", Pollux.nature)
                 readout("order", Pollux.order)
@@ -264,6 +356,8 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("CASTOR / DIOSCURI II")
+                readout("current scope", "existing P22 machinery")
+                readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Castor.role)
                 readout("nature", Castor.nature)
                 readout("order", Castor.order)
@@ -282,6 +376,9 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("DIOSCURI / RESONANCE")
+                readout("current scope", "existing P22 implementation")
+                readout("OrboSpine role", "certification + maintenance resonance")
+                readout("OrboSpine stage", "Pass E / not begun")
                 readout("role", Dioscuri.authorityRole)
                 readout("dialect", Dioscuri.currentDialect)
                 readout("contract", "v\(Dioscuri.contractVersion)")
@@ -299,32 +396,20 @@ private struct FoundationLabView: View {
                 readout("relationships", "implemented")
                 readout("eclipses", "implemented")
                 readout("execution", Dioscuri.exhaustiveExecutionLaw)
-                readout("progress", "phase / completed / total / second-strike lifecycle")
                 readout("checkpoint", Dioscuri.checkpointLaw)
                 readout("checkpoint validation", Dioscuri.checkpointValidationLaw)
-                readout("checkpoint cadence", "\(Dioscuri.checkpointQuestionCadence) / phase ends / second strikes")
-                readout("checkpoint role", "partial testimony only / never verdict or seal")
-                readout("resume", "deterministic prefix / same candidate SHA only")
                 readout("quantization", Dioscuri.quantizationPolicy)
                 readout("second strike", Dioscuri.secondStrikePolicy)
-                readout("second strike UI", Dioscuri.secondStrikeVisibilityLaw)
-                readout("motion recheck", Pollux.motionTopologySecondStrikeLookupLaw)
-                readout("station recheck", Pollux.stationSecondStrikeLookupLaw)
-                readout("relationship recheck", Pollux.relationshipSecondStrikeLookupLaw)
-                readout("eclipse recheck", Pollux.eclipseSecondStrikeLookupLaw)
-                readout("recheck rule", "fresh Pollux + fresh Castor / direct celestial identity")
                 readout("divergence", Dioscuri.divergencePolicy)
-                readout("testimony", "candidate-bound envelope")
                 readout("verdict target", Dioscuri.verdictTarget)
                 readout("seal authority", Dioscuri.sealAuthority)
-                readout("P22 certification", "first candidate preserved / verdict pending")
-                readout("P22 resume path", "p22-resume / candidate + checkpoint")
-                readout("P22 seal", "unavailable / certification pending")
+                readout("P22 certification", "candidate preserved / verdict pending")
 
                 Divider()
 
-                sectionTitle("MUNDANE TIMESPINE / P22")
-                readout("status", "canonical native completion path built")
+                sectionTitle("P22 CONSTRUCTION SUBSTRATE")
+                readout("role", "historical construction specimen / audit evidence")
+                readout("status", "preserved / not the final OrboSpine support law")
                 readout("span", MundaneTimespineP22.spanName)
                 readout("start", MundaneTimespineP22.startUTC)
                 readout("end exclusive", MundaneTimespineP22.endUTC)
@@ -352,11 +437,12 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("UNIVERSAL CELESTIAL EVENTS / P22")
+                sectionTitle("P22 UNIVERSAL CELESTIAL EVENTS")
                 readout("law", MundaneTimespineP22.universalEventsAreCelestialTimeFirst ? "celestial-time-first" : "INVALID")
                 readout("eclipses", "\(eclipseContract.constructionRecordCount)")
                 readout("exact major", "\(majorRelationshipContract.constructionRecordCount)")
                 readout("exact minor", "\(minorRelationshipContract.constructionRecordCount)")
+                readout("relationships total", "\(majorRelationshipContract.constructionRecordCount + minorRelationshipContract.constructionRecordCount)")
                 readout("all events", "\(MundaneTimespineP22.totalUniversalEventRecords)")
                 readout("Ring coverage", "\(admittedRingMarkCount) / \(RingMark.allCases.count) marks")
                 readout("orb stored", "none / exact relationships only")
@@ -367,9 +453,11 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("TIMESPINE STORAGE / READER")
+                sectionTitle("P22 STORAGE / READER")
+                readout("scope", "P22 storage architecture / not final Pass D image")
                 readout("artifact family", MundaneTimespineStorageFormat.identifier)
                 readout("storage version", "\(MundaneTimespineStorageFormat.version)")
+                readout("legacy readable", "ORBOTS01 / v\(MundaneTimespineStorageFormat.legacyVersion)")
                 readout("storage law", MundaneTimespineStorageFormat.celestialTimeFirst ? "celestial-time-first" : "INVALID")
                 readout("exact degrees", "integer microdegrees")
                 readout("runtime reader", "native / ephemeris-free")
@@ -378,13 +466,13 @@ private struct FoundationLabView: View {
                 readout("relationships", "implemented / read-time filters")
                 readout("eclipses", "implemented / read-time filters")
                 readout("event union", "implemented")
-                readout("shipping P22", "not installed yet")
-                readout("Dioscuri", "candidate preserved / restart + checkpoint path built")
+                readout("shipping P22", "not installed")
+                readout("OrboSpine runtime", "Pass D / not begun")
                 readout("proof authority", "OrboCoreTests")
 
                 Divider()
 
-                Text("Diagnostic readout of live OrboCore. Tests remain the proof authority.")
+                Text("Diagnostic readout of live OrboCore. Manufactured OrboSpine matter remains absent until Pass C. Tests remain the proof authority.")
                     .font(.caption.monospaced())
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -414,6 +502,19 @@ private struct FoundationLabView: View {
 
     private func byteCount(_ bytes: Int) -> String {
         ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
+    }
+
+    private func supportDegreeText(_ degrees: Double) -> String {
+        if degrees == degrees.rounded() {
+            return String(format: "%.0f°", degrees)
+        }
+        return String(format: "%.1f°", degrees)
+    }
+
+    private func auxiliaryFactorName(_ factor: OrboSpineAuxiliaryFactorID) -> String {
+        if factor == .trueBlackMoonLilith { return "True Black Moon Lilith" }
+        if factor == .chiron { return "Chiron" }
+        return factor.rawValue
     }
 
     @ViewBuilder
