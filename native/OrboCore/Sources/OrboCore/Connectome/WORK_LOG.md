@@ -59,23 +59,21 @@ Stage 1 status: COMPLETE / REVIEWED, with recipe registration added for Stage 3.
 
 ## 2026-08-20 — Stage 2 / Lachesis
 
-Lachesis fills the existing Stage 0 `DegreeGrid` with the Clotho threads already addressed to it.
+For the Moirai MVP, Lachesis's canonical construction path is now explicitly narrow:
 
 ```text
-DegreeGrid
+fresh DegreeGrid
     +
-ClothoSourcePacket
+complete ClothoSourcePacket
     ↓
 Lachesis
     ↓
-same DegreeGrid type
-360 existing DegreeCells
-threads allotted into matching cells
+completed natal DegreeGrid
 ```
 
-Lachesis does not calculate degree addresses. She uses only the `DegreeAddress` Clotho supplied. Exact `RingFineState` survives unchanged inside the whole-degree cell.
+Lachesis allots the complete twelve-thread natal packet into the fresh Stage 0 grid using only the `DegreeAddress` Clotho supplied. She does not calculate degree addresses. Exact `RingFineState` survives unchanged inside the whole-degree cell.
 
-Lachesis may receive a grid that already contains valid Clotho-thread allotments. Re-allotting the same authoritative thread is idempotent and does not duplicate it. A conflicting thread for an already allotted gene is invalid rather than silently replacing existing truth.
+The implementation can also accept already-valid allotments and behaves idempotently when the same authoritative thread is presented again. That behavior remains in code and its existing tests remain useful, but it is no longer part of the required MVP contract. It is supporting behavior only. Incremental or partial allotment semantics are deferred until later Connectome work actually requires them.
 
 Lachesis does not receive the Moirai recipe and does not consult Ring, Tympan, Mater, Arc, or other authorities for meaning.
 
