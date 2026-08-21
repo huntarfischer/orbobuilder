@@ -17,7 +17,7 @@ LACHESIS
 allots once
     ↓
 LOOM
-persists
+persists the Field
     ↓
 ATROPOS
 seals and serves
@@ -27,6 +27,26 @@ reads
 ```
 
 Stages 0-3 prove the Sisters. They do not attempt to finish the Connectome.
+
+## Field and Loom
+
+The terms are related but not interchangeable.
+
+```text
+FIELD
+The native-specific relational space: what is allotted where.
+
+LOOM
+The persistent interconnected table structure that stores the Field.
+```
+
+Use **Field** when referring to the native topology itself.
+
+Use **Loom** when referring to the stored artifact, tables, indexes, persistence, or query structure that materializes that Field.
+
+Therefore:
+
+> **Clotho gathers authoritative facts. Lachesis allots those facts across the Field by writing them into the Loom. Atropos seals and serves the finished Loom as the authoritative Field.**
 
 ## MVP boundary
 
@@ -101,7 +121,7 @@ North Node
 
 ## Degrees
 
-Define exactly 360 stable degree addresses:
+Define exactly 360 stable Field addresses:
 
 ```text
 0 ... 359
@@ -158,7 +178,7 @@ No Timespines.
 
 ## Clotho source packet
 
-For every thread, gather the minimum authoritative inputs required by Lachesis:
+For every thread, gather the minimum authoritative facts required by Lachesis:
 
 ```text
 thread ID
@@ -172,25 +192,34 @@ Arc exact bounds
 source/version provenance
 ```
 
-Clotho also gathers the authoritative Mater and Tympan facts Lachesis needs to derive Field mappings.
+Clotho also gathers the authoritative Mater and Tympan facts needed for the MVP Field.
 
-Clotho does **not** write conclusions such as:
+Clotho does **not** place those facts into the Field.
+
+For example, Clotho may hand Lachesis facts such as:
+
+```text
+natal Ascendant sign = Scorpio
+Aries ruler = Mars
+Moon Arc bounds = [exact coordinates]
+```
+
+Clotho does not write Field facts such as:
 
 ```text
 7 Aries = natal 6H
 7 Aries = Mars governed
+7 Aries = Moon Arc boundary
 ```
-
-Those are Field statements and therefore belong to Lachesis.
 
 The boundary is:
 
 ```text
 CLOTHO
-collects authoritative facts
+gathers authoritative facts
 
 LACHESIS
-turns those facts into Field statements
+allots those facts across the Field
 ```
 
 ## Persistence
@@ -210,7 +239,7 @@ Arc
 
 Using only the persisted Clotho packet, Lachesis must still have everything necessary to complete Stage 2.
 
-That proves Clotho gathered the source material rather than leaving deferred calculations behind.
+That proves Clotho gathered the source material rather than leaving deferred work behind.
 
 ---
 
@@ -218,13 +247,13 @@ That proves Clotho gathered the source material rather than leaving deferred cal
 
 ## Goal
 
-Construct the first real native Loom.
+Construct the first real native Field by allotting Clotho's authoritative facts into the Loom.
 
 This is the MVP's principal construction stage. Lachesis receives Clotho's completed source packet and performs the allotment work once.
 
-## 2A. Build the 360 Field
+## 2A. Populate the 360 Field
 
-For every degree, derive and persist:
+For every degree address, allot and persist the applicable facts:
 
 ```text
 degree ID
@@ -242,6 +271,8 @@ Example for a Scorpio-rising native:
 → natal 6H
 → Mars
 ```
+
+These are Field facts stored in the Loom.
 
 After construction, no runtime Mater or Tympan read is required to answer those Field questions.
 
@@ -318,7 +349,7 @@ Arc
 
 ## Stage 2 gate
 
-The persisted Loom itself contains the answers.
+The persisted Loom itself contains the required Field facts.
 
 At that point Lachesis has finished the MVP Field.
 
@@ -328,7 +359,7 @@ At that point Lachesis has finished the MVP Field.
 
 ## Goal
 
-Turn Lachesis's completed Loom into the immutable public Connectome Field.
+Turn Lachesis's completed Loom into the immutable public representation of the Connectome Field.
 
 Atropos does not enrich, allot, or recalculate the Field.
 
@@ -388,6 +419,8 @@ ORBO
 ATROPOS
   ↓
 SEALED LOOM
+  ↓
+FIELD FACTS
 ```
 
 ## Stage 3 decisive test
@@ -446,15 +479,15 @@ CLOTHO
 Orbo's required authorities can be gathered once into a complete native construction packet.
 
 LACHESIS
-That packet can become a persistent native-specific 360-degree Field of allotment.
+Those authoritative facts can be allotted once across a persistent native-specific 360-degree Field.
 
 LOOM
-The Field survives independently of the machinery that created it.
+The Field survives independently of the machinery that created it because its allotted facts persist in the Loom.
 
 ATROPOS
-The rest of Orbo can retrieve finished Field truth without rediscovering how it was made.
+The rest of Orbo can retrieve finished Field facts from the sealed Loom without rediscovering how they were made.
 ```
 
 The governing implementation rule is:
 
-> **Build the vessel first. Gather only what the MVP requires. Allot it once. Persist the result. Seal it. Prove that Orbo can read it after every construction authority has gone away.**
+> **Build the vessel first. Gather only what the MVP requires. Allot it once across the Field. Persist it in the Loom. Seal it. Prove that Orbo can read it after every construction authority has gone away.**
