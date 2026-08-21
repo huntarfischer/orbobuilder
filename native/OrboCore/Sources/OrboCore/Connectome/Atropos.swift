@@ -2,8 +2,10 @@ public enum AtroposFailure: Error, Hashable, Sendable {
     case nonCanonicalGrid
     case invalidRecipeCount(Int)
     case invalidAllottedThreadCount(Int)
-    case missingGene(AstroDNAGene)
-    case duplicateGene(AstroDNAGene)
+    case recipeMissingGene(AstroDNAGene)
+    case recipeDuplicateGene(AstroDNAGene)
+    case allotmentMissingGene(AstroDNAGene)
+    case allotmentDuplicateGene(AstroDNAGene)
     case exactStateMismatch(AstroDNAGene)
     case degreeAddressMismatch(AstroDNAGene)
     case wrongCell(
@@ -42,11 +44,11 @@ public enum Atropos {
 
         let recipeGenes = recipe.entries.map(\.gene)
         if let duplicate = firstDuplicateGene(in: recipeGenes) {
-            return .failure(.duplicateGene(duplicate))
+            return .failure(.recipeDuplicateGene(duplicate))
         }
 
         for gene in AstroDNAGene.canonicalOrder where !recipeGenes.contains(gene) {
-            return .failure(.missingGene(gene))
+            return .failure(.recipeMissingGene(gene))
         }
 
         let allotted = grid.cells.flatMap(\.threads)
@@ -56,11 +58,11 @@ public enum Atropos {
 
         let allottedGenes = allotted.map(\.gene)
         if let duplicate = firstDuplicateGene(in: allottedGenes) {
-            return .failure(.duplicateGene(duplicate))
+            return .failure(.allotmentDuplicateGene(duplicate))
         }
 
         for gene in AstroDNAGene.canonicalOrder where !allottedGenes.contains(gene) {
-            return .failure(.missingGene(gene))
+            return .failure(.allotmentMissingGene(gene))
         }
 
         let recipeByGene = Dictionary(
@@ -71,9 +73,11 @@ public enum Atropos {
         )
 
         for gene in AstroDNAGene.canonicalOrder {
-            guard let expected = recipeByGene[gene],
-                  let actual = allottedByGene[gene] else {
-                return .failure(.missingGene(gene))
+            guard let expected = recipeByGene[gene] else {
+                return .failure(.recipeMissingGene(gene))
+            }
+            guard let actual = allottedByGene[gene] else {
+                return .failure(.allotmentMissingGene(gene))
             }
 
             guard actual.exactState == expected.exactState else {
@@ -87,7 +91,7 @@ public enum Atropos {
             guard let containingCell = grid.cells.first(where: {
                 $0.threads.contains(actual)
             }) else {
-                return .failure(.missingGene(gene))
+                return .failure(.allotmentMissingGene(gene))
             }
 
             guard containingCell.address == expected.degreeAddress else {
