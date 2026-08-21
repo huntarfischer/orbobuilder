@@ -1,0 +1,29 @@
+{
+  "failures": [],
+  "families": {
+    "F": {
+      "first_shell": "F0",
+      "last_shell": "F197",
+      "row_count": 2376,
+      "shell_count": 198,
+      "status": "PASS"
+    },
+    "R": {
+      "first_shell": "R0",
+      "last_shell": "R69",
+      "row_count": 840,
+      "shell_count": 70,
+      "status": "PASS"
+    },
+    "W": {
+      "first_shell": "W0",
+      "last_shell": "W34",
+      "row_count": 420,
+      "shell_count": 35,
+      "status": "PASS"
+    }
+  },
+  "law": "01=Aries through 12=Pisces; first direct sign ingress begins stable ownership and retrograde recrossings remain transition metadata.",
+  "notation": "Shell.sign",
+  "status": "PASS"
+}
