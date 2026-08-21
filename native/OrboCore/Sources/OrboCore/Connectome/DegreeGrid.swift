@@ -49,7 +49,7 @@ public struct DegreeGrid: Hashable, Sendable {
 ///
 /// She does not derive thread addresses or astrological meaning. She places each
 /// complete Clotho thread into the existing DegreeCell identified by the
-/// DegreeAddress Clotho supplied.
+/// DegreeAddress Clotho supplied. Existing valid allotments are preserved.
 public enum Lachesis {
     public static func allot(
         _ packet: ClothoSourcePacket,
@@ -57,19 +57,45 @@ public enum Lachesis {
     ) -> DegreeGrid {
         precondition(grid.cells.count == DegreeAddress.count)
         precondition(grid.cells.map(\.address) == DegreeAddress.canonicalOrder)
-        precondition(grid.cells.allSatisfy { $0.threads.isEmpty })
 
-        let threadsByAddress = Dictionary(grouping: packet.threads, by: \.degreeAddress)
+        let existingThreads = grid.cells.flatMap(\.threads)
+
+        for cell in grid.cells {
+            precondition(cell.threads.allSatisfy { $0.degreeAddress == cell.address })
+        }
+
+        let existingGenes = existingThreads.map(\.gene)
+        precondition(Set(existingGenes).count == existingGenes.count)
+
+        let existingByGene = Dictionary(
+            uniqueKeysWithValues: existingThreads.map { ($0.gene, $0) }
+        )
+
+        for thread in packet.threads {
+            if let existing = existingByGene[thread.gene] {
+                precondition(existing == thread)
+            }
+        }
+
+        let newThreadsByAddress = Dictionary(
+            grouping: packet.threads.filter { existingByGene[$0.gene] == nil },
+            by: \.degreeAddress
+        )
 
         let allottedCells = grid.cells.map { cell in
             DegreeCell(
                 address: cell.address,
-                threads: threadsByAddress[cell.address] ?? []
+                threads: cell.threads + (newThreadsByAddress[cell.address] ?? [])
             )
         }
 
         let allottedThreads = allottedCells.flatMap(\.threads)
-        precondition(allottedThreads.count == packet.threads.count)
+        let expectedCount = existingThreads.count + packet.threads.filter {
+            existingByGene[$0.gene] == nil
+        }.count
+
+        precondition(allottedThreads.count == expectedCount)
+        precondition(Set(allottedThreads.map(\.gene)).count == allottedThreads.count)
 
         return DegreeGrid(allottedCells: allottedCells)
     }
