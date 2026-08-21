@@ -7,47 +7,26 @@
 
 ## Governing objective
 
-Build the smallest complete version of the Moirai that proves the permanent Connectome Field can be constructed once and then read without reconstructing its sources.
+Build the smallest complete version of the Moirai that proves the native-specific Connectome structure can be constructed once and then read without reconstructing its sources.
 
 ```text
 CLOTHO
-gathers once
+creates natal threads once
     ↓
 LACHESIS
-allots once
-    ↓
-LOOM
-persists the Field
+allots those threads once
     ↓
 ATROPOS
-seals and serves
-    ↓
-REST OF ORBO
-reads
+validates and serves the finished structure
 ```
 
-Stages 0-3 prove the Sisters. They do not attempt to finish the Connectome.
-
-## Field and Loom
-
-```text
-FIELD
-The native-specific relational space: what is allotted where.
-
-LOOM
-The persistent interconnected table structure that stores the Field.
-```
-
-Use **Field** for the native topology itself.
-
-Use **Loom** for the stored artifact that materializes that Field.
-
-> **Clotho gathers authoritative facts. Lachesis allots those facts across the Field by writing them into the Loom. Atropos seals and serves the finished Loom as the authoritative Field.**
+Stages 0-3 prove the Sisters. They do not attempt to finish the Connectome or define the final Loom shape.
 
 ## MVP boundary
 
 This pass does not add:
 
+- final Loom architecture
 - Ring aspects or aspect reachability
 - dispositor chains
 - full Synchronic Governance
@@ -73,13 +52,13 @@ DegreeAddress
 0 ... 359
 
 DegreeCell
-address only
+address only at Stage 0 construction
 
 DegreeGrid
 exactly 360 cells
 ```
 
-Stage 0 does not define the Loom, Field contents, construction state, persistence, threads, allotments, governance, Arc data, or birth-chart facts.
+Stage 0 does not define the Loom, construction state, persistence, natal threads, allotments, governance, Arc data, or birth-chart meaning.
 
 The degree grid is an index only. It does not replace exact positional precision.
 
@@ -94,7 +73,7 @@ exactly 360 cells
 no duplicates
 no missing addresses
 canonical order is 0...359
-each cell contains only its degree address
+each fresh cell has its degree address and no allotted threads
 ```
 
 ---
@@ -125,7 +104,7 @@ OUTPUT
 12 Clotho threads for Lachesis
 ```
 
-Only Clotho creates Clotho threads or a Clotho source packet. Downstream code may read them but cannot construct arbitrary thread/packet values through the public API.
+Clotho is the sole construction authority for Clotho threads and the source packet. Downstream Orbo code may read them but does not manufacture arbitrary thread or packet values.
 
 Clotho does not name signs, assign houses, consult Tympan or Mater, interpret positions, allot threads into the degree grid, answer degree queries, or write the Loom.
 
@@ -149,7 +128,7 @@ multiple genes may share one DegreeAddress while retaining distinct exact states
 Clotho does not alter the Stage 0 DegreeGrid
 same natal AstroDNA produces the same packet
 no sign, house, ruler, or other astrological meaning is added
-only Clotho constructs threads and packets through the public API
+Clotho alone constructs threads and packets
 ```
 
 ---
@@ -158,13 +137,54 @@ only Clotho constructs threads and packets through the public API
 
 ## Goal
 
-Allot Clotho's authoritative facts across the Field by writing them into the Loom.
+Fill the existing Stage 0 `DegreeGrid` with the Clotho threads already addressed to it.
 
-Lachesis performs the allotment work once. The resulting Field facts persist.
+Lachesis receives only the existing degree grid and Clotho's source packet. She does not recalculate thread positions or derive additional astrological meaning.
+
+```text
+INPUT
+DegreeGrid
+ClothoSourcePacket
+
+LACHESIS
+for each existing DegreeCell:
+    allots every Clotho thread whose supplied DegreeAddress matches that cell
+
+OUTPUT
+the same DegreeGrid type
+with Clotho threads allotted into its existing cells
+```
+
+A `DegreeCell` therefore evolves at Stage 2 from an empty address holder into:
+
+```text
+DegreeCell
+    address
+    threads[]
+```
+
+The cell remains whole-degree. Each allotted thread still carries its exact `RingFineState`, so arcsecond precision is preserved inside the degree-addressed structure.
+
+Lachesis is the sole allotment authority for Clotho threads. She trusts the `DegreeAddress` Clotho supplied. She does not call Ring to recalculate the address and does not consult Tympan, Mater, Arc, or other authorities in this stage.
+
+This stage does not define or persist the final Loom. It proves the first allotment operation on the grid that already exists.
 
 ## Stage 2 gate
 
-The Loom itself contains the MVP Field facts required for lookup without returning to Clotho or the original authorities.
+Prove:
+
+```text
+the grid remains exactly 360 cells in canonical 0...359 order
+all 12 Clotho threads are allotted
+ each thread appears exactly once
+each thread appears only in its supplied DegreeAddress
+multiple threads may share one existing cell
+empty cells remain valid
+exact RingFineState survives unchanged to the arcsecond
+Lachesis does not change thread identity or address
+same empty grid + same Clotho packet produces the same allotted grid
+no sign, house, ruler, aspect, or other astrological meaning is added
+```
 
 ---
 
@@ -172,15 +192,11 @@ The Loom itself contains the MVP Field facts required for lookup without returni
 
 ## Goal
 
-Turn Lachesis's completed Loom into the immutable public representation of the Connectome Field.
+Define the smallest validation and serving boundary for the structure produced by Lachesis.
 
-Atropos does not enrich, allot, or recalculate the Field.
+Atropos does not enrich, allot, or recalculate it.
 
-She validates the completed Loom, seals it, and serves it to the rest of Orbo.
-
-## Stage 3 gate
-
-Restart with only Atropos and the sealed Loom artifact and successfully answer the MVP Field queries without loading Clotho, Lachesis, or the construction authorities.
+The exact Stage 3 representation should be designed only after the Stage 2 allotted grid has been reviewed. Do not assume the final Loom shape here.
 
 ---
 
@@ -191,24 +207,24 @@ native/OrboCore/Sources/OrboCore/Connectome/
 native/OrboCore/Tests/OrboCoreTests/Connectome/
 ```
 
-Reuse existing native OrboCore vocabulary wherever possible. Stage 0 adds only the 360-degree grid.
+Reuse existing native OrboCore vocabulary wherever possible.
 
 ---
 
 # MVP acceptance
 
 ```text
+STAGE 0
+360 degree places exist.
+
 CLOTHO
-gathers the required facts once.
+creates exact natal threads and gives each a degree address.
 
 LACHESIS
-allots those facts once across the Field.
-
-LOOM
-persists the allotted Field.
+allots those threads into the existing degree cells without changing them.
 
 ATROPOS
-seals and serves the finished Loom.
+validates and serves the resulting native structure.
 ```
 
-> **Build the degree grid first. Gather only what it needs. Allot once. Persist. Seal. Read.**
+> **Build the places. Create the threads. Allot the threads. Then decide what must be sealed and served.**
