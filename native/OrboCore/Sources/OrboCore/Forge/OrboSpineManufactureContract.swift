@@ -100,6 +100,50 @@ public enum OrboSpineManufactureContract {
         [z21.start, z22.start, z23.start, z23.end]
     }
 
+    /// The final OrboSpine celestial Forge plan. The historical construction-record
+    /// count field carried by `MundaneTimespineBodyContract` is deliberately not
+    /// authoritative here: Pass C discovers fresh row counts from the frozen support law.
+    /// Companion markers are also absent because Ring occurrence truth is manufactured
+    /// independently rather than embedded into body rows.
+    public static func forgePlan(
+        astronomicalSourceVersion: String
+    ) -> MundaneTimespineForgePlan {
+        let bodyPlans = MundaneBody.canonicalOrder.map { body -> MundaneTimespineForgeBodyPlan in
+            let contract = MundaneTimespineBodyContract(
+                body: body,
+                celestialResolutionDegrees: OrboSpineContract.supportDegrees(for: body),
+                markerBodies: [],
+                constructionRecordCount: 1
+            )!
+            return MundaneTimespineForgeBodyPlan(
+                contract: contract,
+                scanStepDays: scanStepDays[body]!
+            )!
+        }
+
+        return MundaneTimespineForgePlan(
+            spanName: "OrboSpine Z21-Z23",
+            astronomicalSource: astronomicalSource,
+            astronomicalSourceVersion: astronomicalSourceVersion,
+            supportedStart: supportedStart,
+            supportedEnd: supportedEnd,
+            bodyPlans: bodyPlans,
+            verifiesConstructionRecordCounts: false,
+            verifiesMarkerUniqueness: false
+        )!
+    }
+
+    public static func manufactureCelestialTracts(
+        astronomicalSourceVersion: String,
+        reference: any ForgeEphemerisReference
+    ) throws -> MundaneTimespineForgeProduct {
+        try validateZeitgeistBoundaries(reference: reference)
+        return try MundaneTimespineForge.manufacture(
+            plan: forgePlan(astronomicalSourceVersion: astronomicalSourceVersion),
+            reference: reference
+        )
+    }
+
     public static func validateZeitgeistBoundaries(
         reference: any ForgeEphemerisReference
     ) throws {
