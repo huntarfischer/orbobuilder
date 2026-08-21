@@ -23,8 +23,14 @@ final class DegreeGridStage0Tests: XCTestCase {
         XCTAssertEqual(Set(grid.cells.map(\.address)).count, 360)
     }
 
-    func testDegreeCellContainsOnlyItsAddress() {
+    func testDegreeCellStartsWithOnlyItsAddressAndNoThreads() {
         let cell = DegreeCell(address: DegreeAddress(rawValue: 127)!)
         XCTAssertEqual(cell.address.rawValue, 127)
+        XCTAssertTrue(cell.threads.isEmpty)
+    }
+
+    func testFreshDegreeGridHasNoAllottedThreads() {
+        let grid = DegreeGrid()
+        XCTAssertTrue(grid.cells.allSatisfy { $0.threads.isEmpty })
     }
 }
