@@ -16,6 +16,22 @@ public struct FieldAddress: RawRepresentable, Codable, Hashable, Sendable, Compa
     public static func < (lhs: FieldAddress, rhs: FieldAddress) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
+
+    public init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(Int.self)
+        guard let address = Self(rawValue: value) else {
+            throw DecodingError.dataCorruptedError(
+                in: try decoder.singleValueContainer(),
+                debugDescription: "FieldAddress must be in 0..<360."
+            )
+        }
+        self = address
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
 }
 
 public struct FieldCell: Codable, Hashable, Sendable {
