@@ -900,7 +900,7 @@ private enum AssemblyProof {
             guard let value = Double(text),
                   value.isFinite,
                   let directional = OrboSpineDirectionalDegree(value),
-                  directional.motion == resolver.motion(of: body, at: julianDay) else {
+                  directional.motion == (try resolver.motion(of: body, at: julianDay)) else {
                 throw AssemblyProofError.mismatch("\(url.lastPathComponent) row \(rowNumber) directional body \(bodyLabel)")
             }
             return directional
