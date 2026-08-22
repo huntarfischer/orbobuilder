@@ -35,10 +35,12 @@ final class OrboSpineLibraryTests: XCTestCase {
         XCTAssertFalse(names.localizedCaseInsensitiveContains("clotho"))
     }
 
-    func testD2LeavesStackSmeldSeamEmpty() {
+    func testLibraryCatalogIsCoreOnlyAndStackSeamRemainsOwnedByD0() {
         let library = OrboSpineLibraryCatalog()
+        let seams = SpineSmeldSeams()
 
-        XCTAssertNil(library.stackSmeld)
+        XCTAssertEqual(library.coreShelves, OrboSpineLibraryShelf.allCases)
+        XCTAssertNil(seams.stack)
         for shelf in OrboSpineLibraryShelf.allCases {
             XCTAssertTrue(library.contains(shelf))
         }
