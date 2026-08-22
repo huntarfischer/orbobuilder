@@ -21,6 +21,8 @@ final class OrboSpineRuntimeTests: XCTestCase {
         XCTAssertEqual(runtime.inventory.eclipseCount, 1)
         XCTAssertEqual(runtime.inventory.shellIntervalCount, 4)
         XCTAssertEqual(runtime.inventory.terraSampleCount, 2)
+        XCTAssertEqual(runtime.eclipses.first?.kind, .solar)
+        XCTAssertEqual(runtime.eclipses.first?.type, .total)
 
         let mercuryAtStation = try runtime.locate.coordinate(
             of: .mercury,
@@ -89,7 +91,7 @@ final class OrboSpineRuntimeTests: XCTestCase {
         let stations: [OrboSpineStation]
         let passages: [OrboSpineRetrogradePassage]
         let ring: [OrboSpineRingOccurrence]
-        let eclipses: [MundaneTimespineEclipseEvent]
+        let eclipses: [OrboSpineEclipseOccurrence]
         let shells: [OrboSpineShellInterval]
         let terra: [TerraMarrowSample]
         let provenance: OrboSpineRuntimeProvenance
@@ -152,7 +154,7 @@ final class OrboSpineRuntimeTests: XCTestCase {
             bodyBDirectionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(10.25)),
             julianDay: JulianDay(1_000.25)!
         ))
-        let eclipse = try XCTUnwrap(MundaneTimespineEclipseEvent(
+        let eclipse = try XCTUnwrap(OrboSpineEclipseOccurrence(
             kind: .solar,
             type: .total,
             eclipseDegree: 12,
