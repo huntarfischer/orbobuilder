@@ -89,7 +89,19 @@ public enum PolluxResonator {
         expected: OrboSpineCelestialCoordinate,
         returned: OrboSpineCelestialCoordinate
     ) -> SpineResonanceResult {
-        expected == returned
+        guard expected.body == returned.body,
+              expected.julianDay == returned.julianDay,
+              expected.directionalDegree.motion == returned.directionalDegree.motion else {
+            return .divergent(expected: expected, returned: returned)
+        }
+
+        let rawDifference = abs(
+            expected.directionalDegree.physicalDegrees
+                - returned.directionalDegree.physicalDegrees
+        )
+        let degreeDifference = min(rawDifference, 360 - rawDifference)
+
+        return degreeDifference <= epsilon
             ? .confirmed
             : .divergent(expected: expected, returned: returned)
     }
