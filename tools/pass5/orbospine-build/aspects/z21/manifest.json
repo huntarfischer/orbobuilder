@@ -1,0 +1,88 @@
+{
+  "artifactFamily": "Orbo exact mundane relationship tables",
+  "astronomicalSource": "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT",
+  "calibrationLaw": "event topology is calibrated against the frozen Z22 canonical relationship tables; historical Z22 civic placements are not copied because diagnostic calibration proved they are variably displaced from exact Swiss roots",
+  "duplicateSourceLaw": "same qualified celestial geometry at same stored second is a duplicate source occurrence and is emitted once",
+  "endJulianDayUT": 2386637.0793997087,
+  "endUTC": "1822-04-16T13:54:20.135Z",
+  "exactOccurrenceLaw": "relationship civic occurrence is the refined Swiss root of the exact oriented Ring geometry; celestial geometry is primary",
+  "families": {
+    "major": {
+      "bodyPairsWithEvents": 55,
+      "duplicateSourceRowsRemoved": 0,
+      "marks": {
+        "0": 40990,
+        "120": 76482,
+        "180": 38143,
+        "60": 77335,
+        "90": 76620
+      },
+      "maxExactAspectResidualArcSeconds": 1.4e-05,
+      "maxRecurrence": 1,
+      "orientations": {
+        "bodyA_ahead_120": 38222,
+        "bodyA_ahead_60": 38698,
+        "bodyA_ahead_90": 38275,
+        "bodyB_ahead_120": 38260,
+        "bodyB_ahead_60": 38637,
+        "bodyB_ahead_90": 38345,
+        "opposite_degree": 38143,
+        "same_degree": 40990
+      },
+      "recurringCelestialKeys": 0,
+      "rows": 309570,
+      "rowsInRecurringCelestialKeys": 0
+    },
+    "minor": {
+      "bodyPairsWithEvents": 54,
+      "duplicateSourceRowsRemoved": 0,
+      "marks": {
+        "135": 76345,
+        "144": 76348,
+        "150": 76366,
+        "30": 78874,
+        "45": 78535,
+        "72": 76789
+      },
+      "maxExactAspectResidualArcSeconds": 1.4e-05,
+      "maxRecurrence": 1,
+      "orientations": {
+        "bodyA_ahead_135": 38159,
+        "bodyA_ahead_144": 38155,
+        "bodyA_ahead_150": 38158,
+        "bodyA_ahead_30": 39490,
+        "bodyA_ahead_45": 39233,
+        "bodyA_ahead_72": 38370,
+        "bodyB_ahead_135": 38186,
+        "bodyB_ahead_144": 38193,
+        "bodyB_ahead_150": 38208,
+        "bodyB_ahead_30": 39384,
+        "bodyB_ahead_45": 39302,
+        "bodyB_ahead_72": 38419
+      },
+      "recurringCelestialKeys": 0,
+      "rows": 463257,
+      "rowsInRecurringCelestialKeys": 0
+    }
+  },
+  "files": [
+    {
+      "bytes": 8888811,
+      "path": "exact-major-mundane-transits.csv.gz",
+      "sha256": "ed5adc0a8e6de347a787090a78b5ede0af9f3636c521d0351ab29d81c80d42cc"
+    },
+    {
+      "bytes": 13464857,
+      "path": "exact-minor-mundane-transits.csv.gz",
+      "sha256": "1ac716e07daff4fbbc70d3f66a08c30bdbc91b94b6e0c28132e784000b93b9d4"
+    }
+  ],
+  "identityLaw": "exact celestial geometry + recurrence ordinal / civic UT excluded",
+  "ownershipLaw": "Z21 first Pluto Aries ingress inclusive to Z22 first Pluto Aries ingress exclusive",
+  "startJulianDayUT": 2297171.740867775,
+  "startUTC": "1577-05-05T05:46:50.976Z",
+  "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissRepository": "huntarfischer/swisseph",
+  "swissVersion": "2.10.03",
+  "zeitgeist": "Z21"
+}

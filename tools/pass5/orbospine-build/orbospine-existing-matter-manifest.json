@@ -1,0 +1,49 @@
+{
+  "identity": "OrboSpine",
+  "span": "Z21-Z23",
+  "status": "existing canonical Timespine matter gathered; Terra Marrow pending",
+  "components": {
+    "celestial": {
+      "path": "celestial",
+      "status": "C4 forged and audited in the build workspace",
+      "supportRows": 1550229,
+      "stationRows": 52679,
+      "totalRecords": 1602908
+    },
+    "aspects": {
+      "path": "aspects",
+      "status": "existing exact aspect tables gathered without alteration",
+      "z21": {"majorRows": 309570, "minorRows": 463257, "totalRows": 772827},
+      "z22": {"majorRows": 308474, "minorRows": 461819, "totalRows": 770293},
+      "z23": {"majorRows": 309501, "minorRows": 463309, "totalRows": 772810},
+      "totalRows": 2315930
+    },
+    "temporalShells": {
+      "path": "shells",
+      "families": ["Frame / Saturn", "Revolt / Uranus", "Wave / Neptune", "Zeitgeist / Pluto"],
+      "address": "F.R.W.Z",
+      "status": "canonical interval truth tables gathered without alteration"
+    },
+    "eclipses": {
+      "path": "eclipses",
+      "status": "existing eclipse tables gathered without alteration",
+      "z21Rows": 1221,
+      "z22Rows": 1133,
+      "z23Rows": 1185,
+      "totalRows": 3539
+    },
+    "terraMarrow": {
+      "path": "terra",
+      "status": "pending forge"
+    }
+  },
+  "excluded": [
+    "legacy P22 body tables superseded by the C4 celestial forge",
+    "legacy P22 station table superseded by C4 stations",
+    "retrograde crossings/passages and planetary shadows because they are derived from stations plus ordered supports",
+    "temporal-shell sign tables and summaries because they are derived views rather than shell interval truth",
+    "Forge apparatus under .forge",
+    "runtime indexes because Pass D has not begun",
+    "Dioscuri and Hephaestus machinery because they manufacture or verify the Spine rather than constitute its astronomical matter"
+  ]
+}

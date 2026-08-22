@@ -1,0 +1,46 @@
+{
+  "span": "P22 Pluto Zeitgeist",
+  "status": "admitted construction artifacts; final astronomical conformance remains pending",
+  "celestialTimeFirst": true,
+  "civicOccurrenceCoordinate": "Julian Day UT plus integer seconds from P22 start",
+  "bodyCount": 11,
+  "totalRows": 771426,
+  "files": [
+    {
+      "family": "eclipse",
+      "path": "eclipse-table.csv.gz",
+      "rows": 1133,
+      "gzipBytes": 62156,
+      "sha256": "15e13795d8b460782606b3dd3302796633d1229f30f2d397cf228777319e72a8",
+      "celestialPrimaryFields": ["eclipse_degree"],
+      "civicOccurrenceFields": ["phase_jd_ut", "greatest_eclipse_jd_ut"],
+      "solarRows": 561,
+      "lunarRows": 572
+    },
+    {
+      "family": "exact-major-relationships",
+      "path": "exact-major-mundane-transits.csv.gz",
+      "rows": 308474,
+      "gzipBytes": 8959884,
+      "sha256": "307178a19fc2b7d5ab7364cf73e00f57ca18a7c5693072b81d4cef56f5d3f057",
+      "celestialPrimaryFields": ["bodyA", "bodyACelestialTimeDegrees", "bodyB", "bodyBCelestialTimeDegrees", "ringDegrees", "orientation"],
+      "civicOccurrenceFields": ["civicTimeJulianDayUT", "civicTimeOffsetSeconds"],
+      "ringDegrees": [0, 60, 90, 120, 180],
+      "possibleBodyPairs": 55,
+      "populatedBodyPairs": 55
+    },
+    {
+      "family": "exact-minor-relationships",
+      "path": "exact-minor-mundane-transits.csv.gz",
+      "rows": 461819,
+      "gzipBytes": 17090897,
+      "sha256": "b1d3f3dbb5a78654b713dc03b7869241312f9e08ca88357c59446ba529000552",
+      "celestialPrimaryFields": ["bodyA", "bodyACelestialTimeDegrees", "bodyB", "bodyBCelestialTimeDegrees", "ringDegrees", "orientation"],
+      "civicOccurrenceFields": ["civicTimeJulianDayUT", "civicTimeOffsetSeconds"],
+      "ringDegrees": [30, 45, 72, 135, 144, 150],
+      "possibleBodyPairs": 55,
+      "populatedBodyPairs": 54,
+      "zeroEventPairs": ["Sun|Mercury"]
+    }
+  ]
+}
