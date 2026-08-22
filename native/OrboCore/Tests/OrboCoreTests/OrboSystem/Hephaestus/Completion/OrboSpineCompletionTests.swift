@@ -57,6 +57,52 @@ final class OrboSpineCompletionTests: XCTestCase {
         assertInvalidBinding(testimony, fixture: fixture)
     }
 
+    func testG3DivergentTestimonyReturnsReforgeAndPreservesTestimony() throws {
+        let fixture = try makeFixture()
+        let testimony = SpineResonanceTestimony(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: fixture.candidate.provenance.candidateManifestSHA256,
+            result: .divergent(
+                body: .sun,
+                expected: coordinate(.sun, 10, at: 1_000),
+                returned: coordinate(.sun, 10.25, at: 1_000)
+            )
+        )
+
+        XCTAssertEqual(
+            try HephaestusOrboSpineCompletion.reforge(
+                schematic: fixture.schematic,
+                candidate: fixture.candidate,
+                testimony: testimony
+            ),
+            .reforge(testimony)
+        )
+    }
+
+    func testG3ConfirmedTestimonyDoesNotReforge() throws {
+        let fixture = try makeFixture()
+        let testimony = SpineResonanceTestimony(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: fixture.candidate.provenance.candidateManifestSHA256,
+            result: .confirmed
+        )
+
+        XCTAssertThrowsError(
+            try HephaestusOrboSpineCompletion.reforge(
+                schematic: fixture.schematic,
+                candidate: fixture.candidate,
+                testimony: testimony
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? OrboSpineCompletionError,
+                .testimonyNotDivergent
+            )
+        }
+    }
+
     private struct Fixture {
         let schematic: SpineSchematic
         let candidate: OrboSpineRuntime
