@@ -18,10 +18,12 @@ public struct OrboSpineSeal: Hashable, Sendable {
 public enum OrboSpineCompletionError: Error, Equatable, Sendable {
     case invalidTestimonyBinding
     case testimonyNotDivergent
+    case testimonyNotConfirmed
 }
 
 public enum HephaestusOrboSpineDisposition: Equatable, Sendable {
     case reforge(SpineResonanceTestimony)
+    case sealed(OrboSpineSeal)
 }
 
 /// Hephaestus's OrboSpine completion boundary.
@@ -57,5 +59,27 @@ public enum HephaestusOrboSpineCompletion {
         }
 
         return .reforge(boundTestimony)
+    }
+
+    /// G4 seals the exact OrboSpine only after valid confirmed testimony.
+    public static func seal(
+        schematic: SpineSchematic,
+        candidate: OrboSpineRuntime,
+        testimony: SpineResonanceTestimony
+    ) throws -> HephaestusOrboSpineDisposition {
+        let boundTestimony = try receive(
+            schematic: schematic,
+            candidate: candidate,
+            testimony: testimony
+        )
+        guard case .confirmed = boundTestimony.result else {
+            throw OrboSpineCompletionError.testimonyNotConfirmed
+        }
+
+        return .sealed(OrboSpineSeal(
+            schematicIdentity: boundTestimony.schematicIdentity,
+            schematicVersion: boundTestimony.schematicVersion,
+            candidateIdentity: boundTestimony.candidateIdentity
+        ))
     }
 }
