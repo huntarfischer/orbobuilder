@@ -192,6 +192,76 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         XCTAssertEqual(candidateTruth, returned)
     }
 
+    func testE3DirectInteriorResonates() throws {
+        let fixture = try makeE2Fixture()
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: fixture.candidate
+        ))
+        let challenge = try XCTUnwrap(SpineCelestialChallenge(
+            body: .sun,
+            directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
+                physicalDegrees: 15,
+                motion: .direct
+            ))
+        ))
+
+        let expected = try XCTUnwrap(PolluxResonator.ask(
+            challenge,
+            from: fixture.celestialProduct
+        ))
+        XCTAssertEqual(expected.julianDay.value, 1_000.5, accuracy: 1e-12)
+        XCTAssertEqual(
+            try assignment.resonate(challenge, celestialProduct: fixture.celestialProduct),
+            .confirmed
+        )
+    }
+
+    func testE3RetrogradeInteriorResonates() throws {
+        let fixture = try makeE2Fixture()
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: fixture.candidate
+        ))
+        let challenge = try XCTUnwrap(SpineCelestialChallenge(
+            body: .mercury,
+            directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
+                physicalDegrees: 10.5,
+                motion: .retrograde
+            ))
+        ))
+
+        let expected = try XCTUnwrap(PolluxResonator.ask(
+            challenge,
+            from: fixture.celestialProduct
+        ))
+        XCTAssertEqual(expected.julianDay.value, 1_000.875, accuracy: 1e-12)
+        XCTAssertEqual(
+            try assignment.resonate(challenge, celestialProduct: fixture.celestialProduct),
+            .confirmed
+        )
+    }
+
+    func testE3StationResonates() throws {
+        let fixture = try makeE2Fixture()
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: fixture.candidate
+        ))
+        let challenge = try XCTUnwrap(SpineStationChallenge(body: .mercury))
+
+        let expected = try XCTUnwrap(PolluxResonator.ask(
+            challenge,
+            from: fixture.celestialProduct
+        ))
+        XCTAssertEqual(expected.julianDay.value, 1_000.5, accuracy: 1e-12)
+        XCTAssertEqual(expected.directionalDegree.degrees, 372, accuracy: 1e-12)
+        XCTAssertEqual(
+            try assignment.resonate(challenge, celestialProduct: fixture.celestialProduct),
+            .confirmed
+        )
+    }
+
     private struct E2Fixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
@@ -215,7 +285,7 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         ))
         let station = try XCTUnwrap(OrboSpineStation(
             body: .mercury,
-            physicalDegrees: 10.5,
+            physicalDegrees: 12,
             julianDay: JulianDay(1_000.5)!,
             laneBefore: .direct,
             laneAfter: .retrograde
@@ -227,21 +297,32 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         for body in MundaneBody.canonicalOrder {
             let supportDegrees = OrboSpineContract.supportDegrees(for: body)
             if body == .mercury {
-                let direct = coordinate(body, 10, .direct, 1_000)
-                let forgedRetrograde = coordinate(body, 10, .retrograde, 1_001)
-                let candidateRetrograde = coordinate(
-                    body,
-                    candidateMercuryRetrogradePhysicalDegrees,
-                    .retrograde,
-                    1_001
-                )
+                let directSupports = [
+                    coordinate(body, 10, .direct, 1_000),
+                    coordinate(body, 11, .direct, 1_000.25),
+                ]
+                let forgedRetrogradeSupports = [
+                    coordinate(body, 11, .retrograde, 1_000.75),
+                    coordinate(body, 10, .retrograde, 1_001),
+                    coordinate(body, 9, .retrograde, 1_001.25),
+                    coordinate(body, 8, .retrograde, 1_001.5),
+                    coordinate(body, 7, .retrograde, 1_001.75),
+                ]
+                let offset = candidateMercuryRetrogradePhysicalDegrees - 10
+                let candidateRetrogradeSupports = [
+                    coordinate(body, 11 + offset, .retrograde, 1_000.75),
+                    coordinate(body, 10 + offset, .retrograde, 1_001),
+                    coordinate(body, 9 + offset, .retrograde, 1_001.25),
+                    coordinate(body, 8 + offset, .retrograde, 1_001.5),
+                    coordinate(body, 7 + offset, .retrograde, 1_001.75),
+                ]
                 forgedBodies.append(SpineForgeBodyProduct(
                     body: body,
                     supportDegrees: supportDegrees,
-                    supports: [direct, forgedRetrograde],
+                    supports: directSupports + forgedRetrogradeSupports,
                     stations: [station]
                 ))
-                candidateSupports.append(contentsOf: [direct, candidateRetrograde])
+                candidateSupports.append(contentsOf: directSupports + candidateRetrogradeSupports)
             } else {
                 let start = coordinate(body, 10, .direct, 1_000)
                 let next = coordinate(body, 10 + supportDegrees, .direct, 1_001)
