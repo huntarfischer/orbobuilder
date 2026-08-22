@@ -205,6 +205,96 @@ final class DioscuriAdversarialTests: XCTestCase {
         XCTAssertNil(PolluxResonator.ask(challenge, from: product))
     }
 
+    func testF3MissingSchematicBodyFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let bodies = fixture.celestialProduct.bodies.filter { $0.body != .sun }
+        let product = makeProduct(from: fixture, bodies: bodies)
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3EmptyBodyMatterFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        var bodies = fixture.celestialProduct.bodies
+        let sunIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .sun })
+        let sun = bodies[sunIndex]
+        bodies[sunIndex] = SpineForgeBodyProduct(
+            body: sun.body,
+            supportDegrees: sun.supportDegrees,
+            supports: [],
+            stations: []
+        )
+        let product = makeProduct(from: fixture, bodies: bodies)
+
+        assertRunFailsClosed(.challengeUnavailable(.sun), product: product, fixture: fixture)
+    }
+
+    func testF3WrongBodyOrderFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        var bodies = fixture.celestialProduct.bodies
+        bodies.swapAt(0, 1)
+        let product = makeProduct(from: fixture, bodies: bodies)
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongSupportDegreesFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        var bodies = fixture.celestialProduct.bodies
+        let first = bodies[0]
+        bodies[0] = SpineForgeBodyProduct(
+            body: first.body,
+            supportDegrees: first.supportDegrees + 0.5,
+            supports: first.supports,
+            stations: first.stations
+        )
+        let product = makeProduct(from: fixture, bodies: bodies)
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongIdentityFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let product = makeProduct(from: fixture, identity: "NotOrboSpine")
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongVersionFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let product = makeProduct(
+            from: fixture,
+            version: fixture.schematic.version + 1
+        )
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongBoneFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let wrongBone = try XCTUnwrap(OrboSpineBoneSpan(
+            start: JulianDay(1_000)!,
+            end: JulianDay(1_003)!
+        ))
+        let product = makeProduct(from: fixture, bone: wrongBone)
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongAuthorityFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let product = makeProduct(from: fixture, authority: "Other authority")
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
+    func testF3WrongSourceVersionFailsClosed() throws {
+        let fixture = try makeBaselineFixture()
+        let product = makeProduct(from: fixture, sourceVersion: "other-version")
+
+        assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
+    }
+
     private struct AttackFixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
@@ -339,6 +429,41 @@ final class DioscuriAdversarialTests: XCTestCase {
             candidate: candidate,
             assignment: assignment
         )
+    }
+
+    private func makeProduct(
+        from fixture: AttackFixture,
+        identity: String? = nil,
+        version: UInt16? = nil,
+        bone: OrboSpineBoneSpan? = nil,
+        authority: String? = nil,
+        sourceVersion: String? = nil,
+        bodies: [SpineForgeBodyProduct]? = nil
+    ) -> SpineForgeProduct {
+        SpineForgeProduct(
+            schematicIdentity: identity ?? fixture.schematic.identity,
+            schematicVersion: version ?? fixture.schematic.version,
+            astronomicalAuthority: authority ?? fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: sourceVersion ?? fixture.schematic.astronomicalSourceVersion,
+            bone: bone ?? fixture.schematic.bone,
+            bodies: bodies ?? fixture.celestialProduct.bodies
+        )
+    }
+
+    private func assertRunFailsClosed(
+        _ expectedError: SpineResonanceRunError,
+        product: SpineForgeProduct,
+        fixture: AttackFixture
+    ) {
+        XCTAssertThrowsError(
+            try SpineResonanceRun.run(
+                schematic: fixture.schematic,
+                celestialProduct: product,
+                assignment: fixture.assignment
+            )
+        ) { error in
+            XCTAssertEqual(error as? SpineResonanceRunError, expectedError)
+        }
     }
 
     private func makeRuntime(
