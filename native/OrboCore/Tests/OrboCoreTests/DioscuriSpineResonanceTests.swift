@@ -262,6 +262,170 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         )
     }
 
+    func testE4ChallengesEverySchematicBodyExactlyOnce() throws {
+        let fixture = try makeE2Fixture()
+        let challenges = try fixture.schematic.bodyPlans.map { bodyPlan in
+            let bodyProduct = try XCTUnwrap(fixture.celestialProduct.body(bodyPlan.body))
+            return try XCTUnwrap(SpineResonanceRun.selectedChallenge(for: bodyProduct))
+        }
+
+        XCTAssertEqual(challenges.count, fixture.schematic.bodyPlans.count)
+        XCTAssertEqual(challenges.map(\.body), fixture.schematic.bodyPlans.map(\.body))
+        XCTAssertEqual(Set(challenges.map(\.body)).count, challenges.count)
+    }
+
+    func testE4SuppliedSchematicBodyOrderDrivesRun() throws {
+        let fixture = try makeE2Fixture()
+        let reversedPlans = Array(fixture.schematic.bodyPlans.reversed())
+        let schematic = try XCTUnwrap(SpineSchematic(
+            identity: fixture.schematic.identity,
+            version: fixture.schematic.version,
+            bone: fixture.schematic.bone,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bodyPlans: reversedPlans
+        ))
+        let byBody = Dictionary(uniqueKeysWithValues: fixture.celestialProduct.bodies.map { ($0.body, $0) })
+        let bodies = try reversedPlans.map { try XCTUnwrap(byBody[$0.body]) }
+        let celestialProduct = SpineForgeProduct(
+            schematicIdentity: schematic.identity,
+            schematicVersion: schematic.version,
+            astronomicalAuthority: schematic.astronomicalAuthority,
+            astronomicalSourceVersion: schematic.astronomicalSourceVersion,
+            bone: schematic.bone,
+            bodies: bodies
+        )
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: schematic,
+            candidate: fixture.candidate
+        ))
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: schematic,
+            celestialProduct: celestialProduct,
+            assignment: assignment
+        )
+        let challenges = try schematic.bodyPlans.map { bodyPlan in
+            let bodyProduct = try XCTUnwrap(celestialProduct.body(bodyPlan.body))
+            return try XCTUnwrap(SpineResonanceRun.selectedChallenge(for: bodyProduct))
+        }
+
+        XCTAssertEqual(testimony.result, .confirmed)
+        XCTAssertEqual(challenges.map(\.body), reversedPlans.map(\.body))
+    }
+
+    func testE4ProductSchematicMismatchFailsClosed() throws {
+        let fixture = try makeE2Fixture()
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: fixture.candidate
+        ))
+        var bodies = fixture.celestialProduct.bodies
+        let first = bodies[0]
+        bodies[0] = SpineForgeBodyProduct(
+            body: first.body,
+            supportDegrees: first.supportDegrees + 0.5,
+            supports: first.supports,
+            stations: first.stations
+        )
+        let celestialProduct = SpineForgeProduct(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bone: fixture.schematic.bone,
+            bodies: bodies
+        )
+
+        XCTAssertThrowsError(
+            try SpineResonanceRun.run(
+                schematic: fixture.schematic,
+                celestialProduct: celestialProduct,
+                assignment: assignment
+            )
+        ) { error in
+            XCTAssertEqual(error as? SpineResonanceRunError, .productMismatch)
+        }
+    }
+
+    func testE4FirstDivergenceStopsRunAndPreservesBothAnswers() throws {
+        let fixture = try makeE2Fixture()
+        var candidateSupports = fixture.celestialProduct.bodies.flatMap(\.supports)
+        let sunUpperIndex = try XCTUnwrap(candidateSupports.firstIndex {
+            $0.body == .sun && abs($0.julianDay.value - 1_001) < 1e-12
+        })
+        candidateSupports[sunUpperIndex] = coordinate(.sun, 19, .direct, 1_001)
+        let stations = fixture.celestialProduct.bodies.flatMap(\.stations)
+        let candidate = try XCTUnwrap(makeRuntime(
+            bone: fixture.schematic.bone,
+            authority: fixture.schematic.astronomicalAuthority,
+            sourceVersion: fixture.schematic.astronomicalSourceVersion,
+            supports: candidateSupports,
+            stations: stations
+        ))
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: candidate
+        ))
+
+        var bodies = fixture.celestialProduct.bodies
+        let moonIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .moon })
+        let moon = bodies[moonIndex]
+        bodies[moonIndex] = SpineForgeBodyProduct(
+            body: moon.body,
+            supportDegrees: moon.supportDegrees,
+            supports: [],
+            stations: moon.stations
+        )
+        let celestialProduct = SpineForgeProduct(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bone: fixture.schematic.bone,
+            bodies: bodies
+        )
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: celestialProduct,
+            assignment: assignment
+        )
+        guard case let .divergent(body, expected, returned) = testimony.result else {
+            return XCTFail("Expected first E4 divergence.")
+        }
+
+        XCTAssertEqual(body, .sun)
+        XCTAssertEqual(expected.directionalDegree.degrees, 15, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 14.5, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
+    func testE4IdenticalInputsProduceIdenticalTestimony() throws {
+        let fixture = try makeE2Fixture()
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: fixture.candidate
+        ))
+
+        let first = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct,
+            assignment: assignment
+        )
+        let second = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct,
+            assignment: assignment
+        )
+
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(first.schematicIdentity, fixture.schematic.identity)
+        XCTAssertEqual(first.schematicVersion, fixture.schematic.version)
+        XCTAssertEqual(first.candidateIdentity, assignment.candidateIdentity)
+        XCTAssertEqual(first.result, .confirmed)
+    }
+
     private struct E2Fixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
