@@ -103,6 +103,57 @@ final class OrboSpineCompletionTests: XCTestCase {
         }
     }
 
+    func testG4ConfirmedTestimonySealsExactOrboSpine() throws {
+        let fixture = try makeFixture()
+        let testimony = SpineResonanceTestimony(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: fixture.candidate.provenance.candidateManifestSHA256,
+            result: .confirmed
+        )
+        let expectedSeal = OrboSpineSeal(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: fixture.candidate.provenance.candidateManifestSHA256
+        )
+
+        XCTAssertEqual(
+            try HephaestusOrboSpineCompletion.seal(
+                schematic: fixture.schematic,
+                candidate: fixture.candidate,
+                testimony: testimony
+            ),
+            .sealed(expectedSeal)
+        )
+    }
+
+    func testG4DivergentTestimonyDoesNotSeal() throws {
+        let fixture = try makeFixture()
+        let testimony = SpineResonanceTestimony(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: fixture.candidate.provenance.candidateManifestSHA256,
+            result: .divergent(
+                body: .sun,
+                expected: coordinate(.sun, 10, at: 1_000),
+                returned: coordinate(.sun, 10.25, at: 1_000)
+            )
+        )
+
+        XCTAssertThrowsError(
+            try HephaestusOrboSpineCompletion.seal(
+                schematic: fixture.schematic,
+                candidate: fixture.candidate,
+                testimony: testimony
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? OrboSpineCompletionError,
+                .testimonyNotConfirmed
+            )
+        }
+    }
+
     private struct Fixture {
         let schematic: SpineSchematic
         let candidate: OrboSpineRuntime
