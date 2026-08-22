@@ -24,10 +24,26 @@ jobs:
           ref: agent/mundane-timespine-3d-build
           fetch-depth: 0
 
+      - name: Record forge run identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="tools/pass5/orbospine-build/lunations"
+          mkdir -p "$OUT"
+          echo started > "$RUNNER_TEMP/lunation-stage"
+          printf '{\n  "runId": %s,\n  "runAttempt": %s,\n  "sourceSha": "%s",\n  "status": "started"\n}\n' \
+            "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" > "$OUT/forge-run.json"
+          git config user.name "Orbo Forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git add "$OUT/forge-run.json"
+          git commit -m "Record lunation Forge run [skip ci]"
+          git push origin HEAD:agent/mundane-timespine-3d-build
+
       - name: Build and verify pinned Swiss DE441 apparatus
         shell: bash
         run: |
           set -euo pipefail
+          echo swiss-de441 > "$RUNNER_TEMP/lunation-stage"
           SWISS="$RUNNER_TEMP/swisseph"
           git clone https://github.com/huntarfischer/swisseph.git "$SWISS"
           git -C "$SWISS" checkout 3fd0f956d73898b91cc4f67cf18b21af656d1342
@@ -43,6 +59,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo compile > "$RUNNER_TEMP/lunation-stage"
           swiftc -parse-as-library \
             tools/pass5/lunation-forge/main.swift \
             -o "$RUNNER_TEMP/orbo-lunation-forge"
@@ -51,8 +68,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo manufacture > "$RUNNER_TEMP/lunation-stage"
           OUT="tools/pass5/orbospine-build/lunations"
-          mkdir -p "$OUT"
           "$RUNNER_TEMP/orbo-lunation-forge" \
             --library "$RUNNER_TEMP/swisseph/libswe.dylib" \
             --ephe "$RUNNER_TEMP/swisseph/ephe" \
@@ -66,6 +83,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo package > "$RUNNER_TEMP/lunation-stage"
           OUT="tools/pass5/orbospine-build/lunations"
           gzip -n -9 -c "$OUT/lunation-table.csv" > "$OUT/lunation-table.csv.gz"
           rm "$OUT/lunation-table.csv"
@@ -153,6 +171,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo audit > "$RUNNER_TEMP/lunation-stage"
           OUT="tools/pass5/orbospine-build/lunations"
           test -s "$OUT/lunation-table.csv.gz"
           test -s "$OUT/manifest.json"
@@ -203,13 +222,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo commit > "$RUNNER_TEMP/lunation-stage"
+          OUT="tools/pass5/orbospine-build/lunations"
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git pull --rebase origin agent/mundane-timespine-3d-build
-          git add \
-            tools/pass5/orbospine-build/lunations/lunation-table.csv.gz \
-            tools/pass5/orbospine-build/lunations/manifest.json
+          rm -f "$OUT/forge-run.json"
+          git add -A "$OUT"
           if ! git diff --cached --quiet; then
             git commit -m "Forge Z21-Z23 lunation table [skip ci]"
+            git push origin HEAD:agent/mundane-timespine-3d-build
+          fi
+
+      - name: Record failed forge stage
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$(cat "$RUNNER_TEMP/lunation-stage" 2>/dev/null || echo unknown)"
+          OUT="tools/pass5/orbospine-build/lunations"
+          git config user.name "Orbo Forge"
+          git config user.email "orbo-forge@users.noreply.github.com"
+          git pull --rebase origin agent/mundane-timespine-3d-build
+          mkdir -p "$OUT"
+          printf '{\n  "runId": %s,\n  "runAttempt": %s,\n  "sourceSha": "%s",\n  "status": "failed",\n  "stage": "%s"\n}\n' \
+            "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" "$stage" > "$OUT/forge-run.json"
+          git add "$OUT/forge-run.json"
+          if ! git diff --cached --quiet; then
+            git commit -m "Record failed lunation Forge stage [skip ci]"
             git push origin HEAD:agent/mundane-timespine-3d-build
           fi
