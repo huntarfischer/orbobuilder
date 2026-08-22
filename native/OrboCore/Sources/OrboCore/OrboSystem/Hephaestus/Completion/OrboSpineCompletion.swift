@@ -82,4 +82,28 @@ public enum HephaestusOrboSpineCompletion {
             candidateIdentity: boundTestimony.candidateIdentity
         ))
     }
+
+    /// G5 makes Hephaestus the single authority that resolves valid Dioscuri testimony.
+    public static func complete(
+        schematic: SpineSchematic,
+        candidate: OrboSpineRuntime,
+        testimony: SpineResonanceTestimony
+    ) throws -> HephaestusOrboSpineDisposition {
+        let boundTestimony = try receive(
+            schematic: schematic,
+            candidate: candidate,
+            testimony: testimony
+        )
+
+        switch boundTestimony.result {
+        case .confirmed:
+            return .sealed(OrboSpineSeal(
+                schematicIdentity: boundTestimony.schematicIdentity,
+                schematicVersion: boundTestimony.schematicVersion,
+                candidateIdentity: boundTestimony.candidateIdentity
+            ))
+        case .divergent:
+            return .reforge(boundTestimony)
+        }
+    }
 }
