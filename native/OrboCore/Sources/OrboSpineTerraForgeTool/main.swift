@@ -252,11 +252,9 @@ enum OrboSpineTerraForge {
     private static let swissRepository = "https://github.com/huntarfischer/swisseph.git"
     private static let swissCommit = "3fd0f956d73898b91cc4f67cf18b21af656d1342"
 
-    // Swiss Ephemeris 2.10.03 swephlib.c SIDT_LTERM_T0 / SIDT_LTERM_T1.
-    // The default long-term sidereal model owns the exact boundary instants;
-    // the short-term branch is used strictly between them.
-    private static let siderealSeam1850 = 2_396_758.5
-    private static let siderealSeam2050 = 2_469_807.5
+    // TerraMarrowContract is the sole owner of the Swiss sidereal-model branch boundaries.
+    private static var siderealSeam1850: Double { TerraMarrowContract.sourceModelSeamJulianDays[0] }
+    private static var siderealSeam2050: Double { TerraMarrowContract.sourceModelSeamJulianDays[1] }
 
     private static let expectedRows: [Int: Int] = [
         21: 357_863,
@@ -321,7 +319,7 @@ enum OrboSpineTerraForge {
             refinementLaw: TerraMarrowContract.refinementLaw.rawValue,
             turnLaw: "normalize(swe_sidtime(jd_ut) * 15 degrees) in [0,360)",
             tiltLaw: "swe_calc_ut(jd_ut, SE_ECL_NUT, 0)[0] true ecliptic obliquity",
-            sourceModelSeamLaw: "Swiss default long-term sidereal branch owns JD 2396758.5 and 2469807.5 exactly; short-term branch is strictly between; one-sided samples prevent interpolation through either discontinuity",
+            sourceModelSeamLaw: "Swiss default long-term sidereal branch owns JD \(siderealSeam1850) and \(siderealSeam2050) exactly; short-term branch is strictly between; one-sided samples prevent interpolation through either discontinuity",
             swissRepository: swissRepository,
             swissCommit: swissCommit,
             swissVersion: reference.version,
