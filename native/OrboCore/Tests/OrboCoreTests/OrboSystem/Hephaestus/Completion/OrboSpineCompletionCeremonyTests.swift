@@ -83,7 +83,7 @@ final class OrboSpineCompletionCeremonyTests: XCTestCase {
         let plans = try MundaneBody.canonicalOrder.map { body in
             try XCTUnwrap(SpineSchematicBodyPlan(
                 body: body,
-                supportDegrees: 10,
+                supportDegrees: OrboSpineContract.supportDegrees(for: body),
                 scanStepDays: 0.25
             ))
         }
