@@ -8,6 +8,12 @@ on:
     paths:
       - tools/pass5/lunation-forge/main.swift
       - .github/workflows/pass5-lunation-table.yml
+  pull_request:
+    branches:
+      - agent/mundane-timespine-3d-build
+    paths:
+      - tools/pass5/lunation-forge/**
+      - .github/workflows/pass5-lunation-table.yml
 
 permissions:
   contents: write
