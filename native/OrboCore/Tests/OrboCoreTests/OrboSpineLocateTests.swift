@@ -115,6 +115,28 @@ final class OrboSpineLocateTests: XCTestCase {
         XCTAssertLessThan(after.turnDegrees, 210)
     }
 
+    func testTerraLocateRejectsBoneSpanningSourceSeamWithoutExactSample() throws {
+        let seam = TerraMarrowContract.sourceModelSeamJulianDays[0]
+        let start = seam - 0.5
+        let end = seam + 0.5
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(start: JulianDay(start)!, end: JulianDay(end)!))
+        let supports = [
+            coordinate(.sun, 0, .direct, start),
+            coordinate(.sun, 10, .direct, seam),
+        ]
+        let terraWithoutExactSeam = [
+            try XCTUnwrap(TerraMarrowSample(turnDegrees: 100, tiltDegrees: 23.4, julianDay: JulianDay(start)!)),
+            try XCTUnwrap(TerraMarrowSample(turnDegrees: 200, tiltDegrees: 23.4, julianDay: JulianDay(seam + 0.0001)!)),
+            try XCTUnwrap(TerraMarrowSample(turnDegrees: 210, tiltDegrees: 23.4, julianDay: JulianDay(end)!)),
+        ]
+
+        XCTAssertNil(OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            terraSamples: terraWithoutExactSeam
+        ))
+    }
+
     private func makeMercuryLocate() throws -> OrboSpineLocate {
         let bone = try XCTUnwrap(OrboSpineBoneSpan(start: JulianDay(1_000)!, end: JulianDay(1_008)!))
         let supports = [
