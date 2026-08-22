@@ -17,11 +17,16 @@ public struct OrboSpineSeal: Hashable, Sendable {
 
 public enum OrboSpineCompletionError: Error, Equatable, Sendable {
     case invalidTestimonyBinding
+    case testimonyNotDivergent
+}
+
+public enum HephaestusOrboSpineDisposition: Equatable, Sendable {
+    case reforge(SpineResonanceTestimony)
 }
 
 /// Hephaestus's OrboSpine completion boundary.
-/// G2 only proves that Dioscuri testimony belongs to the exact work in hand.
 public enum HephaestusOrboSpineCompletion {
+    /// G2 proves that Dioscuri testimony belongs to the exact work in hand.
     public static func receive(
         schematic: SpineSchematic,
         candidate: OrboSpineRuntime,
@@ -34,5 +39,23 @@ public enum HephaestusOrboSpineCompletion {
         }
 
         return testimony
+    }
+
+    /// G3 returns valid divergent testimony to Hephaestus for reforging.
+    public static func reforge(
+        schematic: SpineSchematic,
+        candidate: OrboSpineRuntime,
+        testimony: SpineResonanceTestimony
+    ) throws -> HephaestusOrboSpineDisposition {
+        let boundTestimony = try receive(
+            schematic: schematic,
+            candidate: candidate,
+            testimony: testimony
+        )
+        guard case .divergent = boundTestimony.result else {
+            throw OrboSpineCompletionError.testimonyNotDivergent
+        }
+
+        return .reforge(boundTestimony)
     }
 }
