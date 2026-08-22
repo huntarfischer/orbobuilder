@@ -32,10 +32,6 @@ let package = Package(
         .executable(
             name: "OrboSpineAssemblyProofTool",
             targets: ["OrboSpineAssemblyProofTool"]
-        ),
-        .executable(
-            name: "ZeitgeistTableForgeTool",
-            targets: ["ZeitgeistTableForgeTool"]
         )
     ],
     targets: [
@@ -63,10 +59,6 @@ let package = Package(
         ),
         .executableTarget(
             name: "OrboSpineAssemblyProofTool",
-            dependencies: ["OrboCore"]
-        ),
-        .executableTarget(
-            name: "ZeitgeistTableForgeTool",
             dependencies: ["OrboCore"]
         ),
         .testTarget(
