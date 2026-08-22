@@ -210,6 +210,57 @@ public struct OrboSpineRingOccurrence: Hashable, Sendable {
     }
 }
 
+public enum OrboSpineEclipseKind: String, Codable, Hashable, Sendable {
+    case solar
+    case lunar
+}
+
+public enum OrboSpineEclipseType: String, Codable, Hashable, Sendable {
+    case total
+    case annular
+    case hybrid
+    case partial
+    case penumbral
+}
+
+/// One canonical eclipse occurrence carried by OrboSpine. Eclipse degree defines the
+/// celestial event; UT identifies its occurrence. This type owns no P22/ORBOTS runtime law.
+public struct OrboSpineEclipseOccurrence: Hashable, Sendable {
+    public let kind: OrboSpineEclipseKind
+    public let type: OrboSpineEclipseType
+    public let eclipseDegree: Double
+    public let julianDay: JulianDay
+    public let greatestEclipseJulianDay: JulianDay?
+    public let magnitude: Double?
+    public let secondaryMagnitude: Double?
+    public let centrality: String?
+
+    public init?(
+        kind: OrboSpineEclipseKind,
+        type: OrboSpineEclipseType,
+        eclipseDegree: Double,
+        julianDay: JulianDay,
+        greatestEclipseJulianDay: JulianDay? = nil,
+        magnitude: Double? = nil,
+        secondaryMagnitude: Double? = nil,
+        centrality: String? = nil
+    ) {
+        guard eclipseDegree.isFinite,
+              magnitude?.isFinite != false,
+              secondaryMagnitude?.isFinite != false else { return nil }
+        var normalized = eclipseDegree.truncatingRemainder(dividingBy: 360)
+        if normalized < 0 { normalized += 360 }
+        self.kind = kind
+        self.type = type
+        self.eclipseDegree = normalized
+        self.julianDay = julianDay
+        self.greatestEclipseJulianDay = greatestEclipseJulianDay
+        self.magnitude = magnitude
+        self.secondaryMagnitude = secondaryMagnitude
+        self.centrality = centrality
+    }
+}
+
 public enum OrboSpineShellFamily: String, CaseIterable, Codable, Hashable, Sendable {
     case frame = "F"
     case revolt = "R"
