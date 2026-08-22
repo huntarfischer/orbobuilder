@@ -145,17 +145,38 @@ final class OrboSpineContractTests: XCTestCase {
         XCTAssertFalse(interval.contains(JulianDay(20)!))
     }
 
-    func testAuxiliarySocketDoesNotBroadenCanonicalEleven() {
-        _ = OrboSpineAuxiliarySocket()
-        XCTAssertEqual(OrboSpineAuxiliaryIntent.firstPack, [.trueBlackMoonLilith, .chiron])
+    func testCelestialSmeldIntentDoesNotBroadenCanonicalEleven() {
+        XCTAssertEqual(OrboSpineCelestialSmeldIntent.firstSmeld, [.trueBlackMoonLilith, .chiron])
         XCTAssertEqual(MundaneBody.allCases.count, 11)
     }
 
-    func testExactlyThreeNeutralPortTypesExist() {
+    func testEverySpineHasExactlyLocateLibraryAndLink() {
+        XCTAssertEqual(SpineAccessPort.allCases, [.locate, .library, .link])
         let ports = OrboSpinePorts()
-        XCTAssertEqual(ports.chronos, ChronosPort())
-        XCTAssertEqual(ports.horae, HoraePort())
-        XCTAssertEqual(ports.clotho, ClothoPort())
+        XCTAssertEqual(ports.locate, .locate)
+        XCTAssertEqual(ports.library, .library)
+        XCTAssertEqual(ports.link, .link)
+    }
+
+    func testSmeldSeamsAreExactlyCelestialAndStackWithZeroOrOneEach() throws {
+        XCTAssertEqual(SpineSmeldSeam.allCases, [.celestial, .stack])
+        XCTAssertEqual(SpineSmeldContract.maximumMountedPerSeam, 1)
+        XCTAssertEqual(SpineSmeldContract.forgeAuthority, "Hephaestus")
+        XCTAssertEqual(SpineSmeldContract.certificationAuthority, "Dioscuri")
+        XCTAssertEqual(SpineSmeldContract.sealAuthority, "Hephaestus")
+        XCTAssertTrue(SpineSmeldContract.requiresSealBeforeMount)
+        XCTAssertEqual(SpineSmeldContract.replacementLaw, "reforge-and-replace")
+
+        let empty = SpineSmeldSeams()
+        XCTAssertNil(empty.celestial)
+        XCTAssertNil(empty.stack)
+
+        let celestial = try XCTUnwrap(SpineSmeld(identity: "celestial-smeld-v1"))
+        let stack = try XCTUnwrap(SpineSmeld(identity: "stack-smeld-v1"))
+        let mounted = SpineSmeldSeams(celestial: celestial, stack: stack)
+        XCTAssertEqual(mounted.celestial, celestial)
+        XCTAssertEqual(mounted.stack, stack)
+        XCTAssertNil(SpineSmeld(identity: "   "))
     }
 
     func testLifecycleBoundaryAndAstroDNAIsolation() {
