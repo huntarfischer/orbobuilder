@@ -90,8 +90,8 @@ private enum MotionForge {
         guard celestial.identity == OrboSpineContract.identity else {
             throw MotionForgeError.mismatch("celestial identity \(celestial.identity)")
         }
-        guard same(celestial.supportedStartJulianDayUT, OrboSpineManufactureContract.supportedStart.value),
-              same(celestial.supportedEndJulianDayUT, OrboSpineManufactureContract.supportedEnd.value) else {
+        guard same(celestial.supportedStartJulianDayUT, OrboSpineSchematic.supportedStart.value),
+              same(celestial.supportedEndJulianDayUT, OrboSpineSchematic.supportedEnd.value) else {
             throw MotionForgeError.mismatch("celestial span is not canonical Z21-Z23")
         }
         guard celestial.totalStationRows == 52_679 else {
@@ -207,8 +207,8 @@ private enum MotionForge {
 
     private static func requireSpan() throws -> OrboSpineBoneSpan {
         guard let span = OrboSpineBoneSpan(
-            start: OrboSpineManufactureContract.supportedStart,
-            end: OrboSpineManufactureContract.supportedEnd
+            start: OrboSpineSchematic.supportedStart,
+            end: OrboSpineSchematic.supportedEnd
         ) else {
             throw MotionForgeError.mismatch("canonical Bone span is invalid")
         }
