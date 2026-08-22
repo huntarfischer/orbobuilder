@@ -17,4 +17,12 @@ if [[ ! -f "$BUILD_ROOT/celestial/orbospine-celestial-manifest.json" ]]; then
 fi
 
 cd "$CORE_DIR"
+
+echo "ORBOSPINE C7 / GREEN GATE"
+swift test
+
+echo "ORBOSPINE C7 / FORGE MOTION BODY"
+swift run -c release OrboSpineMotionForgeTool --build-root "$BUILD_ROOT"
+
+echo "ORBOSPINE C7 / RE-CLOSE CANDIDATE"
 swift run -c release OrboSpineCandidateManifestTool --build-root "$BUILD_ROOT"
