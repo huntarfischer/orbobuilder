@@ -18,6 +18,10 @@ let package = Package(
             targets: ["OrboForgeTool"]
         ),
         .executable(
+            name: "OrboSpineForgeTool",
+            targets: ["OrboSpineForgeTool"]
+        ),
+        .executable(
             name: "P22BoundaryForgeTool",
             targets: ["P22BoundaryForgeTool"]
         ),
@@ -35,6 +39,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "OrboForgeTool",
+            dependencies: ["OrboCore"]
+        ),
+        .executableTarget(
+            name: "OrboSpineForgeTool",
             dependencies: ["OrboCore"]
         ),
         .executableTarget(
