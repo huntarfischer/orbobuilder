@@ -506,6 +506,13 @@ private extension OrboSpineLocate {
                 return nil
             }
 
+            for seam in TerraMarrowContract.sourceModelSeamJulianDays
+            where seam >= bone.start.value && seam < bone.end.value {
+                guard canonical.contains(where: { abs($0.julianDay.value - seam) <= 1e-12 }) else {
+                    return nil
+                }
+            }
+
             self.bone = bone
             self.samples = canonical
         }
