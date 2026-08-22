@@ -14,10 +14,6 @@ let package = Package(
             targets: ["OrboCore"]
         ),
         .executable(
-            name: "OrboForgeTool",
-            targets: ["OrboForgeTool"]
-        ),
-        .executable(
             name: "OrboSpineForgeTool",
             targets: ["OrboSpineForgeTool"]
         ),
@@ -38,10 +34,6 @@ let package = Package(
             targets: ["OrboSpineAssemblyProofTool"]
         ),
         .executable(
-            name: "P22BoundaryForgeTool",
-            targets: ["P22BoundaryForgeTool"]
-        ),
-        .executable(
             name: "ZeitgeistTableForgeTool",
             targets: ["ZeitgeistTableForgeTool"]
         )
@@ -52,10 +44,6 @@ let package = Package(
             resources: [
                 .copy("Geoplacement/Resources/geoplacement-atlas-v1.js")
             ]
-        ),
-        .executableTarget(
-            name: "OrboForgeTool",
-            dependencies: ["OrboCore"]
         ),
         .executableTarget(
             name: "OrboSpineForgeTool",
@@ -75,10 +63,6 @@ let package = Package(
         ),
         .executableTarget(
             name: "OrboSpineAssemblyProofTool",
-            dependencies: ["OrboCore"]
-        ),
-        .executableTarget(
-            name: "P22BoundaryForgeTool",
             dependencies: ["OrboCore"]
         ),
         .executableTarget(
