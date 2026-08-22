@@ -335,8 +335,8 @@ private enum AssemblyProof {
         print("PASS bound files: \(candidate.files.count) / \(candidate.files.count) SHA-256")
 
         guard let bone = OrboSpineBoneSpan(
-            start: OrboSpineManufactureContract.supportedStart,
-            end: OrboSpineManufactureContract.supportedEnd
+            start: OrboSpineSchematic.supportedStart,
+            end: OrboSpineSchematic.supportedEnd
         ) else {
             throw AssemblyProofError.mismatch("canonical Bone cannot be formed")
         }
@@ -441,10 +441,10 @@ private enum AssemblyProof {
         guard candidate.identity == OrboSpineContract.identity,
               candidate.lifecycle == OrboSpineLifecycleBoundary.candidate.rawValue,
               candidate.span == "Z21-Z23",
-              same(candidate.supportedStartJulianDayUT, OrboSpineManufactureContract.supportedStart.value),
-              same(candidate.supportedEndJulianDayUT, OrboSpineManufactureContract.supportedEnd.value),
-              candidate.astronomicalAuthority == OrboSpineManufactureContract.astronomicalSource,
-              candidate.astronomicalSourceVersion == OrboSpineManufactureContract.canonicalAstronomicalSourceVersion,
+              same(candidate.supportedStartJulianDayUT, OrboSpineSchematic.supportedStart.value),
+              same(candidate.supportedEndJulianDayUT, OrboSpineSchematic.supportedEnd.value),
+              candidate.astronomicalAuthority == OrboSpineSchematic.astronomicalAuthority,
+              candidate.astronomicalSourceVersion == OrboSpineSchematic.astronomicalSourceVersion,
               candidate.celestial.supportRows == expectedSupportRows,
               candidate.celestial.stationRows == expectedStationRows,
               candidate.motion.passageRows == expectedPassageRows,
@@ -491,8 +491,8 @@ private enum AssemblyProof {
         bone: OrboSpineBoneSpan
     ) throws -> ([OrboSpineCelestialCoordinate], [OrboSpineStation]) {
         guard manifest.identity == OrboSpineContract.identity,
-              manifest.astronomicalSource == OrboSpineManufactureContract.astronomicalSource,
-              manifest.astronomicalSourceVersion == OrboSpineManufactureContract.canonicalAstronomicalSourceVersion,
+              manifest.astronomicalSource == OrboSpineSchematic.astronomicalAuthority,
+              manifest.astronomicalSourceVersion == OrboSpineSchematic.astronomicalSourceVersion,
               same(manifest.supportedStartJulianDayUT, bone.start.value),
               same(manifest.supportedEndJulianDayUT, bone.end.value),
               manifest.totalSupportRows == expectedSupportRows,
