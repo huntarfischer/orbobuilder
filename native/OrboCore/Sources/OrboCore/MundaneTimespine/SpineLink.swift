@@ -1,6 +1,7 @@
 import Foundation
 
 /// One opaque addressable member presented to Port III.
+/// `spineIdentity` identifies the specific Spine instance/artifact, not merely its Spine class.
 /// D3 does not define the meaning or syntax of the member identity; each Spine owns that.
 public struct SpineLinkAddress: Hashable, Codable, Sendable {
     public let spineIdentity: String
