@@ -14,17 +14,15 @@ public enum OrboSpineLibraryShelf: String, CaseIterable, Codable, Hashable, Send
 }
 
 /// Port II catalog over already-forged OrboSpine matter.
-/// D2 exposes stable shelf identities only. It owns no astronomy, copies no truth rows,
-/// and leaves the Stack Smeld seam empty.
+/// D2 exposes stable core shelf identities only. It owns no astronomy, copies no truth rows,
+/// and does not own the Stack Smeld mount; SpineSmeldSeams remains the sole seam owner.
 public struct OrboSpineLibraryCatalog: Hashable, Sendable {
     public static let port = SpineAccessPort.library
 
     public let coreShelves: [OrboSpineLibraryShelf]
-    public let stackSmeld: SpineSmeld?
 
     public init() {
         self.coreShelves = OrboSpineLibraryShelf.allCases
-        self.stackSmeld = nil
     }
 
     public func contains(_ shelf: OrboSpineLibraryShelf) -> Bool {
