@@ -85,7 +85,7 @@ private struct OrboSpineCelestialForgeArguments {
     }
 }
 
-private final class OrboSpineSwissReference: @unchecked Sendable, ForgeEphemerisReference {
+private final class OrboSpineSwissReference: @unchecked Sendable, SpineForgeEphemerisReference {
     private let handle: UnsafeMutableRawPointer
     private let calculateUT: OrboSpineSweCalcUT
     let version: String
@@ -120,7 +120,7 @@ private final class OrboSpineSwissReference: @unchecked Sendable, ForgeEphemeris
 
     deinit { dlclose(handle) }
 
-    func state(of body: MundaneBody, at julianDay: JulianDay) throws -> MundaneForgeState {
+    func state(of body: MundaneBody, at julianDay: JulianDay) throws -> SpineForgeState {
         let swissBody: Int32
         switch body {
         case .sun: swissBody = 0
@@ -148,7 +148,7 @@ private final class OrboSpineSwissReference: @unchecked Sendable, ForgeEphemeris
         guard returned >= 0,
               (returned & Self.swissEphemerisFlag) != 0,
               (returned & Self.moshierFlag) == 0,
-              let state = MundaneForgeState(
+              let state = SpineForgeState(
                 longitudeDegrees: values[0],
                 longitudinalSpeedDegreesPerDay: values[3]
               ) else {
@@ -283,6 +283,7 @@ enum OrboSpineDurableCelestialForge {
         throw OrboSpineCelestialForgeError.releaseBuildRequired
         #else
         let arguments = try OrboSpineCelestialForgeArguments(raw)
+        let schematic = OrboSpineSchematic.current
         try FileManager.default.createDirectory(
             at: arguments.outputDirectory,
             withIntermediateDirectories: true
@@ -299,7 +300,7 @@ enum OrboSpineDurableCelestialForge {
             libraryPath: arguments.libraryPath,
             ephemerisDirectory: arguments.ephemerisDirectory
         )
-        let expectedVersion = OrboSpineManufactureContract.canonicalAstronomicalSourceVersion
+        let expectedVersion = schematic.astronomicalSourceVersion
         guard reference.version == expectedVersion else {
             throw OrboSpineCelestialForgeError.swissVersionDrift(
                 actual: reference.version,
@@ -307,19 +308,19 @@ enum OrboSpineDurableCelestialForge {
             )
         }
 
-        try OrboSpineManufactureContract.validateZeitgeistBoundaries(reference: reference)
+        try SpineForge.preflight(schematic: schematic, reference: reference)
 
         print("ORBO FORGE / ORBOSPINE CELESTIAL MATTER")
-        print("authority: \(OrboSpineManufactureContract.astronomicalSource)")
+        print("authority: \(schematic.astronomicalAuthority)")
         print("Swiss Ephemeris: \(reference.version)")
         print("Swiss library SHA-256: \(swissLibrarySHA256)")
         print("span: Z21 -> Z22 -> Z23")
-        print("start: \(OrboSpineManufactureContract.z21.startUTC)")
-        print("end exclusive: \(OrboSpineManufactureContract.z23.endUTC)")
-        print("canonical bodies: \(MundaneBody.canonicalOrder.count)")
+        print("start: \(OrboSpineSchematic.z21.startUTC)")
+        print("end exclusive: \(OrboSpineSchematic.z23.endUTC)")
+        print("canonical bodies: \(schematic.bodyPlans.count)")
         print("runtime storage: none / Pass D")
         print("DE441 file gate: \(ephemerisFiles.count) files verified + SHA-256 bound")
-        print("Zeitgeist fence gate: 4 / 4 direct Pluto 0 Aries")
+        print("Zeitgeist fence gate: \(schematic.boundaryChecks.count) / \(schematic.boundaryChecks.count) direct Pluto 0 Aries")
         print("durability: one continuous Z21-Z23 tract per body / atomic files / SHA-256 checkpoint")
 
         let checkpointURL = arguments.outputDirectory.appendingPathComponent(checkpointFileName)
@@ -336,9 +337,9 @@ enum OrboSpineDurableCelestialForge {
             swissLibrarySHA256: swissLibrarySHA256,
             ephemerisFiles: ephemerisFiles
         )
-        print("resume gate: \(checkpoint.completedBodies.count) / \(MundaneBody.canonicalOrder.count) bodies verified")
+        print("resume gate: \(checkpoint.completedBodies.count) / \(schematic.bodyPlans.count) bodies verified")
 
-        for body in MundaneBody.canonicalOrder {
+        for body in schematic.bodyPlans.map(\.body) {
             if checkpoint.completedBodies.contains(where: { $0.body == body.displayName }) {
                 print("skip \(body.displayName): checkpointed files verified")
                 continue
@@ -358,7 +359,7 @@ enum OrboSpineDurableCelestialForge {
                 swissLibrarySHA256: swissLibrarySHA256,
                 ephemerisFiles: ephemerisFiles
             )
-            print("checkpoint \(body.displayName): \(checkpoint.completedBodies.count) / \(MundaneBody.canonicalOrder.count) durable")
+            print("checkpoint \(body.displayName): \(checkpoint.completedBodies.count) / \(schematic.bodyPlans.count) durable")
         }
 
         try validateCheckpoint(
@@ -368,20 +369,20 @@ enum OrboSpineDurableCelestialForge {
             swissLibrarySHA256: swissLibrarySHA256,
             ephemerisFiles: ephemerisFiles
         )
-        guard checkpoint.completedBodies.count == MundaneBody.canonicalOrder.count else {
+        guard checkpoint.completedBodies.count == schematic.bodyPlans.count else {
             throw OrboSpineCelestialForgeError.checkpoint("manufacture ended before all Eleven bodies were durable")
         }
 
         let manifest = OrboSpineCelestialManifest(
-            identity: OrboSpineContract.identity,
+            identity: schematic.identity,
             matterFormat: matterFormat,
             matterVersion: matterVersion,
-            astronomicalSource: OrboSpineManufactureContract.astronomicalSource,
+            astronomicalSource: schematic.astronomicalAuthority,
             astronomicalSourceVersion: reference.version,
             swissLibrarySHA256: swissLibrarySHA256,
-            supportedStartJulianDayUT: OrboSpineManufactureContract.supportedStart.value,
-            supportedEndJulianDayUT: OrboSpineManufactureContract.supportedEnd.value,
-            zeitgeists: OrboSpineManufactureContract.zeitgeists.map(OrboSpineZeitgeistReport.init),
+            supportedStartJulianDayUT: schematic.bone.start.value,
+            supportedEndJulianDayUT: schematic.bone.end.value,
+            zeitgeists: OrboSpineSchematic.zeitgeists.map(OrboSpineZeitgeistReport.init),
             ephemerisFiles: ephemerisFiles,
             bodies: checkpoint.completedBodies,
             totalSupportRows: checkpoint.completedBodies.reduce(0) { $0 + $1.supportRows },
@@ -406,11 +407,10 @@ enum OrboSpineDurableCelestialForge {
         reference: OrboSpineSwissReference,
         outputDirectory: URL
     ) throws -> OrboSpineCelestialBodyReport {
-        let plan = OrboSpineManufactureContract.forgePlan(
-            for: body,
-            astronomicalSourceVersion: reference.version
-        )
-        var cursor = MundaneTimespineForge.makeCursor(plan: plan)
+        guard let schematic = OrboSpineSchematic.current.bodySchematic(for: body) else {
+            throw OrboSpineCelestialForgeError.malformedProduct("missing schematic for \(body.displayName)")
+        }
+        var cursor = SpineForge.makeCursor(schematic: schematic)
         var lastCompleted = 0
         let progressStride = 250_000
 
@@ -448,7 +448,7 @@ enum OrboSpineDurableCelestialForge {
             try? FileManager.default.removeItem(at: stationTemp)
         }
 
-        try writeSupports(forged, to: supportTemp)
+        try writeSupports(forged, bone: product.bone, to: supportTemp)
         try writeStations(forged, to: stationTemp)
 
         let supportBytes = try fileSize(supportTemp)
@@ -461,12 +461,12 @@ enum OrboSpineDurableCelestialForge {
 
         let report = OrboSpineCelestialBodyReport(
             body: body.displayName,
-            supportDegrees: forged.celestialResolutionDegrees,
-            supportRows: forged.occurrences.count,
+            supportDegrees: forged.supportDegrees,
+            supportRows: forged.supports.count,
             stationRows: forged.stations.count,
             astronomicalSourceVersion: reference.version,
-            supportedStartJulianDayUT: product.supportedStart.value,
-            supportedEndJulianDayUT: product.supportedEnd.value,
+            supportedStartJulianDayUT: product.bone.start.value,
+            supportedEndJulianDayUT: product.bone.end.value,
             supportFile: supportName,
             supportFileBytes: supportBytes,
             supportSHA256: supportHash,
@@ -502,17 +502,18 @@ enum OrboSpineDurableCelestialForge {
             }
         }
 
+        let schematic = OrboSpineSchematic.current
         let checkpoint = OrboSpineCelestialCheckpoint(
-            identity: OrboSpineContract.identity,
+            identity: schematic.identity,
             checkpointVersion: checkpointVersion,
             matterFormat: matterFormat,
             matterVersion: matterVersion,
-            astronomicalSource: OrboSpineManufactureContract.astronomicalSource,
+            astronomicalSource: schematic.astronomicalAuthority,
             astronomicalSourceVersion: swissVersion,
             swissLibrarySHA256: swissLibrarySHA256,
             ephemerisFiles: ephemerisFiles,
-            supportedStartJulianDayUT: OrboSpineManufactureContract.supportedStart.value,
-            supportedEndJulianDayUT: OrboSpineManufactureContract.supportedEnd.value,
+            supportedStartJulianDayUT: schematic.bone.start.value,
+            supportedEndJulianDayUT: schematic.bone.end.value,
             completedBodies: []
         )
         try writeJSON(checkpoint, to: url)
@@ -526,22 +527,23 @@ enum OrboSpineDurableCelestialForge {
         swissLibrarySHA256: String,
         ephemerisFiles: [OrboSpineEphemerisFileReport]
     ) throws {
-        guard checkpoint.identity == OrboSpineContract.identity,
+        let schematic = OrboSpineSchematic.current
+        guard checkpoint.identity == schematic.identity,
               checkpoint.checkpointVersion == checkpointVersion,
               checkpoint.matterFormat == matterFormat,
               checkpoint.matterVersion == matterVersion,
-              checkpoint.astronomicalSource == OrboSpineManufactureContract.astronomicalSource,
+              checkpoint.astronomicalSource == schematic.astronomicalAuthority,
               checkpoint.astronomicalSourceVersion == swissVersion,
               checkpoint.swissLibrarySHA256 == swissLibrarySHA256,
               checkpoint.ephemerisFiles == ephemerisFiles,
-              same(checkpoint.supportedStartJulianDayUT, OrboSpineManufactureContract.supportedStart.value),
-              same(checkpoint.supportedEndJulianDayUT, OrboSpineManufactureContract.supportedEnd.value),
-              checkpoint.completedBodies.count <= MundaneBody.canonicalOrder.count else {
+              same(checkpoint.supportedStartJulianDayUT, schematic.bone.start.value),
+              same(checkpoint.supportedEndJulianDayUT, schematic.bone.end.value),
+              checkpoint.completedBodies.count <= schematic.bodyPlans.count else {
             throw OrboSpineCelestialForgeError.checkpoint("identity, source provenance, span, or version drift")
         }
 
         for (index, report) in checkpoint.completedBodies.enumerated() {
-            let expectedBody = MundaneBody.canonicalOrder[index]
+            let expectedBody = schematic.bodyPlans[index].body
             try validateBodyReport(
                 report,
                 expectedBody: expectedBody,
@@ -557,14 +559,16 @@ enum OrboSpineDurableCelestialForge {
         outputDirectory: URL,
         swissVersion: String
     ) throws {
+        let schematic = OrboSpineSchematic.current
         let slug = bodySlug(expectedBody)
-        guard report.body == expectedBody.displayName,
-              report.supportDegrees == OrboSpineContract.supportDegrees(for: expectedBody),
+        guard let bodyPlan = schematic.bodyPlan(for: expectedBody),
+              report.body == expectedBody.displayName,
+              report.supportDegrees == bodyPlan.supportDegrees,
               report.supportRows > 0,
               report.stationRows >= 0,
               report.astronomicalSourceVersion == swissVersion,
-              same(report.supportedStartJulianDayUT, OrboSpineManufactureContract.supportedStart.value),
-              same(report.supportedEndJulianDayUT, OrboSpineManufactureContract.supportedEnd.value),
+              same(report.supportedStartJulianDayUT, schematic.bone.start.value),
+              same(report.supportedEndJulianDayUT, schematic.bone.end.value),
               report.supportFile == "\(slug)-supports.csv",
               report.stationFile == "\(slug)-stations.csv" else {
             throw OrboSpineCelestialForgeError.checkpoint("\(expectedBody.displayName) report contract drift")
@@ -583,20 +587,21 @@ enum OrboSpineDurableCelestialForge {
     }
 
     private static func validateSingleBodyProduct(
-        _ product: MundaneTimespineForgeProduct,
+        _ product: SpineForgeProduct,
         expectedBody: MundaneBody,
         swissVersion: String
-    ) throws -> MundaneTimespineForgedBody {
-        guard product.spanName == "OrboSpine Z21-Z23 / \(expectedBody.displayName)",
-              product.astronomicalSource == OrboSpineManufactureContract.astronomicalSource,
+    ) throws -> SpineForgeBodyProduct {
+        let schematic = OrboSpineSchematic.current
+        guard let bodyPlan = schematic.bodyPlan(for: expectedBody),
+              product.schematicIdentity == schematic.identity,
+              product.schematicVersion == schematic.version,
+              product.astronomicalAuthority == schematic.astronomicalAuthority,
               product.astronomicalSourceVersion == swissVersion,
-              product.supportedStart == OrboSpineManufactureContract.supportedStart,
-              product.supportedEnd == OrboSpineManufactureContract.supportedEnd,
+              product.bone == schematic.bone,
               product.bodies.count == 1,
               let body = product.bodies.first,
               body.body == expectedBody,
-              body.markerBodies.isEmpty,
-              body.celestialResolutionDegrees == OrboSpineContract.supportDegrees(for: expectedBody) else {
+              body.supportDegrees == bodyPlan.supportDegrees else {
             throw OrboSpineCelestialForgeError.malformedProduct("\(expectedBody.displayName) product identity, span, or support drift")
         }
         return body
@@ -630,30 +635,27 @@ enum OrboSpineDurableCelestialForge {
     }
 
     private static func writeSupports(
-        _ body: MundaneTimespineForgedBody,
+        _ body: SpineForgeBodyProduct,
+        bone: OrboSpineBoneSpan,
         to url: URL
     ) throws {
         let writer = try OrboSpineBufferedCSVWriter(
             url: url,
             header: "directional_degree,physical_degree,navigation_cell,motion,jd_ut,civic_offset_seconds\n"
         )
-        for occurrence in body.occurrences {
-            let motion = occurrence.sequenceDirection.motion
-            guard let directional = OrboSpineDirectionalDegree(
-                physicalDegrees: occurrence.focalCelestialDegrees,
-                motion: motion
-            ) else {
-                throw OrboSpineCelestialForgeError.malformedProduct("invalid directional support for \(body.body.displayName)")
-            }
+        for support in body.supports {
+            let directional = support.directionalDegree
+            let motion = directional.motion
+            let offset = Int64(((support.julianDay.value - bone.start.value) * 86_400).rounded())
             try writer.append(
-                "\(decimal(directional.degrees)),\(decimal(directional.physicalDegrees)),\(directional.navigationCell),\(motion.rawValue),\(decimal(occurrence.julianDay.value)),\(occurrence.civicOffsetSeconds)\n"
+                "\(decimal(directional.degrees)),\(decimal(directional.physicalDegrees)),\(directional.navigationCell),\(motion.rawValue),\(decimal(support.julianDay.value)),\(offset)\n"
             )
         }
         try writer.finish()
     }
 
     private static func writeStations(
-        _ body: MundaneTimespineForgedBody,
+        _ body: SpineForgeBodyProduct,
         to url: URL
     ) throws {
         let writer = try OrboSpineBufferedCSVWriter(
@@ -661,17 +663,8 @@ enum OrboSpineDurableCelestialForge {
             header: "physical_degree,directional_degree_after,navigation_cell_after,lane_before,lane_after,jd_ut\n"
         )
         for station in body.stations {
-            guard let finalStation = OrboSpineStation(
-                body: body.body,
-                physicalDegrees: station.celestialTimeDegrees,
-                julianDay: station.julianDay,
-                laneBefore: station.sequenceBefore.motion,
-                laneAfter: station.sequenceAfter.motion
-            ) else {
-                throw OrboSpineCelestialForgeError.malformedProduct("invalid station for \(body.body.displayName)")
-            }
             try writer.append(
-                "\(decimal(finalStation.physicalDegrees)),\(decimal(finalStation.directionalDegreeAfter.degrees)),\(finalStation.navigationCellAfter),\(finalStation.laneBefore.rawValue),\(finalStation.laneAfter.rawValue),\(decimal(finalStation.julianDay.value))\n"
+                "\(decimal(station.physicalDegrees)),\(decimal(station.directionalDegreeAfter.degrees)),\(station.navigationCellAfter),\(station.laneBefore.rawValue),\(station.laneAfter.rawValue),\(decimal(station.julianDay.value))\n"
             )
         }
         try writer.finish()
