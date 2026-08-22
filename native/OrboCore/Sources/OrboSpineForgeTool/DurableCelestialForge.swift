@@ -158,9 +158,10 @@ private final class OrboSpineSwissReference: @unchecked Sendable, ForgeEphemeris
     }
 }
 
-private struct OrboSpineEphemerisFileReport: Codable {
+private struct OrboSpineEphemerisFileReport: Codable, Equatable {
     let name: String
     let bytes: Int64
+    let sha256: String
 }
 
 private struct OrboSpineZeitgeistReport: Codable {
@@ -202,6 +203,8 @@ private struct OrboSpineCelestialCheckpoint: Codable {
     let matterVersion: Int
     let astronomicalSource: String
     let astronomicalSourceVersion: String
+    let swissLibrarySHA256: String
+    let ephemerisFiles: [OrboSpineEphemerisFileReport]
     let supportedStartJulianDayUT: Double
     let supportedEndJulianDayUT: Double
     var completedBodies: [OrboSpineCelestialBodyReport]
@@ -213,6 +216,7 @@ private struct OrboSpineCelestialManifest: Codable {
     let matterVersion: Int
     let astronomicalSource: String
     let astronomicalSourceVersion: String
+    let swissLibrarySHA256: String
     let supportedStartJulianDayUT: Double
     let supportedEndJulianDayUT: Double
     let zeitgeists: [OrboSpineZeitgeistReport]
@@ -285,6 +289,12 @@ enum OrboSpineDurableCelestialForge {
         )
 
         let ephemerisFiles = try validateDE441Directory(arguments.ephemerisDirectory)
+        let swissLibraryURL = URL(fileURLWithPath: arguments.libraryPath).standardizedFileURL
+        guard FileManager.default.fileExists(atPath: swissLibraryURL.path) else {
+            throw OrboSpineCelestialForgeError.swissLibrary("library file not found at \(swissLibraryURL.path)")
+        }
+        let swissLibrarySHA256 = try sha256(swissLibraryURL)
+
         let reference = try OrboSpineSwissReference(
             libraryPath: arguments.libraryPath,
             ephemerisDirectory: arguments.ephemerisDirectory
@@ -302,24 +312,29 @@ enum OrboSpineDurableCelestialForge {
         print("ORBO FORGE / ORBOSPINE CELESTIAL MATTER")
         print("authority: \(OrboSpineManufactureContract.astronomicalSource)")
         print("Swiss Ephemeris: \(reference.version)")
+        print("Swiss library SHA-256: \(swissLibrarySHA256)")
         print("span: Z21 -> Z22 -> Z23")
         print("start: \(OrboSpineManufactureContract.z21.startUTC)")
         print("end exclusive: \(OrboSpineManufactureContract.z23.endUTC)")
         print("canonical bodies: \(MundaneBody.canonicalOrder.count)")
         print("runtime storage: none / Pass D")
-        print("DE441 file gate: \(ephemerisFiles.count) files verified")
+        print("DE441 file gate: \(ephemerisFiles.count) files verified + SHA-256 bound")
         print("Zeitgeist fence gate: 4 / 4 direct Pluto 0 Aries")
         print("durability: one continuous Z21-Z23 tract per body / atomic files / SHA-256 checkpoint")
 
         let checkpointURL = arguments.outputDirectory.appendingPathComponent(checkpointFileName)
         var checkpoint = try loadOrCreateCheckpoint(
             at: checkpointURL,
-            swissVersion: reference.version
+            swissVersion: reference.version,
+            swissLibrarySHA256: swissLibrarySHA256,
+            ephemerisFiles: ephemerisFiles
         )
         try validateCheckpoint(
             checkpoint,
             outputDirectory: arguments.outputDirectory,
-            swissVersion: reference.version
+            swissVersion: reference.version,
+            swissLibrarySHA256: swissLibrarySHA256,
+            ephemerisFiles: ephemerisFiles
         )
         print("resume gate: \(checkpoint.completedBodies.count) / \(MundaneBody.canonicalOrder.count) bodies verified")
 
@@ -339,7 +354,9 @@ enum OrboSpineDurableCelestialForge {
             try validateCheckpoint(
                 checkpoint,
                 outputDirectory: arguments.outputDirectory,
-                swissVersion: reference.version
+                swissVersion: reference.version,
+                swissLibrarySHA256: swissLibrarySHA256,
+                ephemerisFiles: ephemerisFiles
             )
             print("checkpoint \(body.displayName): \(checkpoint.completedBodies.count) / \(MundaneBody.canonicalOrder.count) durable")
         }
@@ -347,7 +364,9 @@ enum OrboSpineDurableCelestialForge {
         try validateCheckpoint(
             checkpoint,
             outputDirectory: arguments.outputDirectory,
-            swissVersion: reference.version
+            swissVersion: reference.version,
+            swissLibrarySHA256: swissLibrarySHA256,
+            ephemerisFiles: ephemerisFiles
         )
         guard checkpoint.completedBodies.count == MundaneBody.canonicalOrder.count else {
             throw OrboSpineCelestialForgeError.checkpoint("manufacture ended before all Eleven bodies were durable")
@@ -359,6 +378,7 @@ enum OrboSpineDurableCelestialForge {
             matterVersion: matterVersion,
             astronomicalSource: OrboSpineManufactureContract.astronomicalSource,
             astronomicalSourceVersion: reference.version,
+            swissLibrarySHA256: swissLibrarySHA256,
             supportedStartJulianDayUT: OrboSpineManufactureContract.supportedStart.value,
             supportedEndJulianDayUT: OrboSpineManufactureContract.supportedEnd.value,
             zeitgeists: OrboSpineManufactureContract.zeitgeists.map(OrboSpineZeitgeistReport.init),
@@ -454,7 +474,12 @@ enum OrboSpineDurableCelestialForge {
             stationFileBytes: stationBytes,
             stationSHA256: stationHash
         )
-        try validateBodyReport(report, expectedBody: body, outputDirectory: outputDirectory, swissVersion: reference.version)
+        try validateBodyReport(
+            report,
+            expectedBody: body,
+            outputDirectory: outputDirectory,
+            swissVersion: reference.version
+        )
 
         print("wrote \(body.displayName): \(report.supportRows) supports / \(report.stationRows) stations")
         print("  supports SHA-256: \(report.supportSHA256)")
@@ -464,7 +489,9 @@ enum OrboSpineDurableCelestialForge {
 
     private static func loadOrCreateCheckpoint(
         at url: URL,
-        swissVersion: String
+        swissVersion: String,
+        swissLibrarySHA256: String,
+        ephemerisFiles: [OrboSpineEphemerisFileReport]
     ) throws -> OrboSpineCelestialCheckpoint {
         if FileManager.default.fileExists(atPath: url.path) {
             let data = try Data(contentsOf: url)
@@ -482,6 +509,8 @@ enum OrboSpineDurableCelestialForge {
             matterVersion: matterVersion,
             astronomicalSource: OrboSpineManufactureContract.astronomicalSource,
             astronomicalSourceVersion: swissVersion,
+            swissLibrarySHA256: swissLibrarySHA256,
+            ephemerisFiles: ephemerisFiles,
             supportedStartJulianDayUT: OrboSpineManufactureContract.supportedStart.value,
             supportedEndJulianDayUT: OrboSpineManufactureContract.supportedEnd.value,
             completedBodies: []
@@ -493,7 +522,9 @@ enum OrboSpineDurableCelestialForge {
     private static func validateCheckpoint(
         _ checkpoint: OrboSpineCelestialCheckpoint,
         outputDirectory: URL,
-        swissVersion: String
+        swissVersion: String,
+        swissLibrarySHA256: String,
+        ephemerisFiles: [OrboSpineEphemerisFileReport]
     ) throws {
         guard checkpoint.identity == OrboSpineContract.identity,
               checkpoint.checkpointVersion == checkpointVersion,
@@ -501,10 +532,12 @@ enum OrboSpineDurableCelestialForge {
               checkpoint.matterVersion == matterVersion,
               checkpoint.astronomicalSource == OrboSpineManufactureContract.astronomicalSource,
               checkpoint.astronomicalSourceVersion == swissVersion,
+              checkpoint.swissLibrarySHA256 == swissLibrarySHA256,
+              checkpoint.ephemerisFiles == ephemerisFiles,
               same(checkpoint.supportedStartJulianDayUT, OrboSpineManufactureContract.supportedStart.value),
               same(checkpoint.supportedEndJulianDayUT, OrboSpineManufactureContract.supportedEnd.value),
               checkpoint.completedBodies.count <= MundaneBody.canonicalOrder.count else {
-            throw OrboSpineCelestialForgeError.checkpoint("identity, source, span, or version drift")
+            throw OrboSpineCelestialForgeError.checkpoint("identity, source provenance, span, or version drift")
         }
 
         for (index, report) in checkpoint.completedBodies.enumerated() {
@@ -588,7 +621,8 @@ enum OrboSpineDurableCelestialForge {
             reports.append(
                 OrboSpineEphemerisFileReport(
                     name: name,
-                    bytes: try fileSize(url)
+                    bytes: try fileSize(url),
+                    sha256: try sha256(url)
                 )
             )
         }
