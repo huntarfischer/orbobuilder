@@ -108,26 +108,31 @@ public enum OrboSpineManufactureContract {
     public static func forgePlan(
         astronomicalSourceVersion: String
     ) -> MundaneTimespineForgePlan {
-        let bodyPlans = MundaneBody.canonicalOrder.map { body -> MundaneTimespineForgeBodyPlan in
-            let contract = MundaneTimespineBodyContract(
-                body: body,
-                celestialResolutionDegrees: OrboSpineContract.supportDegrees(for: body),
-                markerBodies: [],
-                constructionRecordCount: 1
-            )!
-            return MundaneTimespineForgeBodyPlan(
-                contract: contract,
-                scanStepDays: scanStepDays[body]!
-            )!
-        }
-
-        return MundaneTimespineForgePlan(
+        MundaneTimespineForgePlan(
             spanName: "OrboSpine Z21-Z23",
             astronomicalSource: astronomicalSource,
             astronomicalSourceVersion: astronomicalSourceVersion,
             supportedStart: supportedStart,
             supportedEnd: supportedEnd,
-            bodyPlans: bodyPlans,
+            bodyPlans: MundaneBody.canonicalOrder.map(bodyPlan(for:)),
+            verifiesConstructionRecordCounts: false,
+            verifiesMarkerUniqueness: false
+        )!
+    }
+
+    /// A durable Pass C transaction for one complete celestial tract. Each body keeps the
+    /// exact same Z21-Z23 Bone span as the full Forge plan; only the selected tract differs.
+    public static func forgePlan(
+        for body: MundaneBody,
+        astronomicalSourceVersion: String
+    ) -> MundaneTimespineForgePlan {
+        MundaneTimespineForgePlan(
+            spanName: "OrboSpine Z21-Z23 / \(body.displayName)",
+            astronomicalSource: astronomicalSource,
+            astronomicalSourceVersion: astronomicalSourceVersion,
+            supportedStart: supportedStart,
+            supportedEnd: supportedEnd,
+            bodyPlans: [bodyPlan(for: body)],
             verifiesConstructionRecordCounts: false,
             verifiesMarkerUniqueness: false
         )!
@@ -155,6 +160,19 @@ public enum OrboSpineManufactureContract {
                 throw OrboSpineManufactureError.zeitgeistBoundaryMismatch(ordinal)
             }
         }
+    }
+
+    private static func bodyPlan(for body: MundaneBody) -> MundaneTimespineForgeBodyPlan {
+        let contract = MundaneTimespineBodyContract(
+            body: body,
+            celestialResolutionDegrees: OrboSpineContract.supportDegrees(for: body),
+            markerBodies: [],
+            constructionRecordCount: 1
+        )!
+        return MundaneTimespineForgeBodyPlan(
+            contract: contract,
+            scanStepDays: scanStepDays[body]!
+        )!
     }
 
     private static func distanceFromZeroAries(_ longitude: Double) -> Double {
