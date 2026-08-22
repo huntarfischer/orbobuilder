@@ -3,7 +3,7 @@ import XCTest
 
 final class MundaneTimespineStorageTests: XCTestCase {
     func testStorageVersionIsIndependentAndCelestialTimeFirst() {
-        XCTAssertEqual(MundaneTimespineStorageFormat.version, 1)
+        XCTAssertEqual(MundaneTimespineStorageFormat.version, 2)
         XCTAssertTrue(MundaneTimespineStorageFormat.celestialTimeFirst)
         XCTAssertEqual(MundaneTimespineStorageFormat.microdegreesPerDegree, 1_000_000)
         XCTAssertEqual(AstroDNA.codec, 4)
@@ -15,8 +15,8 @@ final class MundaneTimespineStorageTests: XCTestCase {
         let second = try fixture.encodedArtifact()
 
         XCTAssertEqual(first, second)
-        XCTAssertEqual(Array(first.prefix(8)), Array("ORBOTS01".utf8))
-        XCTAssertEqual(first[8], 1)
+        XCTAssertEqual(Array(first.prefix(8)), Array("ORBOTS02".utf8))
+        XCTAssertEqual(first[8], 2)
         XCTAssertEqual(first[9], 0)
         XCTAssertEqual(first[10] & 1, 1)
 
@@ -72,9 +72,9 @@ final class MundaneTimespineStorageTests: XCTestCase {
         let bytes = try makeFixture().encodedArtifact()
 
         var badVersion = bytes
-        badVersion[8] = 2
+        badVersion[8] = 3
         XCTAssertThrowsError(try MundaneTimespineArtifact(data: badVersion)) { error in
-            XCTAssertEqual(error as? MundaneTimespineStorageError, .unsupportedVersion(2))
+            XCTAssertEqual(error as? MundaneTimespineStorageError, .unsupportedVersion(3))
         }
 
         var missingLaw = bytes
