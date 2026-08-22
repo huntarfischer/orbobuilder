@@ -46,6 +46,12 @@ private struct CelestialSummary: Codable {
     let manifest: String
 }
 
+private struct MotionSummary: Codable {
+    let passageRows: Int
+    let sourceStationRows: Int
+    let manifest: String
+}
+
 private struct AspectSummary: Codable {
     let spans: [CountedSpan]
     let totalRows: Int
@@ -86,6 +92,7 @@ private struct CandidateManifest: Codable {
     let astronomicalAuthority: String
     let astronomicalSourceVersion: String
     let celestial: CelestialSummary
+    let motion: MotionSummary
     let aspects: AspectSummary
     let temporalShells: ShellSummary
     let eclipses: EclipseSummary
@@ -121,7 +128,12 @@ private enum Closeout {
         guard let bodies = celestialJSON["bodies"] as? [[String: Any]], bodies.count == 11 else {
             throw CandidateManifestError.malformed("celestial manifest must contain exactly 11 bodies")
         }
-        files.append(try digest(root: root, relativePath: celestialManifestRelative, role: "celestial manifest"))
+        let celestialManifestDigest = try digest(
+            root: root,
+            relativePath: celestialManifestRelative,
+            role: "celestial manifest"
+        )
+        files.append(celestialManifestDigest)
         for body in bodies {
             let supportFile = try string(body, "supportFile")
             let stationFile = try string(body, "stationFile")
@@ -132,6 +144,64 @@ private enum Closeout {
             files.append(supportDigest)
             files.append(stationDigest)
         }
+
+        let motionManifestRelative = "motion/orbospine-motion-manifest.json"
+        let motionJSON = try loadJSONObject(root.appendingPathComponent(motionManifestRelative))
+        let motionIdentity = try string(motionJSON, "identity")
+        guard motionIdentity == OrboSpineContract.identity else {
+            throw CandidateManifestError.mismatch("motion identity \(motionIdentity)")
+        }
+        let motionStationRows = try int(motionJSON, "sourceStationRows")
+        let motionPassageRows = try int(motionJSON, "totalPassageRows")
+        guard motionStationRows == stationRows else {
+            throw CandidateManifestError.mismatch("motion source stations \(motionStationRows) != celestial \(stationRows)")
+        }
+        guard motionPassageRows > 0 else {
+            throw CandidateManifestError.mismatch("motion body has no retrograde passages")
+        }
+        guard try string(motionJSON, "sourceCelestialManifest") == celestialManifestRelative else {
+            throw CandidateManifestError.mismatch("motion source celestial manifest path drift")
+        }
+        guard try string(motionJSON, "sourceCelestialManifestSHA256") == celestialManifestDigest.sha256 else {
+            throw CandidateManifestError.mismatch("motion source celestial manifest SHA-256 drift")
+        }
+        guard let motionBodies = motionJSON["bodies"] as? [[String: Any]], motionBodies.count == 11 else {
+            throw CandidateManifestError.malformed("motion manifest must contain exactly 11 bodies")
+        }
+        var motionBodyPassageTotal = 0
+        for motionBody in motionBodies {
+            let bodyName = try string(motionBody, "body")
+            guard let celestialBody = bodies.first(where: { ($0["body"] as? String) == bodyName }) else {
+                throw CandidateManifestError.mismatch("motion body \(bodyName) is not canonical celestial matter")
+            }
+            guard try int(motionBody, "stationRows") == int(celestialBody, "stationRows") else {
+                throw CandidateManifestError.mismatch("motion/celestial station count drift for \(bodyName)")
+            }
+            guard try string(motionBody, "sourceStationFile") == string(celestialBody, "stationFile") else {
+                throw CandidateManifestError.mismatch("motion source station file drift for \(bodyName)")
+            }
+            guard try string(motionBody, "sourceStationSHA256") == string(celestialBody, "stationSHA256") else {
+                throw CandidateManifestError.mismatch("motion source station SHA-256 drift for \(bodyName)")
+            }
+            motionBodyPassageTotal += try int(motionBody, "passageRows")
+        }
+        guard motionBodyPassageTotal == motionPassageRows else {
+            throw CandidateManifestError.mismatch("motion passage body total \(motionBodyPassageTotal) != \(motionPassageRows)")
+        }
+        files.append(try digest(root: root, relativePath: motionManifestRelative, role: "retrograde motion manifest"))
+        let motionPassageFile = try string(motionJSON, "passageFile")
+        let motionPassageDigest = try digest(
+            root: root,
+            relativePath: "motion/\(motionPassageFile)",
+            role: "continuous Z21-Z23 retrograde passages"
+        )
+        try verifyDeclaredDigest(
+            motionJSON,
+            key: "passageSHA256",
+            actual: motionPassageDigest.sha256,
+            context: motionPassageFile
+        )
+        files.append(motionPassageDigest)
 
         let aspectCounts = try gatherAspects(root: root, files: &files)
         guard aspectCounts.map(\.rows).reduce(0, +) == 2_315_930 else {
@@ -183,6 +253,8 @@ private enum Closeout {
         let supportedEnd = OrboSpineManufactureContract.supportedEnd.value
         try verifyDouble(celestialJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "celestial start")
         try verifyDouble(celestialJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "celestial end")
+        try verifyDouble(motionJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "motion start")
+        try verifyDouble(motionJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "motion end")
         try verifyDouble(terraJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "Terra start")
         try verifyDouble(terraJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "Terra end")
 
@@ -201,6 +273,11 @@ private enum Closeout {
                 stationRows: stationRows,
                 totalRecords: supportRows + stationRows,
                 manifest: celestialManifestRelative
+            ),
+            motion: MotionSummary(
+                passageRows: motionPassageRows,
+                sourceStationRows: motionStationRows,
+                manifest: motionManifestRelative
             ),
             aspects: AspectSummary(
                 spans: aspectCounts,
@@ -239,6 +316,7 @@ private enum Closeout {
 
         print("ORBOSPINE MANUFACTURE CLOSEOUT")
         print("PASS celestial: \(supportRows) supports / \(stationRows) stations")
+        print("PASS motion: \(motionPassageRows) continuous retrograde passages")
         print("PASS aspects: \(aspectCounts.map(\.rows).reduce(0, +)) exact occurrences")
         print("PASS temporal shells: F.R.W.Z")
         print("PASS eclipses: \(eclipseCounts.map(\.rows).reduce(0, +))")
