@@ -17,6 +17,78 @@ final class DioscuriAdversarialTests: XCTestCase {
         XCTAssertEqual(testimony.result, .confirmed)
     }
 
+    func testF1PolluxSideCorruptionProducesDivergence() throws {
+        let fixture = try makeBaselineFixture()
+        var bodies = fixture.celestialProduct.bodies
+        let sunIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .sun })
+        let sun = bodies[sunIndex]
+        bodies[sunIndex] = SpineForgeBodyProduct(
+            body: sun.body,
+            supportDegrees: sun.supportDegrees,
+            supports: [
+                coordinate(.sun, 10, .direct, 1_000),
+                coordinate(.sun, 19, .direct, 1_001),
+            ],
+            stations: sun.stations
+        )
+        let corruptedProduct = SpineForgeProduct(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bone: fixture.schematic.bone,
+            bodies: bodies
+        )
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: corruptedProduct,
+            assignment: fixture.assignment
+        )
+        guard case let .divergent(body, expected, returned) = testimony.result else {
+            return XCTFail("Expected Pollux-side corruption to diverge.")
+        }
+
+        XCTAssertEqual(body, .sun)
+        XCTAssertEqual(expected.directionalDegree.degrees, 14.5, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 15, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
+    func testF1CastorSideCorruptionProducesDivergence() throws {
+        let fixture = try makeBaselineFixture()
+        var candidateSupports = fixture.celestialProduct.bodies.flatMap(\.supports)
+        let sunUpperIndex = try XCTUnwrap(candidateSupports.firstIndex {
+            $0.body == .sun && abs($0.julianDay.value - 1_001) < 1e-12
+        })
+        candidateSupports[sunUpperIndex] = coordinate(.sun, 19, .direct, 1_001)
+
+        let corruptedCandidate = try XCTUnwrap(makeRuntime(
+            bone: fixture.schematic.bone,
+            authority: fixture.schematic.astronomicalAuthority,
+            sourceVersion: fixture.schematic.astronomicalSourceVersion,
+            supports: candidateSupports
+        ))
+        let corruptedAssignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: corruptedCandidate
+        ))
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct,
+            assignment: corruptedAssignment
+        )
+        guard case let .divergent(body, expected, returned) = testimony.result else {
+            return XCTFail("Expected Castor-side corruption to diverge.")
+        }
+
+        XCTAssertEqual(body, .sun)
+        XCTAssertEqual(expected.directionalDegree.degrees, 15, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 14.5, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
     private struct AttackFixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
