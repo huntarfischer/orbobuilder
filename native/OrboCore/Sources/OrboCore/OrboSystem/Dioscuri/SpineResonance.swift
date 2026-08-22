@@ -1,5 +1,5 @@
 /// One celestial question Pollux can ask without carrying civic time.
-/// occurrenceIndex is chronological among exact forged supports for that directional degree.
+/// occurrenceIndex is chronological among resolved occurrences for that directional degree.
 public struct SpineCelestialChallenge: Hashable, Sendable {
     public let body: MundaneBody
     public let directionalDegree: OrboSpineDirectionalDegree
@@ -9,6 +9,19 @@ public struct SpineCelestialChallenge: Hashable, Sendable {
         guard occurrenceIndex >= 0 else { return nil }
         self.body = body
         self.directionalDegree = directionalDegree
+        self.occurrenceIndex = occurrenceIndex
+    }
+}
+
+/// One station question Pollux can ask without carrying civic time.
+/// occurrenceIndex is chronological among forged stations for that body.
+public struct SpineStationChallenge: Hashable, Sendable {
+    public let body: MundaneBody
+    public let occurrenceIndex: Int
+
+    public init?(body: MundaneBody, occurrenceIndex: Int = 0) {
+        guard occurrenceIndex >= 0 else { return nil }
+        self.body = body
         self.occurrenceIndex = occurrenceIndex
     }
 }
@@ -53,6 +66,25 @@ public struct SpineResonanceAssignment: Sendable {
         _ challenge: SpineCelestialChallenge,
         celestialProduct: SpineForgeProduct
     ) throws -> SpineResonanceResult {
+        try requireMatching(celestialProduct)
+        guard let expected = PolluxResonator.ask(challenge, from: celestialProduct) else {
+            throw SpineResonanceError.challengeUnavailable
+        }
+        return try answerAndConfirm(expected)
+    }
+
+    public func resonate(
+        _ challenge: SpineStationChallenge,
+        celestialProduct: SpineForgeProduct
+    ) throws -> SpineResonanceResult {
+        try requireMatching(celestialProduct)
+        guard let expected = PolluxResonator.ask(challenge, from: celestialProduct) else {
+            throw SpineResonanceError.challengeUnavailable
+        }
+        return try answerAndConfirm(expected)
+    }
+
+    private func requireMatching(_ celestialProduct: SpineForgeProduct) throws {
         guard celestialProduct.schematicIdentity == schematic.identity,
               celestialProduct.schematicVersion == schematic.version,
               celestialProduct.bone == schematic.bone,
@@ -60,17 +92,16 @@ public struct SpineResonanceAssignment: Sendable {
               celestialProduct.astronomicalSourceVersion == schematic.astronomicalSourceVersion else {
             throw SpineResonanceError.celestialProductMismatch
         }
+    }
 
-        guard let expected = PolluxResonator.ask(challenge, from: celestialProduct) else {
-            throw SpineResonanceError.challengeUnavailable
-        }
-
+    private func answerAndConfirm(
+        _ expected: OrboSpineCelestialCoordinate
+    ) throws -> SpineResonanceResult {
         let returned = try CastorResonator.answer(
             body: expected.body,
             at: expected.julianDay,
             from: candidate
         )
-
         return PolluxResonator.confirm(expected: expected, returned: returned)
     }
 }
