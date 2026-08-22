@@ -277,7 +277,7 @@ enum OrboSpineTerraForge {
 
         let librarySHA256 = try sha256(libraryURL)
         let reference = try TerraSwissReference(libraryPath: libraryURL.path)
-        let expectedVersion = OrboSpineManufactureContract.canonicalAstronomicalSourceVersion
+        let expectedVersion = OrboSpineSchematic.astronomicalSourceVersion
         guard reference.version == expectedVersion else {
             throw OrboSpineTerraForgeError.swissVersionDrift(actual: reference.version, expected: expectedVersion)
         }
@@ -295,7 +295,7 @@ enum OrboSpineTerraForge {
         print("sidereal seams: 1850 / 2050 preserved one-sided; no interpolation across")
 
         var spanReports: [TerraSpanReport] = []
-        for span in OrboSpineManufactureContract.zeitgeists {
+        for span in OrboSpineSchematic.zeitgeists {
             spanReports.append(
                 try forgeSpan(span, reference: reference, outputRoot: arguments.outputDirectory)
             )
@@ -313,8 +313,8 @@ enum OrboSpineTerraForge {
             matterFormat: "terra-marrow-csv",
             matterVersion: matterVersion,
             span: "Z21-Z23",
-            supportedStartJulianDayUT: OrboSpineManufactureContract.supportedStart.value,
-            supportedEndJulianDayUT: OrboSpineManufactureContract.supportedEnd.value,
+            supportedStartJulianDayUT: OrboSpineSchematic.supportedStart.value,
+            supportedEndJulianDayUT: OrboSpineSchematic.supportedEnd.value,
             supportIntervalSeconds: TerraMarrowContract.supportIntervalSeconds,
             refinementLaw: TerraMarrowContract.refinementLaw.rawValue,
             turnLaw: "normalize(swe_sidtime(jd_ut) * 15 degrees) in [0,360)",
@@ -481,7 +481,7 @@ enum OrboSpineTerraForge {
     }
 
     private static func validateSourceSeamsInsideBone() throws {
-        let z22 = OrboSpineManufactureContract.z22
+        let z22 = OrboSpineSchematic.z22
         guard siderealSeam1850 > z22.start.value,
               siderealSeam1850 < siderealSeam2050,
               siderealSeam2050 < z22.end.value else {
