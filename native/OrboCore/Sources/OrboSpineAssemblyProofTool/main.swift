@@ -1217,32 +1217,9 @@ private enum AssemblyProof {
     }
 
     private static func csvFields(_ line: String) -> [String] {
-        let line = line.trimmingCharacters(in: CharacterSet(charactersIn: "\r"))
-        var fields: [String] = []
-        var current = ""
-        var quoted = false
-        var index = line.startIndex
-
-        while index < line.endIndex {
-            let character = line[index]
-            if character == "\"" {
-                let next = line.index(after: index)
-                if quoted, next < line.endIndex, line[next] == "\"" {
-                    current.append("\"")
-                    index = line.index(after: next)
-                    continue
-                }
-                quoted.toggle()
-            } else if character == ",", !quoted {
-                fields.append(current)
-                current.removeAll(keepingCapacity: true)
-            } else {
-                current.append(character)
-            }
-            index = line.index(after: index)
-        }
-        fields.append(current)
-        return fields
+        line.trimmingCharacters(in: CharacterSet(charactersIn: "\r"))
+            .split(separator: ",", omittingEmptySubsequences: false)
+            .map(String.init)
     }
 
     private static func optionalText(
