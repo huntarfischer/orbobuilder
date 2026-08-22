@@ -3,7 +3,7 @@ import XCTest
 
 final class DioscuriSpineResonanceTests: XCTestCase {
     func testE1NamesDioscuriAsTheResonanceAuthority() {
-        XCTAssertEqual(Dioscuri.authorityRole, "resonance authority")
+        XCTAssertEqual(DioscuriResonanceAuthority.authorityRole, "resonance authority")
     }
 
     func testE1FormsAssignmentFromMatchingSchematicAndCandidate() throws {
