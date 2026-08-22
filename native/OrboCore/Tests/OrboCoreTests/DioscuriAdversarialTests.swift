@@ -89,6 +89,122 @@ final class DioscuriAdversarialTests: XCTestCase {
         XCTAssertEqual(expected.julianDay, returned.julianDay)
     }
 
+    func testF2InteriorCorruptionBetweenMatchingEndpointsProducesDivergence() throws {
+        let fixture = try makeBaselineFixture()
+        var candidateSupports = fixture.celestialProduct.bodies.flatMap(\.supports)
+        candidateSupports.removeAll { $0.body == .sun }
+        candidateSupports.append(contentsOf: [
+            coordinate(.sun, 10, .direct, 1_000),
+            coordinate(.sun, 14, .direct, 1_000.5),
+            coordinate(.sun, 20, .direct, 1_001),
+            coordinate(.sun, 25, .direct, 1_001.5),
+        ])
+
+        let corruptedCandidate = try XCTUnwrap(makeRuntime(
+            bone: fixture.schematic.bone,
+            authority: fixture.schematic.astronomicalAuthority,
+            sourceVersion: fixture.schematic.astronomicalSourceVersion,
+            supports: candidateSupports
+        ))
+        let corruptedAssignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: corruptedCandidate
+        ))
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct,
+            assignment: corruptedAssignment
+        )
+        guard case let .divergent(body, expected, returned) = testimony.result else {
+            return XCTFail("Expected interior corruption to diverge.")
+        }
+
+        XCTAssertEqual(body, .sun)
+        XCTAssertEqual(expected.directionalDegree.degrees, 15, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 14, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay.value, 1_000.5, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
+    func testF2StationCorruptionProducesDivergence() throws {
+        let fixture = try makeStationFixture()
+        var bodies = fixture.celestialProduct.bodies
+        let mercuryIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .mercury })
+        let mercury = bodies[mercuryIndex]
+        let corruptedStation = try XCTUnwrap(OrboSpineStation(
+            body: .mercury,
+            physicalDegrees: 12.25,
+            julianDay: JulianDay(1_000.5)!,
+            laneBefore: .direct,
+            laneAfter: .retrograde
+        ))
+        bodies[mercuryIndex] = SpineForgeBodyProduct(
+            body: mercury.body,
+            supportDegrees: mercury.supportDegrees,
+            supports: mercury.supports,
+            stations: [corruptedStation]
+        )
+        let corruptedProduct = SpineForgeProduct(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bone: fixture.schematic.bone,
+            bodies: bodies
+        )
+        let challenge = try XCTUnwrap(SpineStationChallenge(body: .mercury))
+
+        let result = try fixture.assignment.resonate(
+            challenge,
+            celestialProduct: corruptedProduct
+        )
+        guard case let .divergent(expected, returned) = result else {
+            return XCTFail("Expected station corruption to diverge.")
+        }
+
+        XCTAssertEqual(expected.directionalDegree.degrees, 372.25, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 372, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
+    func testF2StationBetweenSupportsBlocksPolluxInterpolation() throws {
+        let fixture = try makeBaselineFixture()
+        let station = try XCTUnwrap(OrboSpineStation(
+            body: .mercury,
+            physicalDegrees: 10.5,
+            julianDay: JulianDay(1_000.5)!,
+            laneBefore: .direct,
+            laneAfter: .retrograde
+        ))
+        let bodyProduct = SpineForgeBodyProduct(
+            body: .mercury,
+            supportDegrees: OrboSpineContract.supportDegrees(for: .mercury),
+            supports: [
+                coordinate(.mercury, 10, .direct, 1_000),
+                coordinate(.mercury, 11, .direct, 1_001),
+            ],
+            stations: [station]
+        )
+        let product = SpineForgeProduct(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            astronomicalAuthority: fixture.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: fixture.schematic.astronomicalSourceVersion,
+            bone: fixture.schematic.bone,
+            bodies: [bodyProduct]
+        )
+        let challenge = try XCTUnwrap(SpineCelestialChallenge(
+            body: .mercury,
+            directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
+                physicalDegrees: 10.5,
+                motion: .direct
+            ))
+        ))
+
+        XCTAssertNil(PolluxResonator.ask(challenge, from: product))
+    }
+
     private struct AttackFixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
@@ -169,11 +285,68 @@ final class DioscuriAdversarialTests: XCTestCase {
         )
     }
 
+    private func makeStationFixture() throws -> AttackFixture {
+        let baseline = try makeBaselineFixture()
+        let station = try XCTUnwrap(OrboSpineStation(
+            body: .mercury,
+            physicalDegrees: 12,
+            julianDay: JulianDay(1_000.5)!,
+            laneBefore: .direct,
+            laneAfter: .retrograde
+        ))
+        let mercurySupports = [
+            coordinate(.mercury, 10, .direct, 1_000),
+            coordinate(.mercury, 11, .direct, 1_000.25),
+            coordinate(.mercury, 11, .retrograde, 1_000.75),
+            coordinate(.mercury, 10, .retrograde, 1_001),
+            coordinate(.mercury, 9, .retrograde, 1_001.25),
+            coordinate(.mercury, 8, .retrograde, 1_001.5),
+            coordinate(.mercury, 7, .retrograde, 1_001.75),
+        ]
+
+        var bodies = baseline.celestialProduct.bodies
+        let mercuryIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .mercury })
+        let mercury = bodies[mercuryIndex]
+        bodies[mercuryIndex] = SpineForgeBodyProduct(
+            body: .mercury,
+            supportDegrees: mercury.supportDegrees,
+            supports: mercurySupports,
+            stations: [station]
+        )
+        let celestialProduct = SpineForgeProduct(
+            schematicIdentity: baseline.schematic.identity,
+            schematicVersion: baseline.schematic.version,
+            astronomicalAuthority: baseline.schematic.astronomicalAuthority,
+            astronomicalSourceVersion: baseline.schematic.astronomicalSourceVersion,
+            bone: baseline.schematic.bone,
+            bodies: bodies
+        )
+        let candidate = try XCTUnwrap(makeRuntime(
+            bone: baseline.schematic.bone,
+            authority: baseline.schematic.astronomicalAuthority,
+            sourceVersion: baseline.schematic.astronomicalSourceVersion,
+            supports: bodies.flatMap(\.supports),
+            stations: [station]
+        ))
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: baseline.schematic,
+            candidate: candidate
+        ))
+
+        return AttackFixture(
+            schematic: baseline.schematic,
+            celestialProduct: celestialProduct,
+            candidate: candidate,
+            assignment: assignment
+        )
+    }
+
     private func makeRuntime(
         bone: OrboSpineBoneSpan,
         authority: String,
         sourceVersion: String,
-        supports: [OrboSpineCelestialCoordinate]
+        supports: [OrboSpineCelestialCoordinate],
+        stations: [OrboSpineStation] = []
     ) throws -> OrboSpineRuntime? {
         let shells = try OrboSpineShellFamily.allCases.map { family in
             let id = try XCTUnwrap(OrboSpineShellID(family: family, ordinal: 1))
@@ -204,7 +377,7 @@ final class DioscuriAdversarialTests: XCTestCase {
         return OrboSpineRuntime(
             bone: bone,
             celestialSupports: supports,
-            stations: [],
+            stations: stations,
             retrogradePassages: [],
             ringOccurrences: [],
             eclipses: [],
