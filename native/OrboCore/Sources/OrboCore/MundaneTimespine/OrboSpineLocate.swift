@@ -405,7 +405,7 @@ private extension OrboSpineLocate {
             )
         }
 
-        private static func directionalDistance(
+        fileprivate static func directionalDistance(
             from start: Double,
             to end: Double,
             motion: Motion
