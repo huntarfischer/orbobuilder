@@ -56,7 +56,7 @@ public struct OrboSpineRuntime: Sendable {
     public let stations: [OrboSpineStation]
     public let retrogradePassages: [OrboSpineRetrogradePassage]
     public let ringOccurrences: [OrboSpineRingOccurrence]
-    public let eclipses: [MundaneTimespineEclipseEvent]
+    public let eclipses: [OrboSpineEclipseOccurrence]
     public let shellIntervals: [OrboSpineShellInterval]
 
     public let smeldSeams: SpineSmeldSeams
@@ -69,7 +69,7 @@ public struct OrboSpineRuntime: Sendable {
         stations: [OrboSpineStation],
         retrogradePassages: [OrboSpineRetrogradePassage],
         ringOccurrences: [OrboSpineRingOccurrence],
-        eclipses: [MundaneTimespineEclipseEvent],
+        eclipses: [OrboSpineEclipseOccurrence],
         shellIntervals: [OrboSpineShellInterval],
         terraSamples: [TerraMarrowSample],
         provenance: OrboSpineRuntimeProvenance
