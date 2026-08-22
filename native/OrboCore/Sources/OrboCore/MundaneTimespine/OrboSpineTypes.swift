@@ -290,33 +290,75 @@ public struct OrboSpineAuxiliaryFactorID: RawRepresentable, Hashable, Codable, S
     public static let chiron = OrboSpineAuxiliaryFactorID(rawValue: "chiron")!
 }
 
-/// Empty Pass 5 mounting seam for future independently forged auxiliary packs.
-public struct OrboSpineAuxiliarySocket: Hashable, Sendable {
-    public init() {}
-}
-
-public enum OrboSpineAuxiliaryIntent {
-    public static let firstPack: [OrboSpineAuxiliaryFactorID] = [
+/// Intended first contents of the Celestial Seam. D0 defines intent only; it does not forge the Smeld.
+public enum OrboSpineCelestialSmeldIntent {
+    public static let firstSmeld: [OrboSpineAuxiliaryFactorID] = [
         .trueBlackMoonLilith,
         .chiron,
     ]
 }
 
-/// Neutral read-port identities only. Pass 5 deliberately defines no consumer behavior.
-public struct ChronosPort: Hashable, Sendable { public init() {} }
-public struct HoraePort: Hashable, Sendable { public init() {} }
-public struct ClothoPort: Hashable, Sendable { public init() {} }
+/// Universal reasons to tap any Spine. These are access identities only; behavior belongs downstream.
+public enum SpineAccessPort: String, CaseIterable, Codable, Hashable, Sendable {
+    case locate
+    case library
+    case link
+}
 
-public struct OrboSpinePorts: Hashable, Sendable {
-    public let chronos: ChronosPort
-    public let horae: HoraePort
-    public let clotho: ClothoPort
+/// The same three stable doors are exposed by every Spine.
+public struct SpinePorts: Hashable, Sendable {
+    public let locate: SpineAccessPort
+    public let library: SpineAccessPort
+    public let link: SpineAccessPort
 
     public init() {
-        self.chronos = ChronosPort()
-        self.horae = HoraePort()
-        self.clotho = ClothoPort()
+        self.locate = .locate
+        self.library = .library
+        self.link = .link
     }
+}
+
+public typealias OrboSpinePorts = SpinePorts
+
+/// The two controlled extension seams of a sealed Spine.
+public enum SpineSmeldSeam: String, CaseIterable, Codable, Hashable, Sendable {
+    case celestial
+    case stack
+}
+
+/// Identity of one sealed Spine Smeld eligible to mount at a Spine seam.
+/// D0 does not implement forging, certification, sealing, or mounting behavior.
+public struct SpineSmeld: Hashable, Codable, Sendable {
+    public let identity: String
+
+    public init?(identity: String) {
+        let trimmed = identity.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        self.identity = trimmed
+    }
+}
+
+/// Shape alone enforces zero-or-one mounted Smeld per seam. Growth requires replacement,
+/// never accumulation of multiple Smelds at the same seam.
+public struct SpineSmeldSeams: Hashable, Sendable {
+    public let celestial: SpineSmeld?
+    public let stack: SpineSmeld?
+
+    public init(celestial: SpineSmeld? = nil, stack: SpineSmeld? = nil) {
+        self.celestial = celestial
+        self.stack = stack
+    }
+}
+
+/// Admission law for any Spine Smeld. The actual lifecycle remains owned by Hephaestus
+/// and the Dioscuri; this contract only freezes the seam requirements.
+public enum SpineSmeldContract {
+    public static let maximumMountedPerSeam = 1
+    public static let forgeAuthority = "Hephaestus"
+    public static let certificationAuthority = "Dioscuri"
+    public static let sealAuthority = "Hephaestus"
+    public static let requiresSealBeforeMount = true
+    public static let replacementLaw = "reforge-and-replace"
 }
 
 /// Type-level forge/certification boundaries. Actual manufacture and adjudication remain
