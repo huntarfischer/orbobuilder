@@ -30,20 +30,12 @@ jobs:
           ref: agent/mundane-timespine-3d-build
           fetch-depth: 0
 
-      - name: Record forge run identity
+      - name: Initialize forge run
         shell: bash
         run: |
           set -euo pipefail
-          OUT="tools/pass5/orbospine-build/lunations"
-          mkdir -p "$OUT"
+          mkdir -p tools/pass5/orbospine-build/lunations
           echo started > "$RUNNER_TEMP/lunation-stage"
-          printf '{\n  "runId": %s,\n  "runAttempt": %s,\n  "sourceSha": "%s",\n  "status": "started"\n}\n' \
-            "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" > "$OUT/forge-run.json"
-          git config user.name "Orbo Forge"
-          git config user.email "orbo-forge@users.noreply.github.com"
-          git add "$OUT/forge-run.json"
-          git commit -m "Record lunation Forge run [skip ci]"
-          git push origin HEAD:agent/mundane-timespine-3d-build
 
       - name: Build and verify pinned Swiss DE441 apparatus
         shell: bash
@@ -233,28 +225,15 @@ jobs:
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git pull --rebase origin agent/mundane-timespine-3d-build
-          rm -f "$OUT/forge-run.json"
-          git add -A "$OUT"
+          git add -f "$OUT/lunation-table.csv.gz" "$OUT/manifest.json"
           if ! git diff --cached --quiet; then
             git commit -m "Forge Z21-Z23 lunation table [skip ci]"
             git push origin HEAD:agent/mundane-timespine-3d-build
           fi
 
-      - name: Record failed forge stage
+      - name: Report failed forge stage
         if: failure()
         shell: bash
         run: |
-          set -euo pipefail
           stage="$(cat "$RUNNER_TEMP/lunation-stage" 2>/dev/null || echo unknown)"
-          OUT="tools/pass5/orbospine-build/lunations"
-          git config user.name "Orbo Forge"
-          git config user.email "orbo-forge@users.noreply.github.com"
-          git pull --rebase origin agent/mundane-timespine-3d-build
-          mkdir -p "$OUT"
-          printf '{\n  "runId": %s,\n  "runAttempt": %s,\n  "sourceSha": "%s",\n  "status": "failed",\n  "stage": "%s"\n}\n' \
-            "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SHA" "$stage" > "$OUT/forge-run.json"
-          git add "$OUT/forge-run.json"
-          if ! git diff --cached --quiet; then
-            git commit -m "Record failed lunation Forge stage [skip ci]"
-            git push origin HEAD:agent/mundane-timespine-3d-build
-          fi
+          echo "Lunation forge failed at stage: $stage"
