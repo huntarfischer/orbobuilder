@@ -249,8 +249,8 @@ final class MundaneTimespineTests: XCTestCase {
         let first = try image.encodedArtifact()
         let second = try image.encodedArtifact()
         XCTAssertEqual(first, second)
-        XCTAssertEqual(Array(first.prefix(8)), Array("ORBOTS01".utf8))
-        XCTAssertEqual(MundaneTimespineStorageFormat.version, 1)
+        XCTAssertEqual(Array(first.prefix(8)), Array("ORBOTS02".utf8))
+        XCTAssertEqual(MundaneTimespineStorageFormat.version, 2)
         XCTAssertTrue(MundaneTimespineStorageFormat.celestialTimeFirst)
 
         let artifact = try MundaneTimespineArtifact(data: first)
