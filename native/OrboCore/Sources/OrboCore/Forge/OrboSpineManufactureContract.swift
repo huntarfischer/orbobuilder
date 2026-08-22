@@ -114,7 +114,7 @@ public enum OrboSpineManufactureContract {
             astronomicalSourceVersion: astronomicalSourceVersion,
             supportedStart: supportedStart,
             supportedEnd: supportedEnd,
-            bodyPlans: MundaneBody.canonicalOrder.map(bodyPlan(for:)),
+            bodyPlans: MundaneBody.canonicalOrder.map { bodyPlan(for: $0) },
             verifiesConstructionRecordCounts: false,
             verifiesMarkerUniqueness: false
         )!
