@@ -295,6 +295,51 @@ final class DioscuriAdversarialTests: XCTestCase {
         assertRunFailsClosed(.productMismatch, product: product, fixture: fixture)
     }
 
+    func testF4FirstDivergenceStopsBeforeLaterMalformedMatter() throws {
+        let fixture = try makeBaselineFixture()
+        var candidateSupports = fixture.celestialProduct.bodies.flatMap(\.supports)
+        let moonUpperIndex = try XCTUnwrap(candidateSupports.firstIndex {
+            $0.body == .moon && abs($0.julianDay.value - 1_001) < 1e-12
+        })
+        candidateSupports[moonUpperIndex] = coordinate(.moon, 19, .direct, 1_001)
+
+        let corruptedCandidate = try XCTUnwrap(makeRuntime(
+            bone: fixture.schematic.bone,
+            authority: fixture.schematic.astronomicalAuthority,
+            sourceVersion: fixture.schematic.astronomicalSourceVersion,
+            supports: candidateSupports
+        ))
+        let assignment = try XCTUnwrap(SpineResonanceAssignment(
+            schematic: fixture.schematic,
+            candidate: corruptedCandidate
+        ))
+
+        var bodies = fixture.celestialProduct.bodies
+        let mercuryIndex = try XCTUnwrap(bodies.firstIndex { $0.body == .mercury })
+        let mercury = bodies[mercuryIndex]
+        bodies[mercuryIndex] = SpineForgeBodyProduct(
+            body: mercury.body,
+            supportDegrees: mercury.supportDegrees,
+            supports: [],
+            stations: mercury.stations
+        )
+        let product = makeProduct(from: fixture, bodies: bodies)
+
+        let testimony = try SpineResonanceRun.run(
+            schematic: fixture.schematic,
+            celestialProduct: product,
+            assignment: assignment
+        )
+        guard case let .divergent(body, expected, returned) = testimony.result else {
+            return XCTFail("Expected Moon divergence before malformed Mercury matter.")
+        }
+
+        XCTAssertEqual(body, .moon)
+        XCTAssertEqual(expected.directionalDegree.degrees, 15, accuracy: 1e-12)
+        XCTAssertEqual(returned.directionalDegree.degrees, 14.5, accuracy: 1e-12)
+        XCTAssertEqual(expected.julianDay, returned.julianDay)
+    }
+
     private struct AttackFixture {
         let schematic: SpineSchematic
         let celestialProduct: SpineForgeProduct
