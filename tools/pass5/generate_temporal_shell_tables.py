@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Manufacture Orbo's numbered Neptune/Uranus/Saturn temporal-shell tables.
+"""Manufacture Orbo's numbered Neptune/Uranus/Saturn/Pluto temporal-shell tables.
 
 Numbering law:
   Z0 = canonical Pluto first direct Aries ingress (3532 BCE)
@@ -43,9 +43,19 @@ Z_UTC = {
 }
 
 FAMILIES = {
-    "W": {"body": 8, "planet": "Neptune", "family": "Neptunian Wave", "step": 30.0, "cluster_gap": 40 * 365.25},
-    "R": {"body": 7, "planet": "Uranus", "family": "Uranian Revolt", "step": 20.0, "cluster_gap": 20 * 365.25},
-    "F": {"body": 6, "planet": "Saturn", "family": "Saturnian Frame", "step": 10.0, "cluster_gap": 10 * 365.25},
+    "W": {"body": 8, "planet": "Neptune", "family": "Neptunian Wave", "step": 30.0, "cluster_gap": 40 * 365.25, "scan_tail_years": 190},
+    "R": {"body": 7, "planet": "Uranus", "family": "Uranian Revolt", "step": 20.0, "cluster_gap": 20 * 365.25, "scan_tail_years": 190},
+    "F": {"body": 6, "planet": "Saturn", "family": "Saturnian Frame", "step": 10.0, "cluster_gap": 10 * 365.25, "scan_tail_years": 190},
+    "Z": {
+        "body": 9,
+        "planet": "Pluto",
+        "family": "Pluto Zeitgeist",
+        "step": 10.0,
+        "cluster_gap": 20 * 365.25,
+        "scan_tail_years": 2_100,
+        "starts_at_epoch": True,
+        "through_ordinal": 30,
+    },
 }
 
 REQUIRED_EPHE_FILES = (
@@ -229,25 +239,41 @@ def z_intersections(start: float, end: float) -> list[str]:
 
 
 def manufacture_family(swiss: SwissC, prefix: str, cfg: dict, scan_end: float) -> list[dict]:
-    crossings = all_zero_crossings(swiss, cfg["body"], Z0_JD, scan_end, cfg["step"])
+    starts_at_epoch = cfg.get("starts_at_epoch", False)
+    scan_start = Z0_JD - cfg["cluster_gap"] if starts_at_epoch else Z0_JD
+    crossings = all_zero_crossings(swiss, cfg["body"], scan_start, scan_end, cfg["step"])
     clusters = cluster_crossings(crossings, cfg["cluster_gap"])
     qualifying = []
+    epoch_tolerance_days = 1e-5
     for cluster in clusters:
         directs = [c for c in cluster if c["motion"] == "direct"]
         if not directs:
             continue
         first = directs[0]
-        if first["jd_ut"] <= Z0_JD:
+        if starts_at_epoch:
+            if first["jd_ut"] < Z0_JD - epoch_tolerance_days:
+                continue
+        elif first["jd_ut"] <= Z0_JD:
             continue
         final = directs[-1]
         transition = [c for c in cluster if first["jd_ut"] - 1e-7 <= c["jd_ut"] <= final["jd_ut"] + 1e-7]
         qualifying.append((first, final, transition))
 
+    if starts_at_epoch:
+        if not qualifying or abs(qualifying[0][0]["jd_ut"] - Z0_JD) > epoch_tolerance_days:
+            raise RuntimeError("Z0 canonical Pluto Aries ingress was not manufactured")
+        qualifying[0][0]["jd_ut"] = Z0_JD
+        qualifying[0][0]["utc"] = Z0_UTC
+
     rows = []
+    through_ordinal = cfg.get("through_ordinal")
     for ordinal in range(len(qualifying) - 1):
         first, final, transition = qualifying[ordinal]
         next_first = qualifying[ordinal + 1][0]
-        if first["jd_ut"] >= Z_BOUNDS["Z23"][1]:
+        if through_ordinal is not None:
+            if ordinal > through_ordinal:
+                break
+        elif first["jd_ut"] >= Z_BOUNDS["Z23"][1]:
             break
         pre_jd, pre_utc, floor = transition_shadow(swiss, cfg["body"], first["jd_ut"], final["jd_ut"])
         rows.append({
@@ -270,6 +296,10 @@ def manufacture_family(swiss: SwissC, prefix: str, cfg: dict, scan_end: float) -
         })
     if not rows or rows[0]["ordinal"] != 0:
         raise RuntimeError(f"{prefix}0 was not manufactured")
+    if through_ordinal is not None and len(rows) != through_ordinal + 1:
+        raise RuntimeError(
+            f"{prefix}0-{prefix}{through_ordinal} were not fully manufactured: {len(rows)} rows"
+        )
     return rows
 
 
@@ -296,6 +326,41 @@ def write_family(out_dir: Path, prefix: str, rows: list[dict], provenance: dict)
         w.writeheader(); w.writerows(flat)
 
 
+def write_zeitgeist(out_dir: Path, rows: list[dict]):
+    fieldnames = [
+        "zeitgeist_id",
+        "ordinal",
+        "pre_shadow_start_jd_ut",
+        "pre_shadow_start_utc",
+        "pre_shadow_floor_degree",
+        "first_aries_ingress_jd_ut",
+        "first_aries_ingress_utc",
+        "final_pisces_egress_jd_ut",
+        "final_pisces_egress_utc",
+        "next_zeitgeist_first_aries_ingress_jd_ut",
+        "next_zeitgeist_first_aries_ingress_utc",
+        "transition_crossing_count",
+    ]
+    with (out_dir / "zeitgeist-z0-z30.csv").open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+        w.writeheader()
+        for r in rows:
+            w.writerow({
+                "zeitgeist_id": r["shell_id"],
+                "ordinal": r["ordinal"],
+                "pre_shadow_start_jd_ut": r["pre_shadow_start_jd_ut"],
+                "pre_shadow_start_utc": r["pre_shadow_start_utc"],
+                "pre_shadow_floor_degree": r["pre_shadow_floor_degree"],
+                "first_aries_ingress_jd_ut": r["first_aries_ingress_jd_ut"],
+                "first_aries_ingress_utc": r["first_aries_ingress_utc"],
+                "final_pisces_egress_jd_ut": r["final_pisces_egress_jd_ut"],
+                "final_pisces_egress_utc": r["final_pisces_egress_utc"],
+                "next_zeitgeist_first_aries_ingress_jd_ut": r["next_shell_first_aries_ingress_jd_ut"],
+                "next_zeitgeist_first_aries_ingress_utc": r["next_shell_first_aries_ingress_utc"],
+                "transition_crossing_count": r["transition_crossing_count"],
+            })
+
+
 def audit(rows_by_prefix: dict[str, list[dict]]) -> dict:
     checks = {}
     for p, rows in rows_by_prefix.items():
@@ -310,6 +375,13 @@ def audit(rows_by_prefix: dict[str, list[dict]]) -> dict:
             "z22_rows": [r["shell_id"] for r in rows if "Z22" in r["z21_z23_intersections"]],
             "z23_rows": [r["shell_id"] for r in rows if "Z23" in r["z21_z23_intersections"]],
         }
+        if p == "Z":
+            checks[p]["canonical_z0"] = (
+                abs(rows[0]["first_aries_ingress_jd_ut"] - Z0_JD) < 1e-12
+                and rows[0]["first_aries_ingress_utc"] == Z0_UTC
+            )
+            checks[p]["row_count_is_31"] = len(rows) == 31
+            checks[p]["ends_at_z30"] = rows[-1]["shell_id"] == "Z30"
     bools = [v for fam in checks.values() for k, v in fam.items() if isinstance(v, bool)]
     return {"status": "PASS" if all(bools) else "FAIL", "checks": checks}
 
@@ -324,7 +396,6 @@ def main() -> int:
 
     files = verify_ephe(args.ephe_dir)
     swiss = SwissC(args.library, args.ephe_dir)
-    scan_end = Z_BOUNDS["Z23"][1] + 190 * 365.25
     rows_by_prefix = {}
     provenance = {
         "astronomical_engine": "official Swiss Ephemeris C",
@@ -339,9 +410,13 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     for prefix, cfg in FAMILIES.items():
         print(f"Manufacturing {cfg['family']}...", flush=True)
+        scan_end = Z_BOUNDS["Z23"][1] + cfg["scan_tail_years"] * 365.25
         rows = manufacture_family(swiss, prefix, cfg, scan_end)
         rows_by_prefix[prefix] = rows
-        write_family(args.out_dir, prefix, rows, provenance)
+        if prefix == "Z":
+            write_zeitgeist(args.out_dir, rows)
+        else:
+            write_family(args.out_dir, prefix, rows, provenance)
         print(f"  {len(rows)} numbered rows", flush=True)
 
     report = audit(rows_by_prefix)
