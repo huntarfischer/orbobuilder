@@ -249,8 +249,8 @@ private enum Closeout {
             files.append(fileDigest)
         }
 
-        let supportedStart = OrboSpineManufactureContract.supportedStart.value
-        let supportedEnd = OrboSpineManufactureContract.supportedEnd.value
+        let supportedStart = OrboSpineSchematic.supportedStart.value
+        let supportedEnd = OrboSpineSchematic.supportedEnd.value
         try verifyDouble(celestialJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "celestial start")
         try verifyDouble(celestialJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "celestial end")
         try verifyDouble(motionJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "motion start")
@@ -266,8 +266,8 @@ private enum Closeout {
             span: "Z21-Z23",
             supportedStartJulianDayUT: supportedStart,
             supportedEndJulianDayUT: supportedEnd,
-            astronomicalAuthority: OrboSpineManufactureContract.astronomicalSource,
-            astronomicalSourceVersion: OrboSpineManufactureContract.canonicalAstronomicalSourceVersion,
+            astronomicalAuthority: OrboSpineSchematic.astronomicalAuthority,
+            astronomicalSourceVersion: OrboSpineSchematic.astronomicalSourceVersion,
             celestial: CelestialSummary(
                 supportRows: supportRows,
                 stationRows: stationRows,
