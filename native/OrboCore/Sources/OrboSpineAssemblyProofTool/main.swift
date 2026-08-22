@@ -934,13 +934,13 @@ private enum AssemblyProof {
         root: URL,
         files: [CandidateFile],
         bone: OrboSpineBoneSpan
-    ) throws -> [MundaneTimespineEclipseEvent] {
+    ) throws -> [OrboSpineEclipseOccurrence] {
         let eclipseFiles = files.filter { $0.role == "eclipse table" }.sorted { $0.path < $1.path }
         guard eclipseFiles.count == 3 else {
             throw AssemblyProofError.mismatch("candidate must bind three eclipse tables")
         }
 
-        var events: [MundaneTimespineEclipseEvent] = []
+        var events: [OrboSpineEclipseOccurrence] = []
         events.reserveCapacity(expectedEclipseRows)
 
         for bound in eclipseFiles {
@@ -969,8 +969,8 @@ private enum AssemblyProof {
                     $0.isEmpty ? nil : $0
                 }
 
-                guard let kind = MundaneTimespineEclipseKind(rawValue: kindText),
-                      let type = MundaneTimespineEclipseType(rawValue: typeText),
+                guard let kind = OrboSpineEclipseKind(rawValue: kindText),
+                      let type = OrboSpineEclipseType(rawValue: typeText),
                       let phase = JulianDay(phaseValue),
                       bone.contains(phase) else {
                     throw AssemblyProofError.mismatch("\(bound.path) eclipse row \(rowNumber) identity")
@@ -986,7 +986,7 @@ private enum AssemblyProof {
                     greatest = nil
                 }
 
-                guard let event = MundaneTimespineEclipseEvent(
+                guard let event = OrboSpineEclipseOccurrence(
                     kind: kind,
                     type: type,
                     eclipseDegree: degree,
