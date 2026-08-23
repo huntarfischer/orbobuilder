@@ -188,7 +188,7 @@ public struct Hestia: Hashable, Sendable {
         return hall.resident(for: subjectID)?.tapestry
     }
 
-    private static func tapestry(
+    static func tapestry(
         _ tapestry: AtroposPackage,
         matches astroDNA: AstroDNA
     ) -> Bool {
