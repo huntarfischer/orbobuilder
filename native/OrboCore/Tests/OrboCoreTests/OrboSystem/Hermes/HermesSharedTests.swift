@@ -5,7 +5,9 @@ final class HermesSharedTests: XCTestCase {
     private let ticketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000101")!)
     private let secondTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000102")!)
     private let parcelID = HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000103")!)
+    private let packageID = HermesPackageID(UUID(uuidString: "00000000-0000-0000-0000-000000000104")!)
     private let hestia = HermesAddress(rawValue: "orbo.hestia")!
+    private let atlas = HermesAddress(rawValue: "orbo.atlas")!
     private let instant = AbsoluteInstant(unixSecondsSince1970: 0)!
 
     func testHermesIdentifiersRejectBlankValues() {
@@ -41,6 +43,8 @@ final class HermesSharedTests: XCTestCase {
         XCTAssertEqual(event.kind, .ticketOpened)
         XCTAssertEqual(event.occurredAt, instant)
         XCTAssertNil(event.parcelID)
+        XCTAssertNil(event.packageID)
+        XCTAssertNil(event.address)
 
         XCTAssertNil(
             HermesManifestEvent(
@@ -50,6 +54,21 @@ final class HermesSharedTests: XCTestCase {
                 occurredAt: instant
             )
         )
+    }
+
+    func testManifestEventCanIdentifyCourierPackageAndAddress() {
+        let event = HermesManifestEvent(
+            ticketID: ticketID,
+            sequence: 1,
+            kind: .deliveredToStop,
+            occurredAt: instant,
+            packageID: packageID,
+            address: atlas
+        )!
+
+        XCTAssertEqual(event.packageID, packageID)
+        XCTAssertEqual(event.address, atlas)
+        XCTAssertNil(event.parcelID)
     }
 
     func testManifestAppendsEventsInSequenceOrder() {
