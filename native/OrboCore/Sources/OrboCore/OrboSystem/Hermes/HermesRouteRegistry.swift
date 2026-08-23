@@ -22,17 +22,17 @@ public struct HermesRouteRegistry: Sendable {
         let moirai = HermesAddress(rawValue: "orbo.moirai")!
         let hestia = HermesAddress(rawValue: "orbo.hestia")!
         let natalCommission = HermesParcelKind(rawValue: "orbo.natal-commission.v1")!
-        let atroposPackage = HermesParcelKind(rawValue: "orbo.atropos-package.v1")!
+        let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
 
         self.contracts = [
             HermesRouteContract(
                 serviceDestination: moirai,
                 acceptedParcelKind: natalCommission,
-                expectedReturnKind: atroposPackage
+                expectedReturnKind: moiraiPackage
             ),
         ]
         self.finalAcceptances = [
-            hestia: [atroposPackage],
+            hestia: [moiraiPackage],
         ]
     }
 
