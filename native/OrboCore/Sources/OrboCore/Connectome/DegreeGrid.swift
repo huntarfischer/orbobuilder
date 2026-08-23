@@ -29,6 +29,14 @@ public struct DegreeCell: Hashable, Sendable {
         self.address = address
         self.threads = threads
     }
+
+    internal init(
+        restoringAddress address: DegreeAddress,
+        threads: [ClothoThread]
+    ) {
+        self.address = address
+        self.threads = threads
+    }
 }
 
 public struct DegreeGrid: Hashable, Sendable {
@@ -42,6 +50,17 @@ public struct DegreeGrid: Hashable, Sendable {
         precondition(allottedCells.count == DegreeAddress.count)
         precondition(allottedCells.map(\.address) == DegreeAddress.canonicalOrder)
         self.cells = allottedCells
+    }
+
+    internal init?(restoringCells cells: [DegreeCell]) {
+        guard cells.count == DegreeAddress.count,
+              cells.map(\.address) == DegreeAddress.canonicalOrder,
+              cells.allSatisfy({ cell in
+                  cell.threads.allSatisfy { $0.degreeAddress == cell.address }
+              }) else {
+            return nil
+        }
+        self.cells = cells
     }
 }
 
