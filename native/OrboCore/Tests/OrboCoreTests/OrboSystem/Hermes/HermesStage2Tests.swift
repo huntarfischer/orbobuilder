@@ -7,19 +7,19 @@ final class HermesStage2Tests: XCTestCase {
     private let hestia = HermesAddress(rawValue: "orbo.hestia")!
     private let unknownService = HermesAddress(rawValue: "orbo.unknown")!
     private let natalCommission = HermesParcelKind(rawValue: "orbo.natal-commission.v1")!
-    private let atroposPackage = HermesParcelKind(rawValue: "orbo.atropos-package.v1")!
+    private let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
     private let wrongKind = HermesParcelKind(rawValue: "orbo.wrong.v1")!
 
     func testKnownServiceContractResolves() {
         let contract = registry.contract(
             for: moirai,
             accepting: natalCommission,
-            returning: atroposPackage
+            returning: moiraiPackage
         )
 
         XCTAssertEqual(contract?.serviceDestination, moirai)
         XCTAssertEqual(contract?.acceptedParcelKind, natalCommission)
-        XCTAssertEqual(contract?.expectedReturnKind, atroposPackage)
+        XCTAssertEqual(contract?.expectedReturnKind, moiraiPackage)
     }
 
     func testWrongAcceptedParcelKindIsRejected() {
@@ -27,7 +27,7 @@ final class HermesStage2Tests: XCTestCase {
             registry.contract(
                 for: moirai,
                 accepting: wrongKind,
-                returning: atroposPackage
+                returning: moiraiPackage
             )
         )
     }
@@ -43,7 +43,7 @@ final class HermesStage2Tests: XCTestCase {
     }
 
     func testKnownFinalAddresseeAcceptsExpectedParcelKind() {
-        XCTAssertTrue(registry.finalAddressee(hestia, accepts: atroposPackage))
+        XCTAssertTrue(registry.finalAddressee(hestia, accepts: moiraiPackage))
         XCTAssertFalse(registry.finalAddressee(hestia, accepts: natalCommission))
     }
 
@@ -52,7 +52,7 @@ final class HermesStage2Tests: XCTestCase {
             registry.contract(
                 for: unknownService,
                 accepting: natalCommission,
-                returning: atroposPackage
+                returning: moiraiPackage
             )
         )
     }
