@@ -1,43 +1,75 @@
-public struct EngravingIntake: Hashable, Codable, Sendable {
+public struct Engraving: Hashable, Sendable {
+    public let subjectID: HermesSubjectID
     public let name: String
     public let birthDate: CivilDate
     public let birthTime: CivilClockTime
     public let birthLocation: String
 
+    public let topos: Topos?
+    public let astroDNA: AstroDNA?
+    public let tapestry: AtroposPackage?
+    public let engraved: Bool
+
+    /// Orbo creates an unfinished Engraving. Its four resolutions are completed
+    /// in order by Atlas, the Moirai, and finally Hestia at the Hearth.
     public init(
+        subjectID: HermesSubjectID,
         name: String,
         birthDate: CivilDate,
         birthTime: CivilClockTime,
         birthLocation: String
     ) {
+        self.subjectID = subjectID
         self.name = name
         self.birthDate = birthDate
         self.birthTime = birthTime
         self.birthLocation = birthLocation
+        self.topos = nil
+        self.astroDNA = nil
+        self.tapestry = nil
+        self.engraved = false
     }
-}
 
-public struct AtlasEngraving: Hashable, Codable, Sendable {
-    public let name: String
-    public let birthDate: CivilDate
-    public let birthTime: CivilClockTime
-    public let birthLocation: String
-    public let topos: Topos
-
-    public init(
-        intake: EngravingIntake,
-        topos: Topos
+    private init(
+        subjectID: HermesSubjectID,
+        name: String,
+        birthDate: CivilDate,
+        birthTime: CivilClockTime,
+        birthLocation: String,
+        topos: Topos?,
+        astroDNA: AstroDNA?,
+        tapestry: AtroposPackage?,
+        engraved: Bool
     ) {
-        self.name = intake.name
-        self.birthDate = intake.birthDate
-        self.birthTime = intake.birthTime
-        self.birthLocation = intake.birthLocation
+        self.subjectID = subjectID
+        self.name = name
+        self.birthDate = birthDate
+        self.birthTime = birthTime
+        self.birthLocation = birthLocation
         self.topos = topos
+        self.astroDNA = astroDNA
+        self.tapestry = tapestry
+        self.engraved = engraved
+    }
+
+    /// Atlas resolves only Topos. Every other Engraving resolution is preserved.
+    internal func resolving(topos: Topos) -> Engraving {
+        Engraving(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation,
+            topos: topos,
+            astroDNA: astroDNA,
+            tapestry: tapestry,
+            engraved: engraved
+        )
     }
 }
 
-/// Orbo owns onboarding. Completing onboarding creates the Engraving package
-/// that Orbo entrusts to Hermes.
+/// Orbo owns onboarding. Completing onboarding creates the unfinished Engraving
+/// package that Orbo entrusts to Hermes.
 public enum OrboOnboarding {
     public static let orboAddress = HermesAddress(rawValue: "orbo")!
     public static let engravingPackageKind = HermesPackageKind(rawValue: "orbo.engraving.v1")!
@@ -54,8 +86,9 @@ public enum OrboOnboarding {
         birthTime: CivilClockTime,
         birthLocation: String,
         packageID: HermesPackageID = HermesPackageID()
-    ) -> HermesPackage<EngravingIntake> {
-        let intake = EngravingIntake(
+    ) -> HermesPackage<Engraving> {
+        let engraving = Engraving(
+            subjectID: subjectID,
             name: name,
             birthDate: birthDate,
             birthTime: birthTime,
@@ -68,7 +101,7 @@ public enum OrboOnboarding {
             sender: orboAddress,
             kind: engravingPackageKind,
             addresses: engravingItinerary,
-            contents: intake
+            contents: engraving
         )!
     }
 }
