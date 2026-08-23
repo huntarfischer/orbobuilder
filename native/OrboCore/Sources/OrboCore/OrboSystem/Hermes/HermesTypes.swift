@@ -54,6 +54,16 @@ public struct HermesParcelKind: Hashable, Codable, Sendable, RawRepresentable {
     }
 }
 
+public struct HermesPackageKind: Hashable, Codable, Sendable, RawRepresentable {
+    public let rawValue: String
+
+    public init?(rawValue: String) {
+        let trimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        self.rawValue = trimmed
+    }
+}
+
 public struct HermesTicket: Hashable, Codable, Sendable {
     public let ticketID: HermesTicketID
     public let subjectID: HermesSubjectID
@@ -128,6 +138,7 @@ public struct HermesPackage<Contents: Hashable & Sendable>: Hashable, Sendable {
     public let packageID: HermesPackageID
     public let subjectID: HermesSubjectID
     public let sender: HermesAddress
+    public let kind: HermesPackageKind
     public let addresses: [HermesAddress]
     public let contents: Contents
 
@@ -135,6 +146,7 @@ public struct HermesPackage<Contents: Hashable & Sendable>: Hashable, Sendable {
         packageID: HermesPackageID,
         subjectID: HermesSubjectID,
         sender: HermesAddress,
+        kind: HermesPackageKind,
         addresses: [HermesAddress],
         contents: Contents
     ) {
@@ -143,6 +155,7 @@ public struct HermesPackage<Contents: Hashable & Sendable>: Hashable, Sendable {
         self.packageID = packageID
         self.subjectID = subjectID
         self.sender = sender
+        self.kind = kind
         self.addresses = addresses
         self.contents = contents
     }
