@@ -6,6 +6,7 @@ public enum Ring {
     public static let fineStates = arcseconds * 2
     public static let tieRule: RingTieRule = .lower
     public static let marks: [RingMark] = RingMark.allCases
+    public static let templates: [RingTemplate] = (0..<degrees).map { RingTemplate($0)! }
 
     private static let targetTable: [Int] = {
         var table = Array(repeating: 0, count: degrees * marks.count * 2)
@@ -27,6 +28,11 @@ public enum Ring {
         }
         return table
     }()
+
+    public static func template(forDegree degree: Int) -> RingTemplate? {
+        guard (0..<degrees).contains(degree) else { return nil }
+        return templates[degree]
+    }
 
     public static func state(of longitude: CelestialLongitude, motion: Motion) -> RingState {
         let degree = Int(longitude.degrees.rounded(.down)) % degrees
