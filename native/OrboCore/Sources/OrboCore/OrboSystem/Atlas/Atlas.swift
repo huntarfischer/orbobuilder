@@ -26,6 +26,12 @@ public enum AtlasResolution: Equatable, Sendable {
     case notFound
 }
 
+public enum AtlasEngravingResolution: Equatable, Sendable {
+    case found(AtlasEngraving)
+    case ambiguous([Topos])
+    case notFound
+}
+
 public struct Atlas: Sendable {
     public init() {}
 
@@ -35,6 +41,18 @@ public struct Atlas: Sendable {
             return .found(topos(for: place))
         case let .ambiguous(places):
             return .ambiguous(places.map(topos(for:)))
+        case .notFound:
+            return .notFound
+        }
+    }
+
+    /// Atlas reads only the birth location and adds authoritative Topos.
+    public func resolve(_ intake: EngravingIntake) -> AtlasEngravingResolution {
+        switch resolve(intake.birthLocation) {
+        case let .found(topos):
+            return .found(AtlasEngraving(intake: intake, topos: topos))
+        case let .ambiguous(topoi):
+            return .ambiguous(topoi)
         case .notFound:
             return .notFound
         }
