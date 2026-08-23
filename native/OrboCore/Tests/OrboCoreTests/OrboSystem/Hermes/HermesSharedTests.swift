@@ -14,6 +14,7 @@ final class HermesSharedTests: XCTestCase {
         XCTAssertNil(HermesSubjectID(rawValue: "   "))
         XCTAssertNil(HermesAddress(rawValue: "\n"))
         XCTAssertNil(HermesParcelKind(rawValue: ""))
+        XCTAssertNil(HermesPackageKind(rawValue: "   "))
     }
 
     func testReceiptIdentifiesTheDeliveryItAcknowledges() {
