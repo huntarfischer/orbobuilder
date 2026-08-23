@@ -88,4 +88,42 @@ final class RingTemplateTests: XCTestCase {
         XCTAssertEqual(template.exactMarks(for: direct), template.exactMarks(for: retrograde))
         XCTAssertNil(template.exactMarks(for: wrongDegree))
     }
+
+    func testVenusObjectTemplatePreservesIdentitySourceAndMotion() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 7))
+        let offset = 34 * 60 + 12
+        let source = try XCTUnwrap(
+            RingFineState(Ring.arcseconds + 7 * Ring.arcsecondsPerDegree + offset)
+        )
+        let object = try XCTUnwrap(template.objectTemplate(for: .venus, source: source))
+
+        XCTAssertEqual(object.name, "VenusRingTemplate")
+        XCTAssertEqual(object.gene, .venus)
+        XCTAssertEqual(object.source, source)
+        XCTAssertEqual(object.sourceDMS, RingDMS(degree: 7, minute: 34, second: 12))
+        XCTAssertEqual(object.motion, .retrograde)
+        XCTAssertEqual(object.template.sourceDegree, 7)
+        XCTAssertEqual(object.marks, try XCTUnwrap(template.exactMarks(for: source)))
+    }
+
+    func testObjectTemplateNameUsesCanonicalAstroDNAGeneIdentity() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 7))
+        let source = try XCTUnwrap(RingFineState(7 * Ring.arcsecondsPerDegree))
+
+        XCTAssertEqual(
+            try XCTUnwrap(template.objectTemplate(for: .venus, source: source)).name,
+            "VenusRingTemplate"
+        )
+        XCTAssertEqual(
+            try XCTUnwrap(template.objectTemplate(for: .northNode, source: source)).name,
+            "NorthNodeRingTemplate"
+        )
+    }
+
+    func testObjectTemplateRejectsSourceFromAnotherDegree() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 7))
+        let source = try XCTUnwrap(RingFineState(8 * Ring.arcsecondsPerDegree + 1))
+
+        XCTAssertNil(template.objectTemplate(for: .venus, source: source))
+    }
 }
