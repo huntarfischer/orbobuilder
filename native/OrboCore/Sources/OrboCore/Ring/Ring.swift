@@ -34,6 +34,15 @@ public enum Ring {
         return templates[degree]
     }
 
+    public static func objectTemplate(
+        for gene: AstroDNAGene,
+        in dna: AstroDNA
+    ) -> RingObjectTemplate {
+        let source = dna[gene]
+        let template = templates[source.coarseState.degree]
+        return template.objectTemplate(for: gene, source: source)!
+    }
+
     public static func state(of longitude: CelestialLongitude, motion: Motion) -> RingState {
         let degree = Int(longitude.degrees.rounded(.down)) % degrees
         let motionOffset = motion == .retrograde ? degrees : 0
