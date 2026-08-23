@@ -21,6 +21,10 @@ public struct AtroposPackage: Hashable, Sendable {
     fileprivate init(grid: DegreeGrid) {
         self.grid = grid
     }
+
+    internal init(restoringGrid grid: DegreeGrid) {
+        self.grid = grid
+    }
 }
 
 /// Atropos is the quality-control and sealing authority for the Moirai.
