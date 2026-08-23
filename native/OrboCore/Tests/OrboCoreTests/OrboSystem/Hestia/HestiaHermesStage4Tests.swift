@@ -31,7 +31,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
         ticketID: HermesTicketID,
         initialParcelID: HermesParcelID,
         returnParcelID: HermesParcelID,
-        courier: inout HermesCourier
+        messenger: inout HermesMessenger
     ) throws -> HermesParcel<MoiraiPackage> {
         let ticket = HermesTicket(
             ticketID: ticketID,
@@ -50,8 +50,8 @@ final class HestiaHermesStage4Tests: XCTestCase {
             payload: sourceAstroDNA
         )
 
-        try courier.accept(ticket: ticket, parcel: commission, occurredAt: instant)
-        try courier.deliverToService(ticketID: ticketID, occurredAt: instant)
+        try messenger.accept(ticket: ticket, parcel: commission, occurredAt: instant)
+        try messenger.deliverToService(ticketID: ticketID, occurredAt: instant)
 
         let returned = HermesParcel(
             parcelID: returnParcelID,
@@ -66,15 +66,15 @@ final class HestiaHermesStage4Tests: XCTestCase {
             )
         )
 
-        try courier.acceptReturn(parcel: returned, occurredAt: instant)
-        try courier.deliverToFinalAddressee(parcel: returned, occurredAt: instant)
+        try messenger.acceptReturn(parcel: returned, occurredAt: instant)
+        try messenger.deliverToFinalAddressee(parcel: returned, occurredAt: instant)
         return returned
     }
 
     func testHermesDeliveryImmediatelyEstablishesNativeHearth() throws {
         let native = subject("native")
         let dna = astroDNA(rawValue: 0)
-        var courier = HermesCourier()
+        var messenger = HermesMessenger()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: native,
@@ -82,7 +82,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
             ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000401")!),
             initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000402")!),
             returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000403")!),
-            courier: &courier
+            messenger: &messenger
         )
 
         let disposition = try hestia.receive(returned, receivedAt: instant)
@@ -90,20 +90,20 @@ final class HestiaHermesStage4Tests: XCTestCase {
             return XCTFail("Expected accepted delivery")
         }
         XCTAssertEqual(destination, .hearth)
-        try courier.recordReceipt(receipt)
+        try messenger.recordReceipt(receipt)
 
         XCTAssertEqual(hestia.native()?.subjectID, native)
         XCTAssertEqual(hestia.native()?.astroDNA, dna)
         XCTAssertEqual(hestia.native()?.tapestry, returned.payload.tapestry)
         XCTAssertTrue(hestia.hall.residents.isEmpty)
-        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
+        XCTAssertEqual(messenger.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
     func testHermesDeliveryImmediatelyAdmitsSavedSubjectToHall() throws {
         let native = subject("native")
         let saved = subject("saved-person")
         let dna = astroDNA(rawValue: 1)
-        var courier = HermesCourier()
+        var messenger = HermesMessenger()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: saved,
@@ -111,7 +111,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
             ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000411")!),
             initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000412")!),
             returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000413")!),
-            courier: &courier
+            messenger: &messenger
         )
 
         let disposition = try hestia.receive(returned, receivedAt: instant)
@@ -119,20 +119,20 @@ final class HestiaHermesStage4Tests: XCTestCase {
             return XCTFail("Expected accepted delivery")
         }
         XCTAssertEqual(destination, .hall)
-        try courier.recordReceipt(receipt)
+        try messenger.recordReceipt(receipt)
 
         XCTAssertNil(hestia.native())
         XCTAssertEqual(hestia.saved(saved)?.subjectID, saved)
         XCTAssertEqual(hestia.saved(saved)?.astroDNA, dna)
         XCTAssertEqual(hestia.saved(saved)?.tapestry, returned.payload.tapestry)
-        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
+        XCTAssertEqual(messenger.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
     func testMismatchedTapestryIsImmediatelyRejectedAndKeptNowhere() throws {
         let native = subject("native")
         let sourceDNA = astroDNA(rawValue: 0)
         let wrongTapestry = try tapestry(for: astroDNA(rawValue: 1))
-        var courier = HermesCourier()
+        var messenger = HermesMessenger()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: native,
@@ -141,14 +141,14 @@ final class HestiaHermesStage4Tests: XCTestCase {
             ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000421")!),
             initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000422")!),
             returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000423")!),
-            courier: &courier
+            messenger: &messenger
         )
 
         let disposition = try hestia.receive(returned, receivedAt: instant)
         guard case let .rejected(receipt, correction) = disposition else {
             return XCTFail("Expected rejection")
         }
-        try courier.recordReceipt(receipt)
+        try messenger.recordReceipt(receipt)
 
         XCTAssertNil(hestia.native())
         XCTAssertTrue(hestia.hall.residents.isEmpty)
@@ -159,7 +159,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
         XCTAssertEqual(correction.rejectedTapestry, wrongTapestry)
         XCTAssertEqual(correction.serviceDestination, moirai)
         XCTAssertEqual(correction.finalAddressee, hestiaAddress)
-        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
+        XCTAssertEqual(messenger.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
     func testRejectedTapestryCanOpenNewLinkedHermesJourneyBackToMoirai() throws {
@@ -168,7 +168,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
         let wrongTapestry = try tapestry(for: astroDNA(rawValue: 1))
         let originalTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000431")!)
         let correctionTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000451")!)
-        var courier = HermesCourier()
+        var messenger = HermesMessenger()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: native,
@@ -177,14 +177,14 @@ final class HestiaHermesStage4Tests: XCTestCase {
             ticketID: originalTicketID,
             initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000432")!),
             returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000433")!),
-            courier: &courier
+            messenger: &messenger
         )
 
         let disposition = try hestia.receive(returned, receivedAt: instant)
         guard case let .rejected(receipt, correction) = disposition else {
             return XCTFail("Expected rejection")
         }
-        try courier.recordReceipt(receipt)
+        try messenger.recordReceipt(receipt)
 
         let correctionTicket = HermesTicket(
             ticketID: correctionTicketID,
@@ -203,17 +203,17 @@ final class HestiaHermesStage4Tests: XCTestCase {
             payload: correction
         )
 
-        try courier.accept(
+        try messenger.accept(
             ticket: correctionTicket,
             parcel: correctionParcel,
             occurredAt: instant
         )
-        try courier.deliverToService(ticketID: correctionTicketID, occurredAt: instant)
+        try messenger.deliverToService(ticketID: correctionTicketID, occurredAt: instant)
 
-        XCTAssertEqual(courier.manifest.currentState(for: originalTicketID), .resolved)
-        XCTAssertEqual(courier.manifest.currentState(for: correctionTicketID), .unresolved)
+        XCTAssertEqual(messenger.manifest.currentState(for: originalTicketID), .resolved)
+        XCTAssertEqual(messenger.manifest.currentState(for: correctionTicketID), .unresolved)
         XCTAssertEqual(
-            courier.manifest.events(for: correctionTicketID).last?.kind,
+            messenger.manifest.events(for: correctionTicketID).last?.kind,
             .deliveredToService
         )
         XCTAssertNil(hestia.native())
@@ -223,7 +223,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
     func testDispositionReceiptAlwaysMatchesDeliveredParcel() throws {
         let native = subject("native")
         let dna = astroDNA(rawValue: 0)
-        var courier = HermesCourier()
+        var messenger = HermesMessenger()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: native,
@@ -231,7 +231,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
             ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000461")!),
             initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000462")!),
             returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000463")!),
-            courier: &courier
+            messenger: &messenger
         )
 
         let disposition = try hestia.receive(returned, receivedAt: instant)
