@@ -68,7 +68,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
         return returned
     }
 
-    func testReceiptMeansCustodyNotAdmission() throws {
+    func testHermesDeliveryImmediatelyEstablishesNativeHearth() throws {
         let native = subject("native")
         let dna = astroDNA(rawValue: 0)
         var courier = HermesCourier()
@@ -82,30 +82,11 @@ final class HestiaHermesStage4Tests: XCTestCase {
             courier: &courier
         )
 
-        let receipt = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
+        let disposition = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
+        guard case let .hearth(receipt) = disposition else {
+            return XCTFail("Expected Hearth disposition")
+        }
         try courier.recordReceipt(receipt)
-
-        XCTAssertNil(hestia.native())
-        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
-    }
-
-    func testRealHermesDeliveryCanEstablishNativeHearth() throws {
-        let native = subject("native")
-        let dna = astroDNA(rawValue: 0)
-        var courier = HermesCourier()
-        var hestia = Hestia(nativeSubjectID: native)
-        let returned = try deliveredParcel(
-            subjectID: native,
-            sourceAstroDNA: dna,
-            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000411")!),
-            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000412")!),
-            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000413")!),
-            courier: &courier
-        )
-
-        let receipt = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
-        try courier.recordReceipt(receipt)
-        try hestia.admit(parcelID: returned.parcelID)
 
         XCTAssertEqual(hestia.native()?.subjectID, native)
         XCTAssertEqual(hestia.native()?.astroDNA, dna)
@@ -114,7 +95,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
         XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
-    func testRealHermesDeliveryCanAdmitSavedSubjectToHall() throws {
+    func testHermesDeliveryImmediatelyAdmitsSavedSubjectToHall() throws {
         let native = subject("native")
         let saved = subject("saved-person")
         let dna = astroDNA(rawValue: 1)
@@ -123,53 +104,64 @@ final class HestiaHermesStage4Tests: XCTestCase {
         let returned = try deliveredParcel(
             subjectID: saved,
             sourceAstroDNA: dna,
-            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000421")!),
-            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000422")!),
-            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000423")!),
+            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000411")!),
+            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000412")!),
+            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000413")!),
             courier: &courier
         )
 
-        let receipt = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
+        let disposition = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
+        guard case let .hall(receipt) = disposition else {
+            return XCTFail("Expected Hall disposition")
+        }
         try courier.recordReceipt(receipt)
-        try hestia.admit(parcelID: returned.parcelID)
 
         XCTAssertNil(hestia.native())
         XCTAssertEqual(hestia.saved(saved)?.subjectID, saved)
         XCTAssertEqual(hestia.saved(saved)?.astroDNA, dna)
         XCTAssertEqual(hestia.saved(saved)?.tapestry, returned.payload)
+        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
-    func testHestiaRejectsTapestryThatDoesNotMatchCanonicalAstroDNA() throws {
+    func testMismatchedTapestryIsImmediatelyRejectedAndKeptNowhere() throws {
         let native = subject("native")
         let sourceDNA = astroDNA(rawValue: 0)
-        let wrongDNA = astroDNA(rawValue: 1)
-        let wrongTapestry = try tapestry(for: wrongDNA)
+        let wrongTapestry = try tapestry(for: astroDNA(rawValue: 1))
         var courier = HermesCourier()
         var hestia = Hestia(nativeSubjectID: native)
         let returned = try deliveredParcel(
             subjectID: native,
             sourceAstroDNA: sourceDNA,
             returnedTapestry: wrongTapestry,
-            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000431")!),
-            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000432")!),
-            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000433")!),
+            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000421")!),
+            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000422")!),
+            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000423")!),
             courier: &courier
         )
 
-        let receipt = try hestia.receive(returned, astroDNA: sourceDNA, receivedAt: instant)
+        let disposition = try hestia.receive(returned, astroDNA: sourceDNA, receivedAt: instant)
+        guard case let .rejected(receipt, correction) = disposition else {
+            return XCTFail("Expected rejection")
+        }
         try courier.recordReceipt(receipt)
 
-        XCTAssertThrowsError(try hestia.admit(parcelID: returned.parcelID)) { error in
-            XCTAssertEqual(error as? Hestia.Failure, .tapestryDoesNotMatchAstroDNA)
-        }
         XCTAssertNil(hestia.native())
+        XCTAssertTrue(hestia.hall.residents.isEmpty)
+        XCTAssertEqual(correction.originalTicketID, returned.ticketID)
+        XCTAssertEqual(correction.originalParcelID, returned.parcelID)
+        XCTAssertEqual(correction.subjectID, native)
+        XCTAssertEqual(correction.astroDNA, sourceDNA)
+        XCTAssertEqual(correction.rejectedTapestry, wrongTapestry)
+        XCTAssertEqual(correction.serviceDestination, moirai)
+        XCTAssertEqual(correction.finalAddressee, hestiaAddress)
+        XCTAssertEqual(courier.manifest.currentState(for: returned.ticketID), .resolved)
     }
 
     func testRejectedTapestryCanOpenNewLinkedHermesJourneyBackToMoirai() throws {
         let native = subject("native")
         let sourceDNA = astroDNA(rawValue: 0)
         let wrongTapestry = try tapestry(for: astroDNA(rawValue: 1))
-        let originalTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000441")!)
+        let originalTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000431")!)
         let correctionTicketID = HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000451")!)
         var courier = HermesCourier()
         var hestia = Hestia(nativeSubjectID: native)
@@ -178,23 +170,16 @@ final class HestiaHermesStage4Tests: XCTestCase {
             sourceAstroDNA: sourceDNA,
             returnedTapestry: wrongTapestry,
             ticketID: originalTicketID,
-            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000442")!),
-            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000443")!),
+            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000432")!),
+            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000433")!),
             courier: &courier
         )
 
-        let receipt = try hestia.receive(returned, astroDNA: sourceDNA, receivedAt: instant)
+        let disposition = try hestia.receive(returned, astroDNA: sourceDNA, receivedAt: instant)
+        guard case let .rejected(receipt, correction) = disposition else {
+            return XCTFail("Expected rejection")
+        }
         try courier.recordReceipt(receipt)
-        XCTAssertThrowsError(try hestia.admit(parcelID: returned.parcelID))
-
-        let correction = try hestia.reject(parcelID: returned.parcelID)
-        XCTAssertEqual(correction.originalTicketID, originalTicketID)
-        XCTAssertEqual(correction.originalParcelID, returned.parcelID)
-        XCTAssertEqual(correction.subjectID, native)
-        XCTAssertEqual(correction.astroDNA, sourceDNA)
-        XCTAssertEqual(correction.rejectedTapestry, wrongTapestry)
-        XCTAssertEqual(correction.serviceDestination, moirai)
-        XCTAssertEqual(correction.finalAddressee, hestiaAddress)
 
         let correctionTicket = HermesTicket(
             ticketID: correctionTicketID,
@@ -227,5 +212,27 @@ final class HestiaHermesStage4Tests: XCTestCase {
             .deliveredToService
         )
         XCTAssertNil(hestia.native())
+        XCTAssertTrue(hestia.hall.residents.isEmpty)
+    }
+
+    func testDispositionReceiptAlwaysMatchesDeliveredParcel() throws {
+        let native = subject("native")
+        let dna = astroDNA(rawValue: 0)
+        var courier = HermesCourier()
+        var hestia = Hestia(nativeSubjectID: native)
+        let returned = try deliveredParcel(
+            subjectID: native,
+            sourceAstroDNA: dna,
+            ticketID: HermesTicketID(UUID(uuidString: "00000000-0000-0000-0000-000000000461")!),
+            initialParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000462")!),
+            returnParcelID: HermesParcelID(UUID(uuidString: "00000000-0000-0000-0000-000000000463")!),
+            courier: &courier
+        )
+
+        let disposition = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
+
+        XCTAssertEqual(disposition.receipt.ticketID, returned.ticketID)
+        XCTAssertEqual(disposition.receipt.parcelID, returned.parcelID)
+        XCTAssertEqual(disposition.receipt.recipient, hestiaAddress)
     }
 }
