@@ -83,9 +83,10 @@ final class HestiaHermesStage4Tests: XCTestCase {
         )
 
         let disposition = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
-        guard case let .hearth(receipt) = disposition else {
-            return XCTFail("Expected Hearth disposition")
+        guard case let .accepted(destination, receipt) = disposition else {
+            return XCTFail("Expected accepted delivery")
         }
+        XCTAssertEqual(destination, .hearth)
         try courier.recordReceipt(receipt)
 
         XCTAssertEqual(hestia.native()?.subjectID, native)
@@ -111,9 +112,10 @@ final class HestiaHermesStage4Tests: XCTestCase {
         )
 
         let disposition = try hestia.receive(returned, astroDNA: dna, receivedAt: instant)
-        guard case let .hall(receipt) = disposition else {
-            return XCTFail("Expected Hall disposition")
+        guard case let .accepted(destination, receipt) = disposition else {
+            return XCTFail("Expected accepted delivery")
         }
+        XCTAssertEqual(destination, .hall)
         try courier.recordReceipt(receipt)
 
         XCTAssertNil(hestia.native())
@@ -234,5 +236,10 @@ final class HestiaHermesStage4Tests: XCTestCase {
         XCTAssertEqual(disposition.receipt.ticketID, returned.ticketID)
         XCTAssertEqual(disposition.receipt.parcelID, returned.parcelID)
         XCTAssertEqual(disposition.receipt.recipient, hestiaAddress)
+    }
+
+    func testHestiaDeliveryVocabularyIncludesHoldingsAsDistinctDestination() {
+        XCTAssertNotEqual(HestiaDestination.holdings, .hearth)
+        XCTAssertNotEqual(HestiaDestination.holdings, .hall)
     }
 }
