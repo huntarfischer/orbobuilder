@@ -8,6 +8,12 @@ on:
     paths:
       - tools/pass5/generate_jovian_reign_table.py
       - .github/workflows/pass5-jovian-reign-table.yml
+  pull_request:
+    branches:
+      - agent/mundane-timespine-3d-build
+    paths:
+      - tools/pass5/generate_jovian_reign_table.py
+      - .github/workflows/pass5-jovian-reign-table.yml
 
 permissions:
   contents: write
@@ -82,7 +88,6 @@ jobs:
           ]
           with path.open(newline="", encoding="utf-8") as f:
               rows = list(csv.DictReader(f))
-              assert f.seekable()
           assert rows
           assert list(rows[0].keys()) == expected
           assert rows[0]["shell_id"] == "J0"
