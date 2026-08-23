@@ -26,16 +26,18 @@ final class HestiaStage0Tests: XCTestCase {
         XCTAssertEqual(resident.tapestry, tapestry)
     }
 
-    func testHallResidentPreservesSubjectAndExactTapestry() throws {
+    func testHallResidentPreservesSubjectAstroDNAAndExactTapestry() throws {
         let subjectID = try XCTUnwrap(HermesSubjectID(rawValue: "saved-person"))
-        let (_, tapestry) = try sealedTapestry()
+        let (astroDNA, tapestry) = try sealedTapestry()
 
         let resident = HallResident(
             subjectID: subjectID,
+            astroDNA: astroDNA,
             tapestry: tapestry
         )
 
         XCTAssertEqual(resident.subjectID, subjectID)
+        XCTAssertEqual(resident.astroDNA, astroDNA)
         XCTAssertEqual(resident.tapestry, tapestry)
     }
 }
