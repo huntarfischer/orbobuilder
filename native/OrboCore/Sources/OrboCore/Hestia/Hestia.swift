@@ -26,23 +26,27 @@ public struct HestiaCorrection: Hashable, Sendable {
     }
 }
 
-private struct HestiaCustody: Hashable, Sendable {
-    let parcel: HermesParcel<AtroposPackage>
-    let astroDNA: AstroDNA
+public enum HestiaDeliveryDisposition: Hashable, Sendable {
+    case hearth(HermesReceipt)
+    case hall(HermesReceipt)
+    case rejected(HermesReceipt, HestiaCorrection)
+
+    public var receipt: HermesReceipt {
+        switch self {
+        case let .hearth(receipt), let .hall(receipt), let .rejected(receipt, _):
+            return receipt
+        }
+    }
 }
 
 public struct Hestia: Hashable, Sendable {
     public enum Failure: Error, Hashable, Sendable {
         case nativeAlreadyEstablished
         case savedSubjectAlreadyAdmitted
-        case parcelAlreadyReceived
-        case parcelNotInCustody
-        case tapestryDoesNotMatchAstroDNA
     }
 
     public private(set) var hearth: Hearth
     public private(set) var hall: Hall
-    private var custody: [HestiaCustody]
 
     public var nativeSubjectID: HermesSubjectID {
         hearth.nativeSubjectID
@@ -51,76 +55,50 @@ public struct Hestia: Hashable, Sendable {
     public init(nativeSubjectID: HermesSubjectID) {
         self.hearth = Hearth(nativeSubjectID: nativeSubjectID)
         self.hall = Hall()
-        self.custody = []
     }
 
-    /// Accepts custody of a parcel Hermes has delivered to Hestia.
-    /// Receipt means custody only. It does not mean the tapestry has been admitted.
+    /// Receives a completed Moirai delivery and immediately chooses its disposition.
+    /// The receipt records Hermes delivery in every case. Hestia either hangs the
+    /// tapestry in Hearth or Hall, or rejects it with corrective provenance.
     public mutating func receive(
         _ parcel: HermesParcel<AtroposPackage>,
         astroDNA: AstroDNA,
         receivedAt: AbsoluteInstant
-    ) throws -> HermesReceipt {
-        guard !custody.contains(where: { $0.parcel.parcelID == parcel.parcelID }) else {
-            throw Failure.parcelAlreadyReceived
-        }
-
-        custody.append(
-            HestiaCustody(
-                parcel: parcel,
-                astroDNA: astroDNA
-            )
-        )
-
-        return HermesReceipt(
+    ) throws -> HestiaDeliveryDisposition {
+        let receipt = HermesReceipt(
             ticketID: parcel.ticketID,
             parcelID: parcel.parcelID,
             recipient: parcel.finalAddressee,
             receivedAt: receivedAt
         )
-    }
 
-    /// Admits a parcel already held in Hestia's custody.
-    /// Hestia compares the finished weave to the canonical AstroDNA she received
-    /// with the commission, then places the resident in Hearth or Hall.
-    public mutating func admit(parcelID: HermesParcelID) throws {
-        guard let index = custody.firstIndex(where: { $0.parcel.parcelID == parcelID }) else {
-            throw Failure.parcelNotInCustody
-        }
-
-        let held = custody[index]
-        guard Self.tapestry(held.parcel.payload, matches: held.astroDNA) else {
-            throw Failure.tapestryDoesNotMatchAstroDNA
+        guard Self.tapestry(parcel.payload, matches: astroDNA) else {
+            return .rejected(
+                receipt,
+                HestiaCorrection(
+                    originalTicketID: parcel.ticketID,
+                    originalParcelID: parcel.parcelID,
+                    subjectID: parcel.subjectID,
+                    astroDNA: astroDNA,
+                    rejectedTapestry: parcel.payload,
+                    serviceDestination: parcel.sender,
+                    finalAddressee: parcel.finalAddressee
+                )
+            )
         }
 
         try admit(
-            subjectID: held.parcel.subjectID,
-            astroDNA: held.astroDNA,
-            tapestry: held.parcel.payload
+            subjectID: parcel.subjectID,
+            astroDNA: astroDNA,
+            tapestry: parcel.payload
         )
-        custody.remove(at: index)
+
+        return parcel.subjectID == nativeSubjectID
+            ? .hearth(receipt)
+            : .hall(receipt)
     }
 
-    /// Refuses residence while preserving the exact source and rejected work
-    /// required to commission a corrective Hermes journey back to the service.
-    public mutating func reject(parcelID: HermesParcelID) throws -> HestiaCorrection {
-        guard let index = custody.firstIndex(where: { $0.parcel.parcelID == parcelID }) else {
-            throw Failure.parcelNotInCustody
-        }
-
-        let held = custody.remove(at: index)
-        return HestiaCorrection(
-            originalTicketID: held.parcel.ticketID,
-            originalParcelID: held.parcel.parcelID,
-            subjectID: held.parcel.subjectID,
-            astroDNA: held.astroDNA,
-            rejectedTapestry: held.parcel.payload,
-            serviceDestination: held.parcel.sender,
-            finalAddressee: held.parcel.finalAddressee
-        )
-    }
-
-    /// Stage-3 placement seam. External admission should enter through custody.
+    /// Stage-3 placement seam. Stage 4 enters through `receive`.
     mutating func admit(
         subjectID: HermesSubjectID,
         astroDNA: AstroDNA,
