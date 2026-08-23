@@ -50,4 +50,42 @@ final class RingTemplateTests: XCTestCase {
             }
         }
     }
+
+    func testFineApplicationCarriesMinutesAndSecondsThroughEveryMarkedCell() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 7))
+        let sourceArcsecond = 7 * Ring.arcsecondsPerDegree + 34 * 60 + 12
+        let source = try XCTUnwrap(RingFineState(sourceArcsecond))
+        let marks = try XCTUnwrap(template.exactMarks(for: source))
+
+        XCTAssertEqual(marks.count, 20)
+        XCTAssertTrue(marks.allSatisfy { $0.dms.minute == 34 && $0.dms.second == 12 })
+
+        XCTAssertTrue(marks.contains { $0.mark == .conjunction && $0.dms == RingDMS(degree: 7, minute: 34, second: 12) })
+        XCTAssertTrue(marks.contains { $0.mark == .square && $0.dms == RingDMS(degree: 97, minute: 34, second: 12) })
+        XCTAssertTrue(marks.contains { $0.mark == .square && $0.dms == RingDMS(degree: 277, minute: 34, second: 12) })
+        XCTAssertTrue(marks.contains { $0.mark == .opposition && $0.dms == RingDMS(degree: 187, minute: 34, second: 12) })
+    }
+
+    func testFineApplicationWrapsAtTheEndOfTheCircle() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 359))
+        let sourceArcsecond = 359 * Ring.arcsecondsPerDegree + 59 * 60 + 59
+        let source = try XCTUnwrap(RingFineState(sourceArcsecond))
+        let marks = try XCTUnwrap(template.exactMarks(for: source))
+
+        XCTAssertTrue(marks.contains { $0.mark == .conjunction && $0.dms == RingDMS(degree: 359, minute: 59, second: 59) })
+        XCTAssertTrue(marks.contains { $0.mark == .semisextile && $0.dms == RingDMS(degree: 29, minute: 59, second: 59) })
+        XCTAssertTrue(marks.contains { $0.mark == .square && $0.dms == RingDMS(degree: 89, minute: 59, second: 59) })
+        XCTAssertTrue(marks.contains { $0.mark == .opposition && $0.dms == RingDMS(degree: 179, minute: 59, second: 59) })
+    }
+
+    func testFineApplicationRejectsWrongTemplateAndIgnoresMotionForGeometry() throws {
+        let template = try XCTUnwrap(Ring.template(forDegree: 7))
+        let offset = 34 * 60 + 12
+        let direct = try XCTUnwrap(RingFineState(7 * Ring.arcsecondsPerDegree + offset))
+        let retrograde = try XCTUnwrap(RingFineState(Ring.arcseconds + 7 * Ring.arcsecondsPerDegree + offset))
+        let wrongDegree = try XCTUnwrap(RingFineState(8 * Ring.arcsecondsPerDegree + offset))
+
+        XCTAssertEqual(template.exactMarks(for: direct), template.exactMarks(for: retrograde))
+        XCTAssertNil(template.exactMarks(for: wrongDegree))
+    }
 }
