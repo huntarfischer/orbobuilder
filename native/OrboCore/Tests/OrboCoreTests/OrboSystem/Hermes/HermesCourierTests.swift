@@ -8,6 +8,8 @@ final class HermesCourierTests: XCTestCase {
     private let otherSubject = HermesSubjectID(rawValue: "subject.other")!
     private let orbo = HermesAddress(rawValue: "orbo")!
     private let otherSender = HermesAddress(rawValue: "orbo.other")!
+    private let engraving = HermesPackageKind(rawValue: "orbo.engraving.v1")!
+    private let otherKind = HermesPackageKind(rawValue: "orbo.other.v1")!
     private let atlas = HermesAddress(rawValue: "orbo.atlas")!
     private let moirai = HermesAddress(rawValue: "orbo.moirai")!
     private let hestia = HermesAddress(rawValue: "orbo.hestia")!
@@ -15,12 +17,13 @@ final class HermesCourierTests: XCTestCase {
 
     private var itinerary: [HermesAddress] { [atlas, moirai, hestia] }
 
-    func testPackagePreservesIdentityItineraryAndContents() {
+    func testPackagePreservesIdentityKindItineraryAndContents() {
         let package = makePackage(contents: "engraving")
 
         XCTAssertEqual(package.packageID, packageID)
         XCTAssertEqual(package.subjectID, subject)
         XCTAssertEqual(package.sender, orbo)
+        XCTAssertEqual(package.kind, engraving)
         XCTAssertEqual(package.addresses, itinerary)
         XCTAssertEqual(package.contents, "engraving")
     }
@@ -31,6 +34,7 @@ final class HermesCourierTests: XCTestCase {
                 packageID: packageID,
                 subjectID: subject,
                 sender: orbo,
+                kind: engraving,
                 addresses: [],
                 contents: "engraving"
             )
@@ -132,6 +136,18 @@ final class HermesCourierTests: XCTestCase {
             try courier.recover(ticketID: ticketID, package: changed, occurredAt: instant)
         ) { error in
             XCTAssertEqual(error as? HermesCourier.Failure, .senderMismatch)
+        }
+    }
+
+    func testRecoveryRejectsChangedPackageKind() throws {
+        var (courier, ticketID, _) = try acceptedCourier()
+        _ = try courier.deliverNext(ticketID: ticketID, occurredAt: instant)
+        let changed = makePackage(contents: "changed", kind: otherKind)
+
+        XCTAssertThrowsError(
+            try courier.recover(ticketID: ticketID, package: changed, occurredAt: instant)
+        ) { error in
+            XCTAssertEqual(error as? HermesCourier.Failure, .packageKindMismatch)
         }
     }
 
@@ -298,12 +314,14 @@ final class HermesCourierTests: XCTestCase {
         packageID: HermesPackageID? = nil,
         subjectID: HermesSubjectID? = nil,
         sender: HermesAddress? = nil,
+        kind: HermesPackageKind? = nil,
         addresses: [HermesAddress]? = nil
     ) -> HermesPackage<Contents> {
         HermesPackage(
             packageID: packageID ?? self.packageID,
             subjectID: subjectID ?? subject,
             sender: sender ?? orbo,
+            kind: kind ?? engraving,
             addresses: addresses ?? itinerary,
             contents: contents
         )!
