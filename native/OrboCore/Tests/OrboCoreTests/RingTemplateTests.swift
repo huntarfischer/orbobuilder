@@ -126,4 +126,52 @@ final class RingTemplateTests: XCTestCase {
 
         XCTAssertNil(template.objectTemplate(for: .venus, source: source))
     }
+
+    func testRingBuildsVenusTemplateDirectlyFromAstroDNA() throws {
+        let offset = 34 * 60 + 12
+        var sequence = Array(repeating: 0, count: AstroDNA.geneCount)
+        sequence[AstroDNAGene.venus.ordinal] =
+            Ring.arcseconds + 7 * Ring.arcsecondsPerDegree + offset
+        let dna = try XCTUnwrap(AstroDNA(rawSequence: sequence))
+
+        let object = Ring.objectTemplate(for: .venus, in: dna)
+
+        XCTAssertEqual(object.name, "VenusRingTemplate")
+        XCTAssertEqual(object.gene, .venus)
+        XCTAssertEqual(object.source, dna[.venus])
+        XCTAssertEqual(object.template.sourceDegree, 7)
+        XCTAssertEqual(object.sourceDMS, RingDMS(degree: 7, minute: 34, second: 12))
+        XCTAssertEqual(object.motion, .retrograde)
+        XCTAssertTrue(object.marks.contains {
+            $0.mark == .conjunction &&
+            $0.dms == RingDMS(degree: 7, minute: 34, second: 12)
+        })
+        XCTAssertTrue(object.marks.contains {
+            $0.mark == .square &&
+            $0.dms == RingDMS(degree: 97, minute: 34, second: 12)
+        })
+        XCTAssertTrue(object.marks.contains {
+            $0.mark == .opposition &&
+            $0.dms == RingDMS(degree: 187, minute: 34, second: 12)
+        })
+        XCTAssertTrue(object.marks.contains {
+            $0.mark == .square &&
+            $0.dms == RingDMS(degree: 277, minute: 34, second: 12)
+        })
+    }
+
+    func testRingCanProduceAnObjectTemplateForEveryAstroDNAGene() throws {
+        let sequence = AstroDNAGene.canonicalOrder.map { gene in
+            gene.ordinal * Ring.arcsecondsPerDegree
+        }
+        let dna = try XCTUnwrap(AstroDNA(rawSequence: sequence))
+
+        for gene in AstroDNAGene.canonicalOrder {
+            let object = Ring.objectTemplate(for: gene, in: dna)
+            XCTAssertEqual(object.gene, gene)
+            XCTAssertEqual(object.source, dna[gene])
+            XCTAssertEqual(object.template.sourceDegree, gene.ordinal)
+            XCTAssertEqual(object.name, gene.displayName.split(separator: " ").joined() + "RingTemplate")
+        }
+    }
 }
