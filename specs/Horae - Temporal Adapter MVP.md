@@ -1,17 +1,15 @@
 # Horae - Temporal Adapter MVP
 
-**Status:** Stage 0 contract / awaiting review  
+**Status:** FROZEN / PROVEN  
 **Target:** Orbo 1.0 native  
 **Branch:** `feature/horae-mvp`  
 **Baseline:** `feature/hestia-orbospine-transplant`
 
 ## Purpose
 
-Prove one thing:
+> Horae expose the complete OrboSpine state at one UT, whether that UT is the current real-world moment or an explicitly selected moment.
 
-> Horae can expose the complete OrboSpine state at one UT, whether that UT is the current real-world moment or an explicitly selected moment.
-
-Horae exist to make OrboSpine demonstrable. They are the presentation-neutral temporal adapter between OrboSpine Door I (`Locate`) and future visualization systems.
+Horae are the presentation-neutral temporal adapter between OrboSpine Door I (`Locate`) and future visualization systems.
 
 ```text
 ORBOSPINE
@@ -44,7 +42,7 @@ Horae use only:
 I    LOCATE
 ```
 
-For the MVP, Horae do not use Library or Link and do not change any OrboSpine access law.
+Horae do not use Library or Link and do not change any OrboSpine access law.
 
 `OrboSpineLocate` remains the owner of coordinate navigation, interpolation, exact station topology, Bone bounds, directional degree, and Terra Marrow refinement.
 
@@ -62,7 +60,7 @@ SEEK
 explicit UT
 ```
 
-Both resolve through the same underlying output path.
+Both resolve through the same output path.
 
 ```text
 LIVE ----\
@@ -73,10 +71,6 @@ SEEK ----/
 `SEEK` is the architectural term. Scrubbing is one future interface behavior that may generate repeated seeks.
 
 ## One output
-
-Horae produce one presentation-neutral temporal signal.
-
-Conceptually:
 
 ```text
 HoraeOutput
@@ -139,86 +133,7 @@ Horae do not own:
 9. Requests outside the Bone follow Locate failure law. Horae do not clamp, wrap, guess, or fabricate.
 10. Horae own no presentation. A future visualizer consumes their output.
 
-## MVP build stages
-
-```text
-Stage 0   contract
-Stage 1   HoraeOutput
-Stage 2   SEEK
-Stage 3   reversibility proof
-Stage 4   LIVE
-Stage 5   Spine boundary integration
-Stage 6   demonstration stress
-Stage 7   freeze
-```
-
-### Stage 0 - Contract
-
-Freeze the Door I relationship, two inputs, one output, ownership, and explicit non-goals.
-
-No production code.
-No tests.
-No OrboSpine changes.
-
-### Stage 1 - HoraeOutput
-
-Define the minimum neutral output using existing OrboSpine types.
-
-### Stage 2 - SEEK
-
-Implement:
-
-```text
-seek(to: JulianDay) -> HoraeOutput
-```
-
-At one UT, ask Locate for every canonical body and Terra Marrow, then assemble the output.
-
-### Stage 3 - Reversibility
-
-Prove:
-
-```text
-T1 -> T2 -> T3 -> T1
-```
-
-returns the same output at `T1` both times.
-
-Also prove that approaching the same UT from either direction or jumping directly to it produces the same output.
-
-### Stage 4 - LIVE
-
-Implement:
-
-```text
-live() -> HoraeOutput
-```
-
-LIVE obtains current UT and routes it through the same internal output path as SEEK.
-
-Required proof:
-
-```text
-LIVE at known T == SEEK to T
-```
-
-### Stage 5 - Spine boundary integration
-
-Add thin integration proofs at representative OrboSpine boundaries, including exact station topology, Terra source seams, degree crossings, and Bone edges.
-
-Do not duplicate Locate's own interpolation or topology tests.
-
-### Stage 6 - Demonstration stress
-
-Feed dense forward and reverse seek sequences, jumps, returns, and LIVE/SEEK alternation.
-
-This proves that Horae can supply a rapidly changing neutral signal to a future visualizer without drift, stale values, or accumulated state.
-
-### Stage 7 - Freeze
-
-Freeze the MVP surface.
-
-Conceptually:
+## Frozen MVP surface
 
 ```text
 Horae
@@ -227,18 +142,141 @@ live()               -> HoraeOutput
 seek(to: JulianDay)  -> HoraeOutput
 ```
 
-A shared internal `output(at:)` may exist as implementation detail.
+LIVE obtains the current `AbsoluteInstant`, converts it to `JulianDay`, and calls SEEK. There is one truth path.
+
+SEEK asks `OrboSpineLocate` for every canonical body and Terra Marrow at the supplied UT, then packages those existing values as `HoraeOutput`.
+
+## Build record
+
+```text
+Stage 0   contract                     PROVEN
+Stage 1   HoraeOutput                  PROVEN
+Stage 2   SEEK                         PROVEN
+Stage 3   reversibility                PROVEN
+Stage 4   LIVE                         PROVEN
+Stage 5   Spine boundary integration   PROVEN
+Stage 6   demonstration stress         PROVEN
+Stage 7   freeze                       COMPLETE
+```
+
+### Stage 1 - HoraeOutput
+
+Proves the adapter preserves canonical OrboSpine coordinate and Terra types, including directional-degree and Terra precision.
+
+### Stage 2 - SEEK
+
+Proves one supplied UT yields the direct Locate cross-section for every canonical body plus Terra, and that Locate failures propagate unchanged.
+
+### Stage 3 - Reversibility
+
+Proves:
+
+```text
+T1 -> T2 -> T3 -> T1
+```
+
+returns the same output at `T1`, and that approaching a UT from either direction or jumping directly to it produces the same result.
+
+> Position determines output. Path does not.
+
+### Stage 4 - LIVE
+
+Proves:
+
+```text
+LIVE at known T == SEEK to T
+```
+
+LIVE introduces no second calculation path and inherits SEEK failure law.
+
+### Stage 5 - Spine boundary integration
+
+Proves Horae remain transparent at:
+
+- exact station topology
+- whole-degree crossing
+- 1850 Terra source seam
+- 2050 Terra source seam
+- Bone start
+- immediately before Bone end
+- exact half-open Bone end
+
+No special Horae boundary logic was required.
+
+### Stage 6 - Demonstration stress
+
+Proves no drift, stale state, or mode contamination through:
+
+- 100 dense forward seeks followed by the same 100 in reverse
+- arbitrary jumps with repeated return to an anchor UT
+- alternating LIVE and SEEK
+- 100 repeated seeks to the exact same UT
+
+No production changes were required for Stages 3, 5, or 6.
 
 ## Canonical home
 
-When implementation begins, Horae should live as an OrboSystem sibling:
+Horae live as an OrboSystem sibling:
 
 ```text
 native/OrboCore/Sources/OrboCore/OrboSystem/Horae/
 native/OrboCore/Tests/OrboCoreTests/OrboSystem/Horae/
 ```
 
-Horae do not live inside `OrboSystem/OrboSpine/`.
+They do not live inside `OrboSystem/OrboSpine/`.
+
+Production surface:
+
+```text
+Horae/
+    Horae.swift
+    HoraeOutput.swift
+```
+
+Proof surface:
+
+```text
+Horae/
+    HoraeStage1Tests.swift
+    HoraeStage2Tests.swift
+    HoraeStage3Tests.swift
+    HoraeStage4Tests.swift
+    HoraeStage5Tests.swift
+    HoraeStage6Tests.swift
+```
+
+## Final proof
+
+Final accumulated local package pass on 2026-08-23:
+
+```text
+swift test
+
+Executed 304 tests
+0 failures
+0 unexpected
+```
+
+Horae contributes 18 XCTest methods across Stages 1-6. The full OrboCore package passed together.
+
+## Branch audit
+
+Before the freeze update, `feature/horae-mvp` compared with `feature/hestia-orbospine-transplant` as:
+
+```text
+10 commits ahead
+0 commits behind
+```
+
+All changed files were confined to:
+
+```text
+OrboSystem/Horae/**
+OrboCoreTests/OrboSystem/Horae/**
+specs/Horae - Temporal Adapter MVP.md
+```
+
+No OrboSpine, Hermes, Moirai, Hestia, Hephaestus, or Dioscuri file was changed by the Horae MVP.
 
 ## Endgame
 
@@ -262,9 +300,7 @@ EXPLICIT UT / SEEK ----> HORAE
 
 The visualizer may later own playhead position, scrubber state, playback rate, animation cadence, projection, and rendering. None of those responsibilities belong to Horae v1.
 
-## Stage 0 acceptance
-
-Stage 0 is ready to freeze when we can truthfully say:
+## Frozen acceptance
 
 ```text
 Horae post up at OrboSpine Door I: Locate.
@@ -275,3 +311,5 @@ They do not own how that truth is drawn.
 ```
 
 > **Door I supplies the truth. Horae carry the signal. Visualization comes later.**
+
+No further Horae MVP work belongs here without an explicit new requirement.
