@@ -26,14 +26,19 @@ public struct HestiaCorrection: Hashable, Sendable {
     }
 }
 
+public enum HestiaDestination: Hashable, Sendable {
+    case holdings
+    case hearth
+    case hall
+}
+
 public enum HestiaDeliveryDisposition: Hashable, Sendable {
-    case hearth(HermesReceipt)
-    case hall(HermesReceipt)
-    case rejected(HermesReceipt, HestiaCorrection)
+    case accepted(destination: HestiaDestination, receipt: HermesReceipt)
+    case rejected(receipt: HermesReceipt, correction: HestiaCorrection)
 
     public var receipt: HermesReceipt {
         switch self {
-        case let .hearth(receipt), let .hall(receipt), let .rejected(receipt, _):
+        case let .accepted(_, receipt), let .rejected(receipt, _):
             return receipt
         }
     }
@@ -58,8 +63,10 @@ public struct Hestia: Hashable, Sendable {
     }
 
     /// Receives a completed Moirai delivery and immediately chooses its disposition.
-    /// The receipt records Hermes delivery in every case. Hestia either hangs the
-    /// tapestry in Hearth or Hall, or rejects it with corrective provenance.
+    /// The general Hestia delivery vocabulary has three destinations: Holdings,
+    /// Hearth, and Hall. A finished Tapestry can enter Hearth or Hall; Holdings
+    /// are reserved for lighter retained deliveries that do not require a Tapestry.
+    /// Rejection is not a destination. It returns corrective provenance to Hermes.
     public mutating func receive(
         _ parcel: HermesParcel<AtroposPackage>,
         astroDNA: AstroDNA,
@@ -74,8 +81,8 @@ public struct Hestia: Hashable, Sendable {
 
         guard Self.tapestry(parcel.payload, matches: astroDNA) else {
             return .rejected(
-                receipt,
-                HestiaCorrection(
+                receipt: receipt,
+                correction: HestiaCorrection(
                     originalTicketID: parcel.ticketID,
                     originalParcelID: parcel.parcelID,
                     subjectID: parcel.subjectID,
@@ -93,9 +100,10 @@ public struct Hestia: Hashable, Sendable {
             tapestry: parcel.payload
         )
 
-        return parcel.subjectID == nativeSubjectID
-            ? .hearth(receipt)
-            : .hall(receipt)
+        return .accepted(
+            destination: parcel.subjectID == nativeSubjectID ? .hearth : .hall,
+            receipt: receipt
+        )
     }
 
     /// Stage-3 placement seam. Stage 4 enters through `receive`.
