@@ -48,25 +48,27 @@ public struct Hestia: Hashable, Sendable {
     public enum Failure: Error, Hashable, Sendable {
         case nativeAlreadyEstablished
         case savedSubjectAlreadyAdmitted
+        case nativeCannotEnterHoldings
+        case subjectAlreadyInHoldings
     }
 
-    public private(set) var hearth: Hearth
-    public private(set) var hall: Hall
+    private(set) var holdings: Holdings
+    private(set) var hearth: Hearth
+    private(set) var hall: Hall
 
     public var nativeSubjectID: HermesSubjectID {
         hearth.nativeSubjectID
     }
 
     public init(nativeSubjectID: HermesSubjectID) {
+        self.holdings = Holdings()
         self.hearth = Hearth(nativeSubjectID: nativeSubjectID)
         self.hall = Hall()
     }
 
     /// Receives a completed Moirai delivery and immediately chooses its disposition.
-    /// The general Hestia delivery vocabulary has three destinations: Holdings,
-    /// Hearth, and Hall. A finished Tapestry can enter Hearth or Hall; Holdings
-    /// are reserved for lighter retained deliveries that do not require a Tapestry.
-    /// Rejection is not a destination. It returns corrective provenance to Hermes.
+    /// A finished Tapestry can enter Hearth or Hall. Lighter retained deliveries
+    /// enter Holdings through Hestia's holding seam. Rejection is a Handback to Hermes.
     public mutating func receive(
         _ parcel: HermesParcel<AtroposPackage>,
         astroDNA: AstroDNA,
@@ -106,7 +108,30 @@ public struct Hestia: Hashable, Sendable {
         )
     }
 
-    /// Stage-3 placement seam. Stage 4 enters through `receive`.
+    /// Keeps a lightweight saved subject in Holdings.
+    public mutating func hold(
+        subjectID: HermesSubjectID,
+        astroDNA: AstroDNA
+    ) throws {
+        guard subjectID != nativeSubjectID else {
+            throw Failure.nativeCannotEnterHoldings
+        }
+        guard holdings.holding(for: subjectID) == nil else {
+            throw Failure.subjectAlreadyInHoldings
+        }
+        guard hall.resident(for: subjectID) == nil else {
+            throw Failure.savedSubjectAlreadyAdmitted
+        }
+
+        try holdings.admit(
+            Holding(
+                subjectID: subjectID,
+                astroDNA: astroDNA
+            )
+        )
+    }
+
+    /// Stage-3 placement seam. Finished Tapestries enter Hearth or Hall through Hestia.
     mutating func admit(
         subjectID: HermesSubjectID,
         astroDNA: AstroDNA,
@@ -127,6 +152,9 @@ public struct Hestia: Hashable, Sendable {
             return
         }
 
+        guard holdings.holding(for: subjectID) == nil else {
+            throw Failure.subjectAlreadyInHoldings
+        }
         guard hall.resident(for: subjectID) == nil else {
             throw Failure.savedSubjectAlreadyAdmitted
         }
@@ -144,8 +172,20 @@ public struct Hestia: Hashable, Sendable {
         hearth.resident
     }
 
+    public func holding(_ subjectID: HermesSubjectID) -> Holding? {
+        holdings.holding(for: subjectID)
+    }
+
     public func saved(_ subjectID: HermesSubjectID) -> HallResident? {
         hall.resident(for: subjectID)
+    }
+
+    /// Hestia is the query surface for the Tapestries she keeps.
+    public func tapestry(for subjectID: HermesSubjectID) -> AtroposPackage? {
+        if subjectID == nativeSubjectID {
+            return hearth.resident?.tapestry
+        }
+        return hall.resident(for: subjectID)?.tapestry
     }
 
     private static func tapestry(
