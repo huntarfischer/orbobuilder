@@ -26,6 +26,37 @@ public struct RingTemplateFineMark: Hashable, Sendable {
     }
 }
 
+public struct RingObjectTemplate: Hashable, Sendable {
+    public let gene: AstroDNAGene
+    public let source: RingFineState
+    public let template: RingTemplate
+    public let marks: [RingTemplateFineMark]
+
+    internal init(
+        gene: AstroDNAGene,
+        source: RingFineState,
+        template: RingTemplate,
+        marks: [RingTemplateFineMark]
+    ) {
+        self.gene = gene
+        self.source = source
+        self.template = template
+        self.marks = marks
+    }
+
+    public var name: String {
+        gene.displayName.split(separator: " ").joined() + "RingTemplate"
+    }
+
+    public var motion: Motion {
+        source.motion
+    }
+
+    public var sourceDMS: RingDMS {
+        source.dms
+    }
+}
+
 public struct RingTemplate: Hashable, Sendable {
     public let sourceDegree: Int
     public let cells: [RingTemplateCell]
@@ -66,5 +97,18 @@ public struct RingTemplate: Hashable, Sendable {
                 targetArcsecond: cell.degree * Ring.arcsecondsPerDegree + offset
             )
         }
+    }
+
+    public func objectTemplate(
+        for gene: AstroDNAGene,
+        source: RingFineState
+    ) -> RingObjectTemplate? {
+        guard let marks = exactMarks(for: source) else { return nil }
+        return RingObjectTemplate(
+            gene: gene,
+            source: source,
+            template: self,
+            marks: marks
+        )
     }
 }
