@@ -16,6 +16,14 @@ public struct HermesParcelID: Hashable, Codable, Sendable {
     }
 }
 
+public struct HermesPackageID: Hashable, Codable, Sendable {
+    public let rawValue: UUID
+
+    public init(_ rawValue: UUID = UUID()) {
+        self.rawValue = rawValue
+    }
+}
+
 public struct HermesSubjectID: Hashable, Codable, Sendable, RawRepresentable {
     public let rawValue: String
 
@@ -116,6 +124,32 @@ public struct HermesParcel<Payload: Hashable & Sendable>: Hashable, Sendable {
 
 extension HermesParcel: Codable where Payload: Codable {}
 
+public struct HermesPackage<Contents: Hashable & Sendable>: Hashable, Sendable {
+    public let packageID: HermesPackageID
+    public let subjectID: HermesSubjectID
+    public let sender: HermesAddress
+    public let addresses: [HermesAddress]
+    public let contents: Contents
+
+    public init?(
+        packageID: HermesPackageID,
+        subjectID: HermesSubjectID,
+        sender: HermesAddress,
+        addresses: [HermesAddress],
+        contents: Contents
+    ) {
+        guard !addresses.isEmpty else { return nil }
+
+        self.packageID = packageID
+        self.subjectID = subjectID
+        self.sender = sender
+        self.addresses = addresses
+        self.contents = contents
+    }
+}
+
+extension HermesPackage: Codable where Contents: Codable {}
+
 public struct HermesReceipt: Hashable, Codable, Sendable {
     public let ticketID: HermesTicketID
     public let parcelID: HermesParcelID
@@ -139,6 +173,8 @@ public enum HermesManifestEventKind: String, Hashable, Codable, Sendable {
     case ticketOpened
     case deliveredToService
     case serviceReturnAccepted
+    case deliveredToStop
+    case recoveredFromStop
     case deliveredToAddressee
     case receiptRecorded
     case resolved
@@ -150,13 +186,17 @@ public struct HermesManifestEvent: Hashable, Codable, Sendable {
     public let kind: HermesManifestEventKind
     public let occurredAt: AbsoluteInstant
     public let parcelID: HermesParcelID?
+    public let packageID: HermesPackageID?
+    public let address: HermesAddress?
 
     public init?(
         ticketID: HermesTicketID,
         sequence: Int,
         kind: HermesManifestEventKind,
         occurredAt: AbsoluteInstant,
-        parcelID: HermesParcelID? = nil
+        parcelID: HermesParcelID? = nil,
+        packageID: HermesPackageID? = nil,
+        address: HermesAddress? = nil
     ) {
         guard sequence > 0 else { return nil }
 
@@ -165,5 +205,7 @@ public struct HermesManifestEvent: Hashable, Codable, Sendable {
         self.kind = kind
         self.occurredAt = occurredAt
         self.parcelID = parcelID
+        self.packageID = packageID
+        self.address = address
     }
 }
