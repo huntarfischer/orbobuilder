@@ -12,6 +12,16 @@ public struct ClothoThread: Hashable, Sendable {
         self.exactState = exactState
         self.degreeAddress = degreeAddress
     }
+
+    internal init(
+        restoringGene gene: AstroDNAGene,
+        exactState: RingFineState,
+        degreeAddress: DegreeAddress
+    ) {
+        self.gene = gene
+        self.exactState = exactState
+        self.degreeAddress = degreeAddress
+    }
 }
 
 public struct ClothoSourcePacket: Hashable, Sendable {
