@@ -9,7 +9,7 @@ final class HermesStage0Tests: XCTestCase {
     private let moirai = HermesAddress(rawValue: "orbo.moirai")!
     private let hestia = HermesAddress(rawValue: "orbo.hestia")!
     private let natalCommission = HermesParcelKind(rawValue: "orbo.natal-commission.v1")!
-    private let atroposPackage = HermesParcelKind(rawValue: "orbo.atropos-package.v1")!
+    private let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
     private let instant = AbsoluteInstant(unixSecondsSince1970: 0)!
 
     func testHermesIdentifiersRejectBlankValues() {
@@ -25,7 +25,7 @@ final class HermesStage0Tests: XCTestCase {
         XCTAssertEqual(ticket.subjectID, subject)
         XCTAssertEqual(ticket.serviceDestination, moirai)
         XCTAssertEqual(ticket.finalAddressee, hestia)
-        XCTAssertEqual(ticket.expectedReturnKind, atroposPackage)
+        XCTAssertEqual(ticket.expectedReturnKind, moiraiPackage)
     }
 
     func testTicketRequiresServiceDestinationToDifferFromFinalAddressee() {
@@ -35,7 +35,7 @@ final class HermesStage0Tests: XCTestCase {
                 subjectID: subject,
                 serviceDestination: hestia,
                 finalAddressee: hestia,
-                expectedReturnKind: atroposPackage
+                expectedReturnKind: moiraiPackage
             )
         )
     }
@@ -115,7 +115,7 @@ final class HermesStage0Tests: XCTestCase {
             subjectID: subject,
             serviceDestination: moirai,
             finalAddressee: hestia,
-            expectedReturnKind: atroposPackage
+            expectedReturnKind: moiraiPackage
         )!
     }
 }
