@@ -221,7 +221,11 @@ final class HestiaHermesStage4Tests: XCTestCase {
         try courier.deliverToService(ticketID: correctionTicketID, occurredAt: instant)
 
         XCTAssertEqual(courier.manifest.currentState(for: originalTicketID), .resolved)
-        XCTAssertEqual(courier.manifest.currentState(for: correctionTicketID), .deliveredToService)
+        XCTAssertEqual(courier.manifest.currentState(for: correctionTicketID), .unresolved)
+        XCTAssertEqual(
+            courier.manifest.events(for: correctionTicketID).last?.kind,
+            .deliveredToService
+        )
         XCTAssertNil(hestia.native())
     }
 }
