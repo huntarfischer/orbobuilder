@@ -1,96 +1,233 @@
-name: Temporary Jovian Reign Forge Trigger
+name: Pass 5 Z21-Z23 Lunation Table
 
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
     branches:
       - agent/mundane-timespine-3d-build
     paths:
-      - tools/pass5/generate_jovian_reign_table.py
+      - tools/pass5/lunation-forge/main.swift
       - .github/workflows/pass5-lunation-table.yml
 
 permissions:
   contents: write
 
-env:
-  SWISS_REPO: https://github.com/huntarfischer/swisseph.git
-  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
-
 jobs:
-  forge-jovian-reigns:
-    runs-on: ubuntu-latest
+  forge-lunations:
+    runs-on: macos-15
     timeout-minutes: 30
+
     steps:
-      - name: Checkout Jupiter forge branch
+      - name: Checkout OrboSpine construction branch
         uses: actions/checkout@v4
         with:
-          ref: agent/jovian-reign-table
+          ref: agent/mundane-timespine-3d-build
           fetch-depth: 0
 
-      - name: Build pinned Swiss C
+      - name: Initialize forge run
         shell: bash
         run: |
           set -euo pipefail
-          SWISS="$RUNNER_TEMP/swisseph"
-          git clone "$SWISS_REPO" "$SWISS"
-          git -C "$SWISS" checkout "$SWISS_COMMIT"
-          test "$(git -C "$SWISS" rev-parse HEAD)" = "$SWISS_COMMIT"
-          make -C "$SWISS" libswe.so
-          test -f "$SWISS/libswe.so"
+          mkdir -p tools/pass5/orbospine-build/lunations
+          echo started > "$RUNNER_TEMP/lunation-stage"
 
-      - name: Verify required DE441 planet files
+      - name: Build and verify pinned Swiss DE441 apparatus
         shell: bash
         run: |
           set -euo pipefail
+          echo swiss-de441 > "$RUNNER_TEMP/lunation-stage"
           SWISS="$RUNNER_TEMP/swisseph"
-          for file in \
-            seplm36.se1 seplm30.se1 seplm24.se1 seplm18.se1 seplm12.se1 seplm06.se1 \
-            sepl_00.se1 sepl_06.se1 sepl_12.se1 sepl_18.se1 sepl_24.se1; do
+          git clone https://github.com/huntarfischer/swisseph.git "$SWISS"
+          git -C "$SWISS" checkout 3fd0f956d73898b91cc4f67cf18b21af656d1342
+          test "$(git -C "$SWISS" rev-parse HEAD)" = "3fd0f956d73898b91cc4f67cf18b21af656d1342"
+          for file in sepl_12.se1 semo_12.se1 sepl_18.se1 semo_18.se1; do
             test -f "$SWISS/ephe/$file"
             head -c 512 "$SWISS/ephe/$file" | strings | grep -q DE441
           done
+          make -C "$SWISS" libswe.dylib
+          test -f "$SWISS/libswe.dylib"
 
-      - name: Manufacture Jupiter Reign CSV
+      - name: Compile Lunation Forge
         shell: bash
         run: |
           set -euo pipefail
-          OUT="tools/pass5/orbospine-build/shells/jovian-reign-table.csv"
-          python3 tools/pass5/generate_jovian_reign_table.py \
-            --library "$RUNNER_TEMP/swisseph/libswe.so" \
-            --ephe-dir "$RUNNER_TEMP/swisseph/ephe" \
-            --output "$OUT" \
-            --source-commit "$SWISS_COMMIT"
-          test -s "$OUT"
+          echo compile > "$RUNNER_TEMP/lunation-stage"
+          swiftc -parse-as-library \
+            tools/pass5/lunation-forge/main.swift \
+            -o "$RUNNER_TEMP/orbo-lunation-forge"
 
-      - name: Audit and commit Jupiter Reign CSV
+      - name: Manufacture Z21-Z23 lunation table
         shell: bash
         run: |
           set -euo pipefail
-          OUT="tools/pass5/orbospine-build/shells/jovian-reign-table.csv"
+          echo manufacture > "$RUNNER_TEMP/lunation-stage"
+          OUT="tools/pass5/orbospine-build/lunations"
+          "$RUNNER_TEMP/orbo-lunation-forge" \
+            --library "$RUNNER_TEMP/swisseph/libswe.dylib" \
+            --ephe "$RUNNER_TEMP/swisseph/ephe" \
+            --swiss-commit 3fd0f956d73898b91cc4f67cf18b21af656d1342 \
+            --csv "$OUT/lunation-table.csv" \
+            --summary "$RUNNER_TEMP/lunation-summary.json"
+          test -s "$OUT/lunation-table.csv"
+          test -s "$RUNNER_TEMP/lunation-summary.json"
+
+      - name: Package canonical table and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo package > "$RUNNER_TEMP/lunation-stage"
+          OUT="tools/pass5/orbospine-build/lunations"
+          gzip -n -9 -c "$OUT/lunation-table.csv" > "$OUT/lunation-table.csv.gz"
+          rm "$OUT/lunation-table.csv"
           python3 - <<'PY'
           import csv
+          import gzip
           import hashlib
-          from pathlib import Path
-          p = Path("tools/pass5/orbospine-build/shells/jovian-reign-table.csv")
-          with p.open(newline="", encoding="utf-8") as f:
-              rows = list(csv.DictReader(f))
-          assert rows and rows[0]["shell_id"] == "J0"
-          assert all(r["shell_id"] == f"J{i}" for i, r in enumerate(rows))
-          assert all(r["planet"] == "Jupiter" and r["family"] == "Jovian Reign" for r in rows)
-          for z in ("Z21", "Z22", "Z23"):
-              assert any(z in r["z21_z23_intersections"].split(";") for r in rows)
-          print("rows", len(rows))
-          print("first", rows[0]["shell_id"], rows[0]["first_aries_ingress_utc"])
-          print("last", rows[-1]["shell_id"], rows[-1]["first_aries_ingress_utc"])
-          print("z21", [r["shell_id"] for r in rows if "Z21" in r["z21_z23_intersections"].split(";")])
-          print("z22", [r["shell_id"] for r in rows if "Z22" in r["z21_z23_intersections"].split(";")])
-          print("z23", [r["shell_id"] for r in rows if "Z23" in r["z21_z23_intersections"].split(";")])
-          print("sha256", hashlib.sha256(p.read_bytes()).hexdigest())
+          import json
+          import os
+          import re
+
+          out = "tools/pass5/orbospine-build/lunations"
+          table = os.path.join(out, "lunation-table.csv.gz")
+          summary_path = os.path.join(os.environ["RUNNER_TEMP"], "lunation-summary.json")
+          swiss_ephe = os.path.join(os.environ["RUNNER_TEMP"], "swisseph", "ephe")
+          with open(summary_path, "r", encoding="utf-8") as f:
+              summary = json.load(f)
+
+          with gzip.open(table, "rt", encoding="utf-8", newline="") as f:
+              rows = list(csv.reader(f))
+          assert rows and rows[0] == ["phase", "degree", "ut"]
+          data = rows[1:]
+          assert len(data) == summary["rows"]
+
+          phase_order = {"new": 0, "full": 1}
+          previous = None
+          utc_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$")
+          new_count = 0
+          full_count = 0
+          for phase, degree_text, ut in data:
+              assert phase in phase_order
+              degree = float(degree_text)
+              assert 0.0 <= degree < 360.0
+              assert utc_pattern.match(ut)
+              if phase == "new":
+                  new_count += 1
+              else:
+                  full_count += 1
+              key = (phase_order[phase], degree, ut)
+              if previous is not None:
+                  assert previous <= key
+              previous = key
+
+          assert new_count == summary["newRows"]
+          assert full_count == summary["fullRows"]
+          assert summary["chronologicalAlternation"] is True
+          assert summary["duplicateOccurrences"] == 0
+          assert summary["maximumResidualArcSeconds"] <= summary["residualGateArcSeconds"]
+
+          def sha256(path):
+              h = hashlib.sha256()
+              with open(path, "rb") as f:
+                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          ephemeris = []
+          for name in ["sepl_12.se1", "semo_12.se1", "sepl_18.se1", "semo_18.se1"]:
+              path = os.path.join(swiss_ephe, name)
+              ephemeris.append({
+                  "name": name,
+                  "bytes": os.path.getsize(path),
+                  "sha256": sha256(path),
+              })
+
+          manifest = dict(summary)
+          manifest.update({
+              "ownershipLaw": "Z21 start inclusive through Z23 end exclusive",
+              "startUTC": "1577-05-05T05:46:50.976Z",
+              "endUTC": "2311-06-10T14:16:12.881Z",
+              "swissRepository": "huntarfischer/swisseph",
+              "ephemerisFiles": ephemeris,
+              "files": [{
+                  "path": "lunation-table.csv.gz",
+                  "bytes": os.path.getsize(table),
+                  "sha256": sha256(table),
+              }],
+          })
+          with open(os.path.join(out, "manifest.json"), "w", encoding="utf-8") as f:
+              json.dump(manifest, f, indent=2, sort_keys=True)
+              f.write("\n")
           PY
+
+      - name: Audit canonical lunation artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo audit > "$RUNNER_TEMP/lunation-stage"
+          OUT="tools/pass5/orbospine-build/lunations"
+          test -s "$OUT/lunation-table.csv.gz"
+          test -s "$OUT/manifest.json"
+          test "$(gzip -dc "$OUT/lunation-table.csv.gz" | head -n 1)" = "phase,degree,ut"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+
+          out = "tools/pass5/orbospine-build/lunations"
+          manifest_path = os.path.join(out, "manifest.json")
+          table_path = os.path.join(out, "lunation-table.csv.gz")
+          with open(manifest_path, "r", encoding="utf-8") as f:
+              m = json.load(f)
+          h = hashlib.sha256()
+          with open(table_path, "rb") as f:
+              for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                  h.update(chunk)
+          assert m["artifactFamily"] == "Orbo celestial-forward lunation table"
+          assert m["span"] == "Z21-Z23"
+          assert m["rowSchema"] == ["phase", "degree", "ut"]
+          assert m["degreeLaw"].endswith("0 <= x < 360")
+          assert m["rows"] == m["newRows"] + m["fullRows"]
+          assert abs(m["newRows"] - m["fullRows"]) <= 1
+          assert m["chronologicalAlternation"] is True
+          assert m["duplicateOccurrences"] == 0
+          assert m["maximumResidualArcSeconds"] <= 0.001
+          assert m["files"][0]["sha256"] == h.hexdigest()
+          print(json.dumps({
+              "status": "PASS",
+              "rows": m["rows"],
+              "new": m["newRows"],
+              "full": m["fullRows"],
+              "maxResidualArcSeconds": m["maximumResidualArcSeconds"],
+              "tableSha256": h.hexdigest(),
+          }, indent=2))
+          PY
+
+      - name: Preserve forged lunation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbospine-z21-z23-lunations
+          path: |
+            tools/pass5/orbospine-build/lunations/lunation-table.csv.gz
+            tools/pass5/orbospine-build/lunations/manifest.json
+
+      - name: Commit forged table to construction branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo commit > "$RUNNER_TEMP/lunation-stage"
+          OUT="tools/pass5/orbospine-build/lunations"
           git config user.name "Orbo Forge"
           git config user.email "orbo-forge@users.noreply.github.com"
-          git pull --rebase origin agent/jovian-reign-table
-          git add -f "$OUT"
+          git pull --rebase origin agent/mundane-timespine-3d-build
+          git add -f "$OUT/lunation-table.csv.gz" "$OUT/manifest.json"
           if ! git diff --cached --quiet; then
-            git commit -m "Forge canonical Jovian Reign table [skip ci]"
-            git push origin HEAD:agent/jovian-reign-table
+            git commit -m "Forge Z21-Z23 lunation table [skip ci]"
+            git push origin HEAD:agent/mundane-timespine-3d-build
           fi
+
+      - name: Report failed forge stage
+        if: failure()
+        shell: bash
+        run: |
+          stage="$(cat "$RUNNER_TEMP/lunation-stage" 2>/dev/null || echo unknown)"
+          echo "Lunation forge failed at stage: $stage"
