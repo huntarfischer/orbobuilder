@@ -8,7 +8,7 @@ final class EngravingStage3Tests: XCTestCase {
     private let birthTime = CivilClockTime(hour: 20, minute: 16)!
     private let instant = AbsoluteInstant(unixSecondsSince1970: 0)!
 
-    func testOrboCompletesOnboardingByCreatingEngravingPackage() {
+    func testOrboCompletesOnboardingByCreatingUnfinishedEngravingPackage() {
         let package = makePackage()
 
         XCTAssertEqual(package.packageID, packageID)
@@ -19,25 +19,38 @@ final class EngravingStage3Tests: XCTestCase {
             package.addresses.map(\.rawValue),
             ["orbo.atlas", "orbo.moirai", "orbo.hestia"]
         )
+
+        XCTAssertEqual(package.contents.subjectID, subjectID)
         XCTAssertEqual(package.contents.name, "Ean")
         XCTAssertEqual(package.contents.birthDate, birthDate)
         XCTAssertEqual(package.contents.birthTime, birthTime)
         XCTAssertEqual(package.contents.birthLocation, "Madison, WI")
+
+        XCTAssertNil(package.contents.topos)
+        XCTAssertNil(package.contents.astroDNA)
+        XCTAssertNil(package.contents.tapestry)
+        XCTAssertFalse(package.contents.engraved)
     }
 
-    func testAtlasAddsToposWhilePreservingOnboardingFacts() throws {
-        let intake = makePackage().contents
-        let engraving = try found(Atlas().resolve(intake))
+    func testAtlasResolvesOnlyToposOnTheSameEngravingType() throws {
+        let engraving = makePackage().contents
+        let resolved = try found(Atlas().resolve(engraving))
+        let topos = try XCTUnwrap(resolved.topos)
 
-        XCTAssertEqual(engraving.name, intake.name)
-        XCTAssertEqual(engraving.birthDate, intake.birthDate)
-        XCTAssertEqual(engraving.birthTime, intake.birthTime)
-        XCTAssertEqual(engraving.birthLocation, intake.birthLocation)
-        XCTAssertEqual(engraving.topos.place.canonicalName, "Madison, WI, USA")
-        XCTAssertEqual(engraving.topos.place.timezone.rawValue, "America/Chicago")
+        XCTAssertEqual(resolved.subjectID, engraving.subjectID)
+        XCTAssertEqual(resolved.name, engraving.name)
+        XCTAssertEqual(resolved.birthDate, engraving.birthDate)
+        XCTAssertEqual(resolved.birthTime, engraving.birthTime)
+        XCTAssertEqual(resolved.birthLocation, engraving.birthLocation)
+        XCTAssertEqual(topos.place.canonicalName, "Madison, WI, USA")
+        XCTAssertEqual(topos.place.timezone.rawValue, "America/Chicago")
+
+        XCTAssertNil(resolved.astroDNA)
+        XCTAssertNil(resolved.tapestry)
+        XCTAssertFalse(resolved.engraved)
     }
 
-    func testEngravingPackageTravelsThroughAtlasAndReturnsToHermesOpenForMoirai() throws {
+    func testEngravingPackageTravelsThroughAtlasAsOneEngravingAndReturnsOpenForMoirai() throws {
         let package = makePackage()
         var courier = HermesCourier()
 
@@ -47,14 +60,14 @@ final class EngravingStage3Tests: XCTestCase {
             HermesAddress(rawValue: "orbo.atlas")
         )
 
-        let atlasEngraving = try found(Atlas().resolve(package.contents))
-        let augmentedPackage = HermesPackage(
+        let resolvedEngraving = try found(Atlas().resolve(package.contents))
+        let augmentedPackage: HermesPackage<Engraving> = HermesPackage(
             packageID: package.packageID,
             subjectID: package.subjectID,
             sender: package.sender,
             kind: package.kind,
             addresses: package.addresses,
-            contents: atlasEngraving
+            contents: resolvedEngraving
         )!
 
         try courier.recover(
@@ -68,7 +81,15 @@ final class EngravingStage3Tests: XCTestCase {
         XCTAssertEqual(augmentedPackage.sender, package.sender)
         XCTAssertEqual(augmentedPackage.kind, package.kind)
         XCTAssertEqual(augmentedPackage.addresses, package.addresses)
-        XCTAssertEqual(augmentedPackage.contents.topos.place.canonicalName, "Madison, WI, USA")
+        XCTAssertEqual(augmentedPackage.contents.subjectID, package.contents.subjectID)
+        XCTAssertEqual(
+            try XCTUnwrap(augmentedPackage.contents.topos).place.canonicalName,
+            "Madison, WI, USA"
+        )
+        XCTAssertNil(augmentedPackage.contents.astroDNA)
+        XCTAssertNil(augmentedPackage.contents.tapestry)
+        XCTAssertFalse(augmentedPackage.contents.engraved)
+
         XCTAssertEqual(courier.manifest.currentState(for: ticketID), .unresolved)
         XCTAssertEqual(
             courier.manifest.events(for: ticketID).map(\.kind),
@@ -84,7 +105,7 @@ final class EngravingStage3Tests: XCTestCase {
         XCTAssertEqual(courier.manifest.events(for: ticketID).last?.kind, .recoveredFromStop)
     }
 
-    private func makePackage() -> HermesPackage<EngravingIntake> {
+    private func makePackage() -> HermesPackage<Engraving> {
         OrboOnboarding.complete(
             subjectID: subjectID,
             name: "Ean",
@@ -96,12 +117,12 @@ final class EngravingStage3Tests: XCTestCase {
     }
 
     private func found(
-        _ resolution: AtlasEngravingResolution,
+        _ resolution: EngravingToposResolution,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) throws -> AtlasEngraving {
+    ) throws -> Engraving {
         guard case let .found(engraving) = resolution else {
-            XCTFail("Expected found engraving resolution, got \(resolution)", file: file, line: line)
+            XCTFail("Expected found Engraving Topos resolution, got \(resolution)", file: file, line: line)
             throw TestError.unexpectedResolution
         }
         return engraving
