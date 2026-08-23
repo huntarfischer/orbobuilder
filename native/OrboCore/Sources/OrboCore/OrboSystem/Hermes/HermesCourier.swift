@@ -5,6 +5,7 @@ public struct HermesCourier: Sendable {
         case packageMismatch
         case subjectMismatch
         case senderMismatch
+        case packageKindMismatch
         case itineraryMismatch
         case addressMismatch
         case invalidState
@@ -22,6 +23,7 @@ public struct HermesCourier: Sendable {
         let packageID: HermesPackageID
         let subjectID: HermesSubjectID
         let sender: HermesAddress
+        let packageKind: HermesPackageKind
         let addresses: [HermesAddress]
         var nextAddressIndex: Int
         var phase: Phase
@@ -61,6 +63,7 @@ public struct HermesCourier: Sendable {
             packageID: package.packageID,
             subjectID: package.subjectID,
             sender: package.sender,
+            packageKind: package.kind,
             addresses: package.addresses,
             nextAddressIndex: 0,
             phase: .inCustody
@@ -100,7 +103,7 @@ public struct HermesCourier: Sendable {
     }
 
     /// Recovers the same entrusted package after an intermediate stop.
-    /// Contents may have changed; package identity, subject, sender, and itinerary may not.
+    /// Contents may have changed; package identity, subject, sender, kind, and itinerary may not.
     public mutating func recover<Contents: Hashable & Sendable>(
         ticketID: HermesTicketID,
         package: HermesPackage<Contents>,
@@ -114,6 +117,7 @@ public struct HermesCourier: Sendable {
         guard package.packageID == journey.packageID else { throw Failure.packageMismatch }
         guard package.subjectID == journey.subjectID else { throw Failure.subjectMismatch }
         guard package.sender == journey.sender else { throw Failure.senderMismatch }
+        guard package.kind == journey.packageKind else { throw Failure.packageKindMismatch }
         guard package.addresses == journey.addresses else { throw Failure.itineraryMismatch }
 
         let address = journey.addresses[deliveredIndex]
