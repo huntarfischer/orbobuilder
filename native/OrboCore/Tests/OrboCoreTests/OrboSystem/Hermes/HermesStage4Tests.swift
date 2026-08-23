@@ -10,7 +10,7 @@ final class HermesStage4Tests: XCTestCase {
     private let moirai = HermesAddress(rawValue: "orbo.moirai")!
     private let hestia = HermesAddress(rawValue: "orbo.hestia")!
     private let natalCommission = HermesParcelKind(rawValue: "orbo.natal-commission.v1")!
-    private let atroposPackage = HermesParcelKind(rawValue: "orbo.atropos-package.v1")!
+    private let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
     private let instant = AbsoluteInstant(unixSecondsSince1970: 0)!
 
     func testReceiptResolvesJourney() throws {
@@ -74,7 +74,7 @@ final class HermesStage4Tests: XCTestCase {
             subjectID: subject,
             serviceDestination: moirai,
             finalAddressee: hestia,
-            expectedReturnKind: atroposPackage
+            expectedReturnKind: moiraiPackage
         )!
     }
 
@@ -96,9 +96,9 @@ final class HermesStage4Tests: XCTestCase {
             ticketID: ticketID,
             subjectID: subject,
             sender: moirai,
-            kind: atroposPackage,
+            kind: moiraiPackage,
             finalAddressee: hestia,
-            payload: "dummy Atropos package"
+            payload: "dummy Moirai package"
         )
     }
 }
