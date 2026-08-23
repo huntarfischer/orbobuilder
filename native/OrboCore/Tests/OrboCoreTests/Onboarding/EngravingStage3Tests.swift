@@ -14,7 +14,7 @@ final class EngravingStage3Tests: XCTestCase {
         XCTAssertEqual(package.packageID, packageID)
         XCTAssertEqual(package.subjectID, subjectID)
         XCTAssertEqual(package.sender, OrboOnboarding.orboAddress)
-        XCTAssertEqual(package.kind, HermesPackageKind(rawValue: "orbo.engraving.v1"))
+        XCTAssertEqual(package.kind.rawValue, "orbo.engraving.v1")
         XCTAssertEqual(
             package.addresses.map(\.rawValue),
             ["orbo.atlas", "orbo.moirai", "orbo.hestia"]
