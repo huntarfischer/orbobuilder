@@ -175,27 +175,42 @@ A partially forged child Spine remains one child Spine whose durable coverage is
 
 ---
 
-# 8. Arc may ship before Synchronic Time is authorized
+# 8. Arc is universal even before Synchronic Time is authorized
 
-Arc is a foundational Orbo law and may be present in every shipped Orbo.
+Arc is a foundational Orbo law and is available to the system in every shipped Orbo.
 
-The existence of Arc does **not** require every user to have a forged Synchronic Spine.
+Arc itself does not require:
+
+```text
+AstroDNA
+Tapestry
+Hearth
+native identity
+Natal Spine
+Synchronic Spine
+Synchronic Time authorization
+product entitlement
+```
+
+The existence and universal availability of Arc do **not** require every user to possess a forged Synchronic Spine.
 
 This distinction is permanent:
 
 ```text
-LAW AVAILABLE
+FOUNDATIONAL LAW AVAILABLE
 ≠
 PERSONAL ARTIFACT AUTHORIZED
 ```
 
-Arc may therefore exist as dormant capability while the user lives entirely within natal and other ordinary astrological time.
+Arc may be used by Orbo whenever legal coordinates require half-arc geometry, including outside native-specific Synchronic Time.
+
+What may be gated later is the user's Synchronic Time capability and the manufacture/access of its durable personal chronology. Arc itself may not be product-gated.
 
 ---
 
 # 9. Synchronic Time is an unlockable capability
 
-The Synchronic Spine is not automatically authorized merely because the Natal Spine exists.
+The Synchronic Spine is not automatically authorized merely because Arc exists or the Natal Spine exists.
 
 Synchronic Time requires a later **capability authorization**.
 
@@ -211,6 +226,8 @@ or a combination of these
 The architecture must not hardcode one business model.
 
 A paywall, free unlock, trial, invitation, or other product decision may change without changing Arc, Hephaestus, or the Synchronic Spine law.
+
+Any such gate applies to the Synchronic Time instrument and its personal durable artifact, never to Arc's foundational system availability.
 
 The Pisces Tabula remains the natural Astrolabe surface through which the user deliberately enters or enables Synchronic Time when product policy permits it.
 
@@ -240,7 +257,7 @@ Arc supplies the law of refraction.
 
 Hephaestus supplies manufacture.
 
-Authorization decides whether the personal artifact may be forged.
+Authorization decides whether the personal Synchronic Time artifact may be forged and exposed to the user. It does not decide whether Arc can answer a legal half-arc query.
 
 These responsibilities must remain separate.
 
@@ -266,11 +283,15 @@ The same principle applies:
 
 ---
 
-# 12. The Astrolabe exposes progression but does not own manufacture
+# 12. The Astrolabe exposes progression; the lunar pane reflects it
 
-The Astrolabe and its Tabulae are progression and navigation surfaces.
+The **Astrolabe is the Sun**: it is Orbo's presentation and illumination surface. Its Tabulae may reveal capabilities, place a legal frame or state under examination, and provide the user's route into deeper instruments.
 
-They may:
+The **lunar pane is the Moon**: it reflects and reads facts already made true by Orbo's underlying laws. It does not control, activate, redefine, or manufacture those laws.
+
+The foundational laws, including Ring, Mater, Tympan, and Arc, sit between what the Astrolabe illuminates and what the lunar pane reflects.
+
+The Astrolabe and its Tabulae may:
 
 ```text
 reveal capabilities
@@ -280,9 +301,15 @@ open personal Spines
 select Chronicle, Clock, Synastry, or other views
 ```
 
-They do not own the temporal artifacts they expose.
+The lunar pane may:
 
-The lunar pane may navigate a Spine without manufacturing or redefining it.
+```text
+reflect facts about the illuminated state
+read and navigate a Spine
+expose deeper interpretation where authorized
+```
+
+Neither surface owns the temporal artifacts or foundational truths it exposes.
 
 Iris may visualize availability, progress, or the resulting structures without becoming a source of temporal truth.
 
@@ -337,6 +364,8 @@ The personal temporal lineage is:
 
 The Natal Spine and Synchronic Spine are both descendants of the shipped Mundane OrboSpine and the accepted native Tapestry, but they are authorized at different points in the user's progression.
 
+Arc remains universally available before, during, and after this personal lineage.
+
 ---
 
 # 14. What this doctrine does not freeze
@@ -373,9 +402,9 @@ This doctrine freezes the following lifecycle laws:
 3. **Hearth acceptance makes the Natal Spine Schematic legal and permits Hephaestus to begin quiet automatic Natal Spine manufacture.**
 4. **The Natal Spine is the first personal child Spine and records mundane time moving against the fixed natal chart.**
 5. **Personal Spine manufacture may be divided by shell, body, or shell × body; shell is a first-class scale boundary for incremental work.**
-6. **Arc may ship as foundational law without automatically authorizing a Synchronic Spine.**
-7. **Synchronic Time requires a later capability authorization whose product policy may be free, paid, or otherwise gated without changing the architecture.**
+6. **Arc is a universally available foundational law and is never gated by personal artifact authorization or product entitlement.**
+7. **Synchronic Time requires a later capability authorization whose product policy may be free, paid, or otherwise gated without changing Arc's availability or the architecture.**
 8. **Once Synchronic Time is authorized, its Schematic becomes legal and Hephaestus may forge the Synchronic Spine incrementally.**
-9. **The Astrolabe and lunar pane expose, unlock, and navigate personal Spines but do not own their manufacture or truth.**
+9. **The Astrolabe/Sun illuminates and exposes states and progression; the lunar pane/Moon reflects and reads system truths; neither owns the Titans, temporal manufacture, or the truths it presents.**
 
-> **The Hearth authorizes personal time. The gate authorizes deeper time. Hephaestus forges only what the native is permitted to possess.**
+> **The Hearth authorizes personal time. The gate authorizes deeper time. Hephaestus forges only what the native is permitted to possess. Arc remains a law of Orbo regardless.**
