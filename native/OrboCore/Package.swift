@@ -13,6 +13,10 @@ let package = Package(
             name: "OrboCore",
             targets: ["OrboCore"]
         ),
+        .library(
+            name: "OrboIris",
+            targets: ["OrboIris"]
+        ),
         .executable(
             name: "OrboSpineForgeTool",
             targets: ["OrboSpineForgeTool"]
@@ -41,6 +45,10 @@ let package = Package(
                 .copy("Geoplacement/Resources/geoplacement-atlas-v1.js")
             ]
         ),
+        .target(
+            name: "OrboIris",
+            dependencies: ["OrboCore"]
+        ),
         .executableTarget(
             name: "OrboSpineForgeTool",
             dependencies: ["OrboCore"]
@@ -67,6 +75,10 @@ let package = Package(
             resources: [
                 .copy("Fixtures")
             ]
+        ),
+        .testTarget(
+            name: "OrboIrisTests",
+            dependencies: ["OrboIris", "OrboCore"]
         )
     ]
 )
