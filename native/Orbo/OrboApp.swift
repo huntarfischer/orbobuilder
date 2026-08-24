@@ -8,10 +8,17 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS I4 / SHORT TIMESPINE STRAND")
+                    Text("IRIS I5 / TRUTH + PRESENTATION")
                         .font(.caption.monospaced())
 
-                    IrisChart3DView(scene: IrisI4Fixture.scene)
+                    IrisChart3DView(
+                        scene: IrisI4Fixture.scene,
+                        presentation: IrisChart3DPresentation(
+                            azimuthDegrees: 65,
+                            inclinationDegrees: 28,
+                            cameraProjection: .perspective
+                        )
+                    )
                 }
                 .padding()
             } else {
