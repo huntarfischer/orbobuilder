@@ -4,9 +4,22 @@ import Charts
 @available(iOS 26.0, macOS 26.0, *)
 public struct IrisChart3DView: View {
     public let scene: IrisScene3D
+    public let presentation: IrisChart3DPresentation
 
-    public init(scene: IrisScene3D) {
+    @State private var pose: Chart3DPose
+
+    public init(
+        scene: IrisScene3D,
+        presentation: IrisChart3DPresentation = IrisChart3DPresentation()
+    ) {
         self.scene = scene
+        self.presentation = presentation
+        _pose = State(
+            initialValue: Chart3DPose(
+                azimuth: .degrees(presentation.azimuthDegrees),
+                inclination: .degrees(presentation.inclinationDegrees)
+            )
+        )
     }
 
     public var body: some View {
@@ -18,6 +31,10 @@ public struct IrisChart3DView: View {
             )
             .foregroundStyle(by: .value("Body", point.source.body.displayName))
         }
+        .chart3DPose($pose)
+        .chart3DCameraProjection(
+            presentation.cameraProjection == .perspective ? .perspective : .orthographic
+        )
         .chartXScale(domain: -1.05...1.05)
         .chartYScale(domain: -1.05...1.05)
     }
