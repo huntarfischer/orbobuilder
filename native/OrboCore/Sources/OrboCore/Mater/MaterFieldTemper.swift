@@ -289,8 +289,8 @@ public extension Mater {
                 terminalKind: chain.terminalKind,
                 cycleMembership: cycleByMember[planet],
                 mutualReception: !orderedDetails.isEmpty,
-                mutualReceptionWith: orderedDetails.map(\.partner),
-                mutualReceptionKinds: orderedDetails.map(\.kind),
+                mutualReceptionWith: orderedDetails.map { $0.partner },
+                mutualReceptionKinds: orderedDetails.map { $0.kind },
                 immediateDependents: immediateDependents,
                 transitiveDescendants: transitiveDescendants
             )
