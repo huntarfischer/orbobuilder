@@ -102,8 +102,9 @@ final class MaterQualificationTests: XCTestCase {
             .jupiter: 105,
             .saturn: 201,
         ])
+        let sects: [Sect?] = [nil, .day, .night]
 
-        for sect in [Sect?.none, .some(.day), .some(.night)] {
+        for sect in sects {
             let qualified = Mater.qualifyField(longitudes, sect: sect)
 
             for planet in Planet.classicalSeven {
