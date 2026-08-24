@@ -25,11 +25,12 @@ final class FoundationIntegrationTests: XCTestCase {
         for rising in Sign.canonicalOrder {
             let imprint = Tympan.imprint(for: rising)
             for record in imprint.houses {
-                XCTAssertEqual(record.ruler, Mater.domicileRuler(of: record.sign))
+                XCTAssertEqual(record.signRuler, Mater.domicileRuler(of: record.sign))
             }
         }
 
         XCTAssertEqual(Mater.domicileRuler(of: .scorpio), .mars)
+        XCTAssertEqual(Tympan.traditionalGovernor(of: .first, rising: .scorpio), .mars)
         XCTAssertEqual(Tympan.modernRuler(of: .scorpio), .pluto)
         XCTAssertEqual(Tympan.modernGovernor(of: .first, rising: .scorpio), .pluto)
         XCTAssertNil(Tympan.TraditionalGovernor(planet: .pluto))
