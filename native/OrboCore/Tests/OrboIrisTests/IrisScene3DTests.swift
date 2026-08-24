@@ -162,4 +162,25 @@ final class IrisScene3DTests: XCTestCase {
         XCTAssertEqual(scene.points.map(\.source), [first, second])
         XCTAssertEqual(scene.points.count, scene.coordinates.count)
     }
+
+    func testSceneCarriesOneBodyAcrossMultipleSuppliedTimesAsDistinctZPositions() throws {
+        let values = [2_461_000.5, 2_461_000.75, 2_461_001.0]
+        let degrees = [270.0, 266.0, 262.0]
+        let coordinates = try zip(values, degrees).map { julianDayValue, degree in
+            OrboSpineCelestialCoordinate(
+                body: .jupiter,
+                directionalDegree: try XCTUnwrap(
+                    OrboSpineDirectionalDegree(physicalDegrees: degree, motion: .retrograde)
+                ),
+                julianDay: try XCTUnwrap(JulianDay(julianDayValue))
+            )
+        }
+
+        let scene = IrisScene3D(coordinates: coordinates)
+
+        XCTAssertEqual(scene.points.count, 3)
+        XCTAssertEqual(scene.points.map(\.source.body), [.jupiter, .jupiter, .jupiter])
+        XCTAssertEqual(scene.points.map(\.z), values)
+        XCTAssertEqual(scene.points.map(\.source), coordinates)
+    }
 }
