@@ -11,7 +11,7 @@ final class HearthStage1Tests: XCTestCase {
     ) throws -> HearthResident {
         let rawSequence = Array(repeating: rawValue, count: AstroDNA.geneCount)
         let astroDNA = try XCTUnwrap(AstroDNA(rawSequence: rawSequence))
-        let output = Clotho.gather(from: astroDNA)
+        let output = LegacyMoiraiBridge.gather(from: astroDNA)
         let grid = Lachesis.allot(output.packet, into: DegreeGrid())
         let tapestry = try Atropos.inspect(recipe: output.recipe, grid: grid).get()
 
