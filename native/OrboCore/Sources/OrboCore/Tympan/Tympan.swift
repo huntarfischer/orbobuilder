@@ -37,7 +37,7 @@ public enum Tympan {
         }
     }
 
-    public struct Frame: Sendable {
+    public struct Imprint: Sendable {
         public let risingSign: Sign
         public let houses: [HouseRecord]
 
@@ -79,8 +79,8 @@ public enum Tympan {
         .pisces: .neptune,
     ]
 
-    private static let stampedFrames: [Frame] = {
-        let frames = Sign.canonicalOrder.map { risingSign -> Frame in
+    public static let imprints: [Imprint] = {
+        let imprints = Sign.canonicalOrder.map { risingSign -> Imprint in
             let houseBySign = Dictionary(
                 uniqueKeysWithValues: Sign.canonicalOrder.map { sign -> (Sign, House) in
                     let ordinal = ((sign.rawValue - risingSign.rawValue + 12) % 12) + 1
@@ -99,7 +99,7 @@ public enum Tympan {
 
             let houses = House.canonicalOrder.map { house -> HouseRecord in
                 guard let sign = signByHouse[house] else {
-                    preconditionFailure("Tympan frame is missing house \(house.rawValue).")
+                    preconditionFailure("Tympan imprint is missing house \(house.rawValue).")
                 }
                 return HouseRecord(
                     house: house,
@@ -127,7 +127,7 @@ public enum Tympan {
                 }
             )
 
-            return Frame(
+            return Imprint(
                 risingSign: risingSign,
                 houses: houses,
                 houseBySign: houseBySign,
@@ -137,39 +137,39 @@ public enum Tympan {
             )
         }
 
-        precondition(frames.count == 12)
+        precondition(imprints.count == 12)
 
-        for frame in frames {
-            precondition(frame.houses.count == 12)
-            precondition(frame.houseBySign.count == 12)
-            precondition(frame.signByHouse.count == 12)
-            precondition(frame.houseBySign[frame.risingSign] == .first)
+        for imprint in imprints {
+            precondition(imprint.houses.count == 12)
+            precondition(imprint.houseBySign.count == 12)
+            precondition(imprint.signByHouse.count == 12)
+            precondition(imprint.houseBySign[imprint.risingSign] == .first)
 
-            let allHouses = Set(frame.houses.map(\.house))
+            let allHouses = Set(imprint.houses.map(\.house))
             precondition(allHouses == Set(House.canonicalOrder))
 
             let traditionallyGoverned = TraditionalGovernor.allCases
-                .flatMap { frame.housesRuled(by: $0) }
+                .flatMap { imprint.housesRuled(by: $0) }
             precondition(traditionallyGoverned.count == 12)
             precondition(Set(traditionallyGoverned) == Set(House.canonicalOrder))
 
             for modern in [Planet.uranus, .neptune, .pluto] {
-                precondition(frame.housesCoRuled(by: modern).count == 1)
+                precondition(imprint.housesCoRuled(by: modern).count == 1)
             }
             for traditional in Planet.classicalSeven {
-                precondition(frame.housesCoRuled(by: traditional).isEmpty)
+                precondition(imprint.housesCoRuled(by: traditional).isEmpty)
             }
         }
 
-        return frames
+        return imprints
     }()
 
-    public static func frame(for risingSign: Sign) -> Frame {
-        stampedFrames[risingSign.rawValue]
+    public static func imprint(for risingSign: Sign) -> Imprint {
+        imprints[risingSign.rawValue]
     }
 
     public static func house(of sign: Sign, rising risingSign: Sign) -> House {
-        frame(for: risingSign).houseBySign[sign]!
+        imprint(for: risingSign).houseBySign[sign]!
     }
 
     public static func house(
@@ -180,7 +180,7 @@ public enum Tympan {
     }
 
     public static func sign(of house: House, rising risingSign: Sign) -> Sign {
-        frame(for: risingSign).signByHouse[house]!
+        imprint(for: risingSign).signByHouse[house]!
     }
 
     public static func ruler(of house: House, rising risingSign: Sign) -> Planet {
@@ -199,14 +199,14 @@ public enum Tympan {
         by governor: TraditionalGovernor,
         rising risingSign: Sign
     ) -> [House] {
-        frame(for: risingSign).housesRuled(by: governor)
+        imprint(for: risingSign).housesRuled(by: governor)
     }
 
     public static func housesCoRuled(
         by planet: Planet,
         rising risingSign: Sign
     ) -> [House] {
-        frame(for: risingSign).housesCoRuled(by: planet)
+        imprint(for: risingSign).housesCoRuled(by: planet)
     }
 
     public static func opposite(of house: House) -> House {

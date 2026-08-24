@@ -15,7 +15,7 @@ final class TympanTests: XCTestCase {
         try FixtureLoader.decode(ParityFixture.self, named: "tympan-parity", kind: .parity)
     }
 
-    func testPrototypeParityFixtureCoversAllTwelveFramesBothDirections() throws {
+    func testPrototypeParityFixtureCoversAllTwelveImprintsBothDirections() throws {
         let fixture = try fixture()
         XCTAssertEqual(fixture.id, "tympan-prototype-parity-v1")
         XCTAssertEqual(fixture.houseFrames.count, 12)
@@ -44,7 +44,12 @@ final class TympanTests: XCTestCase {
         }
     }
 
-    func testEveryFrameAnchorsItsRisingSignInHouseOneAndRoundTripsAll144Cells() {
+    func testCanonicalImprintsExposeAllTwelveRisingSignsInOrder() {
+        XCTAssertEqual(Tympan.imprints.count, 12)
+        XCTAssertEqual(Tympan.imprints.map(\.risingSign), Sign.canonicalOrder)
+    }
+
+    func testEveryImprintAnchorsItsRisingSignInHouseOneAndRoundTripsAll144Cells() {
         var checked = 0
 
         for rising in Sign.canonicalOrder {
@@ -167,13 +172,13 @@ final class TympanTests: XCTestCase {
         XCTAssertNil(Tympan.TraditionalGovernor(planet: .neptune))
     }
 
-    func testFrameRecordCarriesTheStampedForwardAndReverseReads() {
+    func testImprintRecordCarriesTheStampedForwardAndReverseReads() {
         for rising in Sign.canonicalOrder {
-            let frame = Tympan.frame(for: rising)
-            XCTAssertEqual(frame.risingSign, rising)
-            XCTAssertEqual(frame.houses.count, 12)
+            let imprint = Tympan.imprint(for: rising)
+            XCTAssertEqual(imprint.risingSign, rising)
+            XCTAssertEqual(imprint.houses.count, 12)
 
-            for (index, record) in frame.houses.enumerated() {
+            for (index, record) in imprint.houses.enumerated() {
                 XCTAssertEqual(record.house.rawValue, index + 1)
                 XCTAssertEqual(record.sign, Tympan.sign(of: record.house, rising: rising))
                 XCTAssertEqual(record.ruler, Tympan.ruler(of: record.house, rising: rising))
@@ -182,13 +187,13 @@ final class TympanTests: XCTestCase {
 
             for governor in Tympan.TraditionalGovernor.allCases {
                 XCTAssertEqual(
-                    frame.housesRuled(by: governor),
+                    imprint.housesRuled(by: governor),
                     Tympan.housesRuled(by: governor, rising: rising)
                 )
             }
             for planet in Planet.canonicalOrder {
                 XCTAssertEqual(
-                    frame.housesCoRuled(by: planet),
+                    imprint.housesCoRuled(by: planet),
                     Tympan.housesCoRuled(by: planet, rising: rising)
                 )
             }

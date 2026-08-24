@@ -23,8 +23,8 @@ final class FoundationIntegrationTests: XCTestCase {
 
     func testTympanConsumesCanonicalMaterWithoutModernContamination() {
         for rising in Sign.canonicalOrder {
-            let frame = Tympan.frame(for: rising)
-            for record in frame.houses {
+            let imprint = Tympan.imprint(for: rising)
+            for record in imprint.houses {
                 XCTAssertEqual(record.ruler, Mater.domicileRuler(of: record.sign))
             }
         }
@@ -41,9 +41,9 @@ final class FoundationIntegrationTests: XCTestCase {
         XCTAssertEqual(Ring.marks.count, 11)
 
         for rising in Sign.canonicalOrder {
-            let frame = Tympan.frame(for: rising)
-            XCTAssertEqual(frame.houses.count, 12)
-            XCTAssertEqual(Set(frame.houses.map(\.house)), Set(House.canonicalOrder))
+            let imprint = Tympan.imprint(for: rising)
+            XCTAssertEqual(imprint.houses.count, 12)
+            XCTAssertEqual(Set(imprint.houses.map(\.house)), Set(House.canonicalOrder))
         }
     }
 }

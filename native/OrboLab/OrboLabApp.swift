@@ -42,8 +42,8 @@ private struct FoundationLabView: View {
         )!
     }
 
-    private var frame: Tympan.Frame {
-        Tympan.frame(for: .scorpio)
+    private var imprint: Tympan.Imprint {
+        Tympan.imprint(for: .scorpio)
     }
 
     private var ringRelation: RingMark? {
@@ -211,13 +211,13 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("TYMPAN")
-                readout("rising", signName(frame.risingSign))
+                readout("rising", signName(imprint.risingSign))
                 readout(
                     "Mars governs",
-                    houseList(Tympan.housesRuled(by: .mars, rising: frame.risingSign))
+                    houseList(Tympan.housesRuled(by: .mars, rising: imprint.risingSign))
                 )
 
-                ForEach(frame.houses, id: \.house) { record in
+                ForEach(imprint.houses, id: \.house) { record in
                     let coRuler = record.coRuler.map { " / co-ruler \($0.rawValue)" } ?? ""
                     readout(
                         "house \(record.house.rawValue)",
