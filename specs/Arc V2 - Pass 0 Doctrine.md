@@ -152,6 +152,27 @@ Hephaestus materializes that law across time as the durable **Synchronic Spine**
 
 Arc does not reopen the Ephemeris.
 
+## A completed synchronic moment is a lawful chart state
+
+A completed synchronic moment is not merely a collection of refracted markers.
+
+Once the admitted synchronic coordinates for a moment exist, including the synchronic Sun and synchronic Ascendant where required, Orbo possesses a lawful chart state upon which its other authorities may perform their ordinary work.
+
+```text
+synchronic planets / admitted coordinates
++
+sSun
++
+sAsc
+        │
+        ▼
+LAWFUL SYNCHRONIC CHART STATE
+```
+
+Arc does not own all facts that can be derived from that chart. It produces the coordinate geometry that makes the chart possible.
+
+The completed state may then be read by Ring, Mater, Tympan, Horizon, Lot doctrine, and other established Orbo authorities without inventing Arc-specific substitutes for their laws.
+
 ---
 
 # 4. Law Four — exact opposition is the Seam
@@ -302,6 +323,8 @@ Arc references those authorities rather than reproducing them.
 
 Arc outputs must be directly consumable by the rest of Orbo. Given an Arc result, Ring, Mater, Tympan, and other lawful readers must be able to do their ordinary work without requiring that the result first be saved into a personal Spine.
 
+Arc must therefore produce coordinates complete and ordinary enough that downstream Orbo laws may construct every lawful derivative of the resulting chart without Arc-specific exceptions.
+
 A forged Spine may preserve, index, and navigate Arc results through time. It is not a prerequisite for Arc to know or return the state of a legal coordinate pair at an instant.
 
 ---
@@ -380,6 +403,58 @@ Tympan owns the corresponding whole-sign Imprint whenever the sAsc changes risin
 
 Arc must never copy Tympan's twelve Imprints.
 
+## Synchronic sect
+
+A lawful synchronic moment has its own Sun and its own synchronic horizon.
+
+Sect is therefore determined from the completed synchronic chart itself using Orbo's ordinary sect rule:
+
+```text
+sSun above the synchronic horizon
+→ day chart
+
+sSun below the synchronic horizon
+→ night chart
+```
+
+Synchronic sect is not inherited automatically from the natal chart and is not supplied by Arc as a separate doctrine. It is a lawful consequence of the completed synchronic chart state.
+
+## Lots are calculated from the synchronic chart
+
+Lots are derived points, not celestial bodies to be refracted as though they possessed independent mundane motion.
+
+Therefore Synchronic Time does **not** define a Lot by:
+
+```text
+nLot + mLot(t)
+       ↓ Arc
+      sLot
+```
+
+Instead the completed synchronic chart supplies the ordinary ingredients required by each admitted Lot formula, including its own sect where the formula is sect-dependent.
+
+For example:
+
+```text
+sAsc
++
+sSun
++
+sMoon
++
+synchronic sect
+        │
+        ▼
+ordinary admitted Lot formula
+        │
+        ▼
+synchronic Lot
+```
+
+The same principle applies to Fortune, Spirit, Eros, Necessity, Courage, marriage/intercourse Lots, and any other Lot Orbo later admits.
+
+Arc makes the lawful synchronic chart possible. The authority that owns Lot calculation derives the Lots from that chart.
+
 ---
 
 # 9. Two framings of one Synchronic Spine
@@ -416,7 +491,74 @@ These are two views of the same Synchronic Spine. They are not independently gen
 
 ---
 
-# 10. Canonical Arc reference
+# 10. Synchronic Synastry is a deterministic temporal consequence
+
+Given two admitted native states evaluated against the same mundane chronology, Arc can independently produce two lawful synchronic chart states at the same moment:
+
+```text
+Native A + Moment t
+        ↓ Arc
+Synchronic Chart A(t)
+
+Native B + Moment t
+        ↓ Arc
+Synchronic Chart B(t)
+```
+
+Ring may then compare those completed chart states normally:
+
+```text
+Synchronic Chart A(t)
+          ↕
+         RING
+          ↕
+Synchronic Chart B(t)
+
+= Synchronic Synastry(t)
+```
+
+Arc does not own Synchronic Synastry and requires no special synastry mode.
+
+The relationship state may include every lawful component of the completed synchronic charts that its owning authority makes available, including:
+
+```text
+synchronic planets / admitted coordinates
+angles
+sect
+Lots
+other admitted derived points
+Mater qualification
+Tympan framing
+Ring relationships
+```
+
+## Reconstructability
+
+A synchronic-synastry moment is not ephemeral.
+
+If the required natal states, mundane chronology, Arc law, and downstream canonical laws remain available, the exact relational geometry of a past or future supported moment is deterministically reconstructable even if that moment was never previously saved as an artifact.
+
+## Preservation
+
+Because the relationship chronology is deterministic through time, Hephaestus may later materialize it as a durable **Synchronic Synastry Spine**.
+
+The exact manufacturing ancestry and storage shape of that future child Spine are not frozen here.
+
+The doctrine freezes only that durable preservation is lawful and must not require a different Arc geometry from the one used for an instantaneous query.
+
+## Forecastability
+
+Because future Synchronic Synastry geometry is deterministic within the supported mundane chronology, Loom may solve, index, and navigate future relationship contacts before the corresponding lived moment occurs.
+
+This may include exact contacts, ingress-like relational changes, event windows, applying/separating states, or later higher-order combinations admitted by downstream doctrine.
+
+Forecastability concerns the knowable future geometry. It does not require Arc or the Synchronic Synastry Spine to contain an interpretation of what a future moment will mean or what any person will experience.
+
+The geometry may therefore be known, preserved, calendared, or searched before its interpretation exists.
+
+---
+
+# 11. Canonical Arc reference
 
 Arc should support a universal canonical reference for mundane displacement around the zodiac at Orbo fidelity.
 
@@ -448,7 +590,7 @@ The precise native storage shape is an implementation question for a later pass.
 
 ---
 
-# 11. Prism relationship
+# 12. Prism relationship
 
 Older Prism work remains architectural archaeology.
 
@@ -485,7 +627,7 @@ It is not the source of truth.
 
 ---
 
-# 12. Pass 0 freeze
+# 13. Pass 0 freeze
 
 Arc Pass 0 freezes exactly these seven laws:
 
@@ -497,9 +639,16 @@ Arc Pass 0 freezes exactly these seven laws:
 6. **Arc owns coordinates and topology only; Ring, Mater, Tympan, Terra/Horizon, Loom, and Hephaestus retain their established authorities.**
 7. **The Synchronic Spine is a first-class child spine, forged from the Mundane Timespine, natal AstroDNA, and Arc, and may be read through either fixed natal framing or the moving synchronic horizon.**
 
-These seven laws include one implementation acceptance condition: a compliant Arc must answer legal coordinate queries without requiring native context or a forged personal Spine. Personal materialization may preserve Arc through time, but may never be the source of Arc's availability.
+These seven laws include the following required consequences and acceptance conditions:
 
-Nothing beyond these laws is frozen by Pass 0.
+1. **Arc must answer legal coordinate queries without requiring native context or a forged personal Spine.** Personal materialization may preserve Arc through time, but may never be the source of Arc's availability.
+2. **A completed synchronic moment is a lawful chart state.** Its synchronic Sun, synchronic Ascendant/horizon, and other admitted coordinates may be consumed by Orbo's ordinary downstream laws.
+3. **Synchronic sect belongs to the synchronic chart itself.** The chart is diurnal when its synchronic Sun is above its synchronic horizon and nocturnal when below.
+4. **Synchronic Lots are calculated from the completed synchronic chart using their ordinary admitted formulas and that chart's own sect where required.** Arc does not refract natal and mundane Lots to manufacture synchronic Lots.
+5. **Two completed synchronic charts at the same mundane moment form a deterministic Synchronic Synastry state under Ring.** That relationship chronology is reconstructable, may be durably preserved as a future Synchronic Synastry Spine, and is forecastable within Orbo's supported chronology without requiring interpretation to exist first.
+6. **Arc must preserve sufficient exact coordinate and Seam topology for Ring and Loom to reconstruct, solve, and forecast Synchronic Synastry without reopening or approximating Arc geometry.**
+
+Nothing beyond these laws, consequences, and acceptance conditions is frozen by Pass 0.
 
 In particular, Pass 0 does not yet freeze:
 
@@ -512,7 +661,11 @@ phase encoding
 pole encoding
 Seam storage representation
 Synchronic Spine storage format
+Synchronic Synastry Spine storage format
+Synchronic Synastry Spine manufacturing ancestry
 body scope
+asteroid scope
+Lot registry / admitted Lot set
 midpoint feature scope
 UI behavior
 animation
