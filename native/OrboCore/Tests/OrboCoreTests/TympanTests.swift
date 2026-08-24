@@ -125,6 +125,45 @@ final class TympanTests: XCTestCase {
         XCTAssertEqual(checked, 84)
     }
 
+    func testTraditionalGovernanceLatticeIsCanonicalAndCompleteAcrossAllTwelveImprints() {
+        for rising in Sign.canonicalOrder {
+            let imprint = Tympan.imprint(for: rising)
+            let lattice = imprint.traditionalGovernanceLattice
+
+            XCTAssertEqual(lattice.count, 7)
+            XCTAssertEqual(lattice.map(\.governor), Tympan.TraditionalGovernor.allCases)
+
+            let governedHouses = lattice.flatMap(\.houses)
+            XCTAssertEqual(governedHouses.count, 12)
+            XCTAssertEqual(Set(governedHouses), Set(House.canonicalOrder))
+            XCTAssertEqual(lattice.filter { $0.houses.count == 2 }.count, 5)
+            XCTAssertEqual(lattice.filter { $0.houses.count == 1 }.count, 2)
+
+            for group in lattice {
+                XCTAssertEqual(
+                    group.houses,
+                    Tympan.housesRuled(by: group.governor, rising: rising)
+                )
+            }
+        }
+    }
+
+    func testScorpioImprintTraditionalGovernanceLatticeMatchesCanon() {
+        let groups = Dictionary(
+            uniqueKeysWithValues: Tympan.imprint(for: .scorpio)
+                .traditionalGovernanceLattice
+                .map { ($0.governor, $0.houses) }
+        )
+
+        XCTAssertEqual(groups[.mars] ?? [], [.first, .sixth])
+        XCTAssertEqual(groups[.jupiter] ?? [], [.second, .fifth])
+        XCTAssertEqual(groups[.saturn] ?? [], [.third, .fourth])
+        XCTAssertEqual(groups[.venus] ?? [], [.seventh, .twelfth])
+        XCTAssertEqual(groups[.mercury] ?? [], [.eighth, .eleventh])
+        XCTAssertEqual(groups[.moon] ?? [], [.ninth])
+        XCTAssertEqual(groups[.sun] ?? [], [.tenth])
+    }
+
     func testTraditionalGovernorCountsStayOneForLightsTwoForTheOtherFive() {
         for rising in Sign.canonicalOrder {
             XCTAssertEqual(Tympan.housesRuled(by: .sun, rising: rising).count, 1)

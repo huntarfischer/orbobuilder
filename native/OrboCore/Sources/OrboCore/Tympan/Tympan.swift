@@ -18,6 +18,16 @@ public enum Tympan {
         }
     }
 
+    public struct TraditionalGovernanceGroup: Hashable, Sendable {
+        public let governor: TraditionalGovernor
+        public let houses: [House]
+
+        public init(governor: TraditionalGovernor, houses: [House]) {
+            self.governor = governor
+            self.houses = houses
+        }
+    }
+
     public struct HouseRecord: Codable, Hashable, Sendable {
         public let house: House
         public let sign: Sign
@@ -40,6 +50,7 @@ public enum Tympan {
     public struct Imprint: Sendable {
         public let risingSign: Sign
         public let houses: [HouseRecord]
+        public let traditionalGovernanceLattice: [TraditionalGovernanceGroup]
 
         fileprivate let houseBySign: [Sign: House]
         fileprivate let signByHouse: [House: Sign]
@@ -49,6 +60,7 @@ public enum Tympan {
         fileprivate init(
             risingSign: Sign,
             houses: [HouseRecord],
+            traditionalGovernanceLattice: [TraditionalGovernanceGroup],
             houseBySign: [Sign: House],
             signByHouse: [House: Sign],
             rulesHouses: [TraditionalGovernor: [House]],
@@ -56,6 +68,7 @@ public enum Tympan {
         ) {
             self.risingSign = risingSign
             self.houses = houses
+            self.traditionalGovernanceLattice = traditionalGovernanceLattice
             self.houseBySign = houseBySign
             self.signByHouse = signByHouse
             self.rulesHouses = rulesHouses
@@ -109,12 +122,18 @@ public enum Tympan {
                 )
             }
 
-            let rulesHouses = Dictionary(
-                uniqueKeysWithValues: TraditionalGovernor.allCases.map { governor in
-                    let governed = houses
+            let traditionalGovernanceLattice = TraditionalGovernor.allCases.map { governor in
+                TraditionalGovernanceGroup(
+                    governor: governor,
+                    houses: houses
                         .filter { $0.ruler == governor.planet }
                         .map(\.house)
-                    return (governor, governed)
+                )
+            }
+
+            let rulesHouses = Dictionary(
+                uniqueKeysWithValues: traditionalGovernanceLattice.map { group in
+                    (group.governor, group.houses)
                 }
             )
 
@@ -130,6 +149,7 @@ public enum Tympan {
             return Imprint(
                 risingSign: risingSign,
                 houses: houses,
+                traditionalGovernanceLattice: traditionalGovernanceLattice,
                 houseBySign: houseBySign,
                 signByHouse: signByHouse,
                 rulesHouses: rulesHouses,
@@ -144,12 +164,13 @@ public enum Tympan {
             precondition(imprint.houseBySign.count == 12)
             precondition(imprint.signByHouse.count == 12)
             precondition(imprint.houseBySign[imprint.risingSign] == .first)
+            precondition(imprint.traditionalGovernanceLattice.count == TraditionalGovernor.allCases.count)
+            precondition(imprint.traditionalGovernanceLattice.map(\.governor) == TraditionalGovernor.allCases)
 
             let allHouses = Set(imprint.houses.map(\.house))
             precondition(allHouses == Set(House.canonicalOrder))
 
-            let traditionallyGoverned = TraditionalGovernor.allCases
-                .flatMap { imprint.housesRuled(by: $0) }
+            let traditionallyGoverned = imprint.traditionalGovernanceLattice.flatMap(\.houses)
             precondition(traditionallyGoverned.count == 12)
             precondition(Set(traditionallyGoverned) == Set(House.canonicalOrder))
 
