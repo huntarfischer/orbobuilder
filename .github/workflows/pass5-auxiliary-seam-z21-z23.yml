@@ -45,10 +45,14 @@ jobs:
             curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
-          curl --fail --location --retry 4 --retry-all-errors \
-            "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=1" \
-            --output .forge/ephe/ast136/s136199.se1
-          test -s .forge/ephe/ast136/s136199.se1
+          (
+            cd .forge/ephe/ast136
+            curl --fail --location --remote-name --remote-header-name --retry 4 --retry-all-errors \
+              "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=0"
+            test -s s136199.se1
+            head -c 32 s136199.se1 | strings | grep -q SWISSEPH
+            head -c 512 s136199.se1 | strings | grep -q DE441
+          )
           sha256sum .forge/ephe/*.se1 .forge/ephe/ast136/s136199.se1 | sort
 
       - name: Compile-check forge
