@@ -13,6 +13,7 @@ public enum TitanTransitProbe {
         public let ring: [RingObjectTemplate]
         public let arcSubjects: [ArcSubject]
         public let arcCasts: [ArcSubjectCast]
+        public let arcGrids: [ArcGrid]
 
         internal init(
             astroDNA: AstroDNA,
@@ -20,7 +21,8 @@ public enum TitanTransitProbe {
             mater: Mater.QualifiedField,
             ring: [RingObjectTemplate],
             arcSubjects: [ArcSubject],
-            arcCasts: [ArcSubjectCast]
+            arcCasts: [ArcSubjectCast],
+            arcGrids: [ArcGrid]
         ) {
             self.astroDNA = astroDNA
             self.tympan = tympan
@@ -28,6 +30,7 @@ public enum TitanTransitProbe {
             self.ring = ring
             self.arcSubjects = arcSubjects
             self.arcCasts = arcCasts
+            self.arcGrids = arcGrids
         }
     }
 
@@ -73,6 +76,7 @@ public enum TitanTransitProbe {
         }
 
         let arcCasts = Arc.cast(arcSubjects)
+        let arcGrids = arcCasts.map { Arc.project($0.field) }
 
         return Result(
             astroDNA: astroDNA,
@@ -80,7 +84,8 @@ public enum TitanTransitProbe {
             mater: mater,
             ring: ring,
             arcSubjects: arcSubjects,
-            arcCasts: arcCasts
+            arcCasts: arcCasts,
+            arcGrids: arcGrids
         )
     }
 
