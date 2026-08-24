@@ -5,7 +5,7 @@ final class HestiaStage0Tests: XCTestCase {
     private func sealedTapestry() throws -> (AstroDNA, AtroposPackage) {
         let rawSequence = Array(repeating: 0, count: AstroDNA.geneCount)
         let natalAstroDNA = try XCTUnwrap(AstroDNA(rawSequence: rawSequence))
-        let output = Clotho.gather(from: natalAstroDNA)
+        let output = LegacyMoiraiBridge.gather(from: natalAstroDNA)
         let grid = Lachesis.allot(output.packet, into: DegreeGrid())
         let tapestry = try Atropos.inspect(recipe: output.recipe, grid: grid).get()
         return (natalAstroDNA, tapestry)
