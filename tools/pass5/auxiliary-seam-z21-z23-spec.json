@@ -1,0 +1,32 @@
+{
+  "status": "FROZEN FORGE CONTRACT",
+  "span": {
+    "name": "Z21-Z23",
+    "z21Start": {"jdUT": 2297171.740867775, "utc": "1577-05-05T05:46:50.976Z"},
+    "z22Start": {"jdUT": 2386637.0793997087, "utc": "1822-04-16T13:54:20.135Z"},
+    "z23Start": {"jdUT": 2475819.1417904533, "utc": "2066-06-17T15:24:10.695Z"},
+    "z23End": {"jdUT": 2565295.0945935287, "utc": "2311-06-10T14:16:12.881Z"}
+  },
+  "astronomicalContract": {
+    "swissVersion": "2.10.03",
+    "flags": ["SEFLG_SWIEPH", "SEFLG_SPEED"],
+    "reject": ["SEFLG_MOSEPH"],
+    "coordinates": "geocentric tropical apparent ecliptic longitude; UT",
+    "crossings": "root-refined inside station-bounded monotonic intervals"
+  },
+  "sourceContract": {
+    "main": "Pinned Swiss Ephemeris 2.10.03 C plus DE441-generation sepl/semo/seas files",
+    "eris": "Swiss long-range numbered-asteroid ephemeris ast136/s136199.se1"
+  },
+  "tracks": [
+    {"name": "TrueBML", "canonical": true, "swissIdentity": "SE_OSCU_APOG", "resolutionDegrees": 1.0},
+    {"name": "MeanBML", "canonical": false, "companionOf": "TrueBML", "swissIdentity": "SE_MEAN_APOG", "resolutionDegrees": 0.1},
+    {"name": "Chiron", "canonical": true, "swissIdentity": "SE_CHIRON", "resolutionDegrees": 0.1},
+    {"name": "Ceres", "canonical": true, "swissIdentity": "SE_CERES", "resolutionDegrees": 1.0},
+    {"name": "Pallas", "canonical": true, "swissIdentity": "SE_PALLAS", "resolutionDegrees": 1.0},
+    {"name": "Juno", "canonical": true, "swissIdentity": "SE_JUNO", "resolutionDegrees": 1.0},
+    {"name": "Vesta", "canonical": true, "swissIdentity": "SE_VESTA", "resolutionDegrees": 1.0},
+    {"name": "Eris", "canonical": true, "swissIdentity": "SE_AST_OFFSET + 136199", "resolutionDegrees": 0.1}
+  ],
+  "integrationBoundary": "This pass manufactures auxiliary crossing, station, and retrograde substrates only. Core marker selection and native Timespine adoption are a later pass."
+}
