@@ -46,7 +46,7 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
           curl --fail --location --retry 4 --retry-all-errors \
-            "https://www.astro.com/ftp/swisseph/ephe/ast136/s136199.se1" \
+            "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=1" \
             --output .forge/ephe/ast136/s136199.se1
           test -s .forge/ephe/ast136/s136199.se1
           sha256sum .forge/ephe/*.se1 .forge/ephe/ast136/s136199.se1 | sort
