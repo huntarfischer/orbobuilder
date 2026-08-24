@@ -1,0 +1,15 @@
+{
+  "body": "Juno",
+  "crossingCount": 77307,
+  "crossingsByZeitgeist": {
+    "Z21": 25785,
+    "Z22": 25710,
+    "Z23": 25812
+  },
+  "resolutionDegrees": 1.0,
+  "retrogradeCrossingCount": 8349,
+  "sampledMaxCrossingResidualDegrees": 2.1073276457173051e-10,
+  "sampledMaxStationSpeedDegreesPerDay": 3.4354901818920033e-09,
+  "stationCount": 1132,
+  "status": "PASS"
+}

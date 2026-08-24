@@ -1,0 +1,15 @@
+{
+  "body": "Vesta",
+  "crossingCount": 88326,
+  "crossingsByZeitgeist": {
+    "Z21": 29506,
+    "Z22": 29403,
+    "Z23": 29417
+  },
+  "resolutionDegrees": 1.0,
+  "retrogradeCrossingCount": 7764,
+  "sampledMaxCrossingResidualDegrees": 1.9619506019807886e-10,
+  "sampledMaxStationSpeedDegreesPerDay": 4.760223645855333e-09,
+  "stationCount": 1064,
+  "status": "PASS"
+}

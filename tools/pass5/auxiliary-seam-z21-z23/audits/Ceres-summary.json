@@ -1,0 +1,88 @@
+{
+  "coordinateContract": "geocentric tropical apparent ecliptic longitude; UT",
+  "endJDUT": 2565295.0945935287,
+  "flagsContract": "SWIEPH|SPEED; Moshier fallback fatal",
+  "sourceFiles": [
+    {
+      "bytes": 483743,
+      "path": "sepl_12.se1",
+      "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 484061,
+      "path": "sepl_18.se1",
+      "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1305932,
+      "path": "semo_12.se1",
+      "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1304771,
+      "path": "semo_18.se1",
+      "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223396,
+      "path": "seas_12.se1",
+      "sha256": "3345555097e2080f4e2582026a6008ebbccfdca27600ba48019ca9c6e3e7a211",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223004,
+      "path": "seas_18.se1",
+      "sha256": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    }
+  ],
+  "span": "Z21-Z23",
+  "startJDUT": 2297171.740867775,
+  "status": "PASS",
+  "swissSourceCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissVersion": "2.10.03",
+  "tables": [
+    {
+      "body": "Ceres",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 73345,
+      "crossingsByZeitgeist": {
+        "Z21": 24482,
+        "Z22": 24390,
+        "Z23": 24473
+      },
+      "files": {
+        "audits/Ceres.json": {
+          "bytes": 369,
+          "sha256": "1801e8fb229c53c69978cc1804e9b2857f95cc1dbce6572179eb935bf6515179"
+        },
+        "crossings/Ceres.csv.gz": {
+          "bytes": 1343228,
+          "sha256": "5653ceed741d760a18c309cc729276f3d4ca6524286312eb4c0247a78650b186"
+        },
+        "retrograde-crossings/Ceres.csv.gz": {
+          "bytes": 140594,
+          "sha256": "9f76a4208f27792029bad9f8e7d25f08ee7126e6a83226b39407b354e203cc45"
+        },
+        "stations/Ceres.csv.gz": {
+          "bytes": 28929,
+          "sha256": "6bc63481295c907981d52c08360c912c18b072fb0c4ade86a2e8fe5c09ee6183"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 7972,
+      "sampledMaxCrossingResidualDegrees": 1.7206502889166586e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 4.7824296483814655e-09,
+      "sourceClass": "main asteroid / dwarf planet",
+      "stationCount": 1149,
+      "status": "PASS"
+    }
+  ],
+  "z22StartJDUT": 2386637.0793997087,
+  "z23StartJDUT": 2475819.1417904533
+}

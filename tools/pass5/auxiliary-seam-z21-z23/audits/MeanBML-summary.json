@@ -1,0 +1,88 @@
+{
+  "coordinateContract": "geocentric tropical apparent ecliptic longitude; UT",
+  "endJDUT": 2565295.0945935287,
+  "flagsContract": "SWIEPH|SPEED; Moshier fallback fatal",
+  "sourceFiles": [
+    {
+      "bytes": 483743,
+      "path": "sepl_12.se1",
+      "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 484061,
+      "path": "sepl_18.se1",
+      "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1305932,
+      "path": "semo_12.se1",
+      "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1304771,
+      "path": "semo_18.se1",
+      "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223396,
+      "path": "seas_12.se1",
+      "sha256": "3345555097e2080f4e2582026a6008ebbccfdca27600ba48019ca9c6e3e7a211",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223004,
+      "path": "seas_18.se1",
+      "sha256": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    }
+  ],
+  "span": "Z21-Z23",
+  "startJDUT": 2297171.740867775,
+  "status": "PASS",
+  "swissSourceCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissVersion": "2.10.03",
+  "tables": [
+    {
+      "body": "MeanBML",
+      "canonical": false,
+      "companionOf": "TrueBML",
+      "crossingCount": 298700,
+      "crossingsByZeitgeist": {
+        "Z21": 99668,
+        "Z22": 99353,
+        "Z23": 99679
+      },
+      "files": {
+        "audits/MeanBML.json": {
+          "bytes": 346,
+          "sha256": "30c07eaa804902a31ed238d8f6fd4caaa8951262601dbf4b3d5992ec1b530f86"
+        },
+        "crossings/MeanBML.csv.gz": {
+          "bytes": 6008988,
+          "sha256": "67266406b2d50aba2abb29831119dce508b1d7238e4be48b1679803c453499d6"
+        },
+        "retrograde-crossings/MeanBML.csv.gz": {
+          "bytes": 111,
+          "sha256": "9ac63f8205a86c89aa4e415d0e1bfdf71c8157ad6263b49c9d3bef4fe691d2e9"
+        },
+        "stations/MeanBML.csv.gz": {
+          "bytes": 126,
+          "sha256": "bc7d12f98dff5beba24322476e791a92e5418a59afbe75b28800cdf2e0f3fd14"
+        }
+      },
+      "resolutionDegrees": 0.1,
+      "retrogradeCrossingCount": 0,
+      "sampledMaxCrossingResidualDegrees": 8.890310709830374e-11,
+      "sampledMaxStationSpeedDegreesPerDay": 0.0,
+      "sourceClass": "analytic mean lunar apogee",
+      "stationCount": 0,
+      "status": "PASS"
+    }
+  ],
+  "z22StartJDUT": 2386637.0793997087,
+  "z23StartJDUT": 2475819.1417904533
+}

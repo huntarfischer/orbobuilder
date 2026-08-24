@@ -1,0 +1,15 @@
+{
+  "body": "Pallas",
+  "crossingCount": 78685,
+  "crossingsByZeitgeist": {
+    "Z21": 26213,
+    "Z22": 26183,
+    "Z23": 26289
+  },
+  "resolutionDegrees": 1.0,
+  "retrogradeCrossingCount": 10702,
+  "sampledMaxCrossingResidualDegrees": 1.7550405573274475e-10,
+  "sampledMaxStationSpeedDegreesPerDay": 3.0823730136324875e-09,
+  "stationCount": 1150,
+  "status": "PASS"
+}

@@ -1,0 +1,15 @@
+{
+  "body": "Chiron",
+  "crossingCount": 131171,
+  "crossingsByZeitgeist": {
+    "Z21": 44014,
+    "Z22": 43372,
+    "Z23": 43785
+  },
+  "resolutionDegrees": 0.1,
+  "retrogradeCrossingCount": 38577,
+  "sampledMaxCrossingResidualDegrees": 4.646949491871055e-11,
+  "sampledMaxStationSpeedDegreesPerDay": 3.051435851157011e-09,
+  "stationCount": 1438,
+  "status": "PASS"
+}

@@ -1,0 +1,15 @@
+{
+  "body": "MeanBML",
+  "crossingCount": 298700,
+  "crossingsByZeitgeist": {
+    "Z21": 99668,
+    "Z22": 99353,
+    "Z23": 99679
+  },
+  "resolutionDegrees": 0.1,
+  "retrogradeCrossingCount": 0,
+  "sampledMaxCrossingResidualDegrees": 8.890310709830374e-11,
+  "sampledMaxStationSpeedDegreesPerDay": 0.0,
+  "stationCount": 0,
+  "status": "PASS"
+}

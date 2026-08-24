@@ -1,0 +1,88 @@
+{
+  "coordinateContract": "geocentric tropical apparent ecliptic longitude; UT",
+  "endJDUT": 2565295.0945935287,
+  "flagsContract": "SWIEPH|SPEED; Moshier fallback fatal",
+  "sourceFiles": [
+    {
+      "bytes": 483743,
+      "path": "sepl_12.se1",
+      "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 484061,
+      "path": "sepl_18.se1",
+      "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1305932,
+      "path": "semo_12.se1",
+      "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1304771,
+      "path": "semo_18.se1",
+      "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223396,
+      "path": "seas_12.se1",
+      "sha256": "3345555097e2080f4e2582026a6008ebbccfdca27600ba48019ca9c6e3e7a211",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223004,
+      "path": "seas_18.se1",
+      "sha256": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    }
+  ],
+  "span": "Z21-Z23",
+  "startJDUT": 2297171.740867775,
+  "status": "PASS",
+  "swissSourceCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissVersion": "2.10.03",
+  "tables": [
+    {
+      "body": "Juno",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 77307,
+      "crossingsByZeitgeist": {
+        "Z21": 25785,
+        "Z22": 25710,
+        "Z23": 25812
+      },
+      "files": {
+        "audits/Juno.json": {
+          "bytes": 368,
+          "sha256": "f763323da71e126ab0bc2d58849835c52d759ac8a7f1239c68e50e8b75207f27"
+        },
+        "crossings/Juno.csv.gz": {
+          "bytes": 1410827,
+          "sha256": "1ce53e1fcb0020ac5214fec53c05c0b6f72ef5853e3f2179632ea8ee553b384f"
+        },
+        "retrograde-crossings/Juno.csv.gz": {
+          "bytes": 147188,
+          "sha256": "24bb4f02cb0107f57caf43b03582645996176c08c4f86551099452ff79607c4f"
+        },
+        "stations/Juno.csv.gz": {
+          "bytes": 28498,
+          "sha256": "0973ae952648935fc5f3df6a6ceb7629536298d78964cf683f9721faef28b03f"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 8349,
+      "sampledMaxCrossingResidualDegrees": 2.1073276457173051e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 3.4354901818920033e-09,
+      "sourceClass": "main asteroid",
+      "stationCount": 1132,
+      "status": "PASS"
+    }
+  ],
+  "z22StartJDUT": 2386637.0793997087,
+  "z23StartJDUT": 2475819.1417904533
+}

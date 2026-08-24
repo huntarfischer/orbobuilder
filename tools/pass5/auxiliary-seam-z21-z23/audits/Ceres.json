@@ -1,0 +1,15 @@
+{
+  "body": "Ceres",
+  "crossingCount": 73345,
+  "crossingsByZeitgeist": {
+    "Z21": 24482,
+    "Z22": 24390,
+    "Z23": 24473
+  },
+  "resolutionDegrees": 1.0,
+  "retrogradeCrossingCount": 7972,
+  "sampledMaxCrossingResidualDegrees": 1.7206502889166586e-10,
+  "sampledMaxStationSpeedDegreesPerDay": 4.7824296483814655e-09,
+  "stationCount": 1149,
+  "status": "PASS"
+}

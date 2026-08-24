@@ -1,0 +1,283 @@
+{
+  "canonicalTracks": [
+    "Chiron",
+    "Ceres",
+    "Pallas",
+    "Juno",
+    "Vesta"
+  ],
+  "companionTracks": [
+    "MeanBML"
+  ],
+  "coordinateContract": "geocentric tropical apparent ecliptic longitude; UT",
+  "deferredTracks": [
+    "TrueBML",
+    "Eris"
+  ],
+  "endJDUT": 2565295.0945935287,
+  "flagsContract": "SWIEPH|SPEED; Moshier fallback fatal",
+  "packStatus": "FINALIZED CURRENT PACK",
+  "sourceFiles": [
+    {
+      "bytes": 223396,
+      "path": "seas_12.se1",
+      "sha256": "3345555097e2080f4e2582026a6008ebbccfdca27600ba48019ca9c6e3e7a211",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 223004,
+      "path": "seas_18.se1",
+      "sha256": "a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1305932,
+      "path": "semo_12.se1",
+      "sha256": "1c65fdbb854f350d3de36afc3e4ac126a53f360ae4f6dcb57beed7c690e7eb61",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 1304771,
+      "path": "semo_18.se1",
+      "sha256": "1ca07bd67c24374d77226180c20a4f9996cba013697894810518e7eb582ca4f7",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 483743,
+      "path": "sepl_12.se1",
+      "sha256": "8dccace2557601a223d5f8a7cf64de4e6bbb8a82b9b130b95a54d49adfbe546d",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    },
+    {
+      "bytes": 484061,
+      "path": "sepl_18.se1",
+      "sha256": "ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66",
+      "sourceClass": "Swiss main ephemeris, DE441 generation"
+    }
+  ],
+  "span": "Z21-Z23",
+  "startJDUT": 2297171.740867775,
+  "status": "PASS",
+  "swissSourceCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissVersion": "2.10.03",
+  "tables": [
+    {
+      "body": "MeanBML",
+      "canonical": false,
+      "companionOf": "TrueBML",
+      "crossingCount": 298700,
+      "crossingsByZeitgeist": {
+        "Z21": 99668,
+        "Z22": 99353,
+        "Z23": 99679
+      },
+      "files": {
+        "audits/MeanBML.json": {
+          "bytes": 346,
+          "sha256": "30c07eaa804902a31ed238d8f6fd4caaa8951262601dbf4b3d5992ec1b530f86"
+        },
+        "crossings/MeanBML.csv.gz": {
+          "bytes": 6008988,
+          "sha256": "67266406b2d50aba2abb29831119dce508b1d7238e4be48b1679803c453499d6"
+        },
+        "retrograde-crossings/MeanBML.csv.gz": {
+          "bytes": 111,
+          "sha256": "9ac63f8205a86c89aa4e415d0e1bfdf71c8157ad6263b49c9d3bef4fe691d2e9"
+        },
+        "stations/MeanBML.csv.gz": {
+          "bytes": 126,
+          "sha256": "bc7d12f98dff5beba24322476e791a92e5418a59afbe75b28800cdf2e0f3fd14"
+        }
+      },
+      "resolutionDegrees": 0.1,
+      "retrogradeCrossingCount": 0,
+      "sampledMaxCrossingResidualDegrees": 8.890310709830374e-11,
+      "sampledMaxStationSpeedDegreesPerDay": 0.0,
+      "sourceClass": "analytic mean lunar apogee",
+      "stationCount": 0,
+      "status": "PASS"
+    },
+    {
+      "body": "Chiron",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 131171,
+      "crossingsByZeitgeist": {
+        "Z21": 44014,
+        "Z22": 43372,
+        "Z23": 43785
+      },
+      "files": {
+        "audits/Chiron.json": {
+          "bytes": 370,
+          "sha256": "eb6aae4abe51ef1496c554b87965272386431bddf5f4f91945d917369e3c3a74"
+        },
+        "crossings/Chiron.csv.gz": {
+          "bytes": 2515516,
+          "sha256": "0565fccb9c19999ffb7908bde84d3320179c36c7b1d167ed21529bbc1503fb8e"
+        },
+        "retrograde-crossings/Chiron.csv.gz": {
+          "bytes": 676844,
+          "sha256": "a004e168497569f157d1721886ea62e045eaf63e8211c502c4ef31095163c643"
+        },
+        "stations/Chiron.csv.gz": {
+          "bytes": 35672,
+          "sha256": "1bfb2c3c3f371e36bbe6c64df9fbfb95f294950306953b8299aff43adfefc305"
+        }
+      },
+      "resolutionDegrees": 0.1,
+      "retrogradeCrossingCount": 38577,
+      "sampledMaxCrossingResidualDegrees": 4.646949491871055e-11,
+      "sampledMaxStationSpeedDegreesPerDay": 3.051435851157011e-09,
+      "sourceClass": "centaur",
+      "stationCount": 1438,
+      "status": "PASS"
+    },
+    {
+      "body": "Ceres",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 73345,
+      "crossingsByZeitgeist": {
+        "Z21": 24482,
+        "Z22": 24390,
+        "Z23": 24473
+      },
+      "files": {
+        "audits/Ceres.json": {
+          "bytes": 369,
+          "sha256": "1801e8fb229c53c69978cc1804e9b2857f95cc1dbce6572179eb935bf6515179"
+        },
+        "crossings/Ceres.csv.gz": {
+          "bytes": 1343228,
+          "sha256": "5653ceed741d760a18c309cc729276f3d4ca6524286312eb4c0247a78650b186"
+        },
+        "retrograde-crossings/Ceres.csv.gz": {
+          "bytes": 140594,
+          "sha256": "9f76a4208f27792029bad9f8e7d25f08ee7126e6a83226b39407b354e203cc45"
+        },
+        "stations/Ceres.csv.gz": {
+          "bytes": 28929,
+          "sha256": "6bc63481295c907981d52c08360c912c18b072fb0c4ade86a2e8fe5c09ee6183"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 7972,
+      "sampledMaxCrossingResidualDegrees": 1.7206502889166586e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 4.7824296483814655e-09,
+      "sourceClass": "main asteroid / dwarf planet",
+      "stationCount": 1149,
+      "status": "PASS"
+    },
+    {
+      "body": "Pallas",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 78685,
+      "crossingsByZeitgeist": {
+        "Z21": 26213,
+        "Z22": 26183,
+        "Z23": 26289
+      },
+      "files": {
+        "audits/Pallas.json": {
+          "bytes": 371,
+          "sha256": "1623e64fb45a0fac632d38174a60a74841717e7667c149a43d9ff4b358613a78"
+        },
+        "crossings/Pallas.csv.gz": {
+          "bytes": 1492373,
+          "sha256": "3eb2d20cecc6bc176bfd2e305d4e29958d9fe360c443210e715379b9ddc3bf8f"
+        },
+        "retrograde-crossings/Pallas.csv.gz": {
+          "bytes": 187854,
+          "sha256": "03d3739dbe9c6a24ad9442210acfa1dc5f51f36b78e5a97dc94fefbad5e03a1e"
+        },
+        "stations/Pallas.csv.gz": {
+          "bytes": 29013,
+          "sha256": "82f2060e2c366e3a629ace245c2561cdfd785b691d90c0861375fcf8b1ac769f"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 10702,
+      "sampledMaxCrossingResidualDegrees": 1.7550405573274475e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 3.0823730136324875e-09,
+      "sourceClass": "main asteroid",
+      "stationCount": 1150,
+      "status": "PASS"
+    },
+    {
+      "body": "Juno",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 77307,
+      "crossingsByZeitgeist": {
+        "Z21": 25785,
+        "Z22": 25710,
+        "Z23": 25812
+      },
+      "files": {
+        "audits/Juno.json": {
+          "bytes": 368,
+          "sha256": "f763323da71e126ab0bc2d58849835c52d759ac8a7f1239c68e50e8b75207f27"
+        },
+        "crossings/Juno.csv.gz": {
+          "bytes": 1410827,
+          "sha256": "1ce53e1fcb0020ac5214fec53c05c0b6f72ef5853e3f2179632ea8ee553b384f"
+        },
+        "retrograde-crossings/Juno.csv.gz": {
+          "bytes": 147188,
+          "sha256": "24bb4f02cb0107f57caf43b03582645996176c08c4f86551099452ff79607c4f"
+        },
+        "stations/Juno.csv.gz": {
+          "bytes": 28498,
+          "sha256": "0973ae952648935fc5f3df6a6ceb7629536298d78964cf683f9721faef28b03f"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 8349,
+      "sampledMaxCrossingResidualDegrees": 2.1073276457173051e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 3.4354901818920033e-09,
+      "sourceClass": "main asteroid",
+      "stationCount": 1132,
+      "status": "PASS"
+    },
+    {
+      "body": "Vesta",
+      "canonical": true,
+      "companionOf": null,
+      "crossingCount": 88326,
+      "crossingsByZeitgeist": {
+        "Z21": 29506,
+        "Z22": 29403,
+        "Z23": 29417
+      },
+      "files": {
+        "audits/Vesta.json": {
+          "bytes": 368,
+          "sha256": "cf5cf076c5e36ab621e1150c36707daf58d98e214b36a289cab165b7c1950a0b"
+        },
+        "crossings/Vesta.csv.gz": {
+          "bytes": 1615885,
+          "sha256": "ad839c5a711499683b7d45a6c24630c3a538aa1df7203de43152cd1f3d6cfd21"
+        },
+        "retrograde-crossings/Vesta.csv.gz": {
+          "bytes": 136657,
+          "sha256": "6658d6d7562d7ff2a7b9c912e1c6182fa19f656866166ac00c797b948875fc6e"
+        },
+        "stations/Vesta.csv.gz": {
+          "bytes": 26840,
+          "sha256": "cdcc9419c458bdf063bfb1443569c6a84c9ac0e5c930b13e44912fd37ec8a511"
+        }
+      },
+      "resolutionDegrees": 1.0,
+      "retrogradeCrossingCount": 7764,
+      "sampledMaxCrossingResidualDegrees": 1.9619506019807886e-10,
+      "sampledMaxStationSpeedDegreesPerDay": 4.760223645855333e-09,
+      "sourceClass": "main asteroid",
+      "stationCount": 1064,
+      "status": "PASS"
+    }
+  ],
+  "z22StartJDUT": 2386637.0793997087,
+  "z23StartJDUT": 2475819.1417904533
+}

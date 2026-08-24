@@ -1,0 +1,170 @@
+{
+  "bodyTrackCount": 6,
+  "bytesTotal": 15853993,
+  "canonicalTrackCount": 5,
+  "companionTrackCount": 1,
+  "deferredTracks": [
+    "TrueBML",
+    "Eris"
+  ],
+  "files": [
+    {
+      "bytes": 2936,
+      "path": "audits/Ceres-summary.json",
+      "sha256": "69e56a8033e27aad46e2aed3b9a891cfffeef73ea82aea54b8751c588bed008d"
+    },
+    {
+      "bytes": 369,
+      "path": "audits/Ceres.json",
+      "sha256": "1801e8fb229c53c69978cc1804e9b2857f95cc1dbce6572179eb935bf6515179"
+    },
+    {
+      "bytes": 2920,
+      "path": "audits/Chiron-summary.json",
+      "sha256": "ac3e76b4593015a6229c81ad629c34c4e471c46c31024de6eb15681963db8f03"
+    },
+    {
+      "bytes": 370,
+      "path": "audits/Chiron.json",
+      "sha256": "eb6aae4abe51ef1496c554b87965272386431bddf5f4f91945d917369e3c3a74"
+    },
+    {
+      "bytes": 2916,
+      "path": "audits/Juno-summary.json",
+      "sha256": "c49e94d2fbb89921551229733a79cc677b7fbbf6dbbabdb734da4ecff10eeef3"
+    },
+    {
+      "bytes": 368,
+      "path": "audits/Juno.json",
+      "sha256": "f763323da71e126ab0bc2d58849835c52d759ac8a7f1239c68e50e8b75207f27"
+    },
+    {
+      "bytes": 2920,
+      "path": "audits/MeanBML-summary.json",
+      "sha256": "5dd6aa0960cb789fea7eb3c95db18b5ea79af1ee9764bc63b90bfba1bf7ebfd5"
+    },
+    {
+      "bytes": 346,
+      "path": "audits/MeanBML.json",
+      "sha256": "30c07eaa804902a31ed238d8f6fd4caaa8951262601dbf4b3d5992ec1b530f86"
+    },
+    {
+      "bytes": 2927,
+      "path": "audits/Pallas-summary.json",
+      "sha256": "25c449de2d9a0192bbcd2eb45f730e5bd930ba1361e35bfae12bc4b99df49a32"
+    },
+    {
+      "bytes": 371,
+      "path": "audits/Pallas.json",
+      "sha256": "1623e64fb45a0fac632d38174a60a74841717e7667c149a43d9ff4b358613a78"
+    },
+    {
+      "bytes": 2920,
+      "path": "audits/Vesta-summary.json",
+      "sha256": "4e00776cd09ebaf2d2b718fad93f26bf798a161ee5436d39b221b291209c530c"
+    },
+    {
+      "bytes": 368,
+      "path": "audits/Vesta.json",
+      "sha256": "cf5cf076c5e36ab621e1150c36707daf58d98e214b36a289cab165b7c1950a0b"
+    },
+    {
+      "bytes": 1343228,
+      "path": "crossings/Ceres.csv.gz",
+      "sha256": "5653ceed741d760a18c309cc729276f3d4ca6524286312eb4c0247a78650b186"
+    },
+    {
+      "bytes": 2515516,
+      "path": "crossings/Chiron.csv.gz",
+      "sha256": "0565fccb9c19999ffb7908bde84d3320179c36c7b1d167ed21529bbc1503fb8e"
+    },
+    {
+      "bytes": 1410827,
+      "path": "crossings/Juno.csv.gz",
+      "sha256": "1ce53e1fcb0020ac5214fec53c05c0b6f72ef5853e3f2179632ea8ee553b384f"
+    },
+    {
+      "bytes": 6008988,
+      "path": "crossings/MeanBML.csv.gz",
+      "sha256": "67266406b2d50aba2abb29831119dce508b1d7238e4be48b1679803c453499d6"
+    },
+    {
+      "bytes": 1492373,
+      "path": "crossings/Pallas.csv.gz",
+      "sha256": "3eb2d20cecc6bc176bfd2e305d4e29958d9fe360c443210e715379b9ddc3bf8f"
+    },
+    {
+      "bytes": 1615885,
+      "path": "crossings/Vesta.csv.gz",
+      "sha256": "ad839c5a711499683b7d45a6c24630c3a538aa1df7203de43152cd1f3d6cfd21"
+    },
+    {
+      "bytes": 140594,
+      "path": "retrograde-crossings/Ceres.csv.gz",
+      "sha256": "9f76a4208f27792029bad9f8e7d25f08ee7126e6a83226b39407b354e203cc45"
+    },
+    {
+      "bytes": 676844,
+      "path": "retrograde-crossings/Chiron.csv.gz",
+      "sha256": "a004e168497569f157d1721886ea62e045eaf63e8211c502c4ef31095163c643"
+    },
+    {
+      "bytes": 147188,
+      "path": "retrograde-crossings/Juno.csv.gz",
+      "sha256": "24bb4f02cb0107f57caf43b03582645996176c08c4f86551099452ff79607c4f"
+    },
+    {
+      "bytes": 111,
+      "path": "retrograde-crossings/MeanBML.csv.gz",
+      "sha256": "9ac63f8205a86c89aa4e415d0e1bfdf71c8157ad6263b49c9d3bef4fe691d2e9"
+    },
+    {
+      "bytes": 187854,
+      "path": "retrograde-crossings/Pallas.csv.gz",
+      "sha256": "03d3739dbe9c6a24ad9442210acfa1dc5f51f36b78e5a97dc94fefbad5e03a1e"
+    },
+    {
+      "bytes": 136657,
+      "path": "retrograde-crossings/Vesta.csv.gz",
+      "sha256": "6658d6d7562d7ff2a7b9c912e1c6182fa19f656866166ac00c797b948875fc6e"
+    },
+    {
+      "bytes": 28929,
+      "path": "stations/Ceres.csv.gz",
+      "sha256": "6bc63481295c907981d52c08360c912c18b072fb0c4ade86a2e8fe5c09ee6183"
+    },
+    {
+      "bytes": 35672,
+      "path": "stations/Chiron.csv.gz",
+      "sha256": "1bfb2c3c3f371e36bbe6c64df9fbfb95f294950306953b8299aff43adfefc305"
+    },
+    {
+      "bytes": 28498,
+      "path": "stations/Juno.csv.gz",
+      "sha256": "0973ae952648935fc5f3df6a6ceb7629536298d78964cf683f9721faef28b03f"
+    },
+    {
+      "bytes": 126,
+      "path": "stations/MeanBML.csv.gz",
+      "sha256": "bc7d12f98dff5beba24322476e791a92e5418a59afbe75b28800cdf2e0f3fd14"
+    },
+    {
+      "bytes": 29013,
+      "path": "stations/Pallas.csv.gz",
+      "sha256": "82f2060e2c366e3a629ace245c2561cdfd785b691d90c0861375fcf8b1ac769f"
+    },
+    {
+      "bytes": 26840,
+      "path": "stations/Vesta.csv.gz",
+      "sha256": "cdcc9419c458bdf063bfb1443569c6a84c9ac0e5c930b13e44912fd37ec8a511"
+    },
+    {
+      "bytes": 9119,
+      "path": "summary.json",
+      "sha256": "e59232d25813780855010c2fab168949f356ac65f87fad619b01a532527baa9a"
+    }
+  ],
+  "packStatus": "FINALIZED CURRENT PACK",
+  "span": "Z21-Z23",
+  "status": "PASS"
+}
