@@ -78,4 +78,88 @@ final class IrisScene3DTests: XCTestCase {
         XCTAssertEqual(scene.coordinates, [first, second])
         XCTAssertNotEqual(scene.coordinates[0], scene.coordinates[1])
     }
+
+    func testProjectionMapsCardinalLongitudesOntoUnitZodiacCircle() throws {
+        let julianDay = try XCTUnwrap(JulianDay(2_461_000.5))
+        let degrees = [0.0, 90.0, 180.0, 270.0]
+        let expected = [
+            (x: 1.0, y: 0.0),
+            (x: 0.0, y: 1.0),
+            (x: -1.0, y: 0.0),
+            (x: 0.0, y: -1.0),
+        ]
+
+        for (index, physicalDegrees) in degrees.enumerated() {
+            let source = OrboSpineCelestialCoordinate(
+                body: .sun,
+                directionalDegree: try XCTUnwrap(
+                    OrboSpineDirectionalDegree(
+                        physicalDegrees: physicalDegrees,
+                        motion: .direct
+                    )
+                ),
+                julianDay: julianDay
+            )
+            let point = IrisScenePoint3D(source: source)
+
+            XCTAssertEqual(point.x, expected[index].x, accuracy: 1e-12)
+            XCTAssertEqual(point.y, expected[index].y, accuracy: 1e-12)
+        }
+    }
+
+    func testProjectionUsesJulianDayAsZWithoutNormalization() throws {
+        let julianDay = try XCTUnwrap(JulianDay(2_461_234.56789))
+        let source = OrboSpineCelestialCoordinate(
+            body: .saturn,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 312.25, motion: .direct)
+            ),
+            julianDay: julianDay
+        )
+
+        let point = IrisScenePoint3D(source: source)
+
+        XCTAssertEqual(point.z, julianDay.value, accuracy: 0)
+    }
+
+    func testProjectionRetainsCanonicalSourceAndBodyIdentity() throws {
+        let julianDay = try XCTUnwrap(JulianDay(2_461_000.5))
+        let source = OrboSpineCelestialCoordinate(
+            body: .mercury,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 19.372, motion: .retrograde)
+            ),
+            julianDay: julianDay
+        )
+
+        let point = IrisScenePoint3D(source: source)
+
+        XCTAssertEqual(point.source, source)
+        XCTAssertEqual(point.source.body, .mercury)
+        XCTAssertEqual(point.source.directionalDegree.motion, .retrograde)
+    }
+
+    func testSceneProjectsOnePointPerCanonicalCoordinateInInputOrder() throws {
+        let firstTime = try XCTUnwrap(JulianDay(2_461_000.5))
+        let secondTime = try XCTUnwrap(JulianDay(2_461_001.5))
+        let first = OrboSpineCelestialCoordinate(
+            body: .sun,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 10.0, motion: .direct)
+            ),
+            julianDay: firstTime
+        )
+        let second = OrboSpineCelestialCoordinate(
+            body: .moon,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 200.0, motion: .direct)
+            ),
+            julianDay: secondTime
+        )
+
+        let scene = IrisScene3D(coordinates: [first, second])
+
+        XCTAssertEqual(scene.points.map(\.source), [first, second])
+        XCTAssertEqual(scene.points.count, scene.coordinates.count)
+    }
 }
