@@ -42,8 +42,8 @@ final class AtroposStage3Tests: XCTestCase {
         return try XCTUnwrap(AstroDNA(sequence: sequence))
     }
 
-    private func completedWork() throws -> (ClothoOutput, DegreeGrid) {
-        let output = Clotho.gather(from: try natalDNA())
+    private func completedWork() throws -> (LegacyMoiraiOutput, DegreeGrid) {
+        let output = LegacyMoiraiBridge.gather(from: try natalDNA())
         let grid = Lachesis.allot(output.packet, into: DegreeGrid())
         return (output, grid)
     }
@@ -90,14 +90,14 @@ final class AtroposStage3Tests: XCTestCase {
     }
 
     func testAtroposRejectsExactStateMismatchBetweenRecipeAndAllotment() throws {
-        let original = Clotho.gather(from: try natalDNA())
+        let original = LegacyMoiraiBridge.gather(from: try natalDNA())
         let changedSun = NatalPosition(
             degree: 21,
             minute: 8,
             second: 20,
             retrograde: false
         )
-        let changed = Clotho.gather(
+        let changed = LegacyMoiraiBridge.gather(
             from: try natalDNA(overrides: [.sun: changedSun])
         )
         let changedGrid = Lachesis.allot(changed.packet, into: DegreeGrid())
@@ -109,14 +109,14 @@ final class AtroposStage3Tests: XCTestCase {
     }
 
     func testAtroposRejectsDifferentProductionAtAnotherDegreeBeforeSealing() throws {
-        let original = Clotho.gather(from: try natalDNA())
+        let original = LegacyMoiraiBridge.gather(from: try natalDNA())
         let changedSun = NatalPosition(
             degree: 22,
             minute: 8,
             second: 19,
             retrograde: false
         )
-        let changed = Clotho.gather(
+        let changed = LegacyMoiraiBridge.gather(
             from: try natalDNA(overrides: [.sun: changedSun])
         )
         let changedGrid = Lachesis.allot(changed.packet, into: DegreeGrid())
