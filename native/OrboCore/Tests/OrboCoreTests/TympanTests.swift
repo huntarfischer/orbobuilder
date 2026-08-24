@@ -7,7 +7,11 @@ final class TympanTests: XCTestCase {
         let houseFrames: [[Int]]
         let signFrames: [[Int]]
         let traditionalRulers: [Planet]
-        let modernCoRulers: [Planet?]
+        let modernRulers: [Planet?]
+        let traditionalGovernorsByHouse: [[Tympan.TraditionalGovernor]]
+        let traditionalGovernanceLattices: [[[Int]]]
+        let modernGovernors: [Planet]
+        let modernGovernanceHouses: [[Int]]
         let flipHouses: Int
     }
 
@@ -15,9 +19,9 @@ final class TympanTests: XCTestCase {
         try FixtureLoader.decode(ParityFixture.self, named: "tympan-parity", kind: .parity)
     }
 
-    func testPrototypeParityFixtureCoversAllTwelveImprintsBothDirections() throws {
+    func testV2ParityFixtureCoversAllTwelveImprintsBothDirections() throws {
         let fixture = try fixture()
-        XCTAssertEqual(fixture.id, "tympan-prototype-parity-v1")
+        XCTAssertEqual(fixture.id, "tympan-v2-parity-v1")
         XCTAssertEqual(fixture.houseFrames.count, 12)
         XCTAssertEqual(fixture.signFrames.count, 12)
 
@@ -186,10 +190,10 @@ final class TympanTests: XCTestCase {
 
     func testModernGovernanceAugmentationIsCanonicalAndSeparateAcrossAllTwelveImprints() throws {
         let fixture = try fixture()
-        XCTAssertEqual(fixture.modernCoRulers.count, 12)
+        XCTAssertEqual(fixture.modernRulers.count, 12)
 
         for sign in Sign.canonicalOrder {
-            XCTAssertEqual(Tympan.modernRuler(of: sign), fixture.modernCoRulers[sign.rawValue])
+            XCTAssertEqual(Tympan.modernRuler(of: sign), fixture.modernRulers[sign.rawValue])
         }
 
         for rising in Sign.canonicalOrder {
@@ -287,6 +291,141 @@ final class TympanTests: XCTestCase {
         XCTAssertEqual(seventh.traditionalGovernor, .venus)
         XCTAssertEqual(seventh.traditionalGovernedHouses, [.seventh, .twelfth])
         XCTAssertNil(seventh.modernGovernor)
+    }
+
+    func testV2ParityFixtureProvesEveryGovernanceFieldAcrossAllTwelveImprints() throws {
+        let fixture = try fixture()
+        let traditionalGovernors = Tympan.TraditionalGovernor.allCases
+        let modernSigns: [Sign] = [.scorpio, .aquarius, .pisces]
+
+        XCTAssertEqual(fixture.traditionalGovernorsByHouse.count, 12)
+        XCTAssertEqual(fixture.traditionalGovernanceLattices.count, 12)
+        XCTAssertEqual(fixture.modernGovernors, [.pluto, .uranus, .neptune])
+        XCTAssertEqual(fixture.modernGovernanceHouses.count, 12)
+
+        var houseReadsChecked = 0
+        var governanceGroupsChecked = 0
+        var modernRelationshipsChecked = 0
+
+        for ascIndex in 0..<12 {
+            let rising = try XCTUnwrap(Sign(rawValue: ascIndex))
+            let imprint = Tympan.imprint(for: rising)
+
+            XCTAssertEqual(fixture.traditionalGovernorsByHouse[ascIndex].count, 12)
+            XCTAssertEqual(fixture.traditionalGovernanceLattices[ascIndex].count, 7)
+            XCTAssertEqual(fixture.modernGovernanceHouses[ascIndex].count, 3)
+
+            for (governorIndex, governor) in traditionalGovernors.enumerated() {
+                let expectedHouses = try fixture.traditionalGovernanceLattices[ascIndex][governorIndex]
+                    .map { try XCTUnwrap(House(rawValue: $0)) }
+
+                XCTAssertEqual(imprint.traditionalGovernanceLattice[governorIndex].governor, governor)
+                XCTAssertEqual(imprint.traditionalGovernanceLattice[governorIndex].houses, expectedHouses)
+                governanceGroupsChecked += 1
+            }
+
+            XCTAssertEqual(imprint.traditionalGovernanceLattice.filter { $0.houses.count == 2 }.count, 5)
+            XCTAssertEqual(imprint.traditionalGovernanceLattice.filter { $0.houses.count == 1 }.count, 2)
+
+            for modernIndex in 0..<fixture.modernGovernors.count {
+                let expectedHouse = try XCTUnwrap(
+                    House(rawValue: fixture.modernGovernanceHouses[ascIndex][modernIndex])
+                )
+                let relationship = imprint.modernGovernance[modernIndex]
+
+                XCTAssertEqual(relationship.governor, fixture.modernGovernors[modernIndex])
+                XCTAssertEqual(relationship.sign, modernSigns[modernIndex])
+                XCTAssertEqual(relationship.house, expectedHouse)
+                modernRelationshipsChecked += 1
+            }
+
+            for houseIndex in 0..<12 {
+                let house = try XCTUnwrap(House(rawValue: houseIndex + 1))
+                let expectedSign = try XCTUnwrap(
+                    Sign(rawValue: fixture.signFrames[ascIndex][houseIndex])
+                )
+                let expectedTraditionalGovernor = fixture.traditionalGovernorsByHouse[ascIndex][houseIndex]
+                let expectedGovernorIndex = try XCTUnwrap(
+                    traditionalGovernors.firstIndex(of: expectedTraditionalGovernor)
+                )
+                let expectedTraditionalHouses = try fixture
+                    .traditionalGovernanceLattices[ascIndex][expectedGovernorIndex]
+                    .map { try XCTUnwrap(House(rawValue: $0)) }
+                let expectedModernGovernor = fixture.modernRulers[expectedSign.rawValue]
+
+                let governance = Tympan.governance(of: house, rising: rising)
+                XCTAssertEqual(governance.house, house)
+                XCTAssertEqual(governance.sign, expectedSign)
+                XCTAssertEqual(governance.traditionalGovernor, expectedTraditionalGovernor)
+                XCTAssertEqual(governance.traditionalGovernedHouses, expectedTraditionalHouses)
+                XCTAssertEqual(governance.modernGovernor, expectedModernGovernor)
+                houseReadsChecked += 1
+            }
+        }
+
+        XCTAssertEqual(governanceGroupsChecked, 84)
+        XCTAssertEqual(modernRelationshipsChecked, 36)
+        XCTAssertEqual(houseReadsChecked, 144)
+    }
+
+    func testTraditionalAndModernGovernanceRemainStructurallySeparateInEveryImprint() throws {
+        let fixture = try fixture()
+        let modernSet = Set(fixture.modernGovernors)
+
+        XCTAssertEqual(modernSet, Set([Planet.pluto, .uranus, .neptune]))
+        for modern in modernSet {
+            XCTAssertNil(Tympan.TraditionalGovernor(planet: modern))
+        }
+
+        for rising in Sign.canonicalOrder {
+            let imprint = Tympan.imprint(for: rising)
+            let traditionalSet = Set(imprint.traditionalGovernanceLattice.map { $0.governor.planet })
+
+            XCTAssertEqual(traditionalSet, Set(Planet.classicalSeven))
+            XCTAssertTrue(traditionalSet.isDisjoint(with: modernSet))
+            XCTAssertEqual(imprint.traditionalGovernanceLattice.flatMap(\.houses).count, 12)
+            XCTAssertEqual(imprint.modernGovernance.count, 3)
+
+            for governance in imprint.houseGovernance {
+                XCTAssertTrue(traditionalSet.contains(governance.traditionalGovernor.planet))
+                if let modernGovernor = governance.modernGovernor {
+                    XCTAssertTrue(modernSet.contains(modernGovernor))
+                    XCTAssertNil(Tympan.TraditionalGovernor(planet: modernGovernor))
+                }
+            }
+        }
+    }
+
+    func testCrossImprintGovernanceAnchorsBeyondScorpio() {
+        let ariesEighth = Tympan.governance(of: .eighth, rising: .aries)
+        XCTAssertEqual(ariesEighth.sign, .scorpio)
+        XCTAssertEqual(ariesEighth.traditionalGovernor, .mars)
+        XCTAssertEqual(ariesEighth.traditionalGovernedHouses, [.first, .eighth])
+        XCTAssertEqual(ariesEighth.modernGovernor, .pluto)
+
+        let cancerFirst = Tympan.governance(of: .first, rising: .cancer)
+        XCTAssertEqual(cancerFirst.sign, .cancer)
+        XCTAssertEqual(cancerFirst.traditionalGovernor, .moon)
+        XCTAssertEqual(cancerFirst.traditionalGovernedHouses, [.first])
+        XCTAssertNil(cancerFirst.modernGovernor)
+
+        let cancerFifth = Tympan.governance(of: .fifth, rising: .cancer)
+        XCTAssertEqual(cancerFifth.sign, .scorpio)
+        XCTAssertEqual(cancerFifth.traditionalGovernor, .mars)
+        XCTAssertEqual(cancerFifth.traditionalGovernedHouses, [.fifth, .tenth])
+        XCTAssertEqual(cancerFifth.modernGovernor, .pluto)
+
+        let piscesFirst = Tympan.governance(of: .first, rising: .pisces)
+        XCTAssertEqual(piscesFirst.sign, .pisces)
+        XCTAssertEqual(piscesFirst.traditionalGovernor, .jupiter)
+        XCTAssertEqual(piscesFirst.traditionalGovernedHouses, [.first, .tenth])
+        XCTAssertEqual(piscesFirst.modernGovernor, .neptune)
+
+        let piscesTwelfth = Tympan.governance(of: .twelfth, rising: .pisces)
+        XCTAssertEqual(piscesTwelfth.sign, .aquarius)
+        XCTAssertEqual(piscesTwelfth.traditionalGovernor, .saturn)
+        XCTAssertEqual(piscesTwelfth.traditionalGovernedHouses, [.eleventh, .twelfth])
+        XCTAssertEqual(piscesTwelfth.modernGovernor, .uranus)
     }
 
     func testImprintRecordCarriesTheStampedForwardAndReverseReads() {
