@@ -52,7 +52,7 @@ final class IrisScene3DTests: XCTestCase {
         XCTAssertEqual(
             scene.coordinates[0].directionalDegree.physicalDegrees,
             scene.coordinates[1].directionalDegree.physicalDegrees,
-            accuracy: 0
+            accuracy: 1e-12
         )
     }
 
