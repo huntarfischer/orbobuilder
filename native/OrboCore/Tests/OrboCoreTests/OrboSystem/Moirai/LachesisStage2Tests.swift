@@ -42,7 +42,7 @@ final class LachesisStage2Tests: XCTestCase {
     }
 
     private func allottedGrid() throws -> (ClothoSourcePacket, DegreeGrid) {
-        let packet = Clotho.gather(from: try natalDNA()).packet
+        let packet = LegacyMoiraiBridge.gather(from: try natalDNA()).packet
         return (packet, Lachesis.allot(packet, into: DegreeGrid()))
     }
 
@@ -128,7 +128,7 @@ final class LachesisStage2Tests: XCTestCase {
     }
 
     func testSameGridAndPacketProduceSameAllotment() throws {
-        let packet = Clotho.gather(from: try natalDNA()).packet
+        let packet = LegacyMoiraiBridge.gather(from: try natalDNA()).packet
         let first = Lachesis.allot(packet, into: DegreeGrid())
         let second = Lachesis.allot(packet, into: DegreeGrid())
 
@@ -136,7 +136,7 @@ final class LachesisStage2Tests: XCTestCase {
     }
 
     func testLachesisMayAllotIntoAnAlreadyAllottedGridWithoutDuplication() throws {
-        let packet = Clotho.gather(from: try natalDNA()).packet
+        let packet = LegacyMoiraiBridge.gather(from: try natalDNA()).packet
         let once = Lachesis.allot(packet, into: DegreeGrid())
         let twice = Lachesis.allot(packet, into: once)
 
