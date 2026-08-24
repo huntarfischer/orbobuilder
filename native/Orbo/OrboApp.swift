@@ -8,7 +8,7 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS I5 / TRUTH + PRESENTATION")
+                    Text("IRIS MVP / FROZEN")
                         .font(.caption.monospaced())
 
                     IrisChart3DView(
@@ -30,7 +30,7 @@ struct OrboApp: App {
     }
 }
 
-/// Fixed typed input for the I4 temporal-strand renderer proof only.
+/// Fixed typed input for the Iris MVP temporal-strand renderer proof only.
 /// The host supplies every body, degree, motion, and time. Iris chooses none of them.
 /// These coordinates are not an ephemeris claim.
 private enum IrisI4Fixture {
