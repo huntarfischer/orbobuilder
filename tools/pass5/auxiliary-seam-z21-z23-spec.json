@@ -1,5 +1,5 @@
 {
-  "status": "FROZEN FORGE CONTRACT",
+  "status": "FINALIZED CURRENT PACK",
   "span": {
     "name": "Z21-Z23",
     "z21Start": {"jdUT": 2297171.740867775, "utc": "1577-05-05T05:46:50.976Z"},
@@ -16,19 +16,33 @@
     "crossings": "root-refined inside station-bounded monotonic intervals"
   },
   "sourceContract": {
-    "main": "Pinned Swiss Ephemeris 2.10.03 C plus DE441-generation sepl/semo/seas files from the pinned Swiss source commit",
-    "eris": "Swiss long-range numbered-asteroid ephemeris ast136/s136199.se1 from the official long_ast distribution",
-    "erisDistribution": "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=1"
+    "main": "Pinned Swiss Ephemeris 2.10.03 C plus DE441-generation sepl/semo/seas files from the pinned Swiss source commit"
   },
-  "tracks": [
-    {"name": "TrueBML", "canonical": true, "swissIdentity": "SE_OSCU_APOG", "resolutionDegrees": 1.0},
-    {"name": "MeanBML", "canonical": false, "companionOf": "TrueBML", "swissIdentity": "SE_MEAN_APOG", "resolutionDegrees": 0.1},
-    {"name": "Chiron", "canonical": true, "swissIdentity": "SE_CHIRON", "resolutionDegrees": 0.1},
-    {"name": "Ceres", "canonical": true, "swissIdentity": "SE_CERES", "resolutionDegrees": 1.0},
-    {"name": "Pallas", "canonical": true, "swissIdentity": "SE_PALLAS", "resolutionDegrees": 1.0},
-    {"name": "Juno", "canonical": true, "swissIdentity": "SE_JUNO", "resolutionDegrees": 1.0},
-    {"name": "Vesta", "canonical": true, "swissIdentity": "SE_VESTA", "resolutionDegrees": 1.0},
-    {"name": "Eris", "canonical": true, "swissIdentity": "SE_AST_OFFSET + 136199", "resolutionDegrees": 0.1}
+  "currentPack": {
+    "tracks": ["MeanBML", "Chiron", "Ceres", "Pallas", "Juno", "Vesta"],
+    "canonicalTracks": ["Chiron", "Ceres", "Pallas", "Juno", "Vesta"],
+    "companionTracks": ["MeanBML"],
+    "note": "Mean BML is retained as an available BML representation. True BML is not promoted or replaced; it is deferred."
+  },
+  "deferred": [
+    {
+      "name": "TrueBML",
+      "reason": "Osculating-apogee station behavior exceeded the current final audit tolerance. Deferred rather than weakening the gate."
+    },
+    {
+      "name": "Eris",
+      "reason": "Explicitly deferred to a later auxiliary expansion pass."
+    }
   ],
-  "integrationBoundary": "This pass manufactures auxiliary crossing, station, and retrograde substrates only. Core marker selection and native Timespine adoption are a later pass."
+  "tracks": [
+    {"name": "MeanBML", "status": "included", "canonical": false, "futureCompanionOf": "TrueBML", "swissIdentity": "SE_MEAN_APOG", "resolutionDegrees": 0.1},
+    {"name": "Chiron", "status": "included", "canonical": true, "swissIdentity": "SE_CHIRON", "resolutionDegrees": 0.1},
+    {"name": "Ceres", "status": "included", "canonical": true, "swissIdentity": "SE_CERES", "resolutionDegrees": 1.0},
+    {"name": "Pallas", "status": "included", "canonical": true, "swissIdentity": "SE_PALLAS", "resolutionDegrees": 1.0},
+    {"name": "Juno", "status": "included", "canonical": true, "swissIdentity": "SE_JUNO", "resolutionDegrees": 1.0},
+    {"name": "Vesta", "status": "included", "canonical": true, "swissIdentity": "SE_VESTA", "resolutionDegrees": 1.0},
+    {"name": "TrueBML", "status": "deferred", "canonical": true, "swissIdentity": "SE_OSCU_APOG", "resolutionDegrees": 1.0},
+    {"name": "Eris", "status": "deferred", "canonical": true, "swissIdentity": "SE_AST_OFFSET + 136199", "resolutionDegrees": 0.1}
+  ],
+  "integrationBoundary": "This finalized pack contains six auxiliary crossing, station, and retrograde substrates only. True BML and Eris are deferred. Core marker selection and native Timespine adoption remain a later pass."
 }
