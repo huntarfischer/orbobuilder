@@ -1,7 +1,7 @@
 public extension Arc {
     /// One absolute zodiacal degree contains 7,200 exact Arc output ticks:
     /// 3,600 whole arcseconds × two half-arcsecond states.
-    static let outputTicksPerDegree = arcsecondsPerDegree * 2
+    static var outputTicksPerDegree: Int { arcsecondsPerDegree * 2 }
 
     /// Projects an already-cast Arc field onto the canonical 360 degree windows.
     static func project(_ field: ArcField) -> ArcGrid {
