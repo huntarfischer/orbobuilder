@@ -71,14 +71,15 @@ final class ClothoStage4Tests: XCTestCase {
         var portI = PortISpy(nodes: try nodeStates())
 
         let output = try Clotho.spin(engraving, through: &portI)
+        let call = try XCTUnwrap(portI.calls.first)
 
         XCTAssertEqual(output.pattern, .engraving)
         XCTAssertEqual(output.pattern.spanYears, 100)
         XCTAssertEqual(portI.calls.count, 1)
-        XCTAssertEqual(portI.calls.first?.subjectID, subjectID)
-        XCTAssertEqual(portI.calls.first?.birthDate, birthDate)
-        XCTAssertEqual(portI.calls.first?.birthTime, birthTime)
-        XCTAssertEqual(portI.calls.first?.topos, expectedTopos)
+        XCTAssertEqual(call.subjectID, subjectID)
+        XCTAssertEqual(call.birthDate, birthDate)
+        XCTAssertEqual(call.birthTime, birthTime)
+        XCTAssertEqual(call.topos, expectedTopos)
     }
 
     func testClothoSpinsTwelveNatalNodesIntoAstroDNAAndResolvesOnlyAstroDNA() throws {
@@ -101,7 +102,7 @@ final class ClothoStage4Tests: XCTestCase {
         XCTAssertFalse(output.engraving.engraved)
 
         for gene in AstroDNAGene.canonicalOrder {
-            XCTAssertEqual(output.threads[gene], portI.nodes[gene])
+            XCTAssertEqual(output.threads[gene], try XCTUnwrap(portI.nodes[gene]))
         }
     }
 
