@@ -147,6 +147,13 @@ def state(swiss: base.SwissC, track: Track, jd: float) -> tuple[float, float]:
 
 
 def refine_station(swiss: base.SwissC, track: Track, lo: float, hi: float) -> float:
+    """Solve speed=0 inside a sign-changing bracket without surrendering the bracket.
+
+    Plain midpoint bisection gives excellent time accuracy, but for very slow bodies the
+    Swiss speed value can leave a few 1e-8 deg/day of residual at the returned midpoint.
+    Use a safeguarded secant estimate inside the bracket, retain the sign-changing bracket,
+    and return the evaluated point with the smallest absolute speed.
+    """
     a, b = lo, hi
     _, fa = state(swiss, track, a)
     _, fb = state(swiss, track, b)
@@ -156,16 +163,53 @@ def refine_station(swiss: base.SwissC, track: Track, lo: float, hi: float) -> fl
         return b
     if fa * fb > 0.0:
         raise RuntimeError(f"Station not bracketed for {track.name}: {lo}..{hi}")
-    for _ in range(60):
-        m = (a + b) / 2.0
-        _, fm = state(swiss, track, m)
-        if abs(fm) < 1e-14:
-            return m
-        if fa * fm <= 0.0:
-            b, fb = m, fm
+
+    best_jd, best_abs = (a, abs(fa)) if abs(fa) <= abs(fb) else (b, abs(fb))
+    for _ in range(80):
+        denom = fb - fa
+        x = (a * fb - b * fa) / denom if abs(denom) > 1e-30 else (a + b) / 2.0
+        if not (a < x < b):
+            x = (a + b) / 2.0
+        _, fx = state(swiss, track, x)
+        if abs(fx) < best_abs:
+            best_jd, best_abs = x, abs(fx)
+        if fx == 0.0:
+            return x
+        if fa * fx <= 0.0:
+            b, fb = x, fx
         else:
-            a, fa = m, fm
-    return (a + b) / 2.0
+            a, fa = x, fx
+
+        # Regula falsi can cling to one edge on curved functions. Force a midpoint
+        # contraction periodically while preserving the sign-changing bracket.
+        if _ % 4 == 3:
+            m = (a + b) / 2.0
+            if m == a or m == b:
+                break
+            _, fm = state(swiss, track, m)
+            if abs(fm) < best_abs:
+                best_jd, best_abs = m, abs(fm)
+            if fm == 0.0:
+                return m
+            if fa * fm <= 0.0:
+                b, fb = m, fm
+            else:
+                a, fa = m, fm
+
+        if math.nextafter(a, b) >= b:
+            break
+
+    # Check the final bracket endpoints and midpoint explicitly because one of those
+    # representable Julian days can be better than the last secant proposal.
+    candidates = [best_jd, a, b]
+    m = (a + b) / 2.0
+    if a <= m <= b:
+        candidates.append(m)
+    scored = []
+    for jd in candidates:
+        _, speed = state(swiss, track, jd)
+        scored.append((abs(speed), jd))
+    return min(scored)[1]
 
 
 def refine_crossing(
