@@ -28,11 +28,40 @@ public enum Tympan {
         }
     }
 
+    public struct ModernGovernance: Hashable, Sendable {
+        public let governor: Planet
+        public let sign: Sign
+        public let house: House
+
+        fileprivate init(governor: Planet, sign: Sign, house: House) {
+            self.governor = governor
+            self.sign = sign
+            self.house = house
+        }
+    }
+
     public struct HouseRecord: Codable, Hashable, Sendable {
         public let house: House
         public let sign: Sign
         public let ruler: Planet
-        public let coRuler: Planet?
+        public let modernGovernor: Planet?
+
+        public init(
+            house: House,
+            sign: Sign,
+            ruler: Planet,
+            modernGovernor: Planet?
+        ) {
+            self.house = house
+            self.sign = sign
+            self.ruler = ruler
+            self.modernGovernor = modernGovernor
+        }
+
+        // Legacy V1 vocabulary. Tympan V2 names the chart-specific relation governance.
+        public var coRuler: Planet? {
+            modernGovernor
+        }
 
         public init(
             house: House,
@@ -40,10 +69,12 @@ public enum Tympan {
             ruler: Planet,
             coRuler: Planet?
         ) {
-            self.house = house
-            self.sign = sign
-            self.ruler = ruler
-            self.coRuler = coRuler
+            self.init(
+                house: house,
+                sign: sign,
+                ruler: ruler,
+                modernGovernor: coRuler
+            )
         }
     }
 
@@ -51,46 +82,58 @@ public enum Tympan {
         public let risingSign: Sign
         public let houses: [HouseRecord]
         public let traditionalGovernanceLattice: [TraditionalGovernanceGroup]
+        public let modernGovernance: [ModernGovernance]
 
         fileprivate let houseBySign: [Sign: House]
         fileprivate let signByHouse: [House: Sign]
         fileprivate let rulesHouses: [TraditionalGovernor: [House]]
-        fileprivate let coRulesHouses: [Planet: [House]]
+        fileprivate let modernGovernedHouses: [Planet: [House]]
 
         fileprivate init(
             risingSign: Sign,
             houses: [HouseRecord],
             traditionalGovernanceLattice: [TraditionalGovernanceGroup],
+            modernGovernance: [ModernGovernance],
             houseBySign: [Sign: House],
             signByHouse: [House: Sign],
             rulesHouses: [TraditionalGovernor: [House]],
-            coRulesHouses: [Planet: [House]]
+            modernGovernedHouses: [Planet: [House]]
         ) {
             self.risingSign = risingSign
             self.houses = houses
             self.traditionalGovernanceLattice = traditionalGovernanceLattice
+            self.modernGovernance = modernGovernance
             self.houseBySign = houseBySign
             self.signByHouse = signByHouse
             self.rulesHouses = rulesHouses
-            self.coRulesHouses = coRulesHouses
+            self.modernGovernedHouses = modernGovernedHouses
         }
 
         public func housesRuled(by governor: TraditionalGovernor) -> [House] {
             rulesHouses[governor] ?? []
         }
 
+        public func housesModernlyGoverned(by planet: Planet) -> [House] {
+            modernGovernedHouses[planet] ?? []
+        }
+
+        // Legacy V1 vocabulary. Canonical V2 callers should use housesModernlyGoverned(by:).
         public func housesCoRuled(by planet: Planet) -> [House] {
-            coRulesHouses[planet] ?? []
+            housesModernlyGoverned(by: planet)
         }
     }
 
     public static let flipHouses = 6
 
-    private static let modernCoRulersBySign: [Sign: Planet] = [
-        .scorpio: .pluto,
-        .aquarius: .uranus,
-        .pisces: .neptune,
+    private static let modernRulerships: [(sign: Sign, ruler: Planet)] = [
+        (.scorpio, .pluto),
+        (.aquarius, .uranus),
+        (.pisces, .neptune),
     ]
+
+    private static let modernRulersBySign: [Sign: Planet] = Dictionary(
+        uniqueKeysWithValues: modernRulerships.map { ($0.sign, $0.ruler) }
+    )
 
     public static let imprints: [Imprint] = {
         let imprints = Sign.canonicalOrder.map { risingSign -> Imprint in
@@ -118,7 +161,7 @@ public enum Tympan {
                     house: house,
                     sign: sign,
                     ruler: Mater.domicileRuler(of: sign),
-                    coRuler: modernCoRulersBySign[sign]
+                    modernGovernor: modernRulersBySign[sign]
                 )
             }
 
@@ -137,12 +180,20 @@ public enum Tympan {
                 }
             )
 
-            let coRulesHouses = Dictionary(
-                uniqueKeysWithValues: Planet.canonicalOrder.map { planet in
-                    let governed = houses
-                        .filter { $0.coRuler == planet }
-                        .map(\.house)
-                    return (planet, governed)
+            let modernGovernance = modernRulerships.map { rulership -> ModernGovernance in
+                guard let house = houseBySign[rulership.sign] else {
+                    preconditionFailure("Tympan imprint is missing a modern-governed sign.")
+                }
+                return ModernGovernance(
+                    governor: rulership.ruler,
+                    sign: rulership.sign,
+                    house: house
+                )
+            }
+
+            let modernGovernedHouses = Dictionary(
+                uniqueKeysWithValues: modernGovernance.map { relationship in
+                    (relationship.governor, [relationship.house])
                 }
             )
 
@@ -150,10 +201,11 @@ public enum Tympan {
                 risingSign: risingSign,
                 houses: houses,
                 traditionalGovernanceLattice: traditionalGovernanceLattice,
+                modernGovernance: modernGovernance,
                 houseBySign: houseBySign,
                 signByHouse: signByHouse,
                 rulesHouses: rulesHouses,
-                coRulesHouses: coRulesHouses
+                modernGovernedHouses: modernGovernedHouses
             )
         }
 
@@ -166,6 +218,9 @@ public enum Tympan {
             precondition(imprint.houseBySign[imprint.risingSign] == .first)
             precondition(imprint.traditionalGovernanceLattice.count == TraditionalGovernor.allCases.count)
             precondition(imprint.traditionalGovernanceLattice.map(\.governor) == TraditionalGovernor.allCases)
+            precondition(imprint.modernGovernance.count == modernRulerships.count)
+            precondition(imprint.modernGovernance.map(\.governor) == [.pluto, .uranus, .neptune])
+            precondition(Set(imprint.modernGovernance.map(\.house)).count == 3)
 
             let allHouses = Set(imprint.houses.map(\.house))
             precondition(allHouses == Set(House.canonicalOrder))
@@ -174,11 +229,18 @@ public enum Tympan {
             precondition(traditionallyGoverned.count == 12)
             precondition(Set(traditionallyGoverned) == Set(House.canonicalOrder))
 
-            for modern in [Planet.uranus, .neptune, .pluto] {
-                precondition(imprint.housesCoRuled(by: modern).count == 1)
+            for relationship in imprint.modernGovernance {
+                precondition(imprint.houseBySign[relationship.sign] == relationship.house)
+                precondition(
+                    imprint.houses.first { $0.house == relationship.house }?.modernGovernor
+                        == relationship.governor
+                )
+                precondition(imprint.housesModernlyGoverned(by: relationship.governor) == [relationship.house])
+                precondition(TraditionalGovernor(planet: relationship.governor) == nil)
             }
+
             for traditional in Planet.classicalSeven {
-                precondition(imprint.housesCoRuled(by: traditional).isEmpty)
+                precondition(imprint.housesModernlyGoverned(by: traditional).isEmpty)
             }
         }
 
@@ -208,12 +270,12 @@ public enum Tympan {
         Mater.domicileRuler(of: sign(of: house, rising: risingSign))
     }
 
-    public static func coRuler(of sign: Sign) -> Planet? {
-        modernCoRulersBySign[sign]
+    public static func modernRuler(of sign: Sign) -> Planet? {
+        modernRulersBySign[sign]
     }
 
-    public static func coRuler(of house: House, rising risingSign: Sign) -> Planet? {
-        coRuler(of: sign(of: house, rising: risingSign))
+    public static func modernGovernor(of house: House, rising risingSign: Sign) -> Planet? {
+        modernRuler(of: sign(of: house, rising: risingSign))
     }
 
     public static func housesRuled(
@@ -223,11 +285,27 @@ public enum Tympan {
         imprint(for: risingSign).housesRuled(by: governor)
     }
 
+    public static func housesModernlyGoverned(
+        by planet: Planet,
+        rising risingSign: Sign
+    ) -> [House] {
+        imprint(for: risingSign).housesModernlyGoverned(by: planet)
+    }
+
+    // Legacy V1 vocabulary retained as compatibility shims during the V2 transition.
+    public static func coRuler(of sign: Sign) -> Planet? {
+        modernRuler(of: sign)
+    }
+
+    public static func coRuler(of house: House, rising risingSign: Sign) -> Planet? {
+        modernGovernor(of: house, rising: risingSign)
+    }
+
     public static func housesCoRuled(
         by planet: Planet,
         rising risingSign: Sign
     ) -> [House] {
-        imprint(for: risingSign).housesCoRuled(by: planet)
+        housesModernlyGoverned(by: planet, rising: risingSign)
     }
 
     public static func opposite(of house: House) -> House {

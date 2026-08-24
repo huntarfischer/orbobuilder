@@ -30,7 +30,8 @@ final class FoundationIntegrationTests: XCTestCase {
         }
 
         XCTAssertEqual(Mater.domicileRuler(of: .scorpio), .mars)
-        XCTAssertEqual(Tympan.coRuler(of: .scorpio), .pluto)
+        XCTAssertEqual(Tympan.modernRuler(of: .scorpio), .pluto)
+        XCTAssertEqual(Tympan.modernGovernor(of: .first, rising: .scorpio), .pluto)
         XCTAssertNil(Tympan.TraditionalGovernor(planet: .pluto))
     }
 

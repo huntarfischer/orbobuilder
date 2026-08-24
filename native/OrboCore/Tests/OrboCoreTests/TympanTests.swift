@@ -184,31 +184,53 @@ final class TympanTests: XCTestCase {
         XCTAssertEqual(Tympan.housesRuled(by: .mercury, rising: .scorpio), [.eighth, .eleventh])
     }
 
-    func testModernCoRulershipIsSeparateAndExact() throws {
+    func testModernGovernanceAugmentationIsCanonicalAndSeparateAcrossAllTwelveImprints() throws {
         let fixture = try fixture()
         XCTAssertEqual(fixture.modernCoRulers.count, 12)
 
         for sign in Sign.canonicalOrder {
-            XCTAssertEqual(Tympan.coRuler(of: sign), fixture.modernCoRulers[sign.rawValue])
+            XCTAssertEqual(Tympan.modernRuler(of: sign), fixture.modernCoRulers[sign.rawValue])
         }
 
         for rising in Sign.canonicalOrder {
-            XCTAssertEqual(Tympan.housesCoRuled(by: .pluto, rising: rising).count, 1)
-            XCTAssertEqual(Tympan.housesCoRuled(by: .uranus, rising: rising).count, 1)
-            XCTAssertEqual(Tympan.housesCoRuled(by: .neptune, rising: rising).count, 1)
+            let imprint = Tympan.imprint(for: rising)
+            XCTAssertEqual(imprint.modernGovernance.count, 3)
+            XCTAssertEqual(imprint.modernGovernance.map(\.governor), [.pluto, .uranus, .neptune])
+            XCTAssertEqual(Set(imprint.modernGovernance.map(\.house)).count, 3)
+
+            for relationship in imprint.modernGovernance {
+                XCTAssertEqual(Tympan.sign(of: relationship.house, rising: rising), relationship.sign)
+                XCTAssertEqual(
+                    Tympan.modernGovernor(of: relationship.house, rising: rising),
+                    relationship.governor
+                )
+                XCTAssertEqual(
+                    imprint.housesModernlyGoverned(by: relationship.governor),
+                    [relationship.house]
+                )
+                XCTAssertNil(Tympan.TraditionalGovernor(planet: relationship.governor))
+            }
 
             for traditional in Planet.classicalSeven {
-                XCTAssertEqual(Tympan.housesCoRuled(by: traditional, rising: rising), [])
+                XCTAssertEqual(imprint.housesModernlyGoverned(by: traditional), [])
             }
         }
+    }
 
-        XCTAssertEqual(Tympan.housesCoRuled(by: .pluto, rising: .scorpio), [.first])
-        XCTAssertEqual(Tympan.housesCoRuled(by: .uranus, rising: .scorpio), [.fourth])
-        XCTAssertEqual(Tympan.housesCoRuled(by: .neptune, rising: .scorpio), [.fifth])
+    func testScorpioImprintModernGovernanceMatchesCanon() {
+        let imprint = Tympan.imprint(for: .scorpio)
+        let governed = Dictionary(
+            uniqueKeysWithValues: imprint.modernGovernance.map { ($0.governor, $0.house) }
+        )
 
-        XCTAssertNil(Tympan.TraditionalGovernor(planet: .pluto))
-        XCTAssertNil(Tympan.TraditionalGovernor(planet: .uranus))
-        XCTAssertNil(Tympan.TraditionalGovernor(planet: .neptune))
+        XCTAssertEqual(governed[.pluto], .first)
+        XCTAssertEqual(governed[.uranus], .fourth)
+        XCTAssertEqual(governed[.neptune], .fifth)
+
+        XCTAssertEqual(Tympan.modernGovernor(of: .first, rising: .scorpio), .pluto)
+        XCTAssertEqual(Tympan.modernGovernor(of: .fourth, rising: .scorpio), .uranus)
+        XCTAssertEqual(Tympan.modernGovernor(of: .fifth, rising: .scorpio), .neptune)
+        XCTAssertNil(Tympan.modernGovernor(of: .seventh, rising: .scorpio))
     }
 
     func testImprintRecordCarriesTheStampedForwardAndReverseReads() {
@@ -221,7 +243,10 @@ final class TympanTests: XCTestCase {
                 XCTAssertEqual(record.house.rawValue, index + 1)
                 XCTAssertEqual(record.sign, Tympan.sign(of: record.house, rising: rising))
                 XCTAssertEqual(record.ruler, Tympan.ruler(of: record.house, rising: rising))
-                XCTAssertEqual(record.coRuler, Tympan.coRuler(of: record.house, rising: rising))
+                XCTAssertEqual(
+                    record.modernGovernor,
+                    Tympan.modernGovernor(of: record.house, rising: rising)
+                )
             }
 
             for governor in Tympan.TraditionalGovernor.allCases {
@@ -232,8 +257,8 @@ final class TympanTests: XCTestCase {
             }
             for planet in Planet.canonicalOrder {
                 XCTAssertEqual(
-                    imprint.housesCoRuled(by: planet),
-                    Tympan.housesCoRuled(by: planet, rising: rising)
+                    imprint.housesModernlyGoverned(by: planet),
+                    Tympan.housesModernlyGoverned(by: planet, rising: rising)
                 )
             }
         }
