@@ -37,23 +37,27 @@ jobs:
           make -C .forge/swisseph libswe.so
           test -f .forge/swisseph/libswe.so
 
-      - name: Stage qualified Z21-Z23 ephemeris inputs
+      - name: Stage qualified DE441 main inputs
         run: |
-          mkdir -p .forge/ephe/ast136
+          mkdir -p .forge/ephe
           base="https://raw.githubusercontent.com/aloistr/swisseph/$SWISS_COMMIT/ephe"
           for file in sepl_12.se1 sepl_18.se1 semo_12.se1 semo_18.se1 seas_12.se1 seas_18.se1; do
             curl --fail --location --retry 4 --retry-all-errors "$base/$file" --output ".forge/ephe/$file"
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
-          (
-            cd .forge/ephe/ast136
-            curl --fail --location --remote-name --remote-header-name --retry 4 --retry-all-errors \
-              "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=0"
-            test -s s136199.se1
-            head -c 32 s136199.se1 | strings | grep -q SWISSEPH
-            head -c 512 s136199.se1 | strings | grep -q DE441
-          )
-          sha256sum .forge/ephe/*.se1 .forge/ephe/ast136/s136199.se1 | sort
+          sha256sum .forge/ephe/*.se1 | sort
+
+      - name: Stage qualified Eris long ephemeris
+        if: matrix.body == 'Eris'
+        run: |
+          mkdir -p .forge/ephe/ast136
+          curl --fail --location --retry 4 --retry-all-errors \
+            "https://ephe.scryr.io/ephe/ast136/s136199.se1" \
+            --output .forge/ephe/ast136/s136199.se1
+          test -s .forge/ephe/ast136/s136199.se1
+          head -c 32 .forge/ephe/ast136/s136199.se1 | strings | grep -q SWISSEPH
+          head -c 512 .forge/ephe/ast136/s136199.se1 | strings | grep -q DE441
+          sha256sum .forge/ephe/ast136/s136199.se1
 
       - name: Compile-check forge
         run: python -m py_compile tools/pass5/generate_auxiliary_seam_z21_z23.py
@@ -130,10 +134,17 @@ jobs:
               for key in ('span','startJDUT','z22StartJDUT','z23StartJDUT','endJDUT','swissVersion','swissSourceCommit','coordinateContract','flagsContract'):
                   if s[key] != first[key]:
                       raise SystemExit(f'cross-body provenance drift: {key}')
-              if s['sourceFiles'] != first['sourceFiles']:
-                  raise SystemExit('cross-body source file provenance drift')
 
-          summary = {k:first[k] for k in ('span','startJDUT','z22StartJDUT','z23StartJDUT','endJDUT','swissVersion','swissSourceCommit','coordinateContract','flagsContract','sourceFiles')}
+          sources = {}
+          for s in summaries:
+              for src in s['sourceFiles']:
+                  path = src['path']
+                  if path in sources and sources[path] != src:
+                      raise SystemExit(f'cross-body source provenance drift: {path}')
+                  sources[path] = src
+
+          summary = {k:first[k] for k in ('span','startJDUT','z22StartJDUT','z23StartJDUT','endJDUT','swissVersion','swissSourceCommit','coordinateContract','flagsContract')}
+          summary['sourceFiles'] = [sources[k] for k in sorted(sources)]
           summary['status'] = 'PASS'
           summary['tables'] = [s['tables'][0] for s in summaries]
           summary['canonicalTracks'] = [b for b in bodies if b != 'MeanBML']
