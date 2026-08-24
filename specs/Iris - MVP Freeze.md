@@ -230,7 +230,7 @@ I5  truth / presentation separation
 I6  deterministic stress + source traceability
 ```
 
-I6 supplies 2,816 lawful typed coordinates across all eleven canonical Timespine bodies and verifies:
+I6 supplies 2,816 synthetic but lawfully typed coordinates across all eleven canonical Timespine bodies. It makes no ephemeris claim. It verifies:
 
 ```text
 same input → same scene
@@ -261,7 +261,7 @@ a5edd11f  Build Iris MVP I4 short temporal strand
 6a5180fe  Prove Iris MVP I4 temporal strand preservation
 
 5edc4f97  Add Iris presentation state
- dd062085  Apply presentation state to Chart3D view
+dd062085  Apply presentation state to Chart3D view
 c88c032e  Prove presentation does not alter scene truth
 00d82cf2  Host Iris I5 truth/presentation proof
 
