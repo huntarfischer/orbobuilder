@@ -68,6 +68,28 @@ N_P × M_P(t) → S_P(t)
 
 Broader midpoint applications may use the same primitive later, but are not part of Arc V1/V2 implementation scope.
 
+## Universal system availability
+
+Arc is a system law before it is a personal law.
+
+Given legal Orbo coordinates, Arc must be usable without requiring:
+
+```text
+AstroDNA
+Tapestry
+Hearth
+native identity
+Natal Spine
+Synchronic Spine
+personal artifact manufacture
+```
+
+Arc therefore remains available to Orbo for any lawful coordinate query whether the coordinates are mundane, natal, synchronic, or otherwise admitted by the system.
+
+Synchronic Refraction is one native × moment application of Arc. It is not the condition of Arc's existence or availability.
+
+No personal authorization, product entitlement, or forged Spine may gate access to Arc as a foundational Orbo law.
+
 ---
 
 # 2. Law Two — the native anchor is the center
@@ -278,6 +300,10 @@ materialization of durable temporal artifacts
 
 Arc references those authorities rather than reproducing them.
 
+Arc outputs must be directly consumable by the rest of Orbo. Given an Arc result, Ring, Mater, Tympan, and other lawful readers must be able to do their ordinary work without requiring that the result first be saved into a personal Spine.
+
+A forged Spine may preserve, index, and navigate Arc results through time. It is not a prerequisite for Arc to know or return the state of a legal coordinate pair at an instant.
+
 ---
 
 # 7. Law Seven — the Synchronic Spine is a first-class child spine
@@ -470,6 +496,8 @@ Arc Pass 0 freezes exactly these seven laws:
 5. **Arc imposes Half-Life: mundane displacement and ordinary motion are expressed at one-half scale in synchronic space.**
 6. **Arc owns coordinates and topology only; Ring, Mater, Tympan, Terra/Horizon, Loom, and Hephaestus retain their established authorities.**
 7. **The Synchronic Spine is a first-class child spine, forged from the Mundane Timespine, natal AstroDNA, and Arc, and may be read through either fixed natal framing or the moving synchronic horizon.**
+
+These seven laws include one implementation acceptance condition: a compliant Arc must answer legal coordinate queries without requiring native context or a forged personal Spine. Personal materialization may preserve Arc through time, but may never be the source of Arc's availability.
 
 Nothing beyond these laws is frozen by Pass 0.
 
