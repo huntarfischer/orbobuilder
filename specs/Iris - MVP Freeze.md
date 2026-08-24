@@ -4,7 +4,7 @@
 **Date:** 2026-08-24  
 **Branch:** `feature/iris-mvp`  
 **Base:** `4b2323ce63b9aff441538fcec3c60185c59bfee2`  
-**Final qualification:** pending one local `swift test` after I6 pull  
+**Qualified suite:** 385 tests, 0 failures  
 **Scope:** Iris MVP only: faithful 3D scene construction and Chart3D presentation of lawful Orbo celestial-time coordinates.
 
 ---
@@ -267,6 +267,8 @@ c88c032e  Prove presentation does not alter scene truth
 
 a5513379  Stress Iris MVP scene contract
 87f93a1d  Freeze Iris MVP host proof
+01d060ee  Document and freeze Iris MVP
+15043b90  Clarify Iris MVP freeze qualification
 ```
 
 ---
@@ -301,18 +303,19 @@ Those may become Iris domains later, but none may require Iris to reinterpret or
 
 ---
 
-## Qualification gate
+## Qualification
 
-The freeze is complete architecturally. Final local qualification requires:
+Qualified from the native Mac toolchain on 2026-08-24:
 
-```bash
-cd native/OrboCore
-swift test
+```text
+Test Suite 'OrboCorePackageTests.xctest' passed
+Executed 385 tests, with 0 failures (0 unexpected)
+
+Test Suite 'All tests' passed
+Executed 385 tests, with 0 failures (0 unexpected)
 ```
 
-The final passing test count should be written into this document once supplied from the native Mac toolchain.
-
-The visual proof has already been demonstrated in the iOS 26.3.1 iPhone 17 Pro simulator with an interactive, rotatable Chart3D scene.
+The visual proof was also demonstrated in the iOS 26.3.1 iPhone 17 Pro simulator with an interactive, rotatable Chart3D scene.
 
 ---
 
