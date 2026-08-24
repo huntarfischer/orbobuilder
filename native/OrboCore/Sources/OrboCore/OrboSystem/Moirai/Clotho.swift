@@ -1,104 +1,79 @@
-public struct ClothoThread: Hashable, Sendable {
-    public let gene: AstroDNAGene
-    public let exactState: RingFineState
-    public let degreeAddress: DegreeAddress
-
-    fileprivate init(
-        gene: AstroDNAGene,
-        exactState: RingFineState,
-        degreeAddress: DegreeAddress
-    ) {
-        self.gene = gene
-        self.exactState = exactState
-        self.degreeAddress = degreeAddress
-    }
-
-    internal init(
-        restoringGene gene: AstroDNAGene,
-        exactState: RingFineState,
-        degreeAddress: DegreeAddress
-    ) {
-        self.gene = gene
-        self.exactState = exactState
-        self.degreeAddress = degreeAddress
-    }
+public enum ClothoFailure: Error, Hashable, Sendable {
+    case unresolvedTopos
+    case astroDNAAlreadyResolved
+    case missingNatalGene(AstroDNAGene)
+    case invalidAstroDNA
 }
 
-public struct ClothoSourcePacket: Hashable, Sendable {
-    public let threads: [ClothoThread]
+/// The single Timespine doorway Clotho uses for natal work.
+///
+/// A natal tap is one operation with two consequences: the delivered Topos is
+/// planted into the native Spine and the twelve natal node states are exposed
+/// to Clotho. Port I does not construct AstroDNA.
+public protocol ClothoPortI {
+    mutating func natalTap(
+        subjectID: HermesSubjectID,
+        birthDate: CivilDate,
+        birthTime: CivilClockTime,
+        topos: Topos
+    ) throws -> [AstroDNAGene: RingFineState]
+}
 
-    fileprivate init(threads: [ClothoThread]) {
+public struct ClothoOutput: Hashable, Sendable {
+    public let engraving: Engraving
+    public let pattern: Pattern
+    public let threads: AstroDNA
+
+    fileprivate init(
+        engraving: Engraving,
+        pattern: Pattern,
+        threads: AstroDNA
+    ) {
+        self.engraving = engraving
+        self.pattern = pattern
         self.threads = threads
     }
 }
 
-public struct MoiraiRecipeEntry: Hashable, Sendable {
-    public let gene: AstroDNAGene
-    public let exactState: RingFineState
-    public let degreeAddress: DegreeAddress
-
-    fileprivate init(
-        gene: AstroDNAGene,
-        exactState: RingFineState,
-        degreeAddress: DegreeAddress
-    ) {
-        self.gene = gene
-        self.exactState = exactState
-        self.degreeAddress = degreeAddress
-    }
-}
-
-public struct MoiraiRecipe: Hashable, Sendable {
-    public let entries: [MoiraiRecipeEntry]
-
-    fileprivate init(entries: [MoiraiRecipeEntry]) {
-        self.entries = entries
-    }
-}
-
-public struct ClothoOutput: Hashable, Sendable {
-    public let packet: ClothoSourcePacket
-    public let recipe: MoiraiRecipe
-
-    fileprivate init(packet: ClothoSourcePacket, recipe: MoiraiRecipe) {
-        self.packet = packet
-        self.recipe = recipe
-    }
-}
-
+/// Clotho receives the commission, selects its Pattern, makes one natal tap at
+/// Timespine Port I, spins the exposed node states into AstroDNA, and returns
+/// Pattern + Threads for Lachesis.
 public enum Clotho {
-    public static func gather(from natalAstroDNA: AstroDNA) -> ClothoOutput {
-        var threads: [ClothoThread] = []
-        var recipeEntries: [MoiraiRecipeEntry] = []
-        threads.reserveCapacity(AstroDNA.geneCount)
-        recipeEntries.reserveCapacity(AstroDNA.geneCount)
-
-        for gene in AstroDNAGene.canonicalOrder {
-            let exactState = natalAstroDNA[gene]
-            let degree = exactState.coarseState.degree
-            guard let degreeAddress = DegreeAddress(rawValue: degree) else {
-                preconditionFailure("Clotho received an invalid whole-degree Ring address.")
-            }
-
-            threads.append(
-                ClothoThread(
-                    gene: gene,
-                    exactState: exactState,
-                    degreeAddress: degreeAddress
-                )
-            )
-            recipeEntries.append(
-                MoiraiRecipeEntry(
-                    gene: gene,
-                    exactState: exactState,
-                    degreeAddress: degreeAddress
-                )
-            )
+    public static func spin<Port: ClothoPortI>(
+        _ engraving: Engraving,
+        through portI: inout Port
+    ) throws -> ClothoOutput {
+        guard let topos = engraving.topos else {
+            throw ClothoFailure.unresolvedTopos
+        }
+        guard engraving.astroDNA == nil else {
+            throw ClothoFailure.astroDNAAlreadyResolved
         }
 
+        let nodeStates = try portI.natalTap(
+            subjectID: engraving.subjectID,
+            birthDate: engraving.birthDate,
+            birthTime: engraving.birthTime,
+            topos: topos
+        )
+
+        let sequence = try AstroDNAGene.canonicalOrder.map { gene -> RingFineState in
+            guard let state = nodeStates[gene] else {
+                throw ClothoFailure.missingNatalGene(gene)
+            }
+            return state
+        }
+
+        guard let astroDNA = AstroDNA(sequence: sequence) else {
+            throw ClothoFailure.invalidAstroDNA
+        }
+
+        let resolvedEngraving = engraving.resolving(astroDNA: astroDNA)
+
         return ClothoOutput(
-            packet: ClothoSourcePacket(threads: threads),
-            recipe: MoiraiRecipe(entries: recipeEntries)
+            engraving: resolvedEngraving,
+            pattern: .engraving,
+            threads: astroDNA
         )
     }
 }
