@@ -9,14 +9,16 @@
   },
   "astronomicalContract": {
     "swissVersion": "2.10.03",
+    "swissSourceCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
     "flags": ["SEFLG_SWIEPH", "SEFLG_SPEED"],
     "reject": ["SEFLG_MOSEPH"],
     "coordinates": "geocentric tropical apparent ecliptic longitude; UT",
     "crossings": "root-refined inside station-bounded monotonic intervals"
   },
   "sourceContract": {
-    "main": "Pinned Swiss Ephemeris 2.10.03 C plus DE441-generation sepl/semo/seas files",
-    "eris": "Swiss long-range numbered-asteroid ephemeris ast136/s136199.se1"
+    "main": "Pinned Swiss Ephemeris 2.10.03 C plus DE441-generation sepl/semo/seas files from the pinned Swiss source commit",
+    "eris": "Swiss long-range numbered-asteroid ephemeris ast136/s136199.se1 from the official long_ast distribution",
+    "erisDistribution": "https://www.dropbox.com/scl/fo/y3naz62gy6f6qfrhquu7u/h/long_ast/ast136/s136199.se1?rlkey=ejltdhb262zglm7eo6yfj2940&dl=1"
   },
   "tracks": [
     {"name": "TrueBML", "canonical": true, "swissIdentity": "SE_OSCU_APOG", "resolutionDegrees": 1.0},
