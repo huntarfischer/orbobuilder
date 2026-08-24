@@ -11,6 +11,7 @@
 		A30000000000000000000002 /* OrboLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OrboLabApp.swift */; };
 		A30000000000000000000003 /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = A60100000000000000000001 /* OrboCore */; };
 		A30000000000000000000004 /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = A60200000000000000000001 /* OrboCore */; };
+		A30000000000000000000005 /* OrboIris in Frameworks */ = {isa = PBXBuildFile; productRef = A60300000000000000000001 /* OrboIris */; };
 		B30000000000000000000001 /* AstroDNAContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* AstroDNAContractTests.swift */; };
 		B30000000000000000000002 /* CivilTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* CivilTimeTests.swift */; };
 		B30000000000000000000003 /* DomainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000003 /* DomainTests.swift */; };
@@ -70,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A30000000000000000000003 /* OrboCore in Frameworks */,
+				A30000000000000000000005 /* OrboIris in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +171,7 @@
 			name = Orbo;
 			packageProductDependencies = (
 				A60100000000000000000001 /* OrboCore */,
+				A60300000000000000000001 /* OrboIris */,
 			);
 			productName = Orbo;
 			productReference = A20000000000000000000003 /* Orbo.app */;
@@ -547,6 +550,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A60000000000000000000001 /* XCLocalSwiftPackageReference "OrboCore" */;
 			productName = OrboCore;
+		};
+		A60300000000000000000001 /* OrboIris */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A60000000000000000000001 /* XCLocalSwiftPackageReference "OrboCore" */;
+			productName = OrboIris;
 		};
 		B60100000000000000000001 /* OrboCore */ = {
 			isa = XCSwiftPackageProductDependency;
