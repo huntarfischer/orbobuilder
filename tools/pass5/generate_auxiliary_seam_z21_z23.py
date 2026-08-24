@@ -108,13 +108,14 @@ def z_of(jd: float) -> str:
     raise RuntimeError(f"JD outside Z21-Z23: {jd}")
 
 
-def verify_sources(ephe_dir: Path) -> list[dict]:
+def verify_sources(ephe_dir: Path, require_eris: bool) -> list[dict]:
     records = []
     for rel in DE441_FILES:
         p = ephe_dir / rel
         if not p.is_file():
             raise RuntimeError(f"Missing required DE441 file: {rel}")
-        if b"DE441" not in p.read_bytes()[:512]:
+        head = p.read_bytes()[:512]
+        if b"DE441" not in head:
             raise RuntimeError(f"Non-DE441 main ephemeris rejected: {rel}")
         records.append({
             "path": rel,
@@ -122,15 +123,21 @@ def verify_sources(ephe_dir: Path) -> list[dict]:
             "bytes": p.stat().st_size,
             "sha256": base.sha256(p),
         })
-    eris = ephe_dir / ERIS_FILE
-    if not eris.is_file():
-        raise RuntimeError(f"Missing official long-range Eris file: {ERIS_FILE}")
-    records.append({
-        "path": ERIS_FILE,
-        "sourceClass": "Swiss long-range numbered asteroid ephemeris",
-        "bytes": eris.stat().st_size,
-        "sha256": base.sha256(eris),
-    })
+    if require_eris:
+        eris = ephe_dir / ERIS_FILE
+        if not eris.is_file():
+            raise RuntimeError(f"Missing long-range Eris file: {ERIS_FILE}")
+        head = eris.read_bytes()[:512]
+        if b"SWISSEPH" not in head:
+            raise RuntimeError(f"Invalid Swiss Eris file header: {ERIS_FILE}")
+        if b"DE441" not in head:
+            raise RuntimeError(f"Non-DE441 Eris ephemeris rejected: {ERIS_FILE}")
+        records.append({
+            "path": ERIS_FILE,
+            "sourceClass": "Swiss long-range numbered asteroid ephemeris, DE441 generation",
+            "bytes": eris.stat().st_size,
+            "sha256": base.sha256(eris),
+        })
     return records
 
 
@@ -356,12 +363,13 @@ def main() -> int:
     p.add_argument("--body", action="append", choices=sorted(TRACKS))
     args = p.parse_args()
 
-    sources = verify_sources(args.ephe_dir)
+    selected = args.body or list(TRACKS)
+    sources = verify_sources(args.ephe_dir, require_eris="Eris" in selected)
     swiss = base.SwissC(args.library, args.ephe_dir)
     try:
         args.output_dir.mkdir(parents=True, exist_ok=True)
         tables = []
-        for name in args.body or list(TRACKS):
+        for name in selected:
             print(f"FORGE {name}", flush=True)
             tables.append(forge(swiss, TRACKS[name], args.output_dir))
         summary = {
