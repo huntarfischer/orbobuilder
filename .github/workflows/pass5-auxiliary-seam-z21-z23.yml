@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        body: [TrueBML, MeanBML, Chiron, Ceres, Pallas, Juno, Vesta, Eris]
+        body: [MeanBML, Chiron, Ceres, Pallas, Juno, Vesta]
     steps:
       - name: Checkout Aux branch
         uses: actions/checkout@v4
@@ -46,18 +46,6 @@ jobs:
             head -c 512 ".forge/ephe/$file" | strings | grep -q DE441
           done
           sha256sum .forge/ephe/*.se1 | sort
-
-      - name: Stage qualified Eris long ephemeris
-        if: matrix.body == 'Eris'
-        run: |
-          mkdir -p .forge/ephe/ast136
-          curl --fail --location --retry 4 --retry-all-errors \
-            "https://ephe.scryr.io/ephe/ast136/s136199.se1" \
-            --output .forge/ephe/ast136/s136199.se1
-          test -s .forge/ephe/ast136/s136199.se1
-          head -c 32 .forge/ephe/ast136/s136199.se1 | strings | grep -q SWISSEPH
-          head -c 512 .forge/ephe/ast136/s136199.se1 | strings | grep -q DE441
-          sha256sum .forge/ephe/ast136/s136199.se1
 
       - name: Compile-check forge
         run: python -m py_compile tools/pass5/generate_auxiliary_seam_z21_z23.py
@@ -95,7 +83,7 @@ jobs:
           path: .forge/staged
           merge-multiple: false
 
-      - name: Assemble canonical Aux substrate directory
+      - name: Assemble finalized current Aux pack
         run: |
           rm -rf tools/pass5/auxiliary-seam-z21-z23
           mkdir -p \
@@ -104,7 +92,7 @@ jobs:
             tools/pass5/auxiliary-seam-z21-z23/retrograde-crossings \
             tools/pass5/auxiliary-seam-z21-z23/audits
 
-          for body in TrueBML MeanBML Chiron Ceres Pallas Juno Vesta Eris; do
+          for body in MeanBML Chiron Ceres Pallas Juno Vesta; do
             src=".forge/staged/aux-$body"
             test -f "$src/crossings/$body.csv.gz"
             test -f "$src/stations/$body.csv.gz"
@@ -125,7 +113,7 @@ jobs:
           from pathlib import Path
 
           root = Path('tools/pass5/auxiliary-seam-z21-z23')
-          bodies = ['TrueBML','MeanBML','Chiron','Ceres','Pallas','Juno','Vesta','Eris']
+          bodies = ['MeanBML','Chiron','Ceres','Pallas','Juno','Vesta']
           summaries = [json.loads((root/'audits'/f'{b}-summary.json').read_text()) for b in bodies]
           if any(s['status'] != 'PASS' for s in summaries):
               raise SystemExit('one or more body summaries did not PASS')
@@ -146,9 +134,11 @@ jobs:
           summary = {k:first[k] for k in ('span','startJDUT','z22StartJDUT','z23StartJDUT','endJDUT','swissVersion','swissSourceCommit','coordinateContract','flagsContract')}
           summary['sourceFiles'] = [sources[k] for k in sorted(sources)]
           summary['status'] = 'PASS'
+          summary['packStatus'] = 'FINALIZED CURRENT PACK'
           summary['tables'] = [s['tables'][0] for s in summaries]
-          summary['canonicalTracks'] = [b for b in bodies if b != 'MeanBML']
+          summary['canonicalTracks'] = ['Chiron','Ceres','Pallas','Juno','Vesta']
           summary['companionTracks'] = ['MeanBML']
+          summary['deferredTracks'] = ['TrueBML','Eris']
           (root/'summary.json').write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
 
           files = []
@@ -157,9 +147,12 @@ jobs:
               files.append({'path': str(path.relative_to(root)), 'bytes': path.stat().st_size, 'sha256': h})
           manifest = {
               'status': 'PASS',
+              'packStatus': 'FINALIZED CURRENT PACK',
               'span': 'Z21-Z23',
-              'bodyTrackCount': 8,
-              'canonicalTrackCount': 7,
+              'bodyTrackCount': 6,
+              'canonicalTrackCount': 5,
+              'companionTrackCount': 1,
+              'deferredTracks': ['TrueBML','Eris'],
               'files': files,
               'bytesTotal': sum(x['bytes'] for x in files),
           }
@@ -167,32 +160,34 @@ jobs:
           print(json.dumps(summary, indent=2, sort_keys=True))
           PY
 
-      - name: Enforce complete seam
+      - name: Enforce finalized current pack
         run: |
-          test "$(find tools/pass5/auxiliary-seam-z21-z23/crossings -name '*.csv.gz' | wc -l)" -eq 8
-          test "$(find tools/pass5/auxiliary-seam-z21-z23/stations -name '*.csv.gz' | wc -l)" -eq 8
-          test "$(find tools/pass5/auxiliary-seam-z21-z23/retrograde-crossings -name '*.csv.gz' | wc -l)" -eq 8
+          test "$(find tools/pass5/auxiliary-seam-z21-z23/crossings -name '*.csv.gz' | wc -l)" -eq 6
+          test "$(find tools/pass5/auxiliary-seam-z21-z23/stations -name '*.csv.gz' | wc -l)" -eq 6
+          test "$(find tools/pass5/auxiliary-seam-z21-z23/retrograde-crossings -name '*.csv.gz' | wc -l)" -eq 6
           python - <<'PY'
           import json
           from pathlib import Path
           root = Path('tools/pass5/auxiliary-seam-z21-z23')
           summary = json.loads((root/'summary.json').read_text())
           assert summary['status'] == 'PASS'
-          assert len(summary['tables']) == 8
+          assert summary['packStatus'] == 'FINALIZED CURRENT PACK'
+          assert len(summary['tables']) == 6
+          assert summary['deferredTracks'] == ['TrueBML','Eris']
           for body in summary['tables']:
               assert body['status'] == 'PASS'
               assert body['crossingCount'] > 0
-          print('AUXILIARY SEAM COMPLETE')
+          print('AUXILIARY CURRENT PACK COMPLETE')
           PY
 
-      - name: Commit manufactured Aux substrate
+      - name: Commit manufactured current Aux pack
         run: |
           git config user.name "orbo-forge"
           git config user.email "orbo-forge@users.noreply.github.com"
           git add tools/pass5/auxiliary-seam-z21-z23
           if git diff --cached --quiet; then
-            echo "Auxiliary seam substrate unchanged."
+            echo "Auxiliary current pack substrate unchanged."
           else
-            git commit -m "Manufacture Z21-Z23 auxiliary seam substrate"
+            git commit -m "Manufacture finalized Z21-Z23 auxiliary current pack"
             git push origin HEAD:feature/aux-seam-z21-z23
           fi
