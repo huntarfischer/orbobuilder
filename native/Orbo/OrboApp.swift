@@ -8,10 +8,10 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS I3 / FIRST SIGHT")
+                    Text("IRIS I4 / SHORT TIMESPINE STRAND")
                         .font(.caption.monospaced())
 
-                    IrisChart3DView(scene: IrisI3Fixture.scene)
+                    IrisChart3DView(scene: IrisI4Fixture.scene)
                 }
                 .padding()
             } else {
@@ -23,19 +23,32 @@ struct OrboApp: App {
     }
 }
 
-/// Fixed typed input for the I3 renderer proof only.
-/// These coordinates are not an ephemeris claim and Iris does not manufacture them.
-private enum IrisI3Fixture {
-    static let scene = IrisScene3D(coordinates: [
-        coordinate(.sun, degree: 0, motion: .direct, julianDay: 2_461_000.5),
-        coordinate(.mercury, degree: 90, motion: .direct, julianDay: 2_461_000.5),
-        coordinate(.mars, degree: 180, motion: .direct, julianDay: 2_461_000.5),
-        coordinate(.jupiter, degree: 270, motion: .retrograde, julianDay: 2_461_000.5),
-        coordinate(.sun, degree: 8, motion: .direct, julianDay: 2_461_001.5),
-        coordinate(.mercury, degree: 102, motion: .direct, julianDay: 2_461_001.5),
-        coordinate(.mars, degree: 185, motion: .direct, julianDay: 2_461_001.5),
-        coordinate(.jupiter, degree: 262, motion: .retrograde, julianDay: 2_461_001.5),
-    ])
+/// Fixed typed input for the I4 temporal-strand renderer proof only.
+/// The host supplies every body, degree, motion, and time. Iris chooses none of them.
+/// These coordinates are not an ephemeris claim.
+private enum IrisI4Fixture {
+    private static let baseJulianDay = 2_461_000.5
+    private static let stepDays = 0.25
+
+    private static let strands: [(body: MundaneBody, motion: Motion, degrees: [Double])] = [
+        (.sun, .direct, [0, 4, 8, 12, 16, 20, 24, 28, 32]),
+        (.mercury, .direct, [90, 97, 104, 111, 118, 125, 132, 139, 146]),
+        (.mars, .direct, [180, 183, 186, 189, 192, 195, 198, 201, 204]),
+        (.jupiter, .retrograde, [270, 266, 262, 258, 254, 250, 246, 242, 238]),
+    ]
+
+    static let scene = IrisScene3D(
+        coordinates: strands.flatMap { strand in
+            strand.degrees.enumerated().map { index, degree in
+                coordinate(
+                    strand.body,
+                    degree: degree,
+                    motion: strand.motion,
+                    julianDay: baseJulianDay + (Double(index) * stepDays)
+                )
+            }
+        }
+    )
 
     private static func coordinate(
         _ body: MundaneBody,
