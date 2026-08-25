@@ -74,36 +74,6 @@ final class LachesisTitanPassTests: XCTestCase {
         XCTAssertEqual(pass.asteria.projections, direct.projections)
     }
 
-    func testLachesisTitanPassMatchesTemporaryTransitProbeExactly() throws {
-        let dna = try makeSyntheticDNA()
-        let probe = TitanTransitProbe.run(dna)
-        let pass = Lachesis.petition(dna, sect: nil)
-
-        XCTAssertEqual(pass.themis.imprint.risingSign, probe.themis.imprint.risingSign)
-        XCTAssertEqual(pass.themis.imprint.houses, probe.themis.imprint.houses)
-        XCTAssertEqual(
-            pass.themis.imprint.traditionalGovernanceLattice,
-            probe.themis.imprint.traditionalGovernanceLattice
-        )
-        XCTAssertEqual(
-            pass.themis.imprint.modernGovernance,
-            probe.themis.imprint.modernGovernance
-        )
-        XCTAssertEqual(
-            pass.themis.imprint.houseGovernance,
-            probe.themis.imprint.houseGovernance
-        )
-
-        XCTAssertEqual(pass.rhea.field.longitudes, probe.rhea.field.longitudes)
-        XCTAssertEqual(pass.rhea.field.sect, probe.rhea.field.sect)
-        XCTAssertEqual(pass.rhea.field.tempers, probe.rhea.field.tempers)
-        XCTAssertEqual(pass.rhea.field.byPlanet, probe.rhea.field.byPlanet)
-
-        XCTAssertEqual(pass.oceanus.objectTemplates, probe.oceanus.objectTemplates)
-        XCTAssertEqual(pass.asteria.refractions, probe.asteria.refractions)
-        XCTAssertEqual(pass.asteria.projections, probe.asteria.projections)
-    }
-
     private func planetaryLongitudes(
         from dna: AstroDNA
     ) -> [Planet: CelestialLongitude] {
