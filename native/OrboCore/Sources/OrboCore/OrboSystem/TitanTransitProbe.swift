@@ -8,36 +8,39 @@
 public enum TitanTransitProbe {
     public struct Result: Sendable {
         public let astroDNA: AstroDNA
-        public let tympan: Tympan.Imprint
-        public let mater: Mater.QualifiedField
-        public let ring: [RingObjectTemplate]
-        public let arcSubjects: [ArcSubject]
-        public let arcCasts: [ArcSubjectCast]
-        public let arcGrids: [ArcGrid]
+        public let themis: ThemisPass
+        public let rhea: RheaPass
+        public let oceanus: OceanusPass
+        public let asteria: AsteriaPass
+
+        // Archaeological aliases preserve the original proof surface while the
+        // keeper testimonies become explicit.
+        public var tympan: Tympan.Imprint { themis.imprint }
+        public var mater: Mater.QualifiedField { rhea.field }
+        public var ring: [RingObjectTemplate] { oceanus.objectTemplates }
+        public var arcSubjects: [ArcSubject] { asteria.refractions.map(\.subject) }
+        public var arcCasts: [ArcSubjectCast] { asteria.refractions }
+        public var arcGrids: [ArcGrid] { asteria.projections }
 
         internal init(
             astroDNA: AstroDNA,
-            tympan: Tympan.Imprint,
-            mater: Mater.QualifiedField,
-            ring: [RingObjectTemplate],
-            arcSubjects: [ArcSubject],
-            arcCasts: [ArcSubjectCast],
-            arcGrids: [ArcGrid]
+            themis: ThemisPass,
+            rhea: RheaPass,
+            oceanus: OceanusPass,
+            asteria: AsteriaPass
         ) {
             self.astroDNA = astroDNA
-            self.tympan = tympan
-            self.mater = mater
-            self.ring = ring
-            self.arcSubjects = arcSubjects
-            self.arcCasts = arcCasts
-            self.arcGrids = arcGrids
+            self.themis = themis
+            self.rhea = rhea
+            self.oceanus = oceanus
+            self.asteria = asteria
         }
     }
 
     public static func run(_ astroDNA: AstroDNA) -> Result {
         // THEMIS keeps TYMPAN: the encoded Ascendant selects the frozen Imprint.
         let ascendant = astroDNA.longitude(of: .ascendant)
-        let tympan = Themis.set(ascendant.sign)
+        let themis = Themis.testify(ascendant.sign)
 
         // RHEA keeps MATER: bear the exact ten-planet field already present in AstroDNA.
         // AstroDNA alone does not carry sect, so this proof intentionally supplies nil.
@@ -46,12 +49,10 @@ public enum TitanTransitProbe {
                 (planet, astroDNA.longitude(of: gene(for: planet)))
             }
         )
-        let mater = Rhea.bear(planetaryLongitudes, sect: nil)
+        let rhea = Rhea.testify(planetaryLongitudes, sect: nil)
 
         // OCEANUS keeps RING: preserve the exact object templates for all twelve genes.
-        let ring = AstroDNAGene.canonicalOrder.map { gene in
-            Oceanus.encircle(gene, in: astroDNA)
-        }
+        let oceanus = Oceanus.testify(astroDNA)
 
         // ASTERIA keeps ARC: copy only lawful coordinate-bearing matter. That means
         // the twelve original AstroDNA coordinates plus Oceanus/Ring exact targets.
@@ -63,7 +64,7 @@ public enum TitanTransitProbe {
             )
         }
 
-        for object in ring {
+        for object in oceanus.objectTemplates {
             for mark in object.marks {
                 arcSubjects.append(
                     ArcSubject(
@@ -75,17 +76,14 @@ public enum TitanTransitProbe {
             }
         }
 
-        let arcCasts = Asteria.refract(arcSubjects)
-        let arcGrids = arcCasts.map { Asteria.project($0.field) }
+        let asteria = Asteria.testify(arcSubjects)
 
         return Result(
             astroDNA: astroDNA,
-            tympan: tympan,
-            mater: mater,
-            ring: ring,
-            arcSubjects: arcSubjects,
-            arcCasts: arcCasts,
-            arcGrids: arcGrids
+            themis: themis,
+            rhea: rhea,
+            oceanus: oceanus,
+            asteria: asteria
         )
     }
 
