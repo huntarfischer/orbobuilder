@@ -40,41 +40,43 @@ public enum SpineResonanceRun {
         celestialProduct: SpineForgeProduct,
         assignment: SpineResonanceAssignment
     ) throws -> SpineResonanceTestimony {
-        let challenges = try campaign(
+        try requireMatching(schematic: schematic, celestialProduct: celestialProduct)
+
+        for bodyPlan in schematic.bodyPlans {
+            guard let bodyProduct = celestialProduct.body(bodyPlan.body) else {
+                throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
+            }
+            let challenges = bodyChallenges(
+                for: bodyProduct,
+                bone: schematic.bone
+            )
+            guard !challenges.isEmpty else {
+                throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
+            }
+
+            for challenge in challenges {
+                if let testimony = try divergenceTestimony(
+                    for: challenge,
+                    schematic: schematic,
+                    celestialProduct: celestialProduct,
+                    assignment: assignment
+                ) {
+                    return testimony
+                }
+            }
+        }
+
+        if let wrap = selectedRetrogradeWrapChallenge(
+            in: celestialProduct,
+            bone: schematic.bone
+        ),
+        let testimony = try divergenceTestimony(
+            for: .celestial(wrap),
             schematic: schematic,
-            celestialProduct: celestialProduct
-        )
-
-        for challenge in challenges {
-            let result: SpineResonanceResult
-            switch challenge {
-            case let .celestial(celestial):
-                result = try assignment.resonate(
-                    celestial,
-                    celestialProduct: celestialProduct
-                )
-            case let .station(station):
-                result = try assignment.resonate(
-                    station,
-                    celestialProduct: celestialProduct
-                )
-            }
-
-            switch result {
-            case .confirmed:
-                continue
-            case let .divergent(expected, returned):
-                return SpineResonanceTestimony(
-                    schematicIdentity: schematic.identity,
-                    schematicVersion: schematic.version,
-                    candidateIdentity: assignment.candidateIdentity,
-                    result: .divergent(
-                        body: challenge.body,
-                        expected: expected,
-                        returned: returned
-                    )
-                )
-            }
+            celestialProduct: celestialProduct,
+            assignment: assignment
+        ) {
+            return testimony
         }
 
         return SpineResonanceTestimony(
@@ -92,51 +94,18 @@ public enum SpineResonanceRun {
         try requireMatching(schematic: schematic, celestialProduct: celestialProduct)
 
         var challenges: [CampaignChallenge] = []
-
         for bodyPlan in schematic.bodyPlans {
             guard let bodyProduct = celestialProduct.body(bodyPlan.body) else {
                 throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
             }
-
-            let bodyStart = challenges.count
-
-            if let direct = selectedInteriorChallenge(
-                for: .direct,
-                in: bodyProduct,
+            let selected = bodyChallenges(
+                for: bodyProduct,
                 bone: schematic.bone
-            ) {
-                challenges.append(.celestial(direct))
-            }
-
-            if let retrograde = selectedInteriorChallenge(
-                for: .retrograde,
-                in: bodyProduct,
-                bone: schematic.bone
-            ) {
-                challenges.append(.celestial(retrograde))
-            }
-
-            if let directToRetrograde = selectedStationChallenge(
-                laneBefore: .direct,
-                laneAfter: .retrograde,
-                in: bodyProduct,
-                bone: schematic.bone
-            ) {
-                challenges.append(.station(directToRetrograde))
-            }
-
-            if let retrogradeToDirect = selectedStationChallenge(
-                laneBefore: .retrograde,
-                laneAfter: .direct,
-                in: bodyProduct,
-                bone: schematic.bone
-            ) {
-                challenges.append(.station(retrogradeToDirect))
-            }
-
-            guard challenges.count > bodyStart else {
+            )
+            guard !selected.isEmpty else {
                 throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
             }
+            challenges.append(contentsOf: selected)
         }
 
         if let wrap = selectedRetrogradeWrapChallenge(
@@ -145,7 +114,6 @@ public enum SpineResonanceRun {
         ) {
             challenges.append(.celestial(wrap))
         }
-
         return challenges
     }
 
@@ -289,6 +257,46 @@ public enum SpineResonanceRun {
         )
     }
 
+    private static func bodyChallenges(
+        for bodyProduct: SpineForgeBodyProduct,
+        bone: OrboSpineBoneSpan
+    ) -> [CampaignChallenge] {
+        var challenges: [CampaignChallenge] = []
+
+        if let direct = selectedInteriorChallenge(
+            for: .direct,
+            in: bodyProduct,
+            bone: bone
+        ) {
+            challenges.append(.celestial(direct))
+        }
+        if let retrograde = selectedInteriorChallenge(
+            for: .retrograde,
+            in: bodyProduct,
+            bone: bone
+        ) {
+            challenges.append(.celestial(retrograde))
+        }
+        if let directToRetrograde = selectedStationChallenge(
+            laneBefore: .direct,
+            laneAfter: .retrograde,
+            in: bodyProduct,
+            bone: bone
+        ) {
+            challenges.append(.station(directToRetrograde))
+        }
+        if let retrogradeToDirect = selectedStationChallenge(
+            laneBefore: .retrograde,
+            laneAfter: .direct,
+            in: bodyProduct,
+            bone: bone
+        ) {
+            challenges.append(.station(retrogradeToDirect))
+        }
+
+        return challenges
+    }
+
     private static func celestialChallenge(
         between lower: OrboSpineCelestialCoordinate,
         and upper: OrboSpineCelestialCoordinate,
@@ -333,6 +341,41 @@ public enum SpineResonanceRun {
             body: bodyProduct.body,
             directionalDegree: directionalDegree,
             occurrenceIndex: occurrenceIndex
+        )
+    }
+
+    private static func divergenceTestimony(
+        for challenge: CampaignChallenge,
+        schematic: SpineSchematic,
+        celestialProduct: SpineForgeProduct,
+        assignment: SpineResonanceAssignment
+    ) throws -> SpineResonanceTestimony? {
+        let result: SpineResonanceResult
+        switch challenge {
+        case let .celestial(celestial):
+            result = try assignment.resonate(
+                celestial,
+                celestialProduct: celestialProduct
+            )
+        case let .station(station):
+            result = try assignment.resonate(
+                station,
+                celestialProduct: celestialProduct
+            )
+        }
+
+        guard case let .divergent(expected, returned) = result else {
+            return nil
+        }
+        return SpineResonanceTestimony(
+            schematicIdentity: schematic.identity,
+            schematicVersion: schematic.version,
+            candidateIdentity: assignment.candidateIdentity,
+            result: .divergent(
+                body: challenge.body,
+                expected: expected,
+                returned: returned
+            )
         )
     }
 
