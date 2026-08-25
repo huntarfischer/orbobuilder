@@ -1,6 +1,6 @@
 # Four Titans - Keeper Doctrine
 
-**Status:** Stage 0 frozen
+**Status:** Stage 3 frozen
 
 ## Purpose
 
@@ -105,16 +105,61 @@ HECATE may later cast.
 
 The frozen Arc implementation may continue to use its existing internal `cast` and `compose` APIs. This doctrine does not rename or alter those proven internals.
 
+## Keeper Routing
+
+The proven transit now approaches the four laws through their keepers:
+
+```text
+AstroDNA
+   ↓
+THEMIS   → TYMPAN
+RHEA     → MATER
+OCEANUS  → RING
+ASTERIA  → ARC
+```
+
+Keeper routing must preserve the same canonical answer as a direct law call.
+
+## Frozen Testimony Contracts
+
+Each keeper returns testimony in the natural shape of the law it keeps. The four testimonies are intentionally not forced into a common structure.
+
+```text
+ThemisPass
+└── imprint: Tympan.Imprint
+
+RheaPass
+└── field: Mater.QualifiedField
+
+OceanusPass
+└── objectTemplates: [RingObjectTemplate]
+
+AsteriaPass
+├── refractions: [ArcSubjectCast]
+└── projections: [ArcGrid]
+```
+
+The testimony law is:
+
+> No Titan mutates, absorbs, or becomes owner of another Titan's testimony.
+
+There is no generic `TitanPass<T>`, Titan protocol, superclass, or shared testimony abstraction in this freeze.
+
+## Proof
+
+The keeper-routed transit and the four testimony contracts passed the native Swift suite at the Stage 3 boundary:
+
+```text
+395 tests
+0 failures
+```
+
 ## Explicit Non-Scope
 
-Stage 0 changes doctrine only. It does not add production Titan entities or alter any frozen law.
+The Keeper Pass ends here.
 
 Not included:
 
-- Themis, Rhea, Oceanus, or Asteria production types
-- keeper routing
-- Pass/testimony types
-- Titan protocol or superclass
 - Clotho changes
 - Lachesis changes
 - Titan's Pass orchestration
@@ -122,9 +167,9 @@ Not included:
 - Hecate implementation
 - Synchronic Time work
 - interpretation
+- Titan hierarchy
+- generic Titan protocol or generic Pass abstraction
 - Rhea-Cronus software dependency
 - Arc internal API renaming
 
-## Next Approved Stage
-
-Stage 1, when separately approved, may add the four thin keeper entities as authoritative entrances to the existing frozen laws. It must add no new astrology and must preserve direct-law truth exactly.
+Any work beyond this boundary requires a separate design and approval.
