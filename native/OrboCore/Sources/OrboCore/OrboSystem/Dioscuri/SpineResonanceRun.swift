@@ -37,17 +37,17 @@ public enum SpineResonanceRun {
 
     public static func run(
         schematic: SpineSchematic,
-        celestialProduct: SpineForgeProduct,
+        source: any SpineResonanceSource,
         assignment: SpineResonanceAssignment
     ) throws -> SpineResonanceTestimony {
-        try requireMatching(schematic: schematic, celestialProduct: celestialProduct)
+        try requireMatching(schematic: schematic, source: source)
 
         for bodyPlan in schematic.bodyPlans {
-            guard let bodyProduct = celestialProduct.body(bodyPlan.body) else {
+            guard let bodyMatter = source.resonanceBody(bodyPlan.body) else {
                 throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
             }
             let challenges = bodyChallenges(
-                for: bodyProduct,
+                for: bodyMatter,
                 bone: schematic.bone
             )
             guard !challenges.isEmpty else {
@@ -58,7 +58,7 @@ public enum SpineResonanceRun {
                 if let testimony = try divergenceTestimony(
                     for: challenge,
                     schematic: schematic,
-                    celestialProduct: celestialProduct,
+                    source: source,
                     assignment: assignment
                 ) {
                     return testimony
@@ -67,13 +67,13 @@ public enum SpineResonanceRun {
         }
 
         if let wrap = selectedRetrogradeWrapChallenge(
-            in: celestialProduct,
+            in: source,
             bone: schematic.bone
         ),
         let testimony = try divergenceTestimony(
             for: .celestial(wrap),
             schematic: schematic,
-            celestialProduct: celestialProduct,
+            source: source,
             assignment: assignment
         ) {
             return testimony
@@ -87,19 +87,33 @@ public enum SpineResonanceRun {
         )
     }
 
+    /// Compatibility for the already-proven Stage 2 fixture surface. The campaign itself runs
+    /// only through SpineResonanceSource.
+    public static func run(
+        schematic: SpineSchematic,
+        celestialProduct: SpineForgeProduct,
+        assignment: SpineResonanceAssignment
+    ) throws -> SpineResonanceTestimony {
+        try run(
+            schematic: schematic,
+            source: celestialProduct,
+            assignment: assignment
+        )
+    }
+
     static func campaign(
         schematic: SpineSchematic,
-        celestialProduct: SpineForgeProduct
+        source: any SpineResonanceSource
     ) throws -> [CampaignChallenge] {
-        try requireMatching(schematic: schematic, celestialProduct: celestialProduct)
+        try requireMatching(schematic: schematic, source: source)
 
         var challenges: [CampaignChallenge] = []
         for bodyPlan in schematic.bodyPlans {
-            guard let bodyProduct = celestialProduct.body(bodyPlan.body) else {
+            guard let bodyMatter = source.resonanceBody(bodyPlan.body) else {
                 throw SpineResonanceRunError.challengeUnavailable(bodyPlan.body)
             }
             let selected = bodyChallenges(
-                for: bodyProduct,
+                for: bodyMatter,
                 bone: schematic.bone
             )
             guard !selected.isEmpty else {
@@ -109,7 +123,7 @@ public enum SpineResonanceRun {
         }
 
         if let wrap = selectedRetrogradeWrapChallenge(
-            in: celestialProduct,
+            in: source,
             bone: schematic.bone
         ) {
             challenges.append(.celestial(wrap))
@@ -117,12 +131,21 @@ public enum SpineResonanceRun {
         return challenges
     }
 
+    /// Compatibility for the already-proven Stage 2 fixture surface. Selection remains owned
+    /// by the source-matter path above.
+    static func campaign(
+        schematic: SpineSchematic,
+        celestialProduct: SpineForgeProduct
+    ) throws -> [CampaignChallenge] {
+        try campaign(schematic: schematic, source: celestialProduct)
+    }
+
     static func selectedInteriorChallenge(
         for motion: Motion,
-        in bodyProduct: SpineForgeBodyProduct,
+        in bodyMatter: SpineResonanceBodyMatter,
         bone: OrboSpineBoneSpan
     ) -> SpineCelestialChallenge? {
-        let supports = bodyProduct.supports.sorted { $0.julianDay.value < $1.julianDay.value }
+        let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
         guard supports.count >= 2 else { return nil }
 
         let boneMidpoint = (bone.start.value + bone.end.value) * 0.5
@@ -141,7 +164,7 @@ public enum SpineResonanceRun {
                   !hasStation(
                     between: lower.julianDay,
                     and: upper.julianDay,
-                    stations: bodyProduct.stations
+                    stations: bodyMatter.stations
                   ) else {
                 continue
             }
@@ -166,17 +189,29 @@ public enum SpineResonanceRun {
         return celestialChallenge(
             between: best.lower,
             and: best.upper,
-            in: bodyProduct
+            in: bodyMatter
+        )
+    }
+
+    static func selectedInteriorChallenge(
+        for motion: Motion,
+        in bodyProduct: SpineForgeBodyProduct,
+        bone: OrboSpineBoneSpan
+    ) -> SpineCelestialChallenge? {
+        selectedInteriorChallenge(
+            for: motion,
+            in: SpineResonanceBodyMatter(bodyProduct),
+            bone: bone
         )
     }
 
     static func selectedStationChallenge(
         laneBefore: Motion,
         laneAfter: Motion,
-        in bodyProduct: SpineForgeBodyProduct,
+        in bodyMatter: SpineResonanceBodyMatter,
         bone: OrboSpineBoneSpan
     ) -> SpineStationChallenge? {
-        let stations = bodyProduct.stations.sorted { $0.julianDay.value < $1.julianDay.value }
+        let stations = bodyMatter.stations.sorted { $0.julianDay.value < $1.julianDay.value }
         let boneMidpoint = (bone.start.value + bone.end.value) * 0.5
         var best: (index: Int, julianDay: Double, distance: Double)?
 
@@ -196,26 +231,41 @@ public enum SpineResonanceRun {
 
         guard let best else { return nil }
         return SpineStationChallenge(
-            body: bodyProduct.body,
+            body: bodyMatter.body,
             occurrenceIndex: best.index
         )
     }
 
+    static func selectedStationChallenge(
+        laneBefore: Motion,
+        laneAfter: Motion,
+        in bodyProduct: SpineForgeBodyProduct,
+        bone: OrboSpineBoneSpan
+    ) -> SpineStationChallenge? {
+        selectedStationChallenge(
+            laneBefore: laneBefore,
+            laneAfter: laneAfter,
+            in: SpineResonanceBodyMatter(bodyProduct),
+            bone: bone
+        )
+    }
+
     static func selectedRetrogradeWrapChallenge(
-        in celestialProduct: SpineForgeProduct,
+        in source: any SpineResonanceSource,
         bone: OrboSpineBoneSpan
     ) -> SpineCelestialChallenge? {
         let boneMidpoint = (bone.start.value + bone.end.value) * 0.5
         var best: (
-            bodyProduct: SpineForgeBodyProduct,
+            bodyMatter: SpineResonanceBodyMatter,
             lower: OrboSpineCelestialCoordinate,
             upper: OrboSpineCelestialCoordinate,
             midpoint: Double,
             distance: Double
         )?
 
-        for bodyProduct in celestialProduct.bodies {
-            let supports = bodyProduct.supports.sorted { $0.julianDay.value < $1.julianDay.value }
+        for body in source.resonanceBodyOrder {
+            guard let bodyMatter = source.resonanceBody(body) else { continue }
+            let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
             guard supports.count >= 2 else { continue }
 
             for index in 0..<(supports.count - 1) {
@@ -227,7 +277,7 @@ public enum SpineResonanceRun {
                       !hasStation(
                         between: lower.julianDay,
                         and: upper.julianDay,
-                        stations: bodyProduct.stations
+                        stations: bodyMatter.stations
                       ) else {
                     continue
                 }
@@ -244,7 +294,7 @@ public enum SpineResonanceRun {
                 if best == nil
                     || distance < best!.distance - epsilon
                     || (abs(distance - best!.distance) <= epsilon && midpoint < best!.midpoint) {
-                    best = (bodyProduct, lower, upper, midpoint, distance)
+                    best = (bodyMatter, lower, upper, midpoint, distance)
                 }
             }
         }
@@ -253,26 +303,33 @@ public enum SpineResonanceRun {
         return celestialChallenge(
             between: best.lower,
             and: best.upper,
-            in: best.bodyProduct
+            in: best.bodyMatter
         )
     }
 
+    static func selectedRetrogradeWrapChallenge(
+        in celestialProduct: SpineForgeProduct,
+        bone: OrboSpineBoneSpan
+    ) -> SpineCelestialChallenge? {
+        selectedRetrogradeWrapChallenge(in: celestialProduct as any SpineResonanceSource, bone: bone)
+    }
+
     private static func bodyChallenges(
-        for bodyProduct: SpineForgeBodyProduct,
+        for bodyMatter: SpineResonanceBodyMatter,
         bone: OrboSpineBoneSpan
     ) -> [CampaignChallenge] {
         var challenges: [CampaignChallenge] = []
 
         if let direct = selectedInteriorChallenge(
             for: .direct,
-            in: bodyProduct,
+            in: bodyMatter,
             bone: bone
         ) {
             challenges.append(.celestial(direct))
         }
         if let retrograde = selectedInteriorChallenge(
             for: .retrograde,
-            in: bodyProduct,
+            in: bodyMatter,
             bone: bone
         ) {
             challenges.append(.celestial(retrograde))
@@ -280,7 +337,7 @@ public enum SpineResonanceRun {
         if let directToRetrograde = selectedStationChallenge(
             laneBefore: .direct,
             laneAfter: .retrograde,
-            in: bodyProduct,
+            in: bodyMatter,
             bone: bone
         ) {
             challenges.append(.station(directToRetrograde))
@@ -288,7 +345,7 @@ public enum SpineResonanceRun {
         if let retrogradeToDirect = selectedStationChallenge(
             laneBefore: .retrograde,
             laneAfter: .direct,
-            in: bodyProduct,
+            in: bodyMatter,
             bone: bone
         ) {
             challenges.append(.station(retrogradeToDirect))
@@ -300,7 +357,7 @@ public enum SpineResonanceRun {
     private static func celestialChallenge(
         between lower: OrboSpineCelestialCoordinate,
         and upper: OrboSpineCelestialCoordinate,
-        in bodyProduct: SpineForgeBodyProduct
+        in bodyMatter: SpineResonanceBodyMatter
     ) -> SpineCelestialChallenge? {
         let motion = lower.directionalDegree.motion
         guard upper.directionalDegree.motion == motion else { return nil }
@@ -329,7 +386,7 @@ public enum SpineResonanceRun {
 
         let occurrences = PolluxResonator.occurrences(
             of: directionalDegree,
-            in: bodyProduct
+            in: bodyMatter
         )
         guard let occurrenceIndex = occurrences.firstIndex(where: {
             abs($0.julianDay.value - selectedJulianDay.value) <= epsilon
@@ -338,7 +395,7 @@ public enum SpineResonanceRun {
         }
 
         return SpineCelestialChallenge(
-            body: bodyProduct.body,
+            body: bodyMatter.body,
             directionalDegree: directionalDegree,
             occurrenceIndex: occurrenceIndex
         )
@@ -347,7 +404,7 @@ public enum SpineResonanceRun {
     private static func divergenceTestimony(
         for challenge: CampaignChallenge,
         schematic: SpineSchematic,
-        celestialProduct: SpineForgeProduct,
+        source: any SpineResonanceSource,
         assignment: SpineResonanceAssignment
     ) throws -> SpineResonanceTestimony? {
         let result: SpineResonanceResult
@@ -355,12 +412,12 @@ public enum SpineResonanceRun {
         case let .celestial(celestial):
             result = try assignment.resonate(
                 celestial,
-                celestialProduct: celestialProduct
+                source: source
             )
         case let .station(station):
             result = try assignment.resonate(
                 station,
-                celestialProduct: celestialProduct
+                source: source
             )
         }
 
@@ -381,20 +438,21 @@ public enum SpineResonanceRun {
 
     private static func requireMatching(
         schematic: SpineSchematic,
-        celestialProduct: SpineForgeProduct
+        source: any SpineResonanceSource
     ) throws {
-        guard celestialProduct.schematicIdentity == schematic.identity,
-              celestialProduct.schematicVersion == schematic.version,
-              celestialProduct.bone == schematic.bone,
-              celestialProduct.astronomicalAuthority == schematic.astronomicalAuthority,
-              celestialProduct.astronomicalSourceVersion == schematic.astronomicalSourceVersion,
-              celestialProduct.bodies.map(\.body) == schematic.bodyPlans.map(\.body),
-              celestialProduct.bodies.count == schematic.bodyPlans.count else {
+        guard source.schematicIdentity == schematic.identity,
+              source.schematicVersion == schematic.version,
+              source.bone == schematic.bone,
+              source.astronomicalAuthority == schematic.astronomicalAuthority,
+              source.astronomicalSourceVersion == schematic.astronomicalSourceVersion,
+              source.resonanceBodyOrder == schematic.bodyPlans.map(\.body) else {
             throw SpineResonanceRunError.productMismatch
         }
 
-        for (bodyProduct, bodyPlan) in zip(celestialProduct.bodies, schematic.bodyPlans) {
-            guard bodyProduct.supportDegrees == bodyPlan.supportDegrees else {
+        for bodyPlan in schematic.bodyPlans {
+            guard let bodyMatter = source.resonanceBody(bodyPlan.body),
+                  bodyMatter.body == bodyPlan.body,
+                  bodyMatter.supportDegrees == bodyPlan.supportDegrees else {
                 throw SpineResonanceRunError.productMismatch
             }
         }
