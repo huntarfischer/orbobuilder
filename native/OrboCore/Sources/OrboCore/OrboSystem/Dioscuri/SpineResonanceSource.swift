@@ -70,6 +70,24 @@ public struct OrboSpineDurableCelestialResonanceSource: SpineResonanceSource {
 
     private let bodiesByIdentity: [MundaneBody: SpineResonanceBodyMatter]
 
+    /// Forms directly from the validated celestial rows the assembly path already loads.
+    public init?(
+        schematic: SpineSchematic,
+        supports: [OrboSpineCelestialCoordinate],
+        stations: [OrboSpineStation]
+    ) {
+        let bodies = schematic.bodyPlans.compactMap { bodyPlan in
+            SpineResonanceBodyMatter(
+                body: bodyPlan.body,
+                supportDegrees: bodyPlan.supportDegrees,
+                supports: supports.filter { $0.body == bodyPlan.body },
+                stations: stations.filter { $0.body == bodyPlan.body }
+            )
+        }
+        guard bodies.count == schematic.bodyPlans.count else { return nil }
+        self.init(schematic: schematic, bodies: bodies)
+    }
+
     public init?(
         schematic: SpineSchematic,
         bodies: [SpineResonanceBodyMatter]
