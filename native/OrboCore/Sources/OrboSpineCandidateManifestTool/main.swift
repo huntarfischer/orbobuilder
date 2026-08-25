@@ -57,6 +57,13 @@ private struct AspectSummary: Codable {
     let totalRows: Int
 }
 
+private struct LunationSummary: Codable {
+    let rows: Int
+    let newRows: Int
+    let fullRows: Int
+    let manifest: String
+}
+
 private struct EclipseSummary: Codable {
     let spans: [CountedSpan]
     let totalRows: Int
@@ -94,6 +101,7 @@ private struct CandidateManifest: Codable {
     let celestial: CelestialSummary
     let motion: MotionSummary
     let aspects: AspectSummary
+    let lunations: LunationSummary
     let temporalShells: ShellSummary
     let eclipses: EclipseSummary
     let terraMarrow: TerraSummary
@@ -115,8 +123,7 @@ private enum Closeout {
         var files: [FileDigest] = []
 
         let celestialManifestRelative = "celestial/orbospine-celestial-manifest.json"
-        let celestialManifestURL = root.appendingPathComponent(celestialManifestRelative)
-        let celestialJSON = try loadJSONObject(celestialManifestURL)
+        let celestialJSON = try loadJSONObject(root.appendingPathComponent(celestialManifestRelative))
         let supportRows = try int(celestialJSON, "totalSupportRows")
         let stationRows = try int(celestialJSON, "totalStationRows")
         guard supportRows == 1_550_229 else {
@@ -128,11 +135,7 @@ private enum Closeout {
         guard let bodies = celestialJSON["bodies"] as? [[String: Any]], bodies.count == 11 else {
             throw CandidateManifestError.malformed("celestial manifest must contain exactly 11 bodies")
         }
-        let celestialManifestDigest = try digest(
-            root: root,
-            relativePath: celestialManifestRelative,
-            role: "celestial manifest"
-        )
+        let celestialManifestDigest = try digest(root: root, relativePath: celestialManifestRelative, role: "celestial manifest")
         files.append(celestialManifestDigest)
         for body in bodies {
             let supportFile = try string(body, "supportFile")
@@ -147,17 +150,16 @@ private enum Closeout {
 
         let motionManifestRelative = "motion/orbospine-motion-manifest.json"
         let motionJSON = try loadJSONObject(root.appendingPathComponent(motionManifestRelative))
-        let motionIdentity = try string(motionJSON, "identity")
-        guard motionIdentity == OrboSpineContract.identity else {
-            throw CandidateManifestError.mismatch("motion identity \(motionIdentity)")
+        guard try string(motionJSON, "identity") == OrboSpineContract.identity else {
+            throw CandidateManifestError.mismatch("motion identity drift")
         }
         let motionStationRows = try int(motionJSON, "sourceStationRows")
         let motionPassageRows = try int(motionJSON, "totalPassageRows")
         guard motionStationRows == stationRows else {
             throw CandidateManifestError.mismatch("motion source stations \(motionStationRows) != celestial \(stationRows)")
         }
-        guard motionPassageRows > 0 else {
-            throw CandidateManifestError.mismatch("motion body has no retrograde passages")
+        guard motionPassageRows == 26_343 else {
+            throw CandidateManifestError.mismatch("motion passages \(motionPassageRows) != 26343")
         }
         guard try string(motionJSON, "sourceCelestialManifest") == celestialManifestRelative else {
             throw CandidateManifestError.mismatch("motion source celestial manifest path drift")
@@ -190,17 +192,8 @@ private enum Closeout {
         }
         files.append(try digest(root: root, relativePath: motionManifestRelative, role: "retrograde motion manifest"))
         let motionPassageFile = try string(motionJSON, "passageFile")
-        let motionPassageDigest = try digest(
-            root: root,
-            relativePath: "motion/\(motionPassageFile)",
-            role: "continuous Z21-Z23 retrograde passages"
-        )
-        try verifyDeclaredDigest(
-            motionJSON,
-            key: "passageSHA256",
-            actual: motionPassageDigest.sha256,
-            context: motionPassageFile
-        )
+        let motionPassageDigest = try digest(root: root, relativePath: "motion/\(motionPassageFile)", role: "continuous Z21-Z23 retrograde passages")
+        try verifyDeclaredDigest(motionJSON, key: "passageSHA256", actual: motionPassageDigest.sha256, context: motionPassageFile)
         files.append(motionPassageDigest)
 
         let aspectCounts = try gatherAspects(root: root, files: &files)
@@ -208,12 +201,30 @@ private enum Closeout {
             throw CandidateManifestError.mismatch("aspect total is not 2315930")
         }
 
+        let lunationManifestRelative = "lunations/manifest.json"
+        let lunationJSON = try loadJSONObject(root.appendingPathComponent(lunationManifestRelative))
+        let lunationRows = try int(lunationJSON, "rows")
+        let newRows = try int(lunationJSON, "newRows")
+        let fullRows = try int(lunationJSON, "fullRows")
+        guard lunationRows == 18_159, newRows + fullRows == lunationRows else {
+            throw CandidateManifestError.mismatch("lunation rows are not canonical 18159")
+        }
+        files.append(try digest(root: root, relativePath: lunationManifestRelative, role: "lunation manifest"))
+        guard let lunationFiles = lunationJSON["files"] as? [[String: Any]], let lunationFile = lunationFiles.first else {
+            throw CandidateManifestError.malformed("lunation manifest files")
+        }
+        let lunationPath = try string(lunationFile, "path")
+        let lunationDigest = try digest(root: root, relativePath: "lunations/\(lunationPath)", role: "exact new/full Moon chronology")
+        try verifyDeclaredDigest(lunationFile, key: "sha256", actual: lunationDigest.sha256, context: lunationPath)
+        files.append(lunationDigest)
+
         let eclipseCounts = try gatherEclipses(root: root, files: &files)
         guard eclipseCounts.map(\.rows).reduce(0, +) == 3_539 else {
             throw CandidateManifestError.mismatch("eclipse total is not 3539")
         }
 
         let shellPaths = [
+            ("shells/jovian-reign-table.csv", "Reign / Jupiter"),
             ("shells/saturnian-frame-table.csv", "Frame / Saturn"),
             ("shells/uranian-revolt-table.csv", "Revolt / Uranus"),
             ("shells/neptunian-wave-table.csv", "Wave / Neptune"),
@@ -224,8 +235,7 @@ private enum Closeout {
         }
 
         let terraManifestRelative = "terra/terra-marrow-manifest.json"
-        let terraManifestURL = root.appendingPathComponent(terraManifestRelative)
-        let terraJSON = try loadJSONObject(terraManifestURL)
+        let terraJSON = try loadJSONObject(root.appendingPathComponent(terraManifestRelative))
         let terraRows = try int(terraJSON, "totalRows")
         let supportIntervalSeconds = try int(terraJSON, "supportIntervalSeconds")
         let refinementLaw = try string(terraJSON, "refinementLaw")
@@ -255,6 +265,8 @@ private enum Closeout {
         try verifyDouble(celestialJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "celestial end")
         try verifyDouble(motionJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "motion start")
         try verifyDouble(motionJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "motion end")
+        try verifyDouble(lunationJSON, key: "startJulianDayUT", expected: supportedStart, context: "lunation start")
+        try verifyDouble(lunationJSON, key: "endJulianDayUTExclusive", expected: supportedEnd, context: "lunation end")
         try verifyDouble(terraJSON, key: "supportedStartJulianDayUT", expected: supportedStart, context: "Terra start")
         try verifyDouble(terraJSON, key: "supportedEndJulianDayUT", expected: supportedEnd, context: "Terra end")
 
@@ -283,9 +295,15 @@ private enum Closeout {
                 spans: aspectCounts,
                 totalRows: aspectCounts.map(\.rows).reduce(0, +)
             ),
+            lunations: LunationSummary(
+                rows: lunationRows,
+                newRows: newRows,
+                fullRows: fullRows,
+                manifest: lunationManifestRelative
+            ),
             temporalShells: ShellSummary(
-                address: "F.R.W.Z",
-                families: ["Frame / Saturn", "Revolt / Uranus", "Wave / Neptune", "Zeitgeist / Pluto"]
+                address: "J.F.R.W.Z",
+                families: ["Reign / Jupiter", "Frame / Saturn", "Revolt / Uranus", "Wave / Neptune", "Zeitgeist / Pluto"]
             ),
             eclipses: EclipseSummary(
                 spans: eclipseCounts,
@@ -301,10 +319,10 @@ private enum Closeout {
             files: files,
             lifecycleStatus: LifecycleSummary(
                 manufacture: "complete",
-                runtimeIndexes: "pending Pass D",
-                dioscuriCertification: "pending Pass E",
-                adversarialProof: "pending Pass F",
-                hephaestusSeal: "pending Pass G"
+                runtimeIndexes: "pending",
+                dioscuriCertification: "pending",
+                adversarialProof: "pending",
+                hephaestusSeal: "pending"
             )
         )
 
@@ -314,16 +332,17 @@ private enum Closeout {
         let hashLine = "\(manifestDigest.sha256)  \(candidateFileName)\n"
         try atomicWrite(Data(hashLine.utf8), to: root.appendingPathComponent(candidateHashFileName))
 
-        print("ORBOSPINE MANUFACTURE CLOSEOUT")
+        print("ORBOSPINE WHOLE FORGE")
         print("PASS celestial: \(supportRows) supports / \(stationRows) stations")
         print("PASS motion: \(motionPassageRows) continuous retrograde passages")
-        print("PASS aspects: \(aspectCounts.map(\.rows).reduce(0, +)) exact occurrences")
-        print("PASS temporal shells: F.R.W.Z")
+        print("PASS Ring: \(aspectCounts.map(\.rows).reduce(0, +)) exact occurrences")
+        print("PASS lunations: \(lunationRows) exact new/full Moons")
         print("PASS eclipses: \(eclipseCounts.map(\.rows).reduce(0, +))")
+        print("PASS indexing: J.F.R.W.Z")
         print("PASS Terra Marrow: \(terraRows) rows")
         print("candidate manifest: \(manifestURL.path)")
         print("candidate SHA-256: \(manifestDigest.sha256)")
-        print("MANUFACTURE STAGE: COMPLETE / ORBOSPINE CANDIDATE")
+        print("FORGE STAGE: COMPLETE / UNSEALED ORBOSPINE CANDIDATE")
     }
 
     private static func gatherAspects(root: URL, files: inout [FileDigest]) throws -> [CountedSpan] {
