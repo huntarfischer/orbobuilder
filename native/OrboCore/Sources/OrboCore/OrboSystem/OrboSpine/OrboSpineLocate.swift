@@ -32,11 +32,13 @@ public struct OrboSpineLocate: Sendable {
         bone: OrboSpineBoneSpan,
         celestialSupports: [OrboSpineCelestialCoordinate],
         stations: [OrboSpineStation] = [],
+        boundaryAnchors: [OrboSpineBoundaryAnchor] = [],
         terraSamples: [TerraMarrowSample] = []
     ) {
         let supportBodies = Set(celestialSupports.map(\.body))
         let stationBodies = Set(stations.map(\.body))
-        let bodies = supportBodies.union(stationBodies)
+        let anchorBodies = Set(boundaryAnchors.map(\.body))
+        let bodies = supportBodies.union(stationBodies).union(anchorBodies)
         guard !bodies.isEmpty else { return nil }
 
         var built: [MundaneBody: Tract] = [:]
@@ -44,11 +46,13 @@ public struct OrboSpineLocate: Sendable {
         for body in bodies {
             let bodySupports = celestialSupports.filter { $0.body == body }
             let bodyStations = stations.filter { $0.body == body }
+            let bodyAnchors = boundaryAnchors.filter { $0.body == body }
             guard let tract = Tract(
                 body: body,
                 bone: bone,
                 supports: bodySupports,
-                stations: bodyStations
+                stations: bodyStations,
+                boundaryAnchors: bodyAnchors
             ) else {
                 return nil
             }
@@ -116,12 +120,31 @@ private extension OrboSpineLocate {
             body: MundaneBody,
             bone: OrboSpineBoneSpan,
             supports: [OrboSpineCelestialCoordinate],
-            stations: [OrboSpineStation]
+            stations: [OrboSpineStation],
+            boundaryAnchors: [OrboSpineBoundaryAnchor]
         ) {
             guard supports.count >= 2,
                   supports.allSatisfy({ $0.body == body && bone.contains($0.julianDay) }),
-                  stations.allSatisfy({ $0.body == body && bone.contains($0.julianDay) }) else {
+                  stations.allSatisfy({ $0.body == body && bone.contains($0.julianDay) }),
+                  boundaryAnchors.allSatisfy({ $0.body == body }) else {
                 return nil
+            }
+
+            let startAnchor: OrboSpineBoundaryAnchor?
+            let endAnchor: OrboSpineBoundaryAnchor?
+            if boundaryAnchors.isEmpty {
+                startAnchor = nil
+                endAnchor = nil
+            } else {
+                guard boundaryAnchors.count == 2,
+                      let start = boundaryAnchors.first(where: { $0.boundary == .start }),
+                      let end = boundaryAnchors.first(where: { $0.boundary == .endExclusive }),
+                      abs(start.julianDay.value - bone.start.value) <= Self.epsilon,
+                      abs(end.julianDay.value - bone.end.value) <= Self.epsilon else {
+                    return nil
+                }
+                startAnchor = start
+                endAnchor = end
             }
 
             var raw: [Event] = supports.map {
@@ -151,7 +174,16 @@ private extension OrboSpineLocate {
 
             guard var events = Self.collapseCoincidentEvents(raw), events.count >= 2 else { return nil }
 
-            if events[0].julianDay.value > bone.start.value + Self.epsilon {
+            if let startAnchor {
+                let boundary = Self.event(for: startAnchor)
+                if events[0].julianDay.value > bone.start.value + Self.epsilon {
+                    events.insert(boundary, at: 0)
+                } else if abs(events[0].julianDay.value - bone.start.value) <= Self.epsilon {
+                    guard Self.matchesStartBoundary(events[0], anchor: boundary) else { return nil }
+                } else {
+                    return nil
+                }
+            } else if events[0].julianDay.value > bone.start.value + Self.epsilon {
                 guard let boundary = Self.startBoundary(
                     at: bone.start,
                     first: events[0],
@@ -162,7 +194,17 @@ private extension OrboSpineLocate {
                 return nil
             }
 
-            if events[events.count - 1].julianDay.value < bone.end.value - Self.epsilon {
+            if let endAnchor {
+                let boundary = Self.event(for: endAnchor)
+                let last = events[events.count - 1]
+                if last.julianDay.value < bone.end.value - Self.epsilon {
+                    events.append(boundary)
+                } else if abs(last.julianDay.value - bone.end.value) <= Self.epsilon {
+                    guard Self.matchesEndBoundary(last, anchor: boundary) else { return nil }
+                } else {
+                    return nil
+                }
+            } else if events[events.count - 1].julianDay.value < bone.end.value - Self.epsilon {
                 guard let boundary = Self.endBoundary(
                     at: bone.end,
                     previous: events[events.count - 2],
@@ -312,6 +354,26 @@ private extension OrboSpineLocate {
         }
 
         private static let epsilon = 1e-10
+
+        private static func event(for anchor: OrboSpineBoundaryAnchor) -> Event {
+            Event(
+                julianDay: anchor.julianDay,
+                physicalDegrees: anchor.physicalDegrees,
+                motionBefore: anchor.motion,
+                motionAfter: anchor.motion,
+                isStation: false
+            )
+        }
+
+        private static func matchesStartBoundary(_ event: Event, anchor: Event) -> Bool {
+            abs(event.physicalDegrees - anchor.physicalDegrees) <= 1e-7
+                && event.motionAfter == anchor.motionAfter
+        }
+
+        private static func matchesEndBoundary(_ event: Event, anchor: Event) -> Bool {
+            abs(event.physicalDegrees - anchor.physicalDegrees) <= 1e-7
+                && event.motionBefore == anchor.motionBefore
+        }
 
         private static func collapseCoincidentEvents(_ raw: [Event]) -> [Event]? {
             var result: [Event] = []
