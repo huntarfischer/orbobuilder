@@ -36,6 +36,10 @@ let package = Package(
         .executable(
             name: "OrboSpineAssemblyProofTool",
             targets: ["OrboSpineAssemblyProofTool"]
+        ),
+        .executable(
+            name: "OrboSpineDioscuriCertificationTool",
+            targets: ["OrboSpineDioscuriCertificationTool"]
         )
     ],
     targets: [
@@ -67,6 +71,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "OrboSpineAssemblyProofTool",
+            dependencies: ["OrboCore"]
+        ),
+        .executableTarget(
+            name: "OrboSpineDioscuriCertificationTool",
             dependencies: ["OrboCore"]
         ),
         .testTarget(
