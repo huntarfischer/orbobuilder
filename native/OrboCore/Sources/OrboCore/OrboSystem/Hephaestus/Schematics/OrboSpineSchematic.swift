@@ -27,7 +27,7 @@ public struct OrboSpineZeitgeistSpan: Hashable, Sendable {
     }
 }
 
-/// The v1 celestial manufacture schematic for the universal OrboSpine.
+/// The v1 Schematic for the universal Z21-Z23 OrboSpine.
 public enum OrboSpineSchematic {
     public static let identity = OrboSpineContract.identity
     public static let version: UInt16 = 1
@@ -63,6 +63,40 @@ public enum OrboSpineSchematic {
     public static let supportedStart = z21.start
     public static let supportedEnd = z23.end
 
+    /// Canonical matter already gathered on Hephaestus's workbench.
+    /// Paths are relative to tools/pass5/orbospine-build/.
+    public static let admittedWorkbenchMatter: [String: String] = [
+        "celestial": "celestial/",
+        "terra-marrow": "terra/",
+        "motion": "motion/",
+        "ring-chronology": "aspects/",
+        "lunations": "lunations/",
+        "eclipses": "eclipses/",
+        "reign": "shells/jovian-reign-table.csv",
+        "frame": "shells/saturnian-frame-table.csv",
+        "revolt": "shells/uranian-revolt-table.csv",
+        "wave": "shells/neptunian-wave-table.csv",
+        "zeitgeist": "shells/zeitgeist-z0-z30.csv",
+    ]
+
+    public static let indexingFamilies = [
+        "Reign / Jupiter",
+        "Frame / Saturn",
+        "Revolt / Uranus",
+        "Wave / Neptune",
+        "Zeitgeist / Pluto",
+    ]
+
+    public static let chronologyFamilies = [
+        "Ring",
+        "Lunations",
+        "Eclipses",
+    ]
+
+    /// Every finished Spine exposes these three doors and these two controlled seams.
+    public static let accessPorts = SpineAccessPort.allCases
+    public static let extensionSeams = SpineSmeldSeam.allCases
+
     public static let scanStepDays: [MundaneBody: Double] = [
         .sun: 0.20,
         .moon: 0.05,
@@ -77,6 +111,7 @@ public enum OrboSpineSchematic {
         .trueNorthNode: 0.10,
     ]
 
+    /// The celestial manufacture sub-schematic remains unchanged and is the C4 authority.
     public static let current: SpineSchematic = {
         let bone = OrboSpineBoneSpan(start: supportedStart, end: supportedEnd)!
         let bodyPlans = MundaneBody.canonicalOrder.map { body in
