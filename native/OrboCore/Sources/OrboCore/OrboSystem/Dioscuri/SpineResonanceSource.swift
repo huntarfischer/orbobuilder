@@ -76,6 +76,12 @@ public struct OrboSpineDurableCelestialResonanceSource: SpineResonanceSource {
         supports: [OrboSpineCelestialCoordinate],
         stations: [OrboSpineStation]
     ) {
+        let expectedBodies = Set(schematic.bodyPlans.map(\.body))
+        guard supports.allSatisfy({ expectedBodies.contains($0.body) }),
+              stations.allSatisfy({ expectedBodies.contains($0.body) }) else {
+            return nil
+        }
+
         let bodies = schematic.bodyPlans.compactMap { bodyPlan in
             SpineResonanceBodyMatter(
                 body: bodyPlan.body,
