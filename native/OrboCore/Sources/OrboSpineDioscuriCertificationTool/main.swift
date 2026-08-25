@@ -152,6 +152,11 @@ private enum Certification {
         let arguments = try Arguments(raw)
         let root = arguments.buildRoot
         let schematic = OrboSpineSchematic.current
+        let startedAt = Date()
+
+        func elapsed() -> String {
+            String(format: "%.2fs", Date().timeIntervalSince(startedAt))
+        }
 
         print("ORBOSPINE DIOSCURI CERTIFICATION")
 
@@ -167,9 +172,11 @@ private enum Certification {
             throw CertificationError.mismatch("candidate identity/binding drift")
         }
         print("PASS candidate: \(candidateSHA)")
+        print("TIME candidate: \(elapsed())")
 
         try verifyBoundFiles(candidate.files, root: root)
         print("PASS bound matter: \(candidate.files.count) / \(candidate.files.count) SHA-256")
+        print("TIME bound matter: \(elapsed())")
 
         let celestial: CelestialManifestReference = try decode(root.appendingPathComponent(celestialManifest))
         guard celestial.identity == schematic.identity,
@@ -218,6 +225,7 @@ private enum Certification {
             throw CertificationError.mismatch("loaded celestial row counts drift")
         }
         print("PASS Pollux source: \(supports.count) supports / \(stations.count) stations")
+        print("TIME Pollux source: \(elapsed())")
 
         let anchors = try loadBoundaryAnchors(
             root: root,
@@ -225,9 +233,12 @@ private enum Certification {
             bone: schematic.bone
         )
         print("PASS Castor anchors: \(anchors.count) exact Bone states")
+        print("TIME Castor anchors: \(elapsed())")
 
         let terraProbes = try loadTerraRuntimeProbes(root: root, files: candidate.files, bone: schematic.bone)
+        print("TIME Terra probes: \(elapsed())")
         let shellIntervals = try loadRuntimeShellIntersections(root: root, files: candidate.files, bone: schematic.bone)
+        print("TIME shell intersections: \(elapsed())")
 
         guard let provenance = OrboSpineRuntimeProvenance(
             candidateManifestSHA256: candidateSHA,
@@ -254,12 +265,15 @@ private enum Certification {
         let assignment = SpineResonanceAssignment(schematic: schematic, candidate: runtime) else {
             throw CertificationError.mismatch("production resonance boundary cannot form")
         }
+        print("TIME Castor runtime: \(elapsed())")
+        print("START Dioscuri campaign: \(elapsed())")
 
         let testimony = try SpineResonanceRun.run(
             schematic: schematic,
             source: source,
             assignment: assignment
         )
+        print("TIME Dioscuri campaign: \(elapsed())")
         guard testimony.schematicIdentity == schematic.identity,
               testimony.schematicVersion == schematic.version,
               testimony.candidateIdentity == candidateSHA else {
@@ -281,6 +295,7 @@ private enum Certification {
             print("returned motion: \(returned.directionalDegree.motion.rawValue)")
             print("delta JD: \(returned.julianDay.value - expected.julianDay.value)")
             print("delta directional degree: \(returned.directionalDegree.degrees - expected.directionalDegree.degrees)")
+            print("TOTAL elapsed: \(elapsed())")
             throw CertificationError.mismatch("Dioscuri testimony is divergent")
         }
 
@@ -309,6 +324,7 @@ private enum Certification {
         print("DIOSCURI TESTIMONY: CONFIRMED")
         print("testimony: \(testimonyURL.path)")
         print("testimony SHA-256: \(testimonySHA)")
+        print("TOTAL elapsed: \(elapsed())")
         print("CERTIFICATION STAGE: COMPLETE / DIOSCURI-CERTIFIED")
     }
 
