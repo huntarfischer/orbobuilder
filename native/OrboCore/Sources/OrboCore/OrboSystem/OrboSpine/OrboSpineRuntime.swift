@@ -67,6 +67,7 @@ public struct OrboSpineRuntime: Sendable {
         bone: OrboSpineBoneSpan,
         celestialSupports: [OrboSpineCelestialCoordinate],
         stations: [OrboSpineStation],
+        boundaryAnchors: [OrboSpineBoundaryAnchor] = [],
         retrogradePassages: [OrboSpineRetrogradePassage],
         ringOccurrences: [OrboSpineRingOccurrence],
         eclipses: [OrboSpineEclipseOccurrence],
@@ -79,6 +80,7 @@ public struct OrboSpineRuntime: Sendable {
               !celestialSupports.isEmpty,
               !terraSamples.isEmpty,
               stations.allSatisfy({ canonicalBodies.contains($0.body) && bone.contains($0.julianDay) }),
+              boundaryAnchors.allSatisfy({ canonicalBodies.contains($0.body) }),
               retrogradePassages.allSatisfy({
                   canonicalBodies.contains($0.body)
                       && $0.start.value >= bone.start.value
@@ -99,6 +101,7 @@ public struct OrboSpineRuntime: Sendable {
                   bone: bone,
                   celestialSupports: celestialSupports,
                   stations: stations,
+                  boundaryAnchors: boundaryAnchors,
                   terraSamples: terraSamples
               ) else {
             return nil
