@@ -35,12 +35,12 @@ public enum SpineResonanceResult: Equatable, Sendable {
 }
 
 public enum SpineResonanceError: Error, Equatable {
-    case celestialProductMismatch
+    case celestialSourceMismatch
     case challengeUnavailable
 }
 
 /// The Dioscuri's first resonance assignment.
-/// The Schematic says what should be true; the candidate is the finished OrboSpine to be checked.
+/// The Schematic says what should be true; the candidate is the finished Spine to be checked.
 public struct SpineResonanceAssignment: Sendable {
     public let schematic: SpineSchematic
     public let candidate: OrboSpineRuntime
@@ -60,14 +60,14 @@ public struct SpineResonanceAssignment: Sendable {
     }
 
     /// ASK → ANSWER → CONFIRM for one celestial challenge.
-    /// Pollux reads finished forged celestial matter; Castor receives only body + UT and reads
-    /// the assembled runtime. No correction, averaging, retry, manufacture, or sealing occurs.
+    /// Pollux reads independent source matter; Castor receives only body + UT and reads the
+    /// assembled runtime. No correction, averaging, retry, manufacture, or sealing occurs.
     public func resonate(
         _ challenge: SpineCelestialChallenge,
-        celestialProduct: SpineForgeProduct
+        source: any SpineResonanceSource
     ) throws -> SpineResonanceResult {
-        try requireMatching(celestialProduct)
-        guard let expected = PolluxResonator.ask(challenge, from: celestialProduct) else {
+        try requireMatching(source)
+        guard let expected = PolluxResonator.ask(challenge, from: source) else {
             throw SpineResonanceError.challengeUnavailable
         }
         return try answerAndConfirm(expected)
@@ -75,22 +75,38 @@ public struct SpineResonanceAssignment: Sendable {
 
     public func resonate(
         _ challenge: SpineStationChallenge,
-        celestialProduct: SpineForgeProduct
+        source: any SpineResonanceSource
     ) throws -> SpineResonanceResult {
-        try requireMatching(celestialProduct)
-        guard let expected = PolluxResonator.ask(challenge, from: celestialProduct) else {
+        try requireMatching(source)
+        guard let expected = PolluxResonator.ask(challenge, from: source) else {
             throw SpineResonanceError.challengeUnavailable
         }
         return try answerAndConfirm(expected)
     }
 
-    private func requireMatching(_ celestialProduct: SpineForgeProduct) throws {
-        guard celestialProduct.schematicIdentity == schematic.identity,
-              celestialProduct.schematicVersion == schematic.version,
-              celestialProduct.bone == schematic.bone,
-              celestialProduct.astronomicalAuthority == schematic.astronomicalAuthority,
-              celestialProduct.astronomicalSourceVersion == schematic.astronomicalSourceVersion else {
-            throw SpineResonanceError.celestialProductMismatch
+    /// Compatibility for the already-proven Stage 2 fixture surface. Production resonance
+    /// should use the source-labelled entry point above.
+    func resonate(
+        _ challenge: SpineCelestialChallenge,
+        celestialProduct: SpineForgeProduct
+    ) throws -> SpineResonanceResult {
+        try resonate(challenge, source: celestialProduct)
+    }
+
+    func resonate(
+        _ challenge: SpineStationChallenge,
+        celestialProduct: SpineForgeProduct
+    ) throws -> SpineResonanceResult {
+        try resonate(challenge, source: celestialProduct)
+    }
+
+    private func requireMatching(_ source: any SpineResonanceSource) throws {
+        guard source.schematicIdentity == schematic.identity,
+              source.schematicVersion == schematic.version,
+              source.bone == schematic.bone,
+              source.astronomicalAuthority == schematic.astronomicalAuthority,
+              source.astronomicalSourceVersion == schematic.astronomicalSourceVersion else {
+            throw SpineResonanceError.celestialSourceMismatch
         }
     }
 
