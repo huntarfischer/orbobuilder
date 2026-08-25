@@ -148,6 +148,16 @@ private enum Closeout {
             files.append(stationDigest)
         }
 
+        let boundaryAnchorRelative = "celestial/orbospine-boundary-anchors.csv"
+        let boundaryAnchorRows = try validateBoundaryAnchors(
+            root.appendingPathComponent(boundaryAnchorRelative)
+        )
+        files.append(try digest(
+            root: root,
+            relativePath: boundaryAnchorRelative,
+            role: "celestial Bone boundary anchors"
+        ))
+
         let motionManifestRelative = "motion/orbospine-motion-manifest.json"
         let motionJSON = try loadJSONObject(root.appendingPathComponent(motionManifestRelative))
         guard try string(motionJSON, "identity") == OrboSpineContract.identity else {
@@ -334,6 +344,7 @@ private enum Closeout {
 
         print("ORBOSPINE WHOLE FORGE")
         print("PASS celestial: \(supportRows) supports / \(stationRows) stations")
+        print("PASS boundary anchors: \(boundaryAnchorRows) exact Bone states")
         print("PASS motion: \(motionPassageRows) continuous retrograde passages")
         print("PASS Ring: \(aspectCounts.map(\.rows).reduce(0, +)) exact occurrences")
         print("PASS lunations: \(lunationRows) exact new/full Moons")
@@ -343,6 +354,146 @@ private enum Closeout {
         print("candidate manifest: \(manifestURL.path)")
         print("candidate SHA-256: \(manifestDigest.sha256)")
         print("FORGE STAGE: COMPLETE / UNSEALED ORBOSPINE CANDIDATE")
+    }
+
+    private static func validateBoundaryAnchors(_ url: URL) throws -> Int {
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            throw CandidateManifestError.missing(url.path)
+        }
+
+        let text = try String(contentsOf: url, encoding: .utf8)
+        let lines = text.split(whereSeparator: { $0.isNewline })
+        guard let headerLine = lines.first else {
+            throw CandidateManifestError.malformed("empty boundary-anchor CSV")
+        }
+
+        let expectedHeader = [
+            "body",
+            "boundary",
+            "jd_ut",
+            "utc",
+            "physical_degree",
+            "longitudinal_speed_degrees_per_day",
+            "motion",
+            "directional_degree",
+            "navigation_cell",
+        ]
+        let header = headerLine
+            .split(separator: ",", omittingEmptySubsequences: false)
+            .map(String.init)
+        guard header == expectedHeader else {
+            throw CandidateManifestError.malformed("boundary-anchor CSV header")
+        }
+
+        let rows = Array(lines.dropFirst())
+        let expectedRows = MundaneBody.canonicalOrder.count * 2
+        guard rows.count == expectedRows else {
+            throw CandidateManifestError.mismatch(
+                "boundary-anchor rows \(rows.count) != \(expectedRows)"
+            )
+        }
+
+        var seen = Set<String>()
+        for row in rows {
+            let fields = row
+                .split(separator: ",", omittingEmptySubsequences: false)
+                .map(String.init)
+            guard fields.count == expectedHeader.count else {
+                throw CandidateManifestError.malformed("boundary-anchor CSV row")
+            }
+
+            let bodyName = fields[0]
+            guard let body = MundaneBody.canonicalOrder.first(where: { $0.displayName == bodyName }) else {
+                throw CandidateManifestError.mismatch("unknown boundary-anchor body \(bodyName)")
+            }
+
+            let boundary: OrboSpineBoundaryAnchorKind
+            let expectedJulianDay: JulianDay
+            switch fields[1] {
+            case "z21_start":
+                boundary = .start
+                expectedJulianDay = OrboSpineSchematic.supportedStart
+            case "z23_end_exclusive":
+                boundary = .endExclusive
+                expectedJulianDay = OrboSpineSchematic.supportedEnd
+            default:
+                throw CandidateManifestError.mismatch(
+                    "unknown boundary-anchor side \(fields[1])"
+                )
+            }
+
+            guard let julianDayValue = Double(fields[2]),
+                  let julianDay = JulianDay(julianDayValue),
+                  abs(julianDay.value - expectedJulianDay.value) <= 1e-12 else {
+                throw CandidateManifestError.mismatch(
+                    "boundary-anchor Julian day drift for \(bodyName) \(fields[1])"
+                )
+            }
+            guard !fields[3].isEmpty else {
+                throw CandidateManifestError.malformed(
+                    "boundary-anchor UTC missing for \(bodyName) \(fields[1])"
+                )
+            }
+
+            guard let physicalDegrees = Double(fields[4]),
+                  let longitudinalSpeed = Double(fields[5]), longitudinalSpeed.isFinite,
+                  let directionalDegrees = Double(fields[7]),
+                  let navigationCell = Int(fields[8]) else {
+                throw CandidateManifestError.malformed(
+                    "boundary-anchor numeric state for \(bodyName) \(fields[1])"
+                )
+            }
+
+            let motion: Motion
+            switch fields[6] {
+            case "direct": motion = .direct
+            case "retrograde": motion = .retrograde
+            default:
+                throw CandidateManifestError.mismatch(
+                    "unknown boundary-anchor motion \(fields[6])"
+                )
+            }
+
+            guard (motion == .direct && longitudinalSpeed > 0)
+                    || (motion == .retrograde && longitudinalSpeed < 0) else {
+                throw CandidateManifestError.mismatch(
+                    "boundary-anchor speed/motion drift for \(bodyName) \(fields[1])"
+                )
+            }
+
+            guard let anchor = OrboSpineBoundaryAnchor(
+                body: body,
+                boundary: boundary,
+                julianDay: julianDay,
+                physicalDegrees: physicalDegrees,
+                motion: motion
+            ),
+            abs(anchor.directionalDegree.degrees - directionalDegrees) <= 1e-9,
+            anchor.navigationCell == navigationCell else {
+                throw CandidateManifestError.mismatch(
+                    "boundary-anchor directional state drift for \(bodyName) \(fields[1])"
+                )
+            }
+
+            let key = "\(body.displayName)|\(boundary.rawValue)"
+            guard seen.insert(key).inserted else {
+                throw CandidateManifestError.mismatch("duplicate boundary anchor \(key)")
+            }
+        }
+
+        for body in MundaneBody.canonicalOrder {
+            for boundary in [
+                OrboSpineBoundaryAnchorKind.start,
+                OrboSpineBoundaryAnchorKind.endExclusive,
+            ] {
+                let key = "\(body.displayName)|\(boundary.rawValue)"
+                guard seen.contains(key) else {
+                    throw CandidateManifestError.mismatch("missing boundary anchor \(key)")
+                }
+            }
+        }
+
+        return rows.count
     }
 
     private static func gatherAspects(root: URL, files: inout [FileDigest]) throws -> [CountedSpan] {

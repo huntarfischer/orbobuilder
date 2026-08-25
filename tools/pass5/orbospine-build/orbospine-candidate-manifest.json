@@ -151,6 +151,12 @@
       "sha256" : "fa8e0b6aeb64e22ff367c0437aa46c238e617c33246fa6d8a5f37a682c263a63"
     },
     {
+      "bytes" : 3070,
+      "path" : "celestial/orbospine-boundary-anchors.csv",
+      "role" : "celestial Bone boundary anchors",
+      "sha256" : "f396bbb3346ca21e996f20cd0e643c53479b9b4aa0ae5184b8c2450cddd3f356"
+    },
+    {
       "bytes" : 11536,
       "path" : "celestial/orbospine-celestial-manifest.json",
       "role" : "celestial manifest",
