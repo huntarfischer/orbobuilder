@@ -262,19 +262,153 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         )
     }
 
-    func testE4ChallengesEverySchematicBodyExactlyOnce() throws {
+    func testE4CampaignRepresentsEveryBodyAndPresentMotionClasses() throws {
         let fixture = try makeE2Fixture()
-        let challenges = try fixture.schematic.bodyPlans.map { bodyPlan in
-            let bodyProduct = try XCTUnwrap(fixture.celestialProduct.body(bodyPlan.body))
-            return try XCTUnwrap(SpineResonanceRun.selectedChallenge(for: bodyProduct))
-        }
+        let challenges = try SpineResonanceRun.campaign(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct
+        )
 
-        XCTAssertEqual(challenges.count, fixture.schematic.bodyPlans.count)
-        XCTAssertEqual(challenges.map(\.body), fixture.schematic.bodyPlans.map(\.body))
-        XCTAssertEqual(Set(challenges.map(\.body)).count, challenges.count)
+        XCTAssertEqual(Set(challenges.map(\.body)), Set(MundaneBody.canonicalOrder))
+
+        let mercuryCelestial = challenges.compactMap { challenge -> SpineCelestialChallenge? in
+            guard case let .celestial(value) = challenge, value.body == .mercury else { return nil }
+            return value
+        }
+        XCTAssertTrue(mercuryCelestial.contains {
+            $0.directionalDegree.motion == .direct
+        })
+        XCTAssertTrue(mercuryCelestial.contains {
+            $0.directionalDegree.motion == .retrograde
+        })
+
+        let mercuryStations = challenges.compactMap { challenge -> SpineStationChallenge? in
+            guard case let .station(value) = challenge, value.body == .mercury else { return nil }
+            return value
+        }
+        XCTAssertEqual(mercuryStations.map(\.occurrenceIndex), [0])
     }
 
-    func testE4SuppliedSchematicBodyOrderDrivesRun() throws {
+    func testE4StationDirectionsChooseNearestOccurrenceToBoneMidpoint() throws {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(
+            start: JulianDay(1_000)!,
+            end: JulianDay(1_010)!
+        ))
+        let stations = [
+            station(.mercury, 11, .direct, .retrograde, 1_001),
+            station(.mercury, 12, .retrograde, .direct, 1_004),
+            station(.mercury, 13, .direct, .retrograde, 1_006),
+            station(.mercury, 14, .retrograde, .direct, 1_009),
+        ]
+        let bodyProduct = SpineForgeBodyProduct(
+            body: .mercury,
+            supportDegrees: OrboSpineContract.supportDegrees(for: .mercury),
+            supports: [
+                coordinate(.mercury, 10, .direct, 1_000),
+                coordinate(.mercury, 11, .direct, 1_001),
+            ],
+            stations: stations
+        )
+
+        let directToRetrograde = try XCTUnwrap(
+            SpineResonanceRun.selectedStationChallenge(
+                laneBefore: .direct,
+                laneAfter: .retrograde,
+                in: bodyProduct,
+                bone: bone
+            )
+        )
+        let retrogradeToDirect = try XCTUnwrap(
+            SpineResonanceRun.selectedStationChallenge(
+                laneBefore: .retrograde,
+                laneAfter: .direct,
+                in: bodyProduct,
+                bone: bone
+            )
+        )
+
+        XCTAssertEqual(directToRetrograde.occurrenceIndex, 2)
+        XCTAssertEqual(retrogradeToDirect.occurrenceIndex, 1)
+    }
+
+    func testE4MidpointSelectionPreservesRepeatedOccurrenceIndex() throws {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(
+            start: JulianDay(1_000)!,
+            end: JulianDay(1_006)!
+        ))
+        let bodyProduct = SpineForgeBodyProduct(
+            body: .mercury,
+            supportDegrees: OrboSpineContract.supportDegrees(for: .mercury),
+            supports: [
+                coordinate(.mercury, 10, .direct, 1_000),
+                coordinate(.mercury, 11, .direct, 1_001),
+                coordinate(.mercury, 11, .retrograde, 1_002),
+                coordinate(.mercury, 10, .retrograde, 1_003),
+                coordinate(.mercury, 10, .direct, 1_004),
+                coordinate(.mercury, 11, .direct, 1_005),
+            ],
+            stations: [
+                station(.mercury, 11.5, .direct, .retrograde, 1_001.5),
+                station(.mercury, 9.5, .retrograde, .direct, 1_003.5),
+            ]
+        )
+
+        let challenge = try XCTUnwrap(
+            SpineResonanceRun.selectedInteriorChallenge(
+                for: .direct,
+                in: bodyProduct,
+                bone: bone
+            )
+        )
+
+        XCTAssertEqual(challenge.directionalDegree.physicalDegrees, 10.5, accuracy: 1e-12)
+        XCTAssertEqual(challenge.occurrenceIndex, 1)
+        let occurrences = PolluxResonator.occurrences(
+            of: challenge.directionalDegree,
+            in: bodyProduct
+        )
+        XCTAssertEqual(occurrences.count, 2)
+        XCTAssertEqual(occurrences[1].julianDay.value, 1_004.5, accuracy: 1e-12)
+    }
+
+    func testE4SelectsRetrogradeWrapSeam() throws {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(
+            start: JulianDay(999)!,
+            end: JulianDay(1_003)!
+        ))
+        let bodyProduct = SpineForgeBodyProduct(
+            body: .mercury,
+            supportDegrees: OrboSpineContract.supportDegrees(for: .mercury),
+            supports: [
+                coordinate(.mercury, 1, .retrograde, 1_000),
+                coordinate(.mercury, 0, .retrograde, 1_001),
+                coordinate(.mercury, 359, .retrograde, 1_002),
+            ],
+            stations: []
+        )
+        let product = SpineForgeProduct(
+            schematicIdentity: "fixture",
+            schematicVersion: 1,
+            astronomicalAuthority: "fixture sky",
+            astronomicalSourceVersion: "1",
+            bone: bone,
+            bodies: [bodyProduct]
+        )
+
+        let challenge = try XCTUnwrap(
+            SpineResonanceRun.selectedRetrogradeWrapChallenge(
+                in: product,
+                bone: bone
+            )
+        )
+
+        XCTAssertEqual(challenge.body, .mercury)
+        XCTAssertEqual(challenge.directionalDegree.motion, .retrograde)
+        XCTAssertEqual(challenge.directionalDegree.physicalDegrees, 359.5, accuracy: 1e-12)
+        XCTAssertEqual(challenge.occurrenceIndex, 0)
+    }
+
+    func testE4SuppliedSchematicBodyOrderDrivesCampaignAndRun() throws {
         let fixture = try makeE2Fixture()
         let reversedPlans = Array(fixture.schematic.bodyPlans.reversed())
         let schematic = try XCTUnwrap(SpineSchematic(
@@ -300,18 +434,23 @@ final class DioscuriSpineResonanceTests: XCTestCase {
             candidate: fixture.candidate
         ))
 
+        let challenges = try SpineResonanceRun.campaign(
+            schematic: schematic,
+            celestialProduct: celestialProduct
+        )
+        var observedBodyOrder: [MundaneBody] = []
+        for challenge in challenges where observedBodyOrder.last != challenge.body {
+            observedBodyOrder.append(challenge.body)
+        }
+
         let testimony = try SpineResonanceRun.run(
             schematic: schematic,
             celestialProduct: celestialProduct,
             assignment: assignment
         )
-        let challenges = try schematic.bodyPlans.map { bodyPlan in
-            let bodyProduct = try XCTUnwrap(celestialProduct.body(bodyPlan.body))
-            return try XCTUnwrap(SpineResonanceRun.selectedChallenge(for: bodyProduct))
-        }
 
+        XCTAssertEqual(observedBodyOrder, reversedPlans.map(\.body))
         XCTAssertEqual(testimony.result, .confirmed)
-        XCTAssertEqual(challenges.map(\.body), reversedPlans.map(\.body))
     }
 
     func testE4ProductSchematicMismatchFailsClosed() throws {
@@ -401,13 +540,21 @@ final class DioscuriSpineResonanceTests: XCTestCase {
         XCTAssertEqual(expected.julianDay, returned.julianDay)
     }
 
-    func testE4IdenticalInputsProduceIdenticalTestimony() throws {
+    func testE4IdenticalInputsProduceIdenticalCampaignAndTestimony() throws {
         let fixture = try makeE2Fixture()
         let assignment = try XCTUnwrap(SpineResonanceAssignment(
             schematic: fixture.schematic,
             candidate: fixture.candidate
         ))
 
+        let firstCampaign = try SpineResonanceRun.campaign(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct
+        )
+        let secondCampaign = try SpineResonanceRun.campaign(
+            schematic: fixture.schematic,
+            celestialProduct: fixture.celestialProduct
+        )
         let first = try SpineResonanceRun.run(
             schematic: fixture.schematic,
             celestialProduct: fixture.celestialProduct,
@@ -419,6 +566,7 @@ final class DioscuriSpineResonanceTests: XCTestCase {
             assignment: assignment
         )
 
+        XCTAssertEqual(firstCampaign, secondCampaign)
         XCTAssertEqual(first, second)
         XCTAssertEqual(first.schematicIdentity, fixture.schematic.identity)
         XCTAssertEqual(first.schematicVersion, fixture.schematic.version)
@@ -619,5 +767,21 @@ final class DioscuriSpineResonanceTests: XCTestCase {
             )!,
             julianDay: JulianDay(julianDay)!
         )
+    }
+
+    private func station(
+        _ body: MundaneBody,
+        _ physicalDegrees: Double,
+        _ laneBefore: Motion,
+        _ laneAfter: Motion,
+        _ julianDay: Double
+    ) -> OrboSpineStation {
+        OrboSpineStation(
+            body: body,
+            physicalDegrees: physicalDegrees,
+            julianDay: JulianDay(julianDay)!,
+            laneBefore: laneBefore,
+            laneAfter: laneAfter
+        )!
     }
 }
