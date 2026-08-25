@@ -40,6 +40,10 @@ let package = Package(
         .executable(
             name: "OrboSpineDioscuriCertificationTool",
             targets: ["OrboSpineDioscuriCertificationTool"]
+        ),
+        .executable(
+            name: "OrboSpineHephaestusCompletionTool",
+            targets: ["OrboSpineHephaestusCompletionTool"]
         )
     ],
     targets: [
@@ -75,6 +79,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "OrboSpineDioscuriCertificationTool",
+            dependencies: ["OrboCore"]
+        ),
+        .executableTarget(
+            name: "OrboSpineHephaestusCompletionTool",
             dependencies: ["OrboCore"]
         ),
         .testTarget(
