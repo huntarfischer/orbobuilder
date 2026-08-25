@@ -224,6 +224,49 @@ final class OrboSpineCompletionTests: XCTestCase {
         }
     }
 
+    func testG5IdentityBoundCompletionSealsWithoutRuntimeRebuild() throws {
+        let fixture = try makeFixture()
+        let candidateIdentity = fixture.candidate.provenance.candidateManifestSHA256
+        let expectedSeal = OrboSpineSeal(
+            schematicIdentity: fixture.schematic.identity,
+            schematicVersion: fixture.schematic.version,
+            candidateIdentity: candidateIdentity
+        )
+
+        XCTAssertEqual(
+            try HephaestusOrboSpineCompletion.complete(
+                schematic: fixture.schematic,
+                candidateIdentity: candidateIdentity,
+                testimonySchematicIdentity: fixture.schematic.identity,
+                testimonySchematicVersion: fixture.schematic.version,
+                testimonyCandidateIdentity: candidateIdentity,
+                testimonyResult: .confirmed
+            ),
+            .sealed(expectedSeal)
+        )
+    }
+
+    func testG5IdentityBoundCompletionFailsClosedOnWrongCandidate() throws {
+        let fixture = try makeFixture()
+        let candidateIdentity = fixture.candidate.provenance.candidateManifestSHA256
+
+        XCTAssertThrowsError(
+            try HephaestusOrboSpineCompletion.complete(
+                schematic: fixture.schematic,
+                candidateIdentity: String(repeating: "b", count: 64),
+                testimonySchematicIdentity: fixture.schematic.identity,
+                testimonySchematicVersion: fixture.schematic.version,
+                testimonyCandidateIdentity: candidateIdentity,
+                testimonyResult: .confirmed
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? OrboSpineCompletionError,
+                .invalidTestimonyBinding
+            )
+        }
+    }
+
     private struct Fixture {
         let schematic: SpineSchematic
         let candidate: OrboSpineRuntime
