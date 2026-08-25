@@ -34,12 +34,13 @@ public enum HephaestusOrboSpineCompletion {
         candidate: OrboSpineRuntime,
         testimony: SpineResonanceTestimony
     ) throws -> SpineResonanceTestimony {
-        guard testimony.schematicIdentity == schematic.identity,
-              testimony.schematicVersion == schematic.version,
-              testimony.candidateIdentity == candidate.provenance.candidateManifestSHA256 else {
-            throw OrboSpineCompletionError.invalidTestimonyBinding
-        }
-
+        try requireBinding(
+            schematic: schematic,
+            candidateIdentity: candidate.provenance.candidateManifestSHA256,
+            testimonySchematicIdentity: testimony.schematicIdentity,
+            testimonySchematicVersion: testimony.schematicVersion,
+            testimonyCandidateIdentity: testimony.candidateIdentity
+        )
         return testimony
     }
 
@@ -83,27 +84,73 @@ public enum HephaestusOrboSpineCompletion {
         ))
     }
 
+    /// Production completion accepts the durable identity fields of already-certified testimony
+    /// without requiring the whole candidate runtime to be rebuilt solely to recover its hash.
+    public static func complete(
+        schematic: SpineSchematic,
+        candidateIdentity: String,
+        testimonySchematicIdentity: String,
+        testimonySchematicVersion: UInt16,
+        testimonyCandidateIdentity: String,
+        testimonyResult: SpineResonanceTestimonyResult
+    ) throws -> HephaestusOrboSpineDisposition {
+        try requireBinding(
+            schematic: schematic,
+            candidateIdentity: candidateIdentity,
+            testimonySchematicIdentity: testimonySchematicIdentity,
+            testimonySchematicVersion: testimonySchematicVersion,
+            testimonyCandidateIdentity: testimonyCandidateIdentity
+        )
+
+        switch testimonyResult {
+        case .confirmed:
+            return .sealed(OrboSpineSeal(
+                schematicIdentity: testimonySchematicIdentity,
+                schematicVersion: testimonySchematicVersion,
+                candidateIdentity: testimonyCandidateIdentity
+            ))
+        case .divergent:
+            throw OrboSpineCompletionError.testimonyNotConfirmed
+        }
+    }
+
     /// G5 makes Hephaestus the single authority that resolves valid Dioscuri testimony.
     public static func complete(
         schematic: SpineSchematic,
         candidate: OrboSpineRuntime,
         testimony: SpineResonanceTestimony
     ) throws -> HephaestusOrboSpineDisposition {
-        let boundTestimony = try receive(
-            schematic: schematic,
-            candidate: candidate,
-            testimony: testimony
-        )
-
-        switch boundTestimony.result {
+        switch testimony.result {
         case .confirmed:
-            return .sealed(OrboSpineSeal(
-                schematicIdentity: boundTestimony.schematicIdentity,
-                schematicVersion: boundTestimony.schematicVersion,
-                candidateIdentity: boundTestimony.candidateIdentity
-            ))
+            return try complete(
+                schematic: schematic,
+                candidateIdentity: candidate.provenance.candidateManifestSHA256,
+                testimonySchematicIdentity: testimony.schematicIdentity,
+                testimonySchematicVersion: testimony.schematicVersion,
+                testimonyCandidateIdentity: testimony.candidateIdentity,
+                testimonyResult: testimony.result
+            )
         case .divergent:
-            return .reforge(boundTestimony)
+            _ = try receive(
+                schematic: schematic,
+                candidate: candidate,
+                testimony: testimony
+            )
+            return .reforge(testimony)
+        }
+    }
+
+    private static func requireBinding(
+        schematic: SpineSchematic,
+        candidateIdentity: String,
+        testimonySchematicIdentity: String,
+        testimonySchematicVersion: UInt16,
+        testimonyCandidateIdentity: String
+    ) throws {
+        guard testimonySchematicIdentity == schematic.identity,
+              testimonySchematicVersion == schematic.version,
+              testimonyCandidateIdentity == candidateIdentity else {
+            throw OrboSpineCompletionError.invalidTestimonyBinding
         }
     }
 }
