@@ -35,7 +35,7 @@ public enum SpineResonanceResult: Equatable, Sendable {
 }
 
 public enum SpineResonanceError: Error, Equatable {
-    case celestialSourceMismatch
+    case celestialProductMismatch
     case challengeUnavailable
 }
 
@@ -106,7 +106,7 @@ public struct SpineResonanceAssignment: Sendable {
               source.bone == schematic.bone,
               source.astronomicalAuthority == schematic.astronomicalAuthority,
               source.astronomicalSourceVersion == schematic.astronomicalSourceVersion else {
-            throw SpineResonanceError.celestialSourceMismatch
+            throw SpineResonanceError.celestialProductMismatch
         }
     }
 
