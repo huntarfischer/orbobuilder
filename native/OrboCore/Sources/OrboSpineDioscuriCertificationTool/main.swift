@@ -144,6 +144,7 @@ private enum Certification {
     private static let candidateManifest = "orbospine-candidate-manifest.json"
     private static let candidateHash = "orbospine-candidate-manifest.sha256"
     private static let celestialManifest = "celestial/orbospine-celestial-manifest.json"
+    private static let boundaryAnchors = "celestial/orbospine-boundary-anchors.csv"
     private static let testimonyFile = "orbospine-dioscuri-testimony.json"
     private static let testimonyHashFile = "orbospine-dioscuri-testimony.sha256"
 
@@ -218,6 +219,13 @@ private enum Certification {
         }
         print("PASS Pollux source: \(supports.count) supports / \(stations.count) stations")
 
+        let anchors = try loadBoundaryAnchors(
+            root: root,
+            files: candidate.files,
+            bone: schematic.bone
+        )
+        print("PASS Castor anchors: \(anchors.count) exact Bone states")
+
         let terraProbes = try loadTerraRuntimeProbes(root: root, files: candidate.files, bone: schematic.bone)
         let shellIntervals = try loadRuntimeShellIntersections(root: root, files: candidate.files, bone: schematic.bone)
 
@@ -230,6 +238,7 @@ private enum Certification {
             bone: schematic.bone,
             celestialSupports: supports,
             stations: stations,
+            boundaryAnchors: anchors,
             retrogradePassages: [],
             ringOccurrences: [],
             eclipses: [],
@@ -357,6 +366,99 @@ private enum Certification {
         }
         guard count == expectedRows else {
             throw CertificationError.mismatch("\(url.lastPathComponent) station rows \(count) != \(expectedRows)")
+        }
+        return result
+    }
+
+    private static func loadBoundaryAnchors(
+        root: URL,
+        files: [CandidateFile],
+        bone: OrboSpineBoneSpan
+    ) throws -> [OrboSpineBoundaryAnchor] {
+        guard let bound = files.first(where: { $0.path == boundaryAnchors }),
+              bound.role == "celestial Bone boundary anchors" else {
+            throw CertificationError.missing(boundaryAnchors)
+        }
+
+        let url = root.appendingPathComponent(bound.path)
+        var result: [OrboSpineBoundaryAnchor] = []
+        result.reserveCapacity(MundaneBody.canonicalOrder.count * 2)
+        var seen = Set<String>()
+
+        let count = try streamCSV(url) { header, fields, row in
+            let bodyText = try text(fields, header, ["body"], url, row)
+            guard let body = MundaneBody.canonicalOrder.first(where: {
+                bodyKey($0.displayName) == bodyKey(bodyText)
+            }) else {
+                throw CertificationError.mismatch("boundary anchor row \(row) body")
+            }
+
+            let boundaryText = try text(fields, header, ["boundary"], url, row)
+            let boundary: OrboSpineBoundaryAnchorKind
+            let expectedJulianDay: JulianDay
+            switch boundaryText {
+            case "z21_start":
+                boundary = .start
+                expectedJulianDay = bone.start
+            case "z23_end_exclusive":
+                boundary = .endExclusive
+                expectedJulianDay = bone.end
+            default:
+                throw CertificationError.mismatch("boundary anchor row \(row) side")
+            }
+
+            let jdValue = try double(fields, header, ["jd_ut"], url, row)
+            let physical = try double(fields, header, ["physical_degree"], url, row)
+            let speed = try double(
+                fields,
+                header,
+                ["longitudinal_speed_degrees_per_day"],
+                url,
+                row
+            )
+            let motionText = try text(fields, header, ["motion"], url, row)
+            let directionalValue = try double(fields, header, ["directional_degree"], url, row)
+            let cell = try int(fields, header, ["navigation_cell"], url, row)
+
+            guard let motion = Motion(rawValue: motionText),
+                  (motion == .direct ? speed > 0 : speed < 0),
+                  let jd = JulianDay(jdValue),
+                  same(jd.value, expectedJulianDay.value),
+                  let anchor = OrboSpineBoundaryAnchor(
+                    body: body,
+                    boundary: boundary,
+                    julianDay: jd,
+                    physicalDegrees: physical,
+                    motion: motion
+                  ),
+                  same(anchor.directionalDegree.degrees, directionalValue),
+                  anchor.navigationCell == cell else {
+                throw CertificationError.mismatch("boundary anchor row \(row) state")
+            }
+
+            let key = "\(body.displayName)|\(boundary.rawValue)"
+            guard seen.insert(key).inserted else {
+                throw CertificationError.mismatch("duplicate boundary anchor \(key)")
+            }
+            result.append(anchor)
+        }
+
+        let expectedCount = MundaneBody.canonicalOrder.count * 2
+        guard count == expectedCount, result.count == expectedCount else {
+            throw CertificationError.mismatch(
+                "boundary anchor rows \(result.count) != \(expectedCount)"
+            )
+        }
+        for body in MundaneBody.canonicalOrder {
+            for boundary in [
+                OrboSpineBoundaryAnchorKind.start,
+                OrboSpineBoundaryAnchorKind.endExclusive,
+            ] {
+                let key = "\(body.displayName)|\(boundary.rawValue)"
+                guard seen.contains(key) else {
+                    throw CertificationError.mismatch("missing boundary anchor \(key)")
+                }
+            }
         }
         return result
     }
