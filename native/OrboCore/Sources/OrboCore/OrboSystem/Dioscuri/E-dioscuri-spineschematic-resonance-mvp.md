@@ -147,8 +147,9 @@ For interior and station representatives, choose the eligible occurrence nearest
 
 After the body-driven challenges:
 
-- challenge every supplied `boundaryCheck`, in Schematic order
 - challenge one deterministic retrograde crossing of the 0°/360° seam, where present, choosing the qualifying crossing nearest the Bone midpoint
+
+Schematic `boundaryChecks` remain Hephaestus Forge preflight law. They already carry exact UT and are proved directly against the astronomical authority before manufacture; they are not Pollux questions and must not be smuggled into the celestial → UT path.
 
 The campaign must not invent a challenge class that is absent from the supplied matter. Every Schematic body must still be represented by at least one challenge.
 
@@ -162,11 +163,10 @@ for body in bodyPlans order
     retrograde → direct station, if present
 
 then
-    every Schematic boundary check, in supplied order
-
-then
     retrograde 0°/360° seam, if present
 ```
+
+When a selected directional degree occurs more than once on the Bone, the challenge must carry the chronological `occurrenceIndex` of the exact selected occurrence. Selection near the Bone midpoint must never silently collapse back to occurrence zero.
 
 Stop on the first divergence and preserve both answers as evidence. Do not repair, retry, average, substitute, or continue looking for a later divergence.
 
@@ -194,13 +194,13 @@ Prove:
 
 - the resonance run is driven by the supplied Schematic
 - all Schematic body plans are represented
-- every motion class present in the selected body matter is represented
-- both station transition classes are represented where present
-- every supplied Schematic boundary check is challenged
-- the retrograde 0°/360° seam is challenged where present
-- challenge selection and order are deterministic
+- direct and retrograde behavior are represented where present
+- both station-transition directions are represented where present
+- midpoint selection is deterministic
+- repeated celestial degrees preserve the selected chronological occurrence
+- the retrograde 0°/360° seam is represented where present
 - candidate truth is traversed through both paths
-- first divergence stops the run and is preserved without correction
+- any divergence fails closed
 - identical input produces deterministic testimony
 
 Then run the full Swift suite.
