@@ -1,0 +1,627 @@
+{
+  "bodies": [
+    {
+      "body": "Sun",
+      "firstStation": null,
+      "firstSupport": {
+        "civic_offset_seconds": "502467",
+        "directional_degree": "50",
+        "jd_ut": "2297177.5564612555",
+        "motion": "direct",
+        "navigation_cell": "50",
+        "physical_degree": "50"
+      },
+      "lastStation": null,
+      "lastSupport": {
+        "civic_offset_seconds": "23165057097",
+        "directional_degree": "70",
+        "jd_ut": "2565285.8276435984",
+        "motion": "direct",
+        "navigation_cell": "70",
+        "physical_degree": "70"
+      },
+      "motions": [
+        "direct"
+      ],
+      "stationRows": 0,
+      "stationSHA256": "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74",
+      "stationTransitions": [],
+      "supportRows": 26427,
+      "supportSHA256": "de44b6924980649587aa7c27a2b256a0c5c5319268a1450835b7cce3b21c255c"
+    },
+    {
+      "body": "Moon",
+      "firstStation": null,
+      "firstSupport": {
+        "civic_offset_seconds": "56423",
+        "directional_degree": "140",
+        "jd_ut": "2297172.39390816",
+        "motion": "direct",
+        "navigation_cell": "140",
+        "physical_degree": "140"
+      },
+      "lastStation": null,
+      "lastSupport": {
+        "civic_offset_seconds": "23165839131",
+        "directional_degree": "350",
+        "jd_ut": "2565294.8789608674",
+        "motion": "direct",
+        "navigation_cell": "350",
+        "physical_degree": "350"
+      },
+      "motions": [
+        "direct"
+      ],
+      "stationRows": 0,
+      "stationSHA256": "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74",
+      "stationTransitions": [],
+      "supportRows": 353290,
+      "supportSHA256": "7d62e4a2dbd983612a61fb22149858b244d0218026266c964b58fa9cd369650e"
+    },
+    {
+      "body": "Mercury",
+      "firstStation": {
+        "directional_degree_after": "506.0331519910078",
+        "jd_ut": "2297256.3030292867",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "506",
+        "physical_degree": "146.03315199100777"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "51726",
+        "directional_degree": "19",
+        "jd_ut": "2297172.3395462297",
+        "motion": "direct",
+        "navigation_cell": "19",
+        "physical_degree": "19"
+      },
+      "lastStation": {
+        "directional_degree_after": "434.7553481247593",
+        "jd_ut": "2565274.9443372553",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "434",
+        "physical_degree": "74.75534812475925"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165746357",
+        "directional_degree": "427",
+        "jd_ut": "2565293.8051892747",
+        "motion": "retrograde",
+        "navigation_cell": "427",
+        "physical_degree": "67"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 4627,
+      "stationSHA256": "446894de88d8fdc30d8115e56fa44831c49b5225a5d1e1f5f1c2ab69e55258da",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 326414,
+      "supportSHA256": "03207faa7f850cc795988c7bbb67401c3725c08ac8c49cb4266ebe58ae7e0b4e"
+    },
+    {
+      "body": "Venus",
+      "firstStation": {
+        "directional_degree_after": "493.16993699418094",
+        "jd_ut": "2297234.5947199566",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "493",
+        "physical_degree": "133.16993699418094"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "75720",
+        "directional_degree": "90",
+        "jd_ut": "2297172.617261528",
+        "motion": "direct",
+        "navigation_cell": "90",
+        "physical_degree": "90"
+      },
+      "lastStation": {
+        "directional_degree_after": "431.1379252049442",
+        "jd_ut": "2565257.038163442",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "431",
+        "physical_degree": "71.13792520494421"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165560301",
+        "directional_degree": "416",
+        "jd_ut": "2565291.651760665",
+        "motion": "retrograde",
+        "navigation_cell": "416",
+        "physical_degree": "56"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 919,
+      "stationSHA256": "ea27188c4f50873986491a7725718ba28f33a8230c764ff98a5ea7e76e9153d8",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 278960,
+      "supportSHA256": "b287354f5f85c7833b988e1b6abc560d521595f264757ba119481f9ecf3ace59"
+    },
+    {
+      "body": "Mars",
+      "firstStation": {
+        "directional_degree_after": "377.74242932716203",
+        "jd_ut": "2297655.2045944594",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "377",
+        "physical_degree": "17.742429327162007"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "29372",
+        "directional_degree": "80",
+        "jd_ut": "2297172.0808157413",
+        "motion": "direct",
+        "navigation_cell": "80",
+        "physical_degree": "80"
+      },
+      "lastStation": {
+        "directional_degree_after": "144.41978011423052",
+        "jd_ut": "2565229.3196748383",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "144",
+        "physical_degree": "144.41978011423052"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165848404",
+        "directional_degree": "163",
+        "jd_ut": "2565294.986280165",
+        "motion": "direct",
+        "navigation_cell": "163",
+        "physical_degree": "163"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 688,
+      "stationSHA256": "81d4ed30f9cc5f043c258a423f7a2f38245ff11d25285a3de3b69f2a627a238d",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 151788,
+      "supportSHA256": "fd700dfe0c12ac208e27c91cf6412022abec43856c5fb92f1ed932832780b2db"
+    },
+    {
+      "body": "Jupiter",
+      "firstStation": {
+        "directional_degree_after": "553.5290215644394",
+        "jd_ut": "2297439.7121119313",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "553",
+        "physical_degree": "193.52902156443943"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "1002426",
+        "directional_degree": "154",
+        "jd_ut": "2297183.3430248573",
+        "motion": "direct",
+        "navigation_cell": "154",
+        "physical_degree": "154"
+      },
+      "lastStation": {
+        "directional_degree_after": "119.18659812383825",
+        "jd_ut": "2565219.034259241",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "119",
+        "physical_degree": "119.18659812383825"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165615901",
+        "directional_degree": "126.5",
+        "jd_ut": "2565292.295274126",
+        "motion": "direct",
+        "navigation_cell": "126",
+        "physical_degree": "126.5"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 1344,
+      "stationSHA256": "e4eb78246f5219fb0668f80e1fe42774495999b57b4f37bb6c899350dc44a587",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 71330,
+      "supportSHA256": "e59315abb0312334409ac56ce2cb080108b424de848b46b3e78c634cf242710e"
+    },
+    {
+      "body": "Saturn",
+      "firstStation": {
+        "directional_degree_after": "275.87365840516225",
+        "jd_ut": "2297299.758934197",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "275",
+        "physical_degree": "275.87365840516225"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "964893",
+        "directional_degree": "642",
+        "jd_ut": "2297182.9086113903",
+        "motion": "retrograde",
+        "navigation_cell": "642",
+        "physical_degree": "282"
+      },
+      "lastStation": {
+        "directional_degree_after": "626.4550176249231",
+        "jd_ut": "2565229.5109588876",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "626",
+        "physical_degree": "266.4550176249231"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165851459",
+        "directional_degree": "623.5",
+        "jd_ut": "2565295.021642173",
+        "motion": "retrograde",
+        "navigation_cell": "623",
+        "physical_degree": "263.5"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 1418,
+      "stationSHA256": "f0bec8593750a59b349ee0b9f809e42c9526e648de05d588f8edbd9d20cb5f13",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 37206,
+      "supportSHA256": "2984263b380571e376844b10b3faecac88169281925f7bf077a03bb98354de5d"
+    },
+    {
+      "body": "Uranus",
+      "firstStation": {
+        "directional_degree_after": "662.9741164451684",
+        "jd_ut": "2297174.111595289",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "662",
+        "physical_degree": "302.97411644516836"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "2007723",
+        "directional_degree": "662.8",
+        "jd_ut": "2297194.97840309",
+        "motion": "retrograde",
+        "navigation_cell": "662",
+        "physical_degree": "302.79999999999995"
+      },
+      "lastStation": {
+        "directional_degree_after": "577.2075625127903",
+        "jd_ut": "2565175.790599795",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "577",
+        "physical_degree": "217.2075625127903"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165583192",
+        "directional_degree": "573.6",
+        "jd_ut": "2565291.916703249",
+        "motion": "retrograde",
+        "navigation_cell": "573",
+        "physical_degree": "213.60000000000002"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 1451,
+      "stationSHA256": "e7a5aa04d0b45aecc354e4dfbd3ee986057f6846f50abfb7c2566067679e90cf",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 44969,
+      "supportSHA256": "27d8915f12c1e4d1033275119f18c8337d6568afd983fdceb69d411c88e42fec"
+    },
+    {
+      "body": "Neptune",
+      "firstStation": {
+        "directional_degree_after": "459.24544847130267",
+        "jd_ut": "2297332.1594509473",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "459",
+        "physical_degree": "99.24544847130267"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "23942",
+        "directional_degree": "94.9",
+        "jd_ut": "2297172.017974132",
+        "motion": "direct",
+        "navigation_cell": "94",
+        "physical_degree": "94.9"
+      },
+      "lastStation": {
+        "directional_degree_after": "630.2815529537093",
+        "jd_ut": "2565226.0512558436",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "630",
+        "physical_degree": "270.28155295370925"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165816078",
+        "directional_degree": "629.2",
+        "jd_ut": "2565294.6121390765",
+        "motion": "retrograde",
+        "navigation_cell": "629",
+        "physical_degree": "269.20000000000005"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 1459,
+      "stationSHA256": "91d5597c5667abde9b5f176ca27feb0dfc1bd4b45551f7fc206bfc51cdfd8657",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 56865,
+      "supportSHA256": "fa8e0b6aeb64e22ff367c0437aa46c238e617c33246fa6d8a5f37a682c263a63"
+    },
+    {
+      "body": "Pluto",
+      "firstStation": {
+        "directional_degree_after": "360.56421916429474",
+        "jd_ut": "2297228.2678143196",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "360",
+        "physical_degree": "0.5642191642947633"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "0",
+        "directional_degree": "0",
+        "jd_ut": "2297171.740867775",
+        "motion": "direct",
+        "navigation_cell": "0",
+        "physical_degree": "0"
+      },
+      "lastStation": {
+        "directional_degree_after": "356.78050228629746",
+        "jd_ut": "2565114.1828004606",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "356",
+        "physical_degree": "356.78050228629746"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23164965615",
+        "directional_degree": "359.90000000000003",
+        "jd_ut": "2565284.768820971",
+        "motion": "direct",
+        "navigation_cell": "359",
+        "physical_degree": "359.90000000000003"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 1462,
+      "stationSHA256": "948bdbcf66f4fafe7a07a2e969c5dab82eb23b365dcd2081bcccb7c66be3fc4f",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 44244,
+      "supportSHA256": "83f32383c6b9bfdcf2b78437658146e419170a6617f23a2ed68ae9205d501d18"
+    },
+    {
+      "body": "True North Node",
+      "firstStation": {
+        "directional_degree_after": "20.538074052710524",
+        "jd_ut": "2297172.00976828",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "20",
+        "physical_degree": "20.538074052710524"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "327789",
+        "directional_degree": "20.6",
+        "jd_ut": "2297175.5347217107",
+        "motion": "direct",
+        "navigation_cell": "20",
+        "physical_degree": "20.6"
+      },
+      "lastStation": {
+        "directional_degree_after": "222.70474013700837",
+        "jd_ut": "2565294.7646039138",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "222",
+        "physical_degree": "222.70474013700837"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165582654",
+        "directional_degree": "582.8",
+        "jd_ut": "2565291.9104718217",
+        "motion": "retrograde",
+        "navigation_cell": "582",
+        "physical_degree": "222.79999999999995"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 39311,
+      "stationSHA256": "f3c8ade2d18f56566de6352b6c3f68938cd033c4a3dde32b9e5903f106610a74",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 158736,
+      "supportSHA256": "5d766f39cc2410b6861c692d3de8913d2c1eb986936cd88e3088bac312aa7ff7"
+    }
+  ],
+  "identity": "OrboSpine",
+  "matterFormat": "directional-degree-csv",
+  "matterVersion": 1,
+  "pass": "C4 celestial closeout",
+  "provenance": {
+    "ephemerisFiles": 22,
+    "swissCommit": "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+    "swissLibrarySHA256": "3273643d37b35f270fbcd8237db152555dc21a8f708622654b26b08c39822bb0",
+    "swissVersion": "2.10.03"
+  },
+  "scopeBoundary": "C4 celestial matter only; no runtime image, Ring, Terra, shell linkage, eclipse annotation, Dioscuri certification, or Hephaestus seal.",
+  "status": "PASS",
+  "supportedEndJulianDayUT": 2565295.0945935287,
+  "supportedStartJulianDayUT": 2297171.740867775,
+  "topologySpotChecks": [
+    {
+      "body": "Sun",
+      "firstStation": null,
+      "firstSupport": {
+        "civic_offset_seconds": "502467",
+        "directional_degree": "50",
+        "jd_ut": "2297177.5564612555",
+        "motion": "direct",
+        "navigation_cell": "50",
+        "physical_degree": "50"
+      },
+      "lastStation": null,
+      "lastSupport": {
+        "civic_offset_seconds": "23165057097",
+        "directional_degree": "70",
+        "jd_ut": "2565285.8276435984",
+        "motion": "direct",
+        "navigation_cell": "70",
+        "physical_degree": "70"
+      },
+      "motions": [
+        "direct"
+      ],
+      "stationRows": 0,
+      "stationSHA256": "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74",
+      "stationTransitions": [],
+      "supportRows": 26427,
+      "supportSHA256": "de44b6924980649587aa7c27a2b256a0c5c5319268a1450835b7cce3b21c255c"
+    },
+    {
+      "body": "Mercury",
+      "firstStation": {
+        "directional_degree_after": "506.0331519910078",
+        "jd_ut": "2297256.3030292867",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "506",
+        "physical_degree": "146.03315199100777"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "51726",
+        "directional_degree": "19",
+        "jd_ut": "2297172.3395462297",
+        "motion": "direct",
+        "navigation_cell": "19",
+        "physical_degree": "19"
+      },
+      "lastStation": {
+        "directional_degree_after": "434.7553481247593",
+        "jd_ut": "2565274.9443372553",
+        "lane_after": "retrograde",
+        "lane_before": "direct",
+        "navigation_cell_after": "434",
+        "physical_degree": "74.75534812475925"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165746357",
+        "directional_degree": "427",
+        "jd_ut": "2565293.8051892747",
+        "motion": "retrograde",
+        "navigation_cell": "427",
+        "physical_degree": "67"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 4627,
+      "stationSHA256": "446894de88d8fdc30d8115e56fa44831c49b5225a5d1e1f5f1c2ab69e55258da",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 326414,
+      "supportSHA256": "03207faa7f850cc795988c7bbb67401c3725c08ac8c49cb4266ebe58ae7e0b4e"
+    },
+    {
+      "body": "True North Node",
+      "firstStation": {
+        "directional_degree_after": "20.538074052710524",
+        "jd_ut": "2297172.00976828",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "20",
+        "physical_degree": "20.538074052710524"
+      },
+      "firstSupport": {
+        "civic_offset_seconds": "327789",
+        "directional_degree": "20.6",
+        "jd_ut": "2297175.5347217107",
+        "motion": "direct",
+        "navigation_cell": "20",
+        "physical_degree": "20.6"
+      },
+      "lastStation": {
+        "directional_degree_after": "222.70474013700837",
+        "jd_ut": "2565294.7646039138",
+        "lane_after": "direct",
+        "lane_before": "retrograde",
+        "navigation_cell_after": "222",
+        "physical_degree": "222.70474013700837"
+      },
+      "lastSupport": {
+        "civic_offset_seconds": "23165582654",
+        "directional_degree": "582.8",
+        "jd_ut": "2565291.9104718217",
+        "motion": "retrograde",
+        "navigation_cell": "582",
+        "physical_degree": "222.79999999999995"
+      },
+      "motions": [
+        "direct",
+        "retrograde"
+      ],
+      "stationRows": 39311,
+      "stationSHA256": "f3c8ade2d18f56566de6352b6c3f68938cd033c4a3dde32b9e5903f106610a74",
+      "stationTransitions": [
+        "direct->retrograde",
+        "retrograde->direct"
+      ],
+      "supportRows": 158736,
+      "supportSHA256": "5d766f39cc2410b6861c692d3de8913d2c1eb986936cd88e3088bac312aa7ff7"
+    }
+  ],
+  "totalCelestialRecords": 1602908,
+  "totalStationRows": 52679,
+  "totalSupportRows": 1550229
+}

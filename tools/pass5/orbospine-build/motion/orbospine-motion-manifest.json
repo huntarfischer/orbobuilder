@@ -1,0 +1,116 @@
+{
+  "bodies" : [
+    {
+      "body" : "Sun",
+      "endsClipped" : false,
+      "passageRows" : 0,
+      "sourceStationFile" : "sun-stations.csv",
+      "sourceStationSHA256" : "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74",
+      "startsClipped" : false,
+      "stationRows" : 0
+    },
+    {
+      "body" : "Moon",
+      "endsClipped" : false,
+      "passageRows" : 0,
+      "sourceStationFile" : "moon-stations.csv",
+      "sourceStationSHA256" : "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74",
+      "startsClipped" : false,
+      "stationRows" : 0
+    },
+    {
+      "body" : "Mercury",
+      "endsClipped" : true,
+      "passageRows" : 2314,
+      "sourceStationFile" : "mercury-stations.csv",
+      "sourceStationSHA256" : "446894de88d8fdc30d8115e56fa44831c49b5225a5d1e1f5f1c2ab69e55258da",
+      "startsClipped" : false,
+      "stationRows" : 4627
+    },
+    {
+      "body" : "Venus",
+      "endsClipped" : true,
+      "passageRows" : 460,
+      "sourceStationFile" : "venus-stations.csv",
+      "sourceStationSHA256" : "ea27188c4f50873986491a7725718ba28f33a8230c764ff98a5ea7e76e9153d8",
+      "startsClipped" : false,
+      "stationRows" : 919
+    },
+    {
+      "body" : "Mars",
+      "endsClipped" : false,
+      "passageRows" : 344,
+      "sourceStationFile" : "mars-stations.csv",
+      "sourceStationSHA256" : "81d4ed30f9cc5f043c258a423f7a2f38245ff11d25285a3de3b69f2a627a238d",
+      "startsClipped" : false,
+      "stationRows" : 688
+    },
+    {
+      "body" : "Jupiter",
+      "endsClipped" : false,
+      "passageRows" : 672,
+      "sourceStationFile" : "jupiter-stations.csv",
+      "sourceStationSHA256" : "e4eb78246f5219fb0668f80e1fe42774495999b57b4f37bb6c899350dc44a587",
+      "startsClipped" : false,
+      "stationRows" : 1344
+    },
+    {
+      "body" : "Saturn",
+      "endsClipped" : true,
+      "passageRows" : 710,
+      "sourceStationFile" : "saturn-stations.csv",
+      "sourceStationSHA256" : "f0bec8593750a59b349ee0b9f809e42c9526e648de05d588f8edbd9d20cb5f13",
+      "startsClipped" : true,
+      "stationRows" : 1418
+    },
+    {
+      "body" : "Uranus",
+      "endsClipped" : true,
+      "passageRows" : 726,
+      "sourceStationFile" : "uranus-stations.csv",
+      "sourceStationSHA256" : "e7a5aa04d0b45aecc354e4dfbd3ee986057f6846f50abfb7c2566067679e90cf",
+      "startsClipped" : false,
+      "stationRows" : 1451
+    },
+    {
+      "body" : "Neptune",
+      "endsClipped" : true,
+      "passageRows" : 730,
+      "sourceStationFile" : "neptune-stations.csv",
+      "sourceStationSHA256" : "91d5597c5667abde9b5f176ca27feb0dfc1bd4b45551f7fc206bfc51cdfd8657",
+      "startsClipped" : false,
+      "stationRows" : 1459
+    },
+    {
+      "body" : "Pluto",
+      "endsClipped" : false,
+      "passageRows" : 731,
+      "sourceStationFile" : "pluto-stations.csv",
+      "sourceStationSHA256" : "948bdbcf66f4fafe7a07a2e969c5dab82eb23b365dcd2081bcccb7c66be3fc4f",
+      "startsClipped" : false,
+      "stationRows" : 1462
+    },
+    {
+      "body" : "True North Node",
+      "endsClipped" : false,
+      "passageRows" : 19656,
+      "sourceStationFile" : "true-north-node-stations.csv",
+      "sourceStationSHA256" : "f3c8ade2d18f56566de6352b6c3f68938cd033c4a3dde32b9e5903f106610a74",
+      "startsClipped" : true,
+      "stationRows" : 39311
+    }
+  ],
+  "identity" : "OrboSpine",
+  "matterFormat" : "retrograde-passage-csv",
+  "matterVersion" : 1,
+  "passageFile" : "retrograde-passages.csv",
+  "passageFileBytes" : 2731049,
+  "passageSHA256" : "50e8a41cf7fd33a0f5d74d1ed2c03a0294127ae2fe4013366d6e82fe06be89db",
+  "source" : "final C4 exact station topology",
+  "sourceCelestialManifest" : "celestial/orbospine-celestial-manifest.json",
+  "sourceCelestialManifestSHA256" : "8d671afa3d7ed1726517a678dce41cec1f3b5b00b803ce619deab865aa1d2696",
+  "sourceStationRows" : 52679,
+  "supportedEndJulianDayUT" : 2565295.0945935287,
+  "supportedStartJulianDayUT" : 2297171.740867775,
+  "totalPassageRows" : 26343
+}
