@@ -1,0 +1,86 @@
+{
+  "de441Dependency" : "none; Terra Marrow is Swiss Earth-orientation/frame data, not a DE441 celestial tract",
+  "identity" : "OrboSpine",
+  "matter" : "Terra Marrow",
+  "matterFormat" : "terra-marrow-csv",
+  "matterVersion" : 1,
+  "refinementLaw" : "linear",
+  "runtimeStorage" : "none / Pass D",
+  "sourceModelSeamLaw" : "Swiss default long-term sidereal branch owns JD 2396758.5 and 2469807.5 exactly; short-term branch is strictly between; one-sided samples prevent interpolation through either discontinuity",
+  "sourceModelSeams" : [
+    {
+      "adjacentJulianDayUT" : 2396758.5000000005,
+      "adjacentSide" : "right / short-term",
+      "boundaryOwnership" : "long-term branch at exact boundary",
+      "julianDayUT" : 2396758.5,
+      "signedTiltJumpArcSeconds" : 2.5579538487363607e-11,
+      "signedTurnJumpArcSeconds" : -0.0966195549551685,
+      "year" : 1850
+    },
+    {
+      "adjacentJulianDayUT" : 2469807.4999999995,
+      "adjacentSide" : "left / short-term",
+      "boundaryOwnership" : "long-term branch at exact boundary",
+      "julianDayUT" : 2469807.5,
+      "signedTiltJumpArcSeconds" : -1.2789769243681803e-11,
+      "signedTurnJumpArcSeconds" : -1.9073595488180217,
+      "year" : 2050
+    }
+  ],
+  "span" : "Z21-Z23",
+  "spans" : [
+    {
+      "boundaryGuardRows" : 1,
+      "bytes" : 25298967,
+      "endJulianDayUT" : 2386637.0793997087,
+      "endUTC" : "1822-04-16T13:54:20.135Z",
+      "file" : "z21/terra-marrow.csv",
+      "rows" : 357863,
+      "seamRows" : 0,
+      "sha256" : "d1a3027aeec4300cc33dd56c339d5b9bb59c935f02d349161bb89fe55a2a5124",
+      "startJulianDayUT" : 2297171.740867775,
+      "startUTC" : "1577-05-05T05:46:50.976Z",
+      "supportRows" : 357862,
+      "zeitgeist" : "Z21"
+    },
+    {
+      "boundaryGuardRows" : 1,
+      "bytes" : 25219195,
+      "endJulianDayUT" : 2475819.1417904533,
+      "endUTC" : "2066-06-17T15:24:10.695Z",
+      "file" : "z22/terra-marrow.csv",
+      "rows" : 356734,
+      "seamRows" : 4,
+      "sha256" : "ee44b598d4d35269b1eaf0d7dc4f961c7e2ebc7906cb55b41be7409a9ac9f064",
+      "startJulianDayUT" : 2386637.0793997087,
+      "startUTC" : "1822-04-16T13:54:20.135Z",
+      "supportRows" : 356729,
+      "zeitgeist" : "Z22"
+    },
+    {
+      "boundaryGuardRows" : 1,
+      "bytes" : 25301924,
+      "endJulianDayUT" : 2565295.0945935287,
+      "endUTC" : "2311-06-10T14:16:12.881Z",
+      "file" : "z23/terra-marrow.csv",
+      "rows" : 357905,
+      "seamRows" : 0,
+      "sha256" : "7ed6c8f10d05470d6a4f7456da6377404fc6393aa7a5ff7e56762f91cf5416d0",
+      "startJulianDayUT" : 2475819.1417904533,
+      "startUTC" : "2066-06-17T15:24:10.695Z",
+      "supportRows" : 357904,
+      "zeitgeist" : "Z23"
+    }
+  ],
+  "status" : "C5 Terra Marrow forged; runtime interpolation/indexing, Dioscuri certification, adversarial proof, and final seal remain pending",
+  "supportIntervalSeconds" : 21600,
+  "supportedEndJulianDayUT" : 2565295.0945935287,
+  "supportedStartJulianDayUT" : 2297171.740867775,
+  "swissCommit" : "3fd0f956d73898b91cc4f67cf18b21af656d1342",
+  "swissLibrarySHA256" : "3273643d37b35f270fbcd8237db152555dc21a8f708622654b26b08c39822bb0",
+  "swissRepository" : "https://github.com/huntarfischer/swisseph.git",
+  "swissVersion" : "2.10.03",
+  "tiltLaw" : "swe_calc_ut(jd_ut, SE_ECL_NUT, 0)[0] true ecliptic obliquity",
+  "totalRows" : 1072502,
+  "turnLaw" : "normalize(swe_sidtime(jd_ut) * 15 degrees) in [0,360)"
+}
