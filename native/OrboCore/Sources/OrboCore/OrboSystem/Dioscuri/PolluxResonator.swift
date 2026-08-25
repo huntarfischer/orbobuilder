@@ -6,16 +6,27 @@ public enum PolluxResonator {
         from celestialProduct: SpineForgeProduct
     ) -> OrboSpineCelestialCoordinate? {
         guard let bodyProduct = celestialProduct.body(challenge.body) else { return nil }
+        let matches = occurrences(
+            of: challenge.directionalDegree,
+            in: bodyProduct
+        )
+        guard challenge.occurrenceIndex < matches.count else { return nil }
+        return matches[challenge.occurrenceIndex]
+    }
 
+    static func occurrences(
+        of directionalDegree: OrboSpineDirectionalDegree,
+        in bodyProduct: SpineForgeBodyProduct
+    ) -> [OrboSpineCelestialCoordinate] {
         let supports = bodyProduct.supports.sorted { $0.julianDay.value < $1.julianDay.value }
-        var matches = supports.filter { $0.directionalDegree == challenge.directionalDegree }
+        var matches = supports.filter { $0.directionalDegree == directionalDegree }
 
         if supports.count >= 2 {
             for index in 0..<(supports.count - 1) {
                 let lower = supports[index]
                 let upper = supports[index + 1]
-                guard lower.directionalDegree.motion == challenge.directionalDegree.motion,
-                      upper.directionalDegree.motion == challenge.directionalDegree.motion,
+                guard lower.directionalDegree.motion == directionalDegree.motion,
+                      upper.directionalDegree.motion == directionalDegree.motion,
                       !hasStation(
                         between: lower.julianDay,
                         and: upper.julianDay,
@@ -27,12 +38,12 @@ public enum PolluxResonator {
                 let span = directionalDistance(
                     from: lower.directionalDegree.physicalDegrees,
                     to: upper.directionalDegree.physicalDegrees,
-                    motion: challenge.directionalDegree.motion
+                    motion: directionalDegree.motion
                 )
                 let target = directionalDistance(
                     from: lower.directionalDegree.physicalDegrees,
-                    to: challenge.directionalDegree.physicalDegrees,
-                    motion: challenge.directionalDegree.motion
+                    to: directionalDegree.physicalDegrees,
+                    motion: directionalDegree.motion
                 )
                 guard span > epsilon,
                       target > epsilon,
@@ -48,8 +59,8 @@ public enum PolluxResonator {
                     continue
                 }
                 matches.append(OrboSpineCelestialCoordinate(
-                    body: challenge.body,
-                    directionalDegree: challenge.directionalDegree,
+                    body: bodyProduct.body,
+                    directionalDegree: directionalDegree,
                     julianDay: julianDay
                 ))
             }
@@ -65,9 +76,7 @@ public enum PolluxResonator {
             }
             deduplicated.append(match)
         }
-
-        guard challenge.occurrenceIndex < deduplicated.count else { return nil }
-        return deduplicated[challenge.occurrenceIndex]
+        return deduplicated
     }
 
     public static func ask(
