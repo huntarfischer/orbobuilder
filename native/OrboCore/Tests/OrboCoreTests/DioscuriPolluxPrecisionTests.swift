@@ -7,7 +7,7 @@ final class DioscuriPolluxPrecisionTests: XCTestCase {
         let expected = OrboSpineCelestialCoordinate(
             body: .mercury,
             directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
-                physicalDegrees: 10.5,
+                physicalDegrees: 38.5,
                 motion: .direct
             )),
             julianDay: julianDay
@@ -15,7 +15,7 @@ final class DioscuriPolluxPrecisionTests: XCTestCase {
         let numericalDust = OrboSpineCelestialCoordinate(
             body: .mercury,
             directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
-                physicalDegrees: 10.50000000005,
+                physicalDegrees: 38.49999999988475,
                 motion: .direct
             )),
             julianDay: julianDay
@@ -23,7 +23,7 @@ final class DioscuriPolluxPrecisionTests: XCTestCase {
         let realDifference = OrboSpineCelestialCoordinate(
             body: .mercury,
             directionalDegree: try XCTUnwrap(OrboSpineDirectionalDegree(
-                physicalDegrees: 10.500001,
+                physicalDegrees: 38.500001,
                 motion: .direct
             )),
             julianDay: julianDay
