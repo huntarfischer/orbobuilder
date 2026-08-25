@@ -147,6 +147,7 @@ public enum SpineResonanceRun {
     ) -> SpineCelestialChallenge? {
         let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
         guard supports.count >= 2 else { return nil }
+        let stationJulianDays = bodyMatter.stations.map(\.julianDay.value).sorted()
 
         let boneMidpoint = (bone.start.value + bone.end.value) * 0.5
         var best: (
@@ -164,7 +165,7 @@ public enum SpineResonanceRun {
                   !hasStation(
                     between: lower.julianDay,
                     and: upper.julianDay,
-                    stations: bodyMatter.stations
+                    sortedStationJulianDays: stationJulianDays
                   ) else {
                 continue
             }
@@ -267,6 +268,7 @@ public enum SpineResonanceRun {
             guard let bodyMatter = source.resonanceBody(body) else { continue }
             let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
             guard supports.count >= 2 else { continue }
+            let stationJulianDays = bodyMatter.stations.map(\.julianDay.value).sorted()
 
             for index in 0..<(supports.count - 1) {
                 let lower = supports[index]
@@ -277,7 +279,7 @@ public enum SpineResonanceRun {
                       !hasStation(
                         between: lower.julianDay,
                         and: upper.julianDay,
-                        stations: bodyMatter.stations
+                        sortedStationJulianDays: stationJulianDays
                       ) else {
                     continue
                 }
@@ -463,12 +465,25 @@ public enum SpineResonanceRun {
     private static func hasStation(
         between lower: JulianDay,
         and upper: JulianDay,
-        stations: [OrboSpineStation]
+        sortedStationJulianDays: [Double]
     ) -> Bool {
-        stations.contains {
-            $0.julianDay.value > lower.value + epsilon
-                && $0.julianDay.value < upper.value - epsilon
+        let lowerBound = lower.value + epsilon
+        let upperBound = upper.value - epsilon
+        guard lowerBound < upperBound, !sortedStationJulianDays.isEmpty else { return false }
+
+        var low = 0
+        var high = sortedStationJulianDays.count
+        while low < high {
+            let mid = low + (high - low) / 2
+            if sortedStationJulianDays[mid] <= lowerBound {
+                low = mid + 1
+            } else {
+                high = mid
+            }
         }
+
+        return low < sortedStationJulianDays.count
+            && sortedStationJulianDays[low] < upperBound
     }
 
     private static func directionalDistance(
