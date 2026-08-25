@@ -1,0 +1,8 @@
+{
+  "authority" : "Hephaestus",
+  "candidateManifestSHA256" : "d4423805bf03c2306579d18b6ef8ec3a149ff56771be24c73e06b837239c5935",
+  "dioscuriTestimonySHA256" : "bb8739723498aefdc369d467f499233a9055f47260e66b062cc171752b2ff8da",
+  "lifecycle" : "hephaestus-sealed",
+  "schematicIdentity" : "OrboSpine",
+  "schematicVersion" : 1
+}
