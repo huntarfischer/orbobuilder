@@ -1,10 +1,10 @@
 /// A deliberately temporary integration proof that sends one AstroDNA strand
-/// through the four frozen foundational laws without changing Clotho, Lachesis,
-/// or any Titan implementation.
+/// through the four keepers and their frozen foundational laws without changing
+/// Clotho, Lachesis, or any law implementation.
 ///
 /// This is not the Titan's Pass. AstroDNA stands in for already-cast chart
-/// matter only so Orbo can observe the existing Tympan → Mater → Ring → Arc
-/// surfaces together before the Titans are personified or Lachesis is rebuilt.
+/// matter only so Orbo can observe the keeper-routed
+/// Themis → Rhea → Oceanus → Asteria transit before Lachesis is rebuilt.
 public enum TitanTransitProbe {
     public struct Result: Sendable {
         public let astroDNA: AstroDNA
@@ -35,26 +35,26 @@ public enum TitanTransitProbe {
     }
 
     public static func run(_ astroDNA: AstroDNA) -> Result {
-        // TYMPAN: the encoded Ascendant selects the already-frozen whole-sign Imprint.
+        // THEMIS keeps TYMPAN: the encoded Ascendant selects the frozen Imprint.
         let ascendant = astroDNA.longitude(of: .ascendant)
-        let tympan = Tympan.imprint(for: ascendant.sign)
+        let tympan = Themis.set(ascendant.sign)
 
-        // MATER: qualify the exact ten-planet field already present in AstroDNA.
+        // RHEA keeps MATER: bear the exact ten-planet field already present in AstroDNA.
         // AstroDNA alone does not carry sect, so this proof intentionally supplies nil.
         let planetaryLongitudes = Dictionary(
             uniqueKeysWithValues: Planet.canonicalOrder.map { planet in
                 (planet, astroDNA.longitude(of: gene(for: planet)))
             }
         )
-        let mater = Mater.qualifyField(planetaryLongitudes, sect: nil)
+        let mater = Rhea.bear(planetaryLongitudes, sect: nil)
 
-        // RING: preserve the existing exact object templates for all twelve genes.
+        // OCEANUS keeps RING: preserve the exact object templates for all twelve genes.
         let ring = AstroDNAGene.canonicalOrder.map { gene in
-            Ring.objectTemplate(for: gene, in: astroDNA)
+            Oceanus.encircle(gene, in: astroDNA)
         }
 
-        // ARC: copy only lawful coordinate-bearing matter. In this first proof that
-        // means the twelve original AstroDNA coordinates plus Ring's exact targets.
+        // ASTERIA keeps ARC: copy only lawful coordinate-bearing matter. That means
+        // the twelve original AstroDNA coordinates plus Oceanus/Ring exact targets.
         var arcSubjects = AstroDNAGene.canonicalOrder.map { gene in
             ArcSubject(
                 identity: gene.displayName,
@@ -75,8 +75,8 @@ public enum TitanTransitProbe {
             }
         }
 
-        let arcCasts = Arc.cast(arcSubjects)
-        let arcGrids = arcCasts.map { Arc.project($0.field) }
+        let arcCasts = Asteria.refract(arcSubjects)
+        let arcGrids = arcCasts.map { Asteria.project($0.field) }
 
         return Result(
             astroDNA: astroDNA,
