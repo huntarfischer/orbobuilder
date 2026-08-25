@@ -1,0 +1,389 @@
+{
+  "aspects" : {
+    "spans" : [
+      {
+        "rows" : 772827,
+        "span" : "Z21"
+      },
+      {
+        "rows" : 770293,
+        "span" : "Z22"
+      },
+      {
+        "rows" : 772810,
+        "span" : "Z23"
+      }
+    ],
+    "totalRows" : 2315930
+  },
+  "astronomicalAuthority" : "Swiss Ephemeris DE441; geocentric tropical apparent ecliptic longitude; UT",
+  "astronomicalSourceVersion" : "2.10.03",
+  "celestial" : {
+    "manifest" : "celestial/orbospine-celestial-manifest.json",
+    "stationRows" : 52679,
+    "supportRows" : 1550229,
+    "totalRecords" : 1602908
+  },
+  "eclipses" : {
+    "spans" : [
+      {
+        "rows" : 1221,
+        "span" : "Z21"
+      },
+      {
+        "rows" : 1133,
+        "span" : "Z22"
+      },
+      {
+        "rows" : 1185,
+        "span" : "Z23"
+      }
+    ],
+    "totalRows" : 3539
+  },
+  "files" : [
+    {
+      "bytes" : 8888811,
+      "path" : "aspects/z21/exact-major-mundane-transits.csv.gz",
+      "role" : "exact major aspects",
+      "sha256" : "ed5adc0a8e6de347a787090a78b5ede0af9f3636c521d0351ab29d81c80d42cc"
+    },
+    {
+      "bytes" : 13464857,
+      "path" : "aspects/z21/exact-minor-mundane-transits.csv.gz",
+      "role" : "exact minor aspects",
+      "sha256" : "1ac716e07daff4fbbc70d3f66a08c30bdbc91b94b6e0c28132e784000b93b9d4"
+    },
+    {
+      "bytes" : 3142,
+      "path" : "aspects/z21/manifest.json",
+      "role" : "aspect manifest",
+      "sha256" : "5140e8886bb142f17fb211ba17c5a48fd73fd292dd1be26b133aa788f80c6579"
+    },
+    {
+      "bytes" : 8959884,
+      "path" : "aspects/z22/exact-major-mundane-transits.csv.gz",
+      "role" : "exact major aspects",
+      "sha256" : "307178a19fc2b7d5ab7364cf73e00f57ca18a7c5693072b81d4cef56f5d3f057"
+    },
+    {
+      "bytes" : 17090897,
+      "path" : "aspects/z22/exact-minor-mundane-transits.csv.gz",
+      "role" : "exact minor aspects",
+      "sha256" : "b1d3f3dbb5a78654b713dc03b7869241312f9e08ca88357c59446ba529000552"
+    },
+    {
+      "bytes" : 8887472,
+      "path" : "aspects/z23/exact-major-mundane-transits.csv.gz",
+      "role" : "exact major aspects",
+      "sha256" : "8280e466538441ec077e53f5575866986c856994db2e881abae0675188125035"
+    },
+    {
+      "bytes" : 13466615,
+      "path" : "aspects/z23/exact-minor-mundane-transits.csv.gz",
+      "role" : "exact minor aspects",
+      "sha256" : "d9811b7bd822a3931c5dbbd0ad1d2456a441db9e9446277f61b5c24b4ac4a91c"
+    },
+    {
+      "bytes" : 3144,
+      "path" : "aspects/z23/manifest.json",
+      "role" : "aspect manifest",
+      "sha256" : "5c740ab45cad76109c1215240c3ebba5d8c916cc71e124b2f91286f9e6cdd3f1"
+    },
+    {
+      "bytes" : 103660,
+      "path" : "celestial/jupiter-stations.csv",
+      "role" : "station topology",
+      "sha256" : "e4eb78246f5219fb0668f80e1fe42774495999b57b4f37bb6c899350dc44a587"
+    },
+    {
+      "bytes" : 3635432,
+      "path" : "celestial/jupiter-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "e59315abb0312334409ac56ce2cb080108b424de848b46b3e78c634cf242710e"
+    },
+    {
+      "bytes" : 53153,
+      "path" : "celestial/mars-stations.csv",
+      "role" : "station topology",
+      "sha256" : "81d4ed30f9cc5f043c258a423f7a2f38245ff11d25285a3de3b69f2a627a238d"
+    },
+    {
+      "bytes" : 7325918,
+      "path" : "celestial/mars-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "fd700dfe0c12ac208e27c91cf6412022abec43856c5fb92f1ed932832780b2db"
+    },
+    {
+      "bytes" : 356782,
+      "path" : "celestial/mercury-stations.csv",
+      "role" : "station topology",
+      "sha256" : "446894de88d8fdc30d8115e56fa44831c49b5225a5d1e1f5f1c2ab69e55258da"
+    },
+    {
+      "bytes" : 15851868,
+      "path" : "celestial/mercury-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "03207faa7f850cc795988c7bbb67401c3725c08ac8c49cb4266ebe58ae7e0b4e"
+    },
+    {
+      "bytes" : 92,
+      "path" : "celestial/moon-stations.csv",
+      "role" : "station topology",
+      "sha256" : "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74"
+    },
+    {
+      "bytes" : 16987899,
+      "path" : "celestial/moon-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "7d62e4a2dbd983612a61fb22149858b244d0218026266c964b58fa9cd369650e"
+    },
+    {
+      "bytes" : 112495,
+      "path" : "celestial/neptune-stations.csv",
+      "role" : "station topology",
+      "sha256" : "91d5597c5667abde9b5f176ca27feb0dfc1bd4b45551f7fc206bfc51cdfd8657"
+    },
+    {
+      "bytes" : 3580301,
+      "path" : "celestial/neptune-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "fa8e0b6aeb64e22ff367c0437aa46c238e617c33246fa6d8a5f37a682c263a63"
+    },
+    {
+      "bytes" : 11536,
+      "path" : "celestial/orbospine-celestial-manifest.json",
+      "role" : "celestial manifest",
+      "sha256" : "8d671afa3d7ed1726517a678dce41cec1f3b5b00b803ce619deab865aa1d2696"
+    },
+    {
+      "bytes" : 112552,
+      "path" : "celestial/pluto-stations.csv",
+      "role" : "station topology",
+      "sha256" : "948bdbcf66f4fafe7a07a2e969c5dab82eb23b365dcd2081bcccb7c66be3fc4f"
+    },
+    {
+      "bytes" : 2783646,
+      "path" : "celestial/pluto-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "83f32383c6b9bfdcf2b78437658146e419170a6617f23a2ed68ae9205d501d18"
+    },
+    {
+      "bytes" : 109369,
+      "path" : "celestial/saturn-stations.csv",
+      "role" : "station topology",
+      "sha256" : "f0bec8593750a59b349ee0b9f809e42c9526e648de05d588f8edbd9d20cb5f13"
+    },
+    {
+      "bytes" : 1908368,
+      "path" : "celestial/saturn-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "2984263b380571e376844b10b3faecac88169281925f7bf077a03bb98354de5d"
+    },
+    {
+      "bytes" : 92,
+      "path" : "celestial/sun-stations.csv",
+      "role" : "station topology",
+      "sha256" : "38e76f4c4a6ac287ab7029400074b714b3f3784c503647a22be9e4736f971f74"
+    },
+    {
+      "bytes" : 1270967,
+      "path" : "celestial/sun-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "de44b6924980649587aa7c27a2b256a0c5c5319268a1450835b7cce3b21c255c"
+    },
+    {
+      "bytes" : 3029674,
+      "path" : "celestial/true-north-node-stations.csv",
+      "role" : "station topology",
+      "sha256" : "f3c8ade2d18f56566de6352b6c3f68938cd033c4a3dde32b9e5903f106610a74"
+    },
+    {
+      "bytes" : 10528443,
+      "path" : "celestial/true-north-node-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "5d766f39cc2410b6861c692d3de8913d2c1eb986936cd88e3088bac312aa7ff7"
+    },
+    {
+      "bytes" : 111904,
+      "path" : "celestial/uranus-stations.csv",
+      "role" : "station topology",
+      "sha256" : "e7a5aa04d0b45aecc354e4dfbd3ee986057f6846f50abfb7c2566067679e90cf"
+    },
+    {
+      "bytes" : 2801050,
+      "path" : "celestial/uranus-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "27d8915f12c1e4d1033275119f18c8337d6568afd983fdceb69d411c88e42fec"
+    },
+    {
+      "bytes" : 70882,
+      "path" : "celestial/venus-stations.csv",
+      "role" : "station topology",
+      "sha256" : "ea27188c4f50873986491a7725718ba28f33a8230c764ff98a5ea7e76e9153d8"
+    },
+    {
+      "bytes" : 13447684,
+      "path" : "celestial/venus-supports.csv",
+      "role" : "celestial support",
+      "sha256" : "b287354f5f85c7833b988e1b6abc560d521595f264757ba119481f9ecf3ace59"
+    },
+    {
+      "bytes" : 66677,
+      "path" : "eclipses/z21/eclipse-table.csv.gz",
+      "role" : "eclipse table",
+      "sha256" : "ca192388a7897eb4f5e7a58117098ef36d7879c6879ad451d6ab6f07d6e7236f"
+    },
+    {
+      "bytes" : 1383,
+      "path" : "eclipses/z21/manifest.json",
+      "role" : "eclipse manifest",
+      "sha256" : "9cfa2706d095cb77f7dc03fde1ff3b5f0ef8ef22bc3dab9dce651ee6ad872ed4"
+    },
+    {
+      "bytes" : 62156,
+      "path" : "eclipses/z22/eclipse-table.csv.gz",
+      "role" : "eclipse table",
+      "sha256" : "15e13795d8b460782606b3dd3302796633d1229f30f2d397cf228777319e72a8"
+    },
+    {
+      "bytes" : 64965,
+      "path" : "eclipses/z23/eclipse-table.csv.gz",
+      "role" : "eclipse table",
+      "sha256" : "d5b486cd9aa1860bcac5d9bf48269384396e36f35afa8d9d49666782a6b7438f"
+    },
+    {
+      "bytes" : 1383,
+      "path" : "eclipses/z23/manifest.json",
+      "role" : "eclipse manifest",
+      "sha256" : "ffb50a905f077215d3bc3fdcf954240b639f5edf34fc59908bed672cd764f77a"
+    },
+    {
+      "bytes" : 316594,
+      "path" : "lunations/lunation-table.csv.gz",
+      "role" : "exact new/full Moon chronology",
+      "sha256" : "ecb88ef6d3967d1ad9a3a4c418dda2e8ac85192047721fd04d4d254d8a5f12a2"
+    },
+    {
+      "bytes" : 2087,
+      "path" : "lunations/manifest.json",
+      "role" : "lunation manifest",
+      "sha256" : "dc3956bec114ec5248d29acf472e88bf0b2f2a2cdd125d02e8274c49cb418342"
+    },
+    {
+      "bytes" : 3975,
+      "path" : "motion/orbospine-motion-manifest.json",
+      "role" : "retrograde motion manifest",
+      "sha256" : "76446208b2ab2ef3c69af7d477a8c0bab27a6f6e3159651f85cb180ccaf2171d"
+    },
+    {
+      "bytes" : 2731049,
+      "path" : "motion/retrograde-passages.csv",
+      "role" : "continuous Z21-Z23 retrograde passages",
+      "sha256" : "50e8a41cf7fd33a0f5d74d1ed2c03a0294127ae2fe4013366d6e82fe06be89db"
+    },
+    {
+      "bytes" : 1881,
+      "path" : "provenance/z22-universal-events-manifest.json",
+      "role" : "Z22 universal-event provenance",
+      "sha256" : "2f1b935243b7d4fe1ead796fc27d9a1cd1e0a7e279fdd22a65f7147cee8b9378"
+    },
+    {
+      "bytes" : 163191,
+      "path" : "shells/jovian-reign-table.csv",
+      "role" : "temporal shell Reign / Jupiter",
+      "sha256" : "ebb2eb9d07d730b337ea7514d8c4f76e4bd81b55415ee71b9be794e996817198"
+    },
+    {
+      "bytes" : 19572,
+      "path" : "shells/neptunian-wave-table.csv",
+      "role" : "temporal shell Wave / Neptune",
+      "sha256" : "e0ae2add46611259ff6e48a11cf3c2ed9d8eccf9f5e8745690efba1a2e8a4060"
+    },
+    {
+      "bytes" : 76619,
+      "path" : "shells/saturnian-frame-table.csv",
+      "role" : "temporal shell Frame / Saturn",
+      "sha256" : "e1b6a3a83e007b9d318824e8e3c4a5da0c2694fbe2f4b32ca996cb269a2c2f55"
+    },
+    {
+      "bytes" : 35275,
+      "path" : "shells/uranian-revolt-table.csv",
+      "role" : "temporal shell Revolt / Uranus",
+      "sha256" : "e069c76e8391f0d3235c1a7427c2112b2c9bec2f92a18f35f489a40235fdfabd"
+    },
+    {
+      "bytes" : 6572,
+      "path" : "shells/zeitgeist-z0-z30.csv",
+      "role" : "temporal shell Zeitgeist / Pluto",
+      "sha256" : "e2604b2457f7dfe6781960c2b3c25fdc23dab43d391676bb11fe3992cf913ca7"
+    },
+    {
+      "bytes" : 3418,
+      "path" : "terra/terra-marrow-manifest.json",
+      "role" : "Terra Marrow manifest",
+      "sha256" : "955e3a34a285ec842debd8c2fe9ccaab165ce6d8b185cd185b32660e50fa8749"
+    },
+    {
+      "bytes" : 25298967,
+      "path" : "terra/z21/terra-marrow.csv",
+      "role" : "Terra Marrow",
+      "sha256" : "d1a3027aeec4300cc33dd56c339d5b9bb59c935f02d349161bb89fe55a2a5124"
+    },
+    {
+      "bytes" : 25219195,
+      "path" : "terra/z22/terra-marrow.csv",
+      "role" : "Terra Marrow",
+      "sha256" : "ee44b598d4d35269b1eaf0d7dc4f961c7e2ebc7906cb55b41be7409a9ac9f064"
+    },
+    {
+      "bytes" : 25301924,
+      "path" : "terra/z23/terra-marrow.csv",
+      "role" : "Terra Marrow",
+      "sha256" : "7ed6c8f10d05470d6a4f7456da6377404fc6393aa7a5ff7e56762f91cf5416d0"
+    }
+  ],
+  "identity" : "OrboSpine",
+  "lifecycle" : "candidate",
+  "lifecycleStatus" : {
+    "adversarialProof" : "pending",
+    "dioscuriCertification" : "pending",
+    "hephaestusSeal" : "pending",
+    "manufacture" : "complete",
+    "runtimeIndexes" : "pending"
+  },
+  "lunations" : {
+    "fullRows" : 9080,
+    "manifest" : "lunations/manifest.json",
+    "newRows" : 9079,
+    "rows" : 18159
+  },
+  "motion" : {
+    "manifest" : "motion/orbospine-motion-manifest.json",
+    "passageRows" : 26343,
+    "sourceStationRows" : 52679
+  },
+  "span" : "Z21-Z23",
+  "supportedEndJulianDayUT" : 2565295.0945935287,
+  "supportedStartJulianDayUT" : 2297171.740867775,
+  "temporalShells" : {
+    "address" : "J.F.R.W.Z",
+    "families" : [
+      "Reign / Jupiter",
+      "Frame / Saturn",
+      "Revolt / Uranus",
+      "Wave / Neptune",
+      "Zeitgeist / Pluto"
+    ]
+  },
+  "terraMarrow" : {
+    "manifest" : "terra/terra-marrow-manifest.json",
+    "refinementLaw" : "linear",
+    "rows" : 1072502,
+    "sourceModelSeamYears" : [
+      1850,
+      2050
+    ],
+    "supportIntervalSeconds" : 21600
+  }
+}
