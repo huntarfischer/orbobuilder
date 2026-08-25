@@ -61,6 +61,98 @@ final class OrboSpineLocateTests: XCTestCase {
         XCTAssertNil(OrboSpineLocate(bone: bone, celestialSupports: supports))
     }
 
+    func testBoundaryAnchorsCloseTractWhenStationsBlockBothBoneEdges() throws {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(start: JulianDay(3_000)!, end: JulianDay(3_004)!))
+        let supports = [
+            coordinate(.uranus, 9.9, .retrograde, 3_001),
+            coordinate(.uranus, 9.7, .retrograde, 3_002),
+            coordinate(.uranus, 9.6, .retrograde, 3_003),
+        ]
+        let stations = [
+            try XCTUnwrap(OrboSpineStation(
+                body: .uranus,
+                physicalDegrees: 10.05,
+                julianDay: JulianDay(3_000.5)!,
+                laneBefore: .direct,
+                laneAfter: .retrograde
+            )),
+            try XCTUnwrap(OrboSpineStation(
+                body: .uranus,
+                physicalDegrees: 9.55,
+                julianDay: JulianDay(3_003.5)!,
+                laneBefore: .retrograde,
+                laneAfter: .direct
+            )),
+        ]
+
+        XCTAssertNil(OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            stations: stations
+        ))
+
+        let anchors = [
+            try XCTUnwrap(OrboSpineBoundaryAnchor(
+                body: .uranus,
+                boundary: .start,
+                julianDay: bone.start,
+                physicalDegrees: 10,
+                motion: .direct
+            )),
+            try XCTUnwrap(OrboSpineBoundaryAnchor(
+                body: .uranus,
+                boundary: .endExclusive,
+                julianDay: bone.end,
+                physicalDegrees: 9.6,
+                motion: .direct
+            )),
+        ]
+        let locate = try XCTUnwrap(OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            stations: stations,
+            boundaryAnchors: anchors
+        ))
+
+        let start = try locate.coordinate(of: .uranus, at: bone.start)
+        XCTAssertEqual(start.directionalDegree.degrees, 10, accuracy: 1e-10)
+        XCTAssertEqual(start.directionalDegree.motion, .direct)
+
+        let firstStation = try locate.coordinate(of: .uranus, at: JulianDay(3_000.5)!)
+        XCTAssertEqual(firstStation.directionalDegree.degrees, 370.05, accuracy: 1e-10)
+        XCTAssertEqual(firstStation.directionalDegree.motion, .retrograde)
+
+        let nearEnd = try locate.coordinate(of: .uranus, at: JulianDay(3_003.75)!)
+        XCTAssertEqual(nearEnd.directionalDegree.degrees, 9.575, accuracy: 1e-10)
+        XCTAssertEqual(nearEnd.directionalDegree.motion, .direct)
+
+        XCTAssertThrowsError(try locate.coordinate(of: .uranus, at: bone.end)) { error in
+            XCTAssertEqual(error as? OrboSpineLocateError, .outsideBone)
+        }
+    }
+
+    func testBoundaryAnchorsMustArriveAsExactStartAndEndPair() throws {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(start: JulianDay(4_000)!, end: JulianDay(4_002)!))
+        let supports = [
+            coordinate(.mercury, 20, .direct, 4_000.5),
+            coordinate(.mercury, 20.5, .direct, 4_001),
+            coordinate(.mercury, 21, .direct, 4_001.5),
+        ]
+        let startOnly = try XCTUnwrap(OrboSpineBoundaryAnchor(
+            body: .mercury,
+            boundary: .start,
+            julianDay: bone.start,
+            physicalDegrees: 19.5,
+            motion: .direct
+        ))
+
+        XCTAssertNil(OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            boundaryAnchors: [startOnly]
+        ))
+    }
+
     func testTerraLocateInterpolatesTurnAcrossZero() throws {
         let bone = try XCTUnwrap(OrboSpineBoneSpan(start: JulianDay(1_100)!, end: JulianDay(1_101)!))
         let supports = [
