@@ -19,6 +19,7 @@ public enum PolluxResonator {
         in bodyMatter: SpineResonanceBodyMatter
     ) -> [OrboSpineCelestialCoordinate] {
         let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
+        let stationJulianDays = bodyMatter.stations.map(\.julianDay.value).sorted()
         var matches = supports.filter { $0.directionalDegree == directionalDegree }
 
         if supports.count >= 2 {
@@ -30,7 +31,7 @@ public enum PolluxResonator {
                       !hasStation(
                         between: lower.julianDay,
                         and: upper.julianDay,
-                        stations: bodyMatter.stations
+                        sortedStationJulianDays: stationJulianDays
                       ) else {
                     continue
                 }
@@ -122,22 +123,36 @@ public enum PolluxResonator {
         )
         let degreeDifference = min(rawDifference, 360 - rawDifference)
 
-        return degreeDifference <= epsilon
+        return degreeDifference <= confirmationEpsilon
             ? .confirmed
             : .divergent(expected: expected, returned: returned)
     }
 
     private static let epsilon = 1e-10
+    private static let confirmationEpsilon = 1e-9
 
     private static func hasStation(
         between lower: JulianDay,
         and upper: JulianDay,
-        stations: [OrboSpineStation]
+        sortedStationJulianDays: [Double]
     ) -> Bool {
-        stations.contains {
-            $0.julianDay.value > lower.value + epsilon
-                && $0.julianDay.value < upper.value - epsilon
+        let lowerBound = lower.value + epsilon
+        let upperBound = upper.value - epsilon
+        guard lowerBound < upperBound, !sortedStationJulianDays.isEmpty else { return false }
+
+        var low = 0
+        var high = sortedStationJulianDays.count
+        while low < high {
+            let mid = low + (high - low) / 2
+            if sortedStationJulianDays[mid] <= lowerBound {
+                low = mid + 1
+            } else {
+                high = mid
+            }
         }
+
+        return low < sortedStationJulianDays.count
+            && sortedStationJulianDays[low] < upperBound
     }
 
     private static func directionalDistance(
