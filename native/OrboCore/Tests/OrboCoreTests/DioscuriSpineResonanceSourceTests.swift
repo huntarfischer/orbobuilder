@@ -43,12 +43,8 @@ final class DioscuriSpineResonanceSourceTests: XCTestCase {
         )
         let durable = try XCTUnwrap(OrboSpineDurableCelestialResonanceSource(
             schematic: schematic,
-            bodies: [try XCTUnwrap(SpineResonanceBodyMatter(
-                body: bodyProduct.body,
-                supportDegrees: bodyProduct.supportDegrees,
-                supports: bodyProduct.supports,
-                stations: bodyProduct.stations
-            ))]
+            supports: bodyProduct.supports,
+            stations: bodyProduct.stations
         ))
 
         let direct = try XCTUnwrap(SpineCelestialChallenge(
