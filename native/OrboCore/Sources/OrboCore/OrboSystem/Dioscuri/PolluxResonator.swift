@@ -1,14 +1,14 @@
-/// Pollux is the celestial resonator. He begins with celestial truth and discovers its UT
-/// from the finished forged celestial product. He does not consult OrboSpine Locate.
+/// Pollux is the celestial resonator. He begins with independent forged celestial matter and
+/// discovers its UT. He does not consult OrboSpine Locate and does not depend on Forge storage.
 public enum PolluxResonator {
     public static func ask(
         _ challenge: SpineCelestialChallenge,
-        from celestialProduct: SpineForgeProduct
+        from source: any SpineResonanceSource
     ) -> OrboSpineCelestialCoordinate? {
-        guard let bodyProduct = celestialProduct.body(challenge.body) else { return nil }
+        guard let bodyMatter = source.resonanceBody(challenge.body) else { return nil }
         let matches = occurrences(
             of: challenge.directionalDegree,
-            in: bodyProduct
+            in: bodyMatter
         )
         guard challenge.occurrenceIndex < matches.count else { return nil }
         return matches[challenge.occurrenceIndex]
@@ -16,9 +16,9 @@ public enum PolluxResonator {
 
     static func occurrences(
         of directionalDegree: OrboSpineDirectionalDegree,
-        in bodyProduct: SpineForgeBodyProduct
+        in bodyMatter: SpineResonanceBodyMatter
     ) -> [OrboSpineCelestialCoordinate] {
-        let supports = bodyProduct.supports.sorted { $0.julianDay.value < $1.julianDay.value }
+        let supports = bodyMatter.supports.sorted { $0.julianDay.value < $1.julianDay.value }
         var matches = supports.filter { $0.directionalDegree == directionalDegree }
 
         if supports.count >= 2 {
@@ -30,7 +30,7 @@ public enum PolluxResonator {
                       !hasStation(
                         between: lower.julianDay,
                         and: upper.julianDay,
-                        stations: bodyProduct.stations
+                        stations: bodyMatter.stations
                       ) else {
                     continue
                 }
@@ -59,7 +59,7 @@ public enum PolluxResonator {
                     continue
                 }
                 matches.append(OrboSpineCelestialCoordinate(
-                    body: bodyProduct.body,
+                    body: bodyMatter.body,
                     directionalDegree: directionalDegree,
                     julianDay: julianDay
                 ))
@@ -79,12 +79,24 @@ public enum PolluxResonator {
         return deduplicated
     }
 
+    /// Stage-2 campaign tests still construct Forge body fixtures directly. The resonance
+    /// algorithm remains owned by the source-matter path above.
+    static func occurrences(
+        of directionalDegree: OrboSpineDirectionalDegree,
+        in bodyProduct: SpineForgeBodyProduct
+    ) -> [OrboSpineCelestialCoordinate] {
+        occurrences(
+            of: directionalDegree,
+            in: SpineResonanceBodyMatter(bodyProduct)
+        )
+    }
+
     public static func ask(
         _ challenge: SpineStationChallenge,
-        from celestialProduct: SpineForgeProduct
+        from source: any SpineResonanceSource
     ) -> OrboSpineCelestialCoordinate? {
-        guard let bodyProduct = celestialProduct.body(challenge.body) else { return nil }
-        let stations = bodyProduct.stations.sorted { $0.julianDay.value < $1.julianDay.value }
+        guard let bodyMatter = source.resonanceBody(challenge.body) else { return nil }
+        let stations = bodyMatter.stations.sorted { $0.julianDay.value < $1.julianDay.value }
         guard challenge.occurrenceIndex < stations.count else { return nil }
         let station = stations[challenge.occurrenceIndex]
         return OrboSpineCelestialCoordinate(
