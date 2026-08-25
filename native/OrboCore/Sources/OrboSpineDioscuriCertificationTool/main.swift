@@ -262,9 +262,26 @@ private enum Certification {
         )
         guard testimony.schematicIdentity == schematic.identity,
               testimony.schematicVersion == schematic.version,
-              testimony.candidateIdentity == candidateSHA,
-              testimony.result == .confirmed else {
-            throw CertificationError.mismatch("Dioscuri testimony is not confirmed")
+              testimony.candidateIdentity == candidateSHA else {
+            throw CertificationError.mismatch("Dioscuri testimony binding drift")
+        }
+        switch testimony.result {
+        case .confirmed:
+            break
+        case let .divergent(body, expected, returned):
+            print("DIOSCURI TESTIMONY: DIVERGENT")
+            print("body: \(body.displayName)")
+            print("expected JD: \(expected.julianDay.value)")
+            print("expected physical degree: \(expected.directionalDegree.physicalDegrees)")
+            print("expected directional degree: \(expected.directionalDegree.degrees)")
+            print("expected motion: \(expected.directionalDegree.motion.rawValue)")
+            print("returned JD: \(returned.julianDay.value)")
+            print("returned physical degree: \(returned.directionalDegree.physicalDegrees)")
+            print("returned directional degree: \(returned.directionalDegree.degrees)")
+            print("returned motion: \(returned.directionalDegree.motion.rawValue)")
+            print("delta JD: \(returned.julianDay.value - expected.julianDay.value)")
+            print("delta directional degree: \(returned.directionalDegree.degrees - expected.directionalDegree.degrees)")
+            throw CertificationError.mismatch("Dioscuri testimony is divergent")
         }
 
         let artifact = TestimonyArtifact(
