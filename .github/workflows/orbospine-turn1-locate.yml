@@ -1,0 +1,14 @@
+name: OrboSpine Turn 1 Locate
+
+on:
+  push:
+    branches:
+      - feature/orbospine-forge-gather
+
+jobs:
+  focused-locate:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run focused OrboSpine Locate tests
+        run: swift test --package-path native/OrboCore --filter OrboSpineLocateTests
