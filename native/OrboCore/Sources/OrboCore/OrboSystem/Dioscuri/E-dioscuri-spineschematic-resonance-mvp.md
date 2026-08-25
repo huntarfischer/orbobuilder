@@ -134,19 +134,41 @@ Then check in.
 
 Extend the single resonance into the first complete Schematic-driven assignment.
 
-The Schematic determines scope.
+The Schematic determines scope. The production campaign tests each distinct celestial behavior present in the candidate without becoming a second Forge or duplicating F’s adversarial campaign.
 
-For its current celestial claims, resonate enough of the candidate to cover:
+For each body in `bodyPlans`, in Schematic order, select deterministically:
 
-- Bone boundaries
-- every body in `bodyPlans`
-- direct motion
-- retrograde motion where applicable
-- stations where applicable
-- interior tract positions
-- Schematic boundary checks
+- one interior direct-motion challenge, where direct motion is present
+- one interior retrograde-motion challenge, where retrograde motion is present
+- one direct-to-retrograde station challenge, where that transition is present
+- one retrograde-to-direct station challenge, where that transition is present
 
-Keep the question set deterministic. Do not turn this into F’s adversarial campaign.
+For interior and station representatives, choose the eligible occurrence nearest the temporal midpoint of the Bone. Identical inputs must therefore produce the same question set and order.
+
+After the body-driven challenges:
+
+- challenge every supplied `boundaryCheck`, in Schematic order
+- challenge one deterministic retrograde crossing of the 0°/360° seam, where present, choosing the qualifying crossing nearest the Bone midpoint
+
+The campaign must not invent a challenge class that is absent from the supplied matter. Every Schematic body must still be represented by at least one challenge.
+
+Challenge order is fixed:
+
+```text
+for body in bodyPlans order
+    direct interior, if present
+    retrograde interior, if present
+    direct → retrograde station, if present
+    retrograde → direct station, if present
+
+then
+    every Schematic boundary check, in supplied order
+
+then
+    retrograde 0°/360° seam, if present
+```
+
+Stop on the first divergence and preserve both answers as evidence. Do not repair, retry, average, substitute, or continue looking for a later divergence.
 
 ### Output
 
@@ -172,8 +194,13 @@ Prove:
 
 - the resonance run is driven by the supplied Schematic
 - all Schematic body plans are represented
+- every motion class present in the selected body matter is represented
+- both station transition classes are represented where present
+- every supplied Schematic boundary check is challenged
+- the retrograde 0°/360° seam is challenged where present
+- challenge selection and order are deterministic
 - candidate truth is traversed through both paths
-- any divergence fails closed
+- first divergence stops the run and is preserved without correction
 - identical input produces deterministic testimony
 
 Then run the full Swift suite.
