@@ -1,0 +1,34 @@
+name: Pass 5 OrboSpine Whole Forge
+
+on:
+  push:
+    branches:
+      - feature/orbospine-forge-gather
+
+permissions:
+  contents: write
+
+jobs:
+  forge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: macos-15
+    steps:
+      - name: Checkout gathered forge bench
+        uses: actions/checkout@v4
+
+      - name: Prove OrboCore
+        run: swift test --package-path native/OrboCore
+
+      - name: Forge unsealed OrboSpine candidate
+        run: |
+          swift run --package-path native/OrboCore OrboSpineCandidateManifestTool --build-root tools/pass5/orbospine-build
+
+      - name: Preserve candidate identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f \
+            tools/pass5/orbospine-build/orbospine-candidate-manifest.json \
+            tools/pass5/orbospine-build/orbospine-candidate-manifest.sha256
+          git commit -m "Forge whole OrboSpine candidate [skip ci]"
+          git push origin HEAD:feature/orbospine-forge-gather
