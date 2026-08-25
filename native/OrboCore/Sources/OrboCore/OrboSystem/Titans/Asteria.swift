@@ -1,3 +1,14 @@
+/// Immutable testimony returned by Asteria.
+public struct AsteriaPass: Sendable {
+    public let refractions: [ArcSubjectCast]
+    public let projections: [ArcGrid]
+
+    internal init(refractions: [ArcSubjectCast], projections: [ArcGrid]) {
+        self.refractions = refractions
+        self.projections = projections
+    }
+}
+
 /// Keeper of Arc.
 ///
 /// Asteria does not reimplement half-arc geometry. She is the authoritative
@@ -32,5 +43,13 @@ public enum Asteria {
 
     public static func project(_ field: ArcField) -> ArcGrid {
         Arc.project(field)
+    }
+
+    public static func testify(_ subjects: [ArcSubject]) -> AsteriaPass {
+        let refractions = refract(subjects)
+        return AsteriaPass(
+            refractions: refractions,
+            projections: refractions.map { project($0.field) }
+        )
     }
 }
