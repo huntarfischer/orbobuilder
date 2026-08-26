@@ -18,7 +18,7 @@ final class IrisZodiacExpressionTests: XCTestCase {
         }
     }
 
-    func testElementFamiliesKeepThreeRelatedSignShades() {
+    func testElementFamiliesKeepThreeRelatedSignShadesAcrossAllTwelveSigns() {
         XCTAssertEqual(
             Sign.canonicalOrder.map { IrisZodiacAppearance(sign: $0).family },
             [.fire, .earth, .air, .water, .fire, .earth,
@@ -32,9 +32,17 @@ final class IrisZodiacExpressionTests: XCTestCase {
         XCTAssertEqual(IrisZodiacAppearance(sign: .taurus).shade, .light)
         XCTAssertEqual(IrisZodiacAppearance(sign: .virgo).shade, .middle)
         XCTAssertEqual(IrisZodiacAppearance(sign: .capricorn).shade, .deep)
+
+        XCTAssertEqual(IrisZodiacAppearance(sign: .gemini).shade, .light)
+        XCTAssertEqual(IrisZodiacAppearance(sign: .libra).shade, .middle)
+        XCTAssertEqual(IrisZodiacAppearance(sign: .aquarius).shade, .deep)
+
+        XCTAssertEqual(IrisZodiacAppearance(sign: .cancer).shade, .light)
+        XCTAssertEqual(IrisZodiacAppearance(sign: .scorpio).shade, .middle)
+        XCTAssertEqual(IrisZodiacAppearance(sign: .pisces).shade, .deep)
     }
 
-    func testMercuryChangesFromLightFireToLightEarthAtThirtyDegrees() throws {
+    func testMercuryChangesFromLightFireToLightEarthAtThirtyDegrees() {
         let ariesSource = coordinate(.mercury, 29.999, .direct)
         let taurusSource = coordinate(.mercury, 30.0, .direct)
 
