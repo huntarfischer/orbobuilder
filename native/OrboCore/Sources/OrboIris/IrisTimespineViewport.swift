@@ -51,6 +51,10 @@ public struct IrisTimespineViewport: Hashable, Sendable {
         frames.map(\.terra)
     }
 
+    public var terraReadouts: [IrisTerraReadout] {
+        frames.map(\.terraReadout)
+    }
+
     public var scene: IrisScene3D {
         IrisScene3D(
             coordinates: frames.flatMap { $0.output.celestial }
