@@ -33,6 +33,40 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Drives UT while keeping one canonical body as the pinned readout grip.
+    ///
+    /// The cross-section still comes from the proven SEEK path. Horae only add
+    /// the control/readout address to that same outward signal; the body's
+    /// directional degree is the value already supplied by Locate at this UT.
+    public func driveUT(
+        to julianDay: JulianDay,
+        body: MundaneBody
+    ) throws -> HoraeOutput {
+        let output = try seek(to: julianDay)
+        guard let coordinate = output.celestial.first(where: { $0.body == body }) else {
+            throw OrboSpineLocateError.bodyUnavailable(body)
+        }
+
+        let address = HoraeAddress(
+            body: body,
+            directionalDegree: coordinate.directionalDegree,
+            julianDay: julianDay
+        )
+        let controlState = HoraeControlState(
+            address: address,
+            bodyRole: .pinned,
+            directionalDegreeRole: .resolved,
+            julianDayRole: .driven
+        )
+
+        return HoraeOutput(
+            julianDay: output.julianDay,
+            celestial: output.celestial,
+            terra: output.terra,
+            controlState: controlState
+        )
+    }
+
     /// Uses the current real-world instant only to supply UT, then follows the
     /// exact same output path as SEEK.
     public func live() throws -> HoraeOutput {
