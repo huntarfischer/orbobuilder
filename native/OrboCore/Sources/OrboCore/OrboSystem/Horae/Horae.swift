@@ -18,6 +18,43 @@ public struct Horae: Sendable {
         self.now = now
     }
 
+    /// Continuous UT envelope available to consumer controls.
+    /// OrboSpine owns the boundaries; Horae expose only their values.
+    public var controlDomain: HoraeControlDomain {
+        HoraeControlDomain(
+            start: locate.bone.start,
+            endExclusive: locate.bone.end
+        )
+    }
+
+    /// Every real UT occurrence for one exact body/state pair on the Bone.
+    /// An empty array is valid availability information, not a navigation error.
+    public func occurrenceUTs(
+        of body: MundaneBody,
+        at directionalDegree: OrboSpineDirectionalDegree
+    ) throws -> [JulianDay] {
+        try locate.occurrences(
+            of: body,
+            at: directionalDegree
+        ).map(\.julianDay)
+    }
+
+    /// Canonical bodies occupying one exact directional state at one exact UT.
+    /// No match is represented by an empty array. An outside-Bone UT remains an
+    /// OrboSpine Locate error rather than being clamped or interpreted by Horae.
+    public func matchingBodies(
+        at directionalDegree: OrboSpineDirectionalDegree,
+        on julianDay: JulianDay
+    ) throws -> [MundaneBody] {
+        try OrboSpineContract.canonicalBodies.filter { body in
+            let coordinate = try locate.coordinate(of: body, at: julianDay)
+            return Self.directionalDegreeMatches(
+                coordinate.directionalDegree,
+                directionalDegree
+            )
+        }
+    }
+
     /// Explicitly selects one UT on the OrboSpine Bone and returns the complete
     /// canonical celestial + Terra cross-section exposed by Locate at that level.
     public func seek(to julianDay: JulianDay) throws -> HoraeOutput {
@@ -196,11 +233,10 @@ public struct Horae: Sendable {
         at julianDay: JulianDay
     ) throws -> HoraeOutput {
         let coordinate = try locate.coordinate(of: body, at: julianDay)
-        guard coordinate.directionalDegree.motion == directionalDegree.motion,
-              abs(
-                coordinate.directionalDegree.physicalDegrees
-                    - directionalDegree.physicalDegrees
-              ) <= 1e-10 else {
+        guard Self.directionalDegreeMatches(
+            coordinate.directionalDegree,
+            directionalDegree
+        ) else {
             throw HoraeControlError.constraintUnsatisfied(
                 body: body,
                 directionalDegree: directionalDegree,
@@ -409,5 +445,13 @@ public struct Horae: Sendable {
             terra: output.terra,
             controlState: controlState
         )
+    }
+
+    private static func directionalDegreeMatches(
+        _ lhs: OrboSpineDirectionalDegree,
+        _ rhs: OrboSpineDirectionalDegree
+    ) -> Bool {
+        lhs.motion == rhs.motion
+            && abs(lhs.physicalDegrees - rhs.physicalDegrees) <= 1e-10
     }
 }
