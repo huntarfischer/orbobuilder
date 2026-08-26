@@ -5,6 +5,18 @@ public enum HoraeCoordinateRole: String, Hashable, Sendable {
     case resolved
 }
 
+/// A control gesture could not resolve one real OrboSpine address.
+public enum HoraeControlError: Error, Equatable {
+    case noOccurrence(
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree
+    )
+    case ambiguousOccurrence(
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree
+    )
+}
+
 /// One presentation-neutral address on the OrboSpine.
 ///
 /// Body, directional degree, and UT are three grips on one valid Spine point,
