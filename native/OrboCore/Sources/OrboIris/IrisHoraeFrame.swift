@@ -23,6 +23,10 @@ public struct IrisHoraeFrame: Hashable, Sendable {
         output.terra
     }
 
+    public var terraReadout: IrisTerraReadout {
+        IrisTerraReadout(source: output.terra)
+    }
+
     public var controlState: HoraeControlState? {
         output.controlState
     }
