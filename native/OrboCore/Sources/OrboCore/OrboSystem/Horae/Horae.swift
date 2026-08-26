@@ -67,6 +67,42 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Drives UT while body and directional degree remain pinned.
+    ///
+    /// UT may land only on a real occurrence of that exact body/state pair.
+    /// The requested UT is the navigation grip; Horae choose the valid occurrence
+    /// nearest it and reject an exact tie rather than guess.
+    public func driveUT(
+        to julianDay: JulianDay,
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree
+    ) throws -> HoraeOutput {
+        _ = try locate.coordinate(of: body, at: julianDay)
+        let occurrence = try nearestOccurrence(
+            of: body,
+            at: directionalDegree,
+            to: julianDay
+        )
+        let output = try seek(to: occurrence.julianDay)
+        let controlState = HoraeControlState(
+            address: HoraeAddress(
+                body: body,
+                directionalDegree: occurrence.directionalDegree,
+                julianDay: occurrence.julianDay
+            ),
+            bodyRole: .pinned,
+            directionalDegreeRole: .pinned,
+            julianDayRole: .driven
+        )
+
+        return HoraeOutput(
+            julianDay: output.julianDay,
+            celestial: output.celestial,
+            terra: output.terra,
+            controlState: controlState
+        )
+    }
+
     /// Drives one body's directional degree along its forged tract and resolves UT.
     ///
     /// The current UT is only a continuity anchor. If the requested directional
@@ -78,39 +114,11 @@ public struct Horae: Sendable {
         from currentJulianDay: JulianDay
     ) throws -> HoraeOutput {
         _ = try locate.coordinate(of: body, at: currentJulianDay)
-
-        let occurrences = try locate.occurrences(
+        let occurrence = try nearestOccurrence(
             of: body,
-            at: directionalDegree
+            at: directionalDegree,
+            to: currentJulianDay
         )
-        guard !occurrences.isEmpty else {
-            throw HoraeControlError.noOccurrence(
-                body: body,
-                directionalDegree: directionalDegree
-            )
-        }
-
-        let ranked = occurrences.sorted { lhs, rhs in
-            let lhsDistance = abs(lhs.julianDay.value - currentJulianDay.value)
-            let rhsDistance = abs(rhs.julianDay.value - currentJulianDay.value)
-            if abs(lhsDistance - rhsDistance) <= 1e-10 {
-                return lhs.julianDay.value < rhs.julianDay.value
-            }
-            return lhsDistance < rhsDistance
-        }
-
-        if ranked.count > 1 {
-            let firstDistance = abs(ranked[0].julianDay.value - currentJulianDay.value)
-            let secondDistance = abs(ranked[1].julianDay.value - currentJulianDay.value)
-            if abs(firstDistance - secondDistance) <= 1e-10 {
-                throw HoraeControlError.ambiguousOccurrence(
-                    body: body,
-                    directionalDegree: directionalDegree
-                )
-            }
-        }
-
-        let occurrence = ranked[0]
         let output = try seek(to: occurrence.julianDay)
         let controlState = HoraeControlState(
             address: HoraeAddress(
@@ -131,9 +139,79 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Drives the body grip while UT remains pinned to one horizontal cross-section.
+    /// The selected body's directional degree is resolved directly from that
+    /// already-forged cross-section.
+    public func driveBody(
+        to body: MundaneBody,
+        at julianDay: JulianDay
+    ) throws -> HoraeOutput {
+        let output = try seek(to: julianDay)
+        guard let coordinate = output.celestial.first(where: { $0.body == body }) else {
+            throw OrboSpineLocateError.bodyUnavailable(body)
+        }
+
+        let controlState = HoraeControlState(
+            address: HoraeAddress(
+                body: body,
+                directionalDegree: coordinate.directionalDegree,
+                julianDay: julianDay
+            ),
+            bodyRole: .driven,
+            directionalDegreeRole: .resolved,
+            julianDayRole: .pinned
+        )
+
+        return HoraeOutput(
+            julianDay: output.julianDay,
+            celestial: output.celestial,
+            terra: output.terra,
+            controlState: controlState
+        )
+    }
+
     /// Uses the current real-world instant only to supply UT, then follows the
     /// exact same output path as SEEK.
     public func live() throws -> HoraeOutput {
         try seek(to: now().julianDay)
+    }
+
+    private func nearestOccurrence(
+        of body: MundaneBody,
+        at directionalDegree: OrboSpineDirectionalDegree,
+        to anchor: JulianDay
+    ) throws -> OrboSpineOccurrence {
+        let occurrences = try locate.occurrences(
+            of: body,
+            at: directionalDegree
+        )
+        guard !occurrences.isEmpty else {
+            throw HoraeControlError.noOccurrence(
+                body: body,
+                directionalDegree: directionalDegree
+            )
+        }
+
+        let ranked = occurrences.sorted { lhs, rhs in
+            let lhsDistance = abs(lhs.julianDay.value - anchor.value)
+            let rhsDistance = abs(rhs.julianDay.value - anchor.value)
+            if abs(lhsDistance - rhsDistance) <= 1e-10 {
+                return lhs.julianDay.value < rhs.julianDay.value
+            }
+            return lhsDistance < rhsDistance
+        }
+
+        if ranked.count > 1 {
+            let firstDistance = abs(ranked[0].julianDay.value - anchor.value)
+            let secondDistance = abs(ranked[1].julianDay.value - anchor.value)
+            if abs(firstDistance - secondDistance) <= 1e-10 {
+                throw HoraeControlError.ambiguousOccurrence(
+                    body: body,
+                    directionalDegree: directionalDegree
+                )
+            }
+        }
+
+        return ranked[0]
     }
 }
