@@ -5,6 +5,12 @@ public enum HoraeCoordinateRole: String, Hashable, Sendable {
     case resolved
 }
 
+/// Direction through the ordered UT occurrence set for one pinned body/state pair.
+public enum HoraeOccurrenceDirection: String, Hashable, Sendable {
+    case previous
+    case next
+}
+
 /// A control gesture could not resolve one real OrboSpine address.
 public enum HoraeControlError: Error, Equatable {
     case noOccurrence(
@@ -19,6 +25,12 @@ public enum HoraeControlError: Error, Equatable {
         body: MundaneBody,
         directionalDegree: OrboSpineDirectionalDegree,
         julianDay: JulianDay
+    )
+    case noOccurrenceInDirection(
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree,
+        from: JulianDay,
+        direction: HoraeOccurrenceDirection
     )
 }
 
@@ -55,6 +67,12 @@ public enum HoraeControlIntent: Hashable, Sendable {
         to: MundaneBody,
         directionalDegree: OrboSpineDirectionalDegree,
         at: JulianDay
+    )
+    case navigateOccurrence(
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree,
+        from: JulianDay,
+        direction: HoraeOccurrenceDirection
     )
 }
 
