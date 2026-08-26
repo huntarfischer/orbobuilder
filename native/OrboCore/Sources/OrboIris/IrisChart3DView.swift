@@ -98,6 +98,7 @@ public struct IrisChart3DView: View {
             order: presentation.trackOrder,
             expansion: presentation.trackExpansion
         )
+        let renderedZ = temporalZ(for: point, fallback: trackPlacement.z)
         let symbolSize = bodyAppearance.symbolSize * (active ? 1.45 : 1.0)
         let xLabel = active ? "Active X" : "X"
         let yLabel = active ? "Active Y" : "Y"
@@ -107,7 +108,7 @@ public struct IrisChart3DView: View {
             PointMark(
                 x: .value(xLabel, trackPlacement.x),
                 y: .value(yLabel, trackPlacement.y),
-                z: .value(zLabel, trackPlacement.z)
+                z: .value(zLabel, renderedZ)
             )
             .symbol(.sphere)
             .symbolSize(CGFloat(symbolSize))
@@ -116,7 +117,7 @@ public struct IrisChart3DView: View {
             PointMark(
                 x: .value(xLabel, trackPlacement.x),
                 y: .value(yLabel, trackPlacement.y),
-                z: .value(zLabel, trackPlacement.z)
+                z: .value(zLabel, renderedZ)
             )
             .symbolSize(CGFloat(symbolSize))
             .foregroundStyle(zodiacColor(for: point))
@@ -141,6 +142,18 @@ public struct IrisChart3DView: View {
     private var chartExtent: Double {
         let extent = plane == nil ? maximumTrackRadius : planeSurfaceExtent
         return extent * 1.05
+    }
+
+    private func temporalZ(
+        for point: IrisScenePoint3D,
+        fallback: Double
+    ) -> Double {
+        guard let plane else { return fallback }
+        return IrisTemporalExpression.renderZ(
+            for: point,
+            activeJulianDay: plane.julianDay,
+            expansion: presentation.timeExpansion
+        )
     }
 
     private func zodiacColor(for point: IrisScenePoint3D) -> Color {
