@@ -170,6 +170,83 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Drives the body grip while directional degree remains pinned and UT resolves.
+    ///
+    /// The current UT is only a continuity anchor. Changing bodies changes the
+    /// occurrence set being navigated; Horae choose the selected body's real
+    /// occurrence nearest that anchor and never fabricate a UT.
+    public func driveBody(
+        to body: MundaneBody,
+        at directionalDegree: OrboSpineDirectionalDegree,
+        from currentJulianDay: JulianDay
+    ) throws -> HoraeOutput {
+        _ = try locate.coordinate(of: body, at: currentJulianDay)
+        let occurrence = try nearestOccurrence(
+            of: body,
+            at: directionalDegree,
+            to: currentJulianDay
+        )
+        let output = try seek(to: occurrence.julianDay)
+        let controlState = HoraeControlState(
+            address: HoraeAddress(
+                body: body,
+                directionalDegree: occurrence.directionalDegree,
+                julianDay: occurrence.julianDay
+            ),
+            bodyRole: .driven,
+            directionalDegreeRole: .pinned,
+            julianDayRole: .resolved
+        )
+
+        return HoraeOutput(
+            julianDay: output.julianDay,
+            celestial: output.celestial,
+            terra: output.terra,
+            controlState: controlState
+        )
+    }
+
+    /// Drives the body grip under exact directional-degree and UT constraints.
+    /// The selected body is valid only if its forged coordinate at the pinned UT
+    /// satisfies the pinned directional state.
+    public func driveBody(
+        to body: MundaneBody,
+        matching directionalDegree: OrboSpineDirectionalDegree,
+        at julianDay: JulianDay
+    ) throws -> HoraeOutput {
+        let coordinate = try locate.coordinate(of: body, at: julianDay)
+        guard coordinate.directionalDegree.motion == directionalDegree.motion,
+              abs(
+                coordinate.directionalDegree.physicalDegrees
+                    - directionalDegree.physicalDegrees
+              ) <= 1e-10 else {
+            throw HoraeControlError.constraintUnsatisfied(
+                body: body,
+                directionalDegree: directionalDegree,
+                julianDay: julianDay
+            )
+        }
+
+        let output = try seek(to: julianDay)
+        let controlState = HoraeControlState(
+            address: HoraeAddress(
+                body: body,
+                directionalDegree: coordinate.directionalDegree,
+                julianDay: julianDay
+            ),
+            bodyRole: .driven,
+            directionalDegreeRole: .pinned,
+            julianDayRole: .pinned
+        )
+
+        return HoraeOutput(
+            julianDay: output.julianDay,
+            celestial: output.celestial,
+            terra: output.terra,
+            controlState: controlState
+        )
+    }
+
     /// Presentation-neutral ingress for a visualization owner such as Iris.
     /// Each intent is routed to one already-proven Horae control path and returns
     /// the same single HoraeOutput cable.
@@ -191,6 +268,18 @@ public struct Horae: Sendable {
             )
         case let .driveBody(body, julianDay):
             return try driveBody(to: body, at: julianDay)
+        case let .driveBodyAtDegree(body, directionalDegree, currentJulianDay):
+            return try driveBody(
+                to: body,
+                at: directionalDegree,
+                from: currentJulianDay
+            )
+        case let .driveConstrainedBody(body, directionalDegree, julianDay):
+            return try driveBody(
+                to: body,
+                matching: directionalDegree,
+                at: julianDay
+            )
         }
     }
 
