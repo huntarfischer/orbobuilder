@@ -33,6 +33,22 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Applies one consumer-supplied UT displacement, then follows SEEK.
+    ///
+    /// Horae retain no current UT and own no playback rate. The consumer supplies
+    /// both the current UT and the requested offset on every action.
+    public func shiftUT(
+        from currentJulianDay: JulianDay,
+        by offset: HoraeUTOffset
+    ) throws -> HoraeOutput {
+        guard let target = JulianDay(
+            currentJulianDay.value + offset.julianDays
+        ) else {
+            throw OrboSpineLocateError.outsideBone
+        }
+        return try seek(to: target)
+    }
+
     /// Drives UT while keeping one canonical body as the pinned readout grip.
     public func driveUT(
         to julianDay: JulianDay,
@@ -237,6 +253,13 @@ public struct Horae: Sendable {
     /// Presentation-neutral ingress for a visualization owner such as Iris.
     public func respond(to intent: HoraeControlIntent) throws -> HoraeOutput {
         switch intent {
+        case let .seekUT(julianDay):
+            return try seek(to: julianDay)
+        case let .shiftUT(currentJulianDay, offset):
+            return try shiftUT(
+                from: currentJulianDay,
+                by: offset
+            )
         case let .driveUT(julianDay, body):
             return try driveUT(to: julianDay, body: body)
         case let .driveConstrainedUT(julianDay, body, directionalDegree):
