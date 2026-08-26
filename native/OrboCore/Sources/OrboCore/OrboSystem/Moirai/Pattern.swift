@@ -12,3 +12,14 @@ public enum Pattern: String, Codable, Hashable, Sendable {
         }
     }
 }
+
+/// The sister-to-sister handoff from Clotho to Lachesis.
+public struct PatternPacket: Hashable, Sendable {
+    public let pattern: Pattern
+    public let astroDNA: AstroDNA
+
+    public init(pattern: Pattern, astroDNA: AstroDNA) {
+        self.pattern = pattern
+        self.astroDNA = astroDNA
+    }
+}

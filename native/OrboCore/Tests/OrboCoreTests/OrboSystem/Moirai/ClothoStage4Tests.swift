@@ -19,7 +19,6 @@ final class ClothoStage4Tests: XCTestCase {
 
     private struct PortISpy: ClothoPortI {
         struct Call: Equatable {
-            let subjectID: HermesSubjectID
             let birthDate: CivilDate
             let birthTime: CivilClockTime
             let topos: Topos
@@ -28,15 +27,13 @@ final class ClothoStage4Tests: XCTestCase {
         var nodes: [AstroDNAGene: RingFineState]
         var calls: [Call] = []
 
-        mutating func natalTap(
-            subjectID: HermesSubjectID,
+        mutating func queryNatalState(
             birthDate: CivilDate,
             birthTime: CivilClockTime,
             topos: Topos
         ) throws -> [AstroDNAGene: RingFineState] {
             calls.append(
                 Call(
-                    subjectID: subjectID,
                     birthDate: birthDate,
                     birthTime: birthTime,
                     topos: topos
@@ -65,7 +62,7 @@ final class ClothoStage4Tests: XCTestCase {
         .northNode: NatalPosition(degree: 49, minute: 50, second: 53, retrograde: true),
     ]
 
-    func testClothoChoosesEngravingPatternAndMakesOneNatalTap() throws {
+    func testClothoChoosesEngravingPatternAndMakesOneNatalQuery() throws {
         let engraving = try resolvedEngraving()
         let expectedTopos = try XCTUnwrap(engraving.topos)
         var portI = PortISpy(nodes: try nodeStates())
@@ -73,10 +70,9 @@ final class ClothoStage4Tests: XCTestCase {
         let output = try Clotho.spin(engraving, through: &portI)
         let call = try XCTUnwrap(portI.calls.first)
 
-        XCTAssertEqual(output.pattern, .engraving)
-        XCTAssertEqual(output.pattern.spanYears, 100)
+        XCTAssertEqual(output.packet.pattern, .engraving)
+        XCTAssertEqual(output.packet.pattern.spanYears, 100)
         XCTAssertEqual(portI.calls.count, 1)
-        XCTAssertEqual(call.subjectID, subjectID)
         XCTAssertEqual(call.birthDate, birthDate)
         XCTAssertEqual(call.birthTime, birthTime)
         XCTAssertEqual(call.topos, expectedTopos)
@@ -90,8 +86,8 @@ final class ClothoStage4Tests: XCTestCase {
         let output = try Clotho.spin(engraving, through: &portI)
         let resolvedDNA = try XCTUnwrap(output.engraving.astroDNA)
 
-        XCTAssertEqual(output.threads, resolvedDNA)
-        XCTAssertEqual(output.threads.sequence.count, AstroDNA.geneCount)
+        XCTAssertEqual(output.packet.astroDNA, resolvedDNA)
+        XCTAssertEqual(output.packet.astroDNA.sequence.count, AstroDNA.geneCount)
         XCTAssertEqual(output.engraving.subjectID, engraving.subjectID)
         XCTAssertEqual(output.engraving.name, engraving.name)
         XCTAssertEqual(output.engraving.birthDate, engraving.birthDate)
@@ -102,7 +98,7 @@ final class ClothoStage4Tests: XCTestCase {
         XCTAssertFalse(output.engraving.engraved)
 
         for gene in AstroDNAGene.canonicalOrder {
-            XCTAssertEqual(output.threads[gene], try XCTUnwrap(portI.nodes[gene]))
+            XCTAssertEqual(output.packet.astroDNA[gene], try XCTUnwrap(portI.nodes[gene]))
         }
     }
 
@@ -112,13 +108,13 @@ final class ClothoStage4Tests: XCTestCase {
 
         let output = try Clotho.spin(engraving, through: &portI)
 
-        XCTAssertEqual(output.threads[.ascendant].dms.second, 37)
-        XCTAssertEqual(output.threads[.mercury].dms.second, 41)
-        XCTAssertTrue(output.threads[.mercury].isRetrograde)
-        XCTAssertTrue(output.threads[.northNode].isRetrograde)
+        XCTAssertEqual(output.packet.astroDNA[.ascendant].dms.second, 37)
+        XCTAssertEqual(output.packet.astroDNA[.mercury].dms.second, 41)
+        XCTAssertTrue(output.packet.astroDNA[.mercury].isRetrograde)
+        XCTAssertTrue(output.packet.astroDNA[.northNode].isRetrograde)
     }
 
-    func testClothoRefusesEngravingWithoutToposBeforeTappingPortI() throws {
+    func testClothoRefusesEngravingWithoutToposBeforeQueryingDoorOne() throws {
         let engraving = unfinishedEngraving()
         var portI = PortISpy(nodes: try nodeStates())
 
@@ -128,7 +124,7 @@ final class ClothoStage4Tests: XCTestCase {
         XCTAssertTrue(portI.calls.isEmpty)
     }
 
-    func testClothoRefusesToOverwriteResolvedAstroDNABeforeAnotherTap() throws {
+    func testClothoRefusesToOverwriteResolvedAstroDNABeforeAnotherQuery() throws {
         let engraving = try resolvedEngraving()
         var portI = PortISpy(nodes: try nodeStates())
         let first = try Clotho.spin(engraving, through: &portI)

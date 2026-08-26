@@ -5,14 +5,13 @@ public enum ClothoFailure: Error, Hashable, Sendable {
     case invalidAstroDNA
 }
 
-/// The single Timespine doorway Clotho uses for natal work.
+/// Door One is the single OrboSpine doorway Clotho uses for natal work.
 ///
-/// A natal tap is one operation with two consequences: the delivered Topos is
-/// planted into the native Spine and the twelve natal node states are exposed
-/// to Clotho. Port I does not construct AstroDNA.
+/// Clotho supplies birth date, birth time, and Topos. The query returns the
+/// twelve natal node states derived from the OrboSpine, including Terra's
+/// contribution. Door One does not construct AstroDNA.
 public protocol ClothoPortI {
-    mutating func natalTap(
-        subjectID: HermesSubjectID,
+    mutating func queryNatalState(
         birthDate: CivilDate,
         birthTime: CivilClockTime,
         topos: Topos
@@ -21,23 +20,20 @@ public protocol ClothoPortI {
 
 public struct ClothoOutput: Hashable, Sendable {
     public let engraving: Engraving
-    public let pattern: Pattern
-    public let threads: AstroDNA
+    public let packet: PatternPacket
 
     fileprivate init(
         engraving: Engraving,
-        pattern: Pattern,
-        threads: AstroDNA
+        packet: PatternPacket
     ) {
         self.engraving = engraving
-        self.pattern = pattern
-        self.threads = threads
+        self.packet = packet
     }
 }
 
-/// Clotho receives the commission, selects its Pattern, makes one natal tap at
-/// Timespine Port I, spins the exposed node states into AstroDNA, and returns
-/// Pattern + Threads for Lachesis.
+/// Clotho receives the commission, queries Door One with birth date, birth time,
+/// and Topos, spins the returned natal states into AstroDNA, resolves the
+/// Engraving, and hands Pattern + AstroDNA forward for Lachesis.
 public enum Clotho {
     public static func spin<Port: ClothoPortI>(
         _ engraving: Engraving,
@@ -50,8 +46,7 @@ public enum Clotho {
             throw ClothoFailure.astroDNAAlreadyResolved
         }
 
-        let nodeStates = try portI.natalTap(
-            subjectID: engraving.subjectID,
+        let nodeStates = try portI.queryNatalState(
             birthDate: engraving.birthDate,
             birthTime: engraving.birthTime,
             topos: topos
@@ -69,11 +64,14 @@ public enum Clotho {
         }
 
         let resolvedEngraving = engraving.resolving(astroDNA: astroDNA)
+        let packet = PatternPacket(
+            pattern: .engraving,
+            astroDNA: astroDNA
+        )
 
         return ClothoOutput(
             engraving: resolvedEngraving,
-            pattern: .engraving,
-            threads: astroDNA
+            packet: packet
         )
     }
 }
