@@ -24,12 +24,29 @@ public struct IrisChart3DView: View {
 
     public var body: some View {
         Chart3D(scene.points, id: \.self) { point in
-            PointMark(
-                x: .value("X", point.x),
-                y: .value("Y", point.y),
-                z: .value("Julian Day", point.z)
+            let appearance = IrisBodyExpression.appearance(
+                for: point.source.body,
+                sizeMode: presentation.bodySizeMode
             )
-            .foregroundStyle(zodiacColor(for: point))
+
+            if appearance.form == .sphere {
+                PointMark(
+                    x: .value("X", point.x),
+                    y: .value("Y", point.y),
+                    z: .value("Julian Day", point.z)
+                )
+                .symbol(.sphere)
+                .symbolSize(CGFloat(appearance.symbolSize))
+                .foregroundStyle(zodiacColor(for: point))
+            } else {
+                PointMark(
+                    x: .value("X", point.x),
+                    y: .value("Y", point.y),
+                    z: .value("Julian Day", point.z)
+                )
+                .symbolSize(CGFloat(appearance.symbolSize))
+                .foregroundStyle(zodiacColor(for: point))
+            }
         }
         .chart3DPose($pose)
         .chart3DCameraProjection(
