@@ -17,6 +17,32 @@ public enum HoraeControlError: Error, Equatable {
     )
 }
 
+/// Presentation-neutral control intent accepted by Horae.
+///
+/// Iris may produce these intents from any visual or gestural form. The intent
+/// describes only which already-proven Horae control path the user is asking to
+/// move through. It contains no rendering or gesture semantics.
+public enum HoraeControlIntent: Hashable, Sendable {
+    case driveUT(
+        to: JulianDay,
+        body: MundaneBody
+    )
+    case driveConstrainedUT(
+        to: JulianDay,
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree
+    )
+    case driveDirectionalDegree(
+        to: OrboSpineDirectionalDegree,
+        body: MundaneBody,
+        from: JulianDay
+    )
+    case driveBody(
+        to: MundaneBody,
+        at: JulianDay
+    )
+}
+
 /// One presentation-neutral address on the OrboSpine.
 ///
 /// Body, directional degree, and UT are three grips on one valid Spine point,
