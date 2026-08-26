@@ -8,25 +8,26 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS IX7 / TERRA PRESERVED")
+                    Text("IRIS IX8 / TEMPORAL FLATTEN")
                         .font(.caption.monospaced())
 
-                    Text("11 tracts · 35 Horae cross-sections · active zodiac rim")
+                    Text("timeExpansion 0.20 · source UT unchanged")
                         .font(.caption2.monospaced())
 
-                    Text(IrisIX7Harness.activePlane.terraReadout.displayText)
+                    Text(IrisIX8Harness.activePlane.terraReadout.displayText)
                         .font(.caption2.monospaced())
 
-                    Text("universal Terra · local Horizon deferred")
+                    Text("Horae plane anchors visible Z · Terra preserved")
                         .font(.caption2.monospaced())
 
                     IrisChart3DView(
-                        scene: IrisIX7Harness.viewport.scene,
-                        plane: IrisIX7Harness.activePlane,
+                        scene: IrisIX8Harness.viewport.scene,
+                        plane: IrisIX8Harness.activePlane,
                         presentation: IrisChart3DPresentation(
                             azimuthDegrees: 65,
                             inclinationDegrees: 28,
-                            cameraProjection: .perspective
+                            cameraProjection: .perspective,
+                            timeExpansion: 0.20
                         )
                     )
                 }
@@ -40,15 +41,16 @@ struct OrboApp: App {
     }
 }
 
-/// IX7 host-side integration harness.
+/// IX8 host-side integration harness.
 ///
 /// Deterministic support matter enters the real OrboSpine Locate -> Horae route.
 /// Iris owns only the visible interval, sampling density, selected Horae plane,
-/// and a presentation-only readout of the Terra sample already carried by Horae.
-/// No local Horizon or Ascendant is derived here. The support values are a
-/// visualization harness, not an ephemeris claim; certified production
-/// OrboSpine matter is not bundled into the app target yet.
-private enum IrisIX7Harness {
+/// and presentation-only spatial compression around that plane. Every source
+/// coordinate retains its canonical Julian Day. Terra remains attached exactly
+/// as supplied by Horae. The support values are a visualization harness, not an
+/// ephemeris claim; certified production OrboSpine matter is not bundled into
+/// the app target yet.
+private enum IrisIX8Harness {
     private static let baseJulianDay = 2_461_000.5
 
     private static let bodyPlans: [(
