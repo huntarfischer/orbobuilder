@@ -11,6 +11,36 @@ public enum HoraeOccurrenceDirection: String, Hashable, Sendable {
     case next
 }
 
+/// Presentation-neutral displacement along the UT Bone.
+///
+/// The consumer chooses how an interaction produces this offset. Horae only
+/// apply the requested temporal displacement; this type carries no playback or
+/// planetary-rate semantics.
+public struct HoraeUTOffset: Hashable, Sendable {
+    public let seconds: Double
+
+    public init?(seconds: Double) {
+        guard seconds.isFinite else { return nil }
+        self.seconds = seconds
+    }
+
+    public init?(minutes: Double) {
+        self.init(seconds: minutes * 60)
+    }
+
+    public init?(hours: Double) {
+        self.init(seconds: hours * 3_600)
+    }
+
+    public init?(days: Double) {
+        self.init(seconds: days * 86_400)
+    }
+
+    var julianDays: Double {
+        seconds / 86_400
+    }
+}
+
 /// A control gesture could not resolve one real OrboSpine address.
 public enum HoraeControlError: Error, Equatable {
     case noOccurrence(
@@ -40,6 +70,13 @@ public enum HoraeControlError: Error, Equatable {
 /// describes only which already-proven Horae control path the user is asking to
 /// move through. It contains no rendering or gesture semantics.
 public enum HoraeControlIntent: Hashable, Sendable {
+    case seekUT(
+        to: JulianDay
+    )
+    case shiftUT(
+        from: JulianDay,
+        by: HoraeUTOffset
+    )
     case driveUT(
         to: JulianDay,
         body: MundaneBody
