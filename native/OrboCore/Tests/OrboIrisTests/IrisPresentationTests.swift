@@ -305,6 +305,121 @@ final class IrisPresentationTests: XCTestCase {
         XCTAssertEqual(plane.frame.output, frame.output)
     }
 
+    func testTimeExpansionInterpolatesRenderedZAroundActiveHoraePlane() throws {
+        let source = OrboSpineCelestialCoordinate(
+            body: .saturn,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 201.0, motion: .direct)
+            ),
+            julianDay: try XCTUnwrap(JulianDay(2_461_000.5))
+        )
+        let point = try XCTUnwrap(IrisScene3D(coordinates: [source]).points.first)
+        let activeJulianDay = try XCTUnwrap(JulianDay(2_461_004.5))
+
+        let expanded = IrisTemporalExpression.placement(
+            for: point,
+            activeJulianDay: activeJulianDay,
+            expansion: 1.0
+        )
+        let halfway = IrisTemporalExpression.placement(
+            for: point,
+            activeJulianDay: activeJulianDay,
+            expansion: 0.5
+        )
+        let flat = IrisTemporalExpression.placement(
+            for: point,
+            activeJulianDay: activeJulianDay,
+            expansion: 0.0
+        )
+
+        XCTAssertEqual(expanded.z, source.julianDay.value, accuracy: 0.000_001)
+        XCTAssertEqual(halfway.z, 2_461_002.5, accuracy: 0.000_001)
+        XCTAssertEqual(flat.z, activeJulianDay.value, accuracy: 0.000_001)
+    }
+
+    func testTimeExpansionLeavesCanonicalSceneTruthUnchanged() throws {
+        let source = OrboSpineCelestialCoordinate(
+            body: .mercury,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 18.5, motion: .retrograde)
+            ),
+            julianDay: try XCTUnwrap(JulianDay(2_461_001.25))
+        )
+        let scene = IrisScene3D(coordinates: [source])
+        let point = try XCTUnwrap(scene.points.first)
+        let originalScene = scene
+        let activeJulianDay = try XCTUnwrap(JulianDay(2_461_004.75))
+
+        for expansion in [0.0, 0.25, 0.5, 1.0] {
+            let placement = IrisTemporalExpression.placement(
+                for: point,
+                activeJulianDay: activeJulianDay,
+                expansion: expansion
+            )
+            XCTAssertEqual(placement.source, point)
+            XCTAssertEqual(placement.source.source, source)
+            XCTAssertEqual(placement.source.z, source.julianDay.value, accuracy: 0.000_001)
+        }
+
+        XCTAssertEqual(scene, originalScene)
+        XCTAssertEqual(scene.coordinates, [source])
+    }
+
+    func testTimeExpansionClampsAndDefaultsFullyExpanded() throws {
+        let source = OrboSpineCelestialCoordinate(
+            body: .venus,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 75.0, motion: .direct)
+            ),
+            julianDay: try XCTUnwrap(JulianDay(100.0))
+        )
+        let point = try XCTUnwrap(IrisScene3D(coordinates: [source]).points.first)
+        let activeJulianDay = try XCTUnwrap(JulianDay(110.0))
+
+        let below = IrisTemporalExpression.placement(
+            for: point,
+            activeJulianDay: activeJulianDay,
+            expansion: -1.0
+        )
+        let above = IrisTemporalExpression.placement(
+            for: point,
+            activeJulianDay: activeJulianDay,
+            expansion: 2.0
+        )
+
+        XCTAssertEqual(below.expansion, 0.0, accuracy: 0.000_001)
+        XCTAssertEqual(below.z, activeJulianDay.value, accuracy: 0.000_001)
+        XCTAssertEqual(above.expansion, 1.0, accuracy: 0.000_001)
+        XCTAssertEqual(above.z, source.julianDay.value, accuracy: 0.000_001)
+        XCTAssertEqual(IrisChart3DPresentation().timeExpansion, 1.0, accuracy: 0.000_001)
+        XCTAssertEqual(IrisChart3DPresentation(timeExpansion: -1.0).timeExpansion, 0.0, accuracy: 0.000_001)
+        XCTAssertEqual(IrisChart3DPresentation(timeExpansion: 2.0).timeExpansion, 1.0, accuracy: 0.000_001)
+    }
+
+    func testActiveHoraePointRemainsOnPlaneAtEveryTimeExpansion() throws {
+        let activeJulianDay = try XCTUnwrap(JulianDay(2_461_004.75))
+        let source = OrboSpineCelestialCoordinate(
+            body: .moon,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 88.0, motion: .direct)
+            ),
+            julianDay: activeJulianDay
+        )
+        let point = try XCTUnwrap(IrisScene3D(coordinates: [source]).points.first)
+
+        for expansion in [0.0, 0.25, 0.5, 0.75, 1.0] {
+            XCTAssertEqual(
+                IrisTemporalExpression.renderZ(
+                    for: point,
+                    activeJulianDay: activeJulianDay,
+                    expansion: expansion
+                ),
+                activeJulianDay.value,
+                accuracy: 0.000_001
+            )
+        }
+    }
+
     private func makePlaneFrame() throws -> IrisHoraeFrame {
         let julianDay = try XCTUnwrap(JulianDay(2_461_004.75))
         let celestial = try OrboSpineContract.canonicalBodies.enumerated().map { index, body in
