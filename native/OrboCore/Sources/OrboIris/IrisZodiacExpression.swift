@@ -1,3 +1,4 @@
+import Foundation
 import OrboCore
 
 /// Iris-owned visual family for one canonical zodiac sign.
