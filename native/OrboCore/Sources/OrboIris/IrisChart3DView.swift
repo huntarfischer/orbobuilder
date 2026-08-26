@@ -44,12 +44,11 @@ public struct IrisChart3DView: View {
     private var planeSurfaceContent: some Chart3DContent {
         if let plane {
             RectangleMark(
-                x: .value("Horae Plane X", -planeSurfaceExtent...planeSurfaceExtent),
-                y: .value("Horae Plane Y", -planeSurfaceExtent...planeSurfaceExtent),
+                x: .value("Horae Plane X", -planeSurfaceExtent..<planeSurfaceExtent),
+                y: .value("Horae Plane Y", -planeSurfaceExtent..<planeSurfaceExtent),
                 z: .value("Selected Julian Day", plane.julianDay.value)
             )
-            .foregroundStyle(Color.secondary)
-            .opacity(0.08)
+            .foregroundStyle(Color.secondary.opacity(0.08))
         }
     }
 
