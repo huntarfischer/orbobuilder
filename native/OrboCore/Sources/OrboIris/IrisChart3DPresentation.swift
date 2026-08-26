@@ -14,6 +14,7 @@ public struct IrisChart3DPresentation: Hashable, Sendable {
     public let bodySizeMode: IrisBodySizeMode
     public let trackOrder: IrisTrackOrder
     public let trackExpansion: Double
+    public let timeExpansion: Double
 
     public init(
         azimuthDegrees: Double = 20,
@@ -21,7 +22,8 @@ public struct IrisChart3DPresentation: Hashable, Sendable {
         cameraProjection: IrisCameraProjection = .orthographic,
         bodySizeMode: IrisBodySizeMode = .planetSized,
         trackOrder: IrisTrackOrder = .astroDNA,
-        trackExpansion: Double = 1.0
+        trackExpansion: Double = 1.0,
+        timeExpansion: Double = 1.0
     ) {
         self.azimuthDegrees = azimuthDegrees
         self.inclinationDegrees = inclinationDegrees
@@ -29,5 +31,6 @@ public struct IrisChart3DPresentation: Hashable, Sendable {
         self.bodySizeMode = bodySizeMode
         self.trackOrder = trackOrder
         self.trackExpansion = min(max(trackExpansion, 0.0), 1.0)
+        self.timeExpansion = min(max(timeExpansion, 0.0), 1.0)
     }
 }
