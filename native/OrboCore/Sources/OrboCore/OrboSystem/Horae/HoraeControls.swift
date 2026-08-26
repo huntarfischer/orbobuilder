@@ -41,6 +41,20 @@ public struct HoraeUTOffset: Hashable, Sendable {
     }
 }
 
+/// Consumer-facing continuous UT envelope spoken by Horae.
+///
+/// OrboSpine owns these boundaries. Horae expose only the values a consumer
+/// needs to construct truthful controls; Locate itself never crosses the seam.
+public struct HoraeControlDomain: Hashable, Sendable {
+    public let start: JulianDay
+    public let endExclusive: JulianDay
+
+    public init(start: JulianDay, endExclusive: JulianDay) {
+        self.start = start
+        self.endExclusive = endExclusive
+    }
+}
+
 /// A control gesture could not resolve one real OrboSpine address.
 public enum HoraeControlError: Error, Equatable {
     case noOccurrence(
