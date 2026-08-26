@@ -1,167 +1,176 @@
 public struct HermesCourier: Sendable {
     public enum Failure: Error, Hashable, Sendable {
-        case invalidRoute
+        case packageAlreadyAccepted
         case unknownTicket
-        case ticketMismatch
+        case packageMismatch
         case subjectMismatch
         case senderMismatch
-        case parcelKindMismatch
-        case finalAddresseeMismatch
+        case packageKindMismatch
+        case itineraryMismatch
+        case addressMismatch
         case invalidState
         case manifestRejectedEvent
     }
 
+    private enum Phase: Sendable {
+        case inCustody
+        case awaitingRecovery(Int)
+        case awaitingReceipt
+        case resolved
+    }
+
+    private struct Journey: Sendable {
+        let packageID: HermesPackageID
+        let subjectID: HermesSubjectID
+        let sender: HermesAddress
+        let packageKind: HermesPackageKind
+        let addresses: [HermesAddress]
+        var nextAddressIndex: Int
+        var phase: Phase
+    }
+
     public private(set) var manifest: HermesManifest
 
-    private let registry: HermesRouteRegistry
-    private var tickets: [HermesTicketID: HermesTicket]
-    private var acceptedReturnParcels: [HermesTicketID: HermesParcelID]
+    private var journeys: [HermesTicketID: Journey]
+    private var packageTickets: [HermesPackageID: HermesTicketID]
 
-    public init(
-        registry: HermesRouteRegistry = HermesRouteRegistry(),
-        manifest: HermesManifest = HermesManifest()
-    ) {
-        self.registry = registry
+    public init(manifest: HermesManifest = HermesManifest()) {
         self.manifest = manifest
-        self.tickets = [:]
-        self.acceptedReturnParcels = [:]
+        self.journeys = [:]
+        self.packageTickets = [:]
     }
 
-    public mutating func accept<Payload: Hashable & Sendable>(
-        ticket: HermesTicket,
-        parcel: HermesParcel<Payload>,
+    /// Accepts custody of a package that has already been created and addressed by the caller.
+    /// Hermes opens the manifest ticket; he does not author the package or its itinerary.
+    @discardableResult
+    public mutating func accept<Contents: Hashable & Sendable>(
+        package: HermesPackage<Contents>,
         occurredAt: AbsoluteInstant
-    ) throws {
-        guard parcel.ticketID == ticket.ticketID else { throw Failure.ticketMismatch }
-        guard parcel.subjectID == ticket.subjectID else { throw Failure.subjectMismatch }
-        guard parcel.finalAddressee == ticket.finalAddressee else {
-            throw Failure.finalAddresseeMismatch
-        }
-        guard registry.contract(
-            for: ticket.serviceDestination,
-            accepting: parcel.kind,
-            returning: ticket.expectedReturnKind
-        ) != nil else {
-            throw Failure.invalidRoute
-        }
-        guard manifest.currentState(for: ticket.ticketID) == nil else {
-            throw Failure.invalidState
+    ) throws -> HermesTicketID {
+        guard packageTickets[package.packageID] == nil else {
+            throw Failure.packageAlreadyAccepted
         }
 
+        let ticketID = HermesTicketID()
         try append(
-            ticketID: ticket.ticketID,
+            ticketID: ticketID,
             kind: .ticketOpened,
             occurredAt: occurredAt,
-            parcelID: parcel.parcelID
+            packageID: package.packageID
         )
-        tickets[ticket.ticketID] = ticket
+
+        journeys[ticketID] = Journey(
+            packageID: package.packageID,
+            subjectID: package.subjectID,
+            sender: package.sender,
+            packageKind: package.kind,
+            addresses: package.addresses,
+            nextAddressIndex: 0,
+            phase: .inCustody
+        )
+        packageTickets[package.packageID] = ticketID
+        return ticketID
     }
 
-    public mutating func deliverToService(
+    /// Delivers the package to the next printed address. Hermes chooses no destination.
+    /// Intermediate addresses require recovery before the journey may continue.
+    @discardableResult
+    public mutating func deliverNext(
         ticketID: HermesTicketID,
         occurredAt: AbsoluteInstant
-    ) throws {
-        guard tickets[ticketID] != nil else { throw Failure.unknownTicket }
-        guard manifest.events(for: ticketID).last?.kind == .ticketOpened else {
+    ) throws -> HermesAddress {
+        guard var journey = journeys[ticketID] else { throw Failure.unknownTicket }
+        guard case .inCustody = journey.phase else { throw Failure.invalidState }
+        guard journey.nextAddressIndex < journey.addresses.count else {
             throw Failure.invalidState
         }
+
+        let index = journey.nextAddressIndex
+        let address = journey.addresses[index]
+        let isFinal = index == journey.addresses.count - 1
 
         try append(
             ticketID: ticketID,
-            kind: .deliveredToService,
-            occurredAt: occurredAt
+            kind: isFinal ? .deliveredToAddressee : .deliveredToStop,
+            occurredAt: occurredAt,
+            packageID: journey.packageID,
+            address: address
         )
+
+        journey.phase = isFinal ? .awaitingReceipt : .awaitingRecovery(index)
+        journeys[ticketID] = journey
+        return address
     }
 
-    public mutating func acceptReturn<Payload: Hashable & Sendable>(
-        parcel: HermesParcel<Payload>,
+    /// Recovers the same entrusted package after an intermediate stop.
+    /// Contents may have changed; package identity, subject, sender, kind, and itinerary may not.
+    public mutating func recover<Contents: Hashable & Sendable>(
+        ticketID: HermesTicketID,
+        package: HermesPackage<Contents>,
         occurredAt: AbsoluteInstant
     ) throws {
-        guard let ticket = tickets[parcel.ticketID] else { throw Failure.unknownTicket }
-        guard manifest.events(for: ticket.ticketID).last?.kind == .deliveredToService else {
+        guard var journey = journeys[ticketID] else { throw Failure.unknownTicket }
+        guard case let .awaitingRecovery(deliveredIndex) = journey.phase else {
             throw Failure.invalidState
         }
 
-        let expectation = HermesExpectation(ticket: ticket)
-        guard parcel.ticketID == expectation.ticketID else { throw Failure.ticketMismatch }
-        guard parcel.subjectID == expectation.subjectID else { throw Failure.subjectMismatch }
-        guard parcel.sender == expectation.expectedFrom else { throw Failure.senderMismatch }
-        guard parcel.kind == expectation.expectedReturnKind else {
-            throw Failure.parcelKindMismatch
-        }
-        guard parcel.finalAddressee == expectation.finalAddressee else {
-            throw Failure.finalAddresseeMismatch
-        }
+        guard package.packageID == journey.packageID else { throw Failure.packageMismatch }
+        guard package.subjectID == journey.subjectID else { throw Failure.subjectMismatch }
+        guard package.sender == journey.sender else { throw Failure.senderMismatch }
+        guard package.kind == journey.packageKind else { throw Failure.packageKindMismatch }
+        guard package.addresses == journey.addresses else { throw Failure.itineraryMismatch }
 
+        let address = journey.addresses[deliveredIndex]
         try append(
-            ticketID: ticket.ticketID,
-            kind: .serviceReturnAccepted,
+            ticketID: ticketID,
+            kind: .recoveredFromStop,
             occurredAt: occurredAt,
-            parcelID: parcel.parcelID
+            packageID: journey.packageID,
+            address: address
         )
-        acceptedReturnParcels[ticket.ticketID] = parcel.parcelID
+
+        journey.nextAddressIndex = deliveredIndex + 1
+        journey.phase = .inCustody
+        journeys[ticketID] = journey
     }
 
-    public mutating func deliverToFinalAddressee<Payload: Hashable & Sendable>(
-        parcel: HermesParcel<Payload>,
-        occurredAt: AbsoluteInstant
+    /// Records final acceptance of the package. Only the final printed address can resolve it.
+    public mutating func recordReceipt(
+        ticketID: HermesTicketID,
+        packageID: HermesPackageID,
+        recipient: HermesAddress,
+        receivedAt: AbsoluteInstant
     ) throws {
-        guard let ticket = tickets[parcel.ticketID] else { throw Failure.unknownTicket }
-        guard acceptedReturnParcels[ticket.ticketID] == parcel.parcelID,
-              manifest.events(for: ticket.ticketID).last?.kind == .serviceReturnAccepted else {
-            throw Failure.invalidState
-        }
-
-        let expectation = HermesExpectation(ticket: ticket)
-        guard parcel.subjectID == expectation.subjectID else { throw Failure.subjectMismatch }
-        guard parcel.sender == expectation.expectedFrom else { throw Failure.senderMismatch }
-        guard parcel.kind == expectation.expectedReturnKind else {
-            throw Failure.parcelKindMismatch
-        }
-        guard parcel.finalAddressee == expectation.finalAddressee else {
-            throw Failure.finalAddresseeMismatch
-        }
-        guard registry.finalAddressee(expectation.finalAddressee, accepts: parcel.kind) else {
-            throw Failure.invalidRoute
-        }
+        guard var journey = journeys[ticketID] else { throw Failure.unknownTicket }
+        guard case .awaitingReceipt = journey.phase else { throw Failure.invalidState }
+        guard packageID == journey.packageID else { throw Failure.packageMismatch }
+        guard recipient == journey.addresses.last else { throw Failure.addressMismatch }
 
         try append(
-            ticketID: ticket.ticketID,
-            kind: .deliveredToAddressee,
-            occurredAt: occurredAt,
-            parcelID: parcel.parcelID
-        )
-    }
-
-    public mutating func recordReceipt(_ receipt: HermesReceipt) throws {
-        guard let ticket = tickets[receipt.ticketID] else { throw Failure.unknownTicket }
-        guard acceptedReturnParcels[ticket.ticketID] == receipt.parcelID,
-              manifest.events(for: ticket.ticketID).last?.kind == .deliveredToAddressee else {
-            throw Failure.invalidState
-        }
-        guard receipt.recipient == ticket.finalAddressee else {
-            throw Failure.finalAddresseeMismatch
-        }
-
-        try append(
-            ticketID: ticket.ticketID,
+            ticketID: ticketID,
             kind: .receiptRecorded,
-            occurredAt: receipt.receivedAt,
-            parcelID: receipt.parcelID
+            occurredAt: receivedAt,
+            packageID: journey.packageID,
+            address: recipient
         )
         try append(
-            ticketID: ticket.ticketID,
+            ticketID: ticketID,
             kind: .resolved,
-            occurredAt: receipt.receivedAt,
-            parcelID: receipt.parcelID
+            occurredAt: receivedAt,
+            packageID: journey.packageID,
+            address: recipient
         )
+
+        journey.phase = .resolved
+        journeys[ticketID] = journey
     }
 
     private mutating func append(
         ticketID: HermesTicketID,
         kind: HermesManifestEventKind,
         occurredAt: AbsoluteInstant,
-        parcelID: HermesParcelID? = nil
+        packageID: HermesPackageID,
+        address: HermesAddress? = nil
     ) throws {
         let sequence = manifest.events(for: ticketID).count + 1
         guard let event = HermesManifestEvent(
@@ -169,7 +178,8 @@ public struct HermesCourier: Sendable {
             sequence: sequence,
             kind: kind,
             occurredAt: occurredAt,
-            parcelID: parcelID
+            packageID: packageID,
+            address: address
         ), manifest.append(event) else {
             throw Failure.manifestRejectedEvent
         }

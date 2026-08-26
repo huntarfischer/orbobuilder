@@ -1,4 +1,4 @@
-public struct HermesRouteContract: Hashable, Codable, Sendable {
+public struct HermesMessengerRouteContract: Hashable, Codable, Sendable {
     public let serviceDestination: HermesAddress
     public let acceptedParcelKind: HermesParcelKind
     public let expectedReturnKind: HermesParcelKind
@@ -14,8 +14,8 @@ public struct HermesRouteContract: Hashable, Codable, Sendable {
     }
 }
 
-public struct HermesRouteRegistry: Sendable {
-    private let contracts: [HermesRouteContract]
+public struct HermesMessengerRouteRegistry: Sendable {
+    private let contracts: [HermesMessengerRouteContract]
     private let finalAcceptances: [HermesAddress: Set<HermesParcelKind>]
 
     public init() {
@@ -25,7 +25,7 @@ public struct HermesRouteRegistry: Sendable {
         let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
 
         self.contracts = [
-            HermesRouteContract(
+            HermesMessengerRouteContract(
                 serviceDestination: moirai,
                 acceptedParcelKind: natalCommission,
                 expectedReturnKind: moiraiPackage
@@ -40,7 +40,7 @@ public struct HermesRouteRegistry: Sendable {
         for serviceDestination: HermesAddress,
         accepting parcelKind: HermesParcelKind,
         returning expectedReturnKind: HermesParcelKind
-    ) -> HermesRouteContract? {
+    ) -> HermesMessengerRouteContract? {
         contracts.first {
             $0.serviceDestination == serviceDestination
                 && $0.acceptedParcelKind == parcelKind
