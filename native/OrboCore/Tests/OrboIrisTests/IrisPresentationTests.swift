@@ -246,4 +246,91 @@ final class IrisPresentationTests: XCTestCase {
         XCTAssertEqual(presentation.trackOrder, .astroDNA)
         XCTAssertEqual(presentation.trackExpansion, 1.0, accuracy: 0.000_001)
     }
+
+    func testHoraePlaneRetainsExactSelectedFrameAndTerra() throws {
+        let frame = try makePlaneFrame()
+        let plane = IrisHoraePlane(frame: frame)
+
+        XCTAssertEqual(plane.frame, frame)
+        XCTAssertEqual(plane.julianDay, frame.julianDay)
+        XCTAssertEqual(plane.terra, frame.terra)
+        XCTAssertEqual(plane.bodyCoordinates, frame.output.celestial)
+        XCTAssertEqual(plane.bodyPoints, frame.scene.points)
+        XCTAssertEqual(plane.bodyCoordinates.count, 11)
+        XCTAssertEqual(plane.bodyCoordinates.map(\.body), OrboSpineContract.canonicalBodies)
+        XCTAssertTrue(plane.bodyCoordinates.allSatisfy { $0.julianDay == plane.julianDay })
+    }
+
+    func testHoraePlaneBuildsCanonicalTwelveSignRimAtSelectedUT() throws {
+        let plane = IrisHoraePlane(frame: try makePlaneFrame())
+        let rim = plane.rimPoints(radius: 1.8)
+
+        XCTAssertEqual(rim.count, IrisHoraePlane.rimSampleCount)
+        XCTAssertEqual(rim.count, 360)
+        XCTAssertEqual(rim.first?.sign, .aries)
+        XCTAssertEqual(rim.last?.sign, .pisces)
+
+        for sign in Sign.canonicalOrder {
+            XCTAssertEqual(rim.filter { $0.sign == sign }.count, 30)
+        }
+
+        XCTAssertEqual(rim[29].sign, .aries)
+        XCTAssertEqual(rim[30].sign, .taurus)
+        XCTAssertEqual(rim[29].longitudeDegrees, 29.5, accuracy: 0.000_001)
+        XCTAssertEqual(rim[30].longitudeDegrees, 30.5, accuracy: 0.000_001)
+    }
+
+    func testHoraePlaneRimUsesCanonicalLongitudeLawAndRawSelectedZ() throws {
+        let plane = IrisHoraePlane(frame: try makePlaneFrame())
+        let radius = 1.8
+        let rim = plane.rimPoints(radius: radius)
+
+        for point in rim {
+            let longitude = try XCTUnwrap(CelestialLongitude(point.longitudeDegrees))
+            XCTAssertEqual(point.sign, longitude.sign)
+            XCTAssertEqual(point.appearance, IrisZodiacAppearance(sign: longitude.sign))
+            XCTAssertEqual(point.z, plane.julianDay.value, accuracy: 0.000_001)
+            XCTAssertEqual(hypot(point.x, point.y), radius, accuracy: 0.000_001)
+        }
+    }
+
+    func testHoraePlaneAddsPresentationGeometryWithoutReplacingSceneTruth() throws {
+        let frame = try makePlaneFrame()
+        let plane = IrisHoraePlane(frame: frame)
+        let originalScene = frame.scene
+        _ = plane.rimPoints(radius: 1.8)
+
+        XCTAssertEqual(frame.scene, originalScene)
+        XCTAssertEqual(plane.bodyPoints.map(\.source), originalScene.coordinates)
+        XCTAssertEqual(plane.frame.output, frame.output)
+    }
+
+    private func makePlaneFrame() throws -> IrisHoraeFrame {
+        let julianDay = try XCTUnwrap(JulianDay(2_461_004.75))
+        let celestial = try OrboSpineContract.canonicalBodies.enumerated().map { index, body in
+            let physicalDegrees = (Double(index) * 31.0 + 14.0).truncatingRemainder(dividingBy: 360)
+            let motion: Motion = body == .mercury || body == .trueNorthNode ? .retrograde : .direct
+            return OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: try XCTUnwrap(
+                    OrboSpineDirectionalDegree(
+                        physicalDegrees: physicalDegrees,
+                        motion: motion
+                    )
+                ),
+                julianDay: julianDay
+            )
+        }
+        let terra = try XCTUnwrap(TerraMarrowSample(
+            turnDegrees: 104.25,
+            tiltDegrees: 23.45,
+            julianDay: julianDay
+        ))
+        let output = HoraeOutput(
+            julianDay: julianDay,
+            celestial: celestial,
+            terra: terra
+        )
+        return IrisHoraeFrame(output: output)
+    }
 }
