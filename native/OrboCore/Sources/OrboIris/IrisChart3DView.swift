@@ -29,7 +29,7 @@ public struct IrisChart3DView: View {
                 y: .value("Y", point.y),
                 z: .value("Julian Day", point.z)
             )
-            .foregroundStyle(by: .value("Body", point.source.body.displayName))
+            .foregroundStyle(zodiacColor(for: point))
         }
         .chart3DPose($pose)
         .chart3DCameraProjection(
@@ -37,5 +37,10 @@ public struct IrisChart3DView: View {
         )
         .chartXScale(domain: -1.05...1.05)
         .chartYScale(domain: -1.05...1.05)
+    }
+
+    private func zodiacColor(for point: IrisScenePoint3D) -> Color {
+        let placement = IrisZodiacPlacement(source: point.source)
+        return IrisZodiacPalette.color(for: placement.appearance)
     }
 }
