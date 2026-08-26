@@ -19,13 +19,17 @@ final class IrisPresentationTests: XCTestCase {
             azimuthDegrees: 20,
             inclinationDegrees: 7,
             cameraProjection: .orthographic,
-            bodySizeMode: .equal
+            bodySizeMode: .equal,
+            trackOrder: .timespine,
+            trackExpansion: 0.0
         )
         let perspective = IrisChart3DPresentation(
             azimuthDegrees: 65,
             inclinationDegrees: 28,
             cameraProjection: .perspective,
-            bodySizeMode: .planetSized
+            bodySizeMode: .planetSized,
+            trackOrder: .astroDNA,
+            trackExpansion: 1.0
         )
 
         XCTAssertNotEqual(orthographic, perspective)
@@ -117,5 +121,129 @@ final class IrisPresentationTests: XCTestCase {
 
     func testPlanetSizedModeIsDefaultPresentation() {
         XCTAssertEqual(IrisChart3DPresentation().bodySizeMode, .planetSized)
+    }
+
+    func testAstroDNAOrderReservesAscendantThenFollowsNativeSequence() {
+        XCTAssertEqual(
+            IrisTrackExpression.astroDNALanes,
+            [
+                .reservedAscendant,
+                .body(.moon),
+                .body(.sun),
+                .body(.mercury),
+                .body(.venus),
+                .body(.mars),
+                .body(.jupiter),
+                .body(.saturn),
+                .body(.uranus),
+                .body(.neptune),
+                .body(.pluto),
+                .body(.trueNorthNode),
+            ]
+        )
+        XCTAssertEqual(IrisTrackExpression.laneIndex(for: .moon, order: .astroDNA), 1)
+        XCTAssertEqual(IrisTrackExpression.laneIndex(for: .sun, order: .astroDNA), 2)
+        XCTAssertEqual(IrisTrackExpression.laneIndex(for: .trueNorthNode, order: .astroDNA), 11)
+    }
+
+    func testTimespineOrderExactlyMatchesCanonicalBodyOrder() {
+        XCTAssertEqual(
+            IrisTrackExpression.timespineLanes,
+            MundaneBody.canonicalOrder.map(IrisTrackLane.body)
+        )
+
+        for (index, body) in MundaneBody.canonicalOrder.enumerated() {
+            XCTAssertEqual(
+                IrisTrackExpression.laneIndex(for: body, order: .timespine),
+                index
+            )
+        }
+    }
+
+    func testUnifiedTrackExpansionUsesOneCommonRadiusForEveryBody() {
+        for order in [IrisTrackOrder.astroDNA, .timespine] {
+            for body in MundaneBody.canonicalOrder {
+                XCTAssertEqual(
+                    IrisTrackExpression.radius(for: body, order: order, expansion: 0.0),
+                    IrisTrackExpression.commonRadius,
+                    accuracy: 0.000_001
+                )
+            }
+        }
+    }
+
+    func testExpandedAstroDNATracksFollowNativeSequence() {
+        let bodyOrder: [MundaneBody] = [
+            .moon, .sun, .mercury, .venus, .mars, .jupiter,
+            .saturn, .uranus, .neptune, .pluto, .trueNorthNode,
+        ]
+        let radii = bodyOrder.map {
+            IrisTrackExpression.radius(for: $0, order: .astroDNA, expansion: 1.0)
+        }
+
+        for pair in zip(radii, radii.dropFirst()) {
+            XCTAssertLessThan(pair.0, pair.1)
+        }
+        XCTAssertEqual(radii.first!, 0.74, accuracy: 0.000_001)
+        XCTAssertEqual(radii.last!, 1.64, accuracy: 0.000_001)
+    }
+
+    func testTrackExpansionInterpolatesWithoutChangingSourceTruth() throws {
+        let source = OrboSpineCelestialCoordinate(
+            body: .mercury,
+            directionalDegree: try XCTUnwrap(
+                OrboSpineDirectionalDegree(physicalDegrees: 42.0, motion: .direct)
+            ),
+            julianDay: try XCTUnwrap(JulianDay(2_461_020.5))
+        )
+        let scene = IrisScene3D(coordinates: [source])
+        let point = try XCTUnwrap(scene.points.first)
+
+        let unified = IrisTrackExpression.placement(
+            for: point,
+            order: .astroDNA,
+            expansion: 0.0
+        )
+        let halfway = IrisTrackExpression.placement(
+            for: point,
+            order: .astroDNA,
+            expansion: 0.5
+        )
+        let expanded = IrisTrackExpression.placement(
+            for: point,
+            order: .astroDNA,
+            expansion: 1.0
+        )
+
+        XCTAssertEqual(unified.radius, 1.0, accuracy: 0.000_001)
+        XCTAssertEqual(halfway.radius, 0.96, accuracy: 0.000_001)
+        XCTAssertEqual(expanded.radius, 0.92, accuracy: 0.000_001)
+
+        for placement in [unified, halfway, expanded] {
+            XCTAssertEqual(placement.source, point)
+            XCTAssertEqual(placement.z, point.z, accuracy: 0.000_001)
+            XCTAssertEqual(placement.x / placement.radius, point.x, accuracy: 0.000_001)
+            XCTAssertEqual(placement.y / placement.radius, point.y, accuracy: 0.000_001)
+        }
+
+        XCTAssertEqual(scene.coordinates, [source])
+        XCTAssertEqual(scene.points, [point])
+    }
+
+    func testTrackExpansionClampsAndAstroDNAExpandedTracksAreDefault() {
+        XCTAssertEqual(
+            IrisTrackExpression.radius(for: .mercury, order: .astroDNA, expansion: -1.0),
+            1.0,
+            accuracy: 0.000_001
+        )
+        XCTAssertEqual(
+            IrisTrackExpression.radius(for: .mercury, order: .astroDNA, expansion: 2.0),
+            0.92,
+            accuracy: 0.000_001
+        )
+
+        let presentation = IrisChart3DPresentation()
+        XCTAssertEqual(presentation.trackOrder, .astroDNA)
+        XCTAssertEqual(presentation.trackExpansion, 1.0, accuracy: 0.000_001)
     }
 }
