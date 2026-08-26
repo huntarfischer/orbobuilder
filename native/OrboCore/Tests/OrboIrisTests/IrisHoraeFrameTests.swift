@@ -120,6 +120,52 @@ final class IrisHoraeFrameTests: XCTestCase {
         }
     }
 
+    func testTerraReadoutPreservesExactHoraeSample() throws {
+        let runtime = try makeRuntime()
+        let horae = Horae(locate: runtime.locate)
+        let frame = IrisHoraeFrame(output: try horae.seek(to: JulianDay(1_000.75)!))
+        let readout = frame.terraReadout
+
+        XCTAssertEqual(readout.source, frame.terra)
+        XCTAssertEqual(readout.julianDay, frame.terra.julianDay)
+        XCTAssertEqual(readout.turnDegrees, frame.terra.turnDegrees, accuracy: 0.000_001)
+        XCTAssertEqual(readout.tiltDegrees, frame.terra.tiltDegrees, accuracy: 0.000_001)
+        XCTAssertEqual(readout.displayText, "Terra turn 103.75° · tilt 23.44°")
+    }
+
+    func testTimespineViewportPreservesOneTerraCompanionPerHoraeFrame() throws {
+        let viewport = try IrisTimespineViewport(
+            horae: makeViewportHorae(),
+            start: JulianDay(2_000.25)!,
+            end: JulianDay(2_001.75)!,
+            sampleCount: 7
+        )
+
+        XCTAssertEqual(viewport.terraReadouts.count, viewport.frames.count)
+        XCTAssertEqual(viewport.terraSamples, viewport.frames.map(\.terra))
+
+        for (frame, readout) in zip(viewport.frames, viewport.terraReadouts) {
+            XCTAssertEqual(readout.source, frame.terra)
+            XCTAssertEqual(readout.julianDay, frame.julianDay)
+        }
+    }
+
+    func testActiveHoraePlaneCarriesSelectedFramesTerraWithoutChangingIt() throws {
+        let viewport = try IrisTimespineViewport(
+            horae: makeViewportHorae(),
+            start: JulianDay(2_000.25)!,
+            end: JulianDay(2_001.75)!,
+            sampleCount: 7
+        )
+        let selectedFrame = viewport.frames[3]
+        let plane = IrisHoraePlane(frame: selectedFrame)
+
+        XCTAssertEqual(plane.terra, selectedFrame.terra)
+        XCTAssertEqual(plane.terraReadout, selectedFrame.terraReadout)
+        XCTAssertEqual(plane.terraReadout.source, selectedFrame.output.terra)
+        XCTAssertEqual(plane.julianDay, plane.terraReadout.julianDay)
+    }
+
     private func makeViewportHorae() throws -> Horae {
         let bone = try XCTUnwrap(OrboSpineBoneSpan(
             start: JulianDay(2_000)!,
