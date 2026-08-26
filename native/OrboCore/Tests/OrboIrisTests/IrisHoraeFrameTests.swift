@@ -23,6 +23,141 @@ final class IrisHoraeFrameTests: XCTestCase {
         XCTAssertEqual(frame.scene.points.map(\.source), output.celestial)
     }
 
+    func testTimespineViewportRequestsMonotonicFramesThroughHorae() throws {
+        let horae = try makeViewportHorae()
+        let start = JulianDay(2_000.25)!
+        let end = JulianDay(2_001.75)!
+        let viewport = try IrisTimespineViewport(
+            horae: horae,
+            start: start,
+            end: end,
+            sampleCount: 7
+        )
+
+        XCTAssertEqual(viewport.frames.count, 7)
+        XCTAssertEqual(viewport.julianDays.first, start)
+        XCTAssertEqual(viewport.julianDays.last, end)
+
+        for pair in zip(viewport.julianDays, viewport.julianDays.dropFirst()) {
+            XCTAssertLessThan(pair.0.value, pair.1.value)
+        }
+
+        for frame in viewport.frames {
+            XCTAssertEqual(frame.output.celestial.count, 11)
+            XCTAssertEqual(frame.output.celestial.map(\.body), OrboSpineContract.canonicalBodies)
+            XCTAssertTrue(frame.output.celestial.allSatisfy { $0.julianDay == frame.julianDay })
+        }
+    }
+
+    func testTimespineViewportSceneIsExactConcatenationOfHoraeTruth() throws {
+        let horae = try makeViewportHorae()
+        let viewport = try IrisTimespineViewport(
+            horae: horae,
+            start: JulianDay(2_000.2)!,
+            end: JulianDay(2_001.8)!,
+            sampleCount: 9
+        )
+        let expected = viewport.frames.flatMap { $0.output.celestial }
+
+        XCTAssertEqual(viewport.scene.coordinates, expected)
+        XCTAssertEqual(viewport.scene.points.map(\.source), expected)
+        XCTAssertEqual(viewport.terraSamples, viewport.frames.map(\.terra))
+
+        for frame in viewport.frames {
+            XCTAssertEqual(frame.output, try horae.seek(to: frame.julianDay))
+        }
+    }
+
+    func testTimespineViewportPreservesRetrogradeTopologyWhileUTMovesForward() throws {
+        let horae = try makeViewportHorae()
+        let viewport = try IrisTimespineViewport(
+            horae: horae,
+            start: JulianDay(2_000.1)!,
+            end: JulianDay(2_001.9)!,
+            sampleCount: 10
+        )
+        let mercury = viewport.frames.compactMap { frame in
+            frame.output.celestial.first(where: { $0.body == .mercury })
+        }
+
+        XCTAssertEqual(mercury.count, viewport.frames.count)
+        XCTAssertTrue(mercury.allSatisfy { $0.directionalDegree.motion == .retrograde })
+
+        for pair in zip(mercury, mercury.dropFirst()) {
+            XCTAssertLessThan(pair.0.julianDay.value, pair.1.julianDay.value)
+            XCTAssertGreaterThan(
+                pair.0.directionalDegree.physicalDegrees,
+                pair.1.directionalDegree.physicalDegrees
+            )
+        }
+    }
+
+    func testTimespineViewportRejectsInvalidSamplingRequest() throws {
+        let horae = try makeViewportHorae()
+        let start = JulianDay(2_000.25)!
+        let end = JulianDay(2_001.75)!
+
+        XCTAssertThrowsError(
+            try IrisTimespineViewport(
+                horae: horae,
+                start: start,
+                end: end,
+                sampleCount: 1
+            )
+        ) { error in
+            XCTAssertEqual(error as? IrisTimespineViewportError, .sampleCountTooSmall)
+        }
+
+        XCTAssertThrowsError(
+            try IrisTimespineViewport(
+                horae: horae,
+                start: end,
+                end: start,
+                sampleCount: 4
+            )
+        ) { error in
+            XCTAssertEqual(error as? IrisTimespineViewportError, .nonIncreasingInterval)
+        }
+    }
+
+    private func makeViewportHorae() throws -> Horae {
+        let bone = try XCTUnwrap(OrboSpineBoneSpan(
+            start: JulianDay(2_000)!,
+            end: JulianDay(2_002)!
+        ))
+
+        var supports: [OrboSpineCelestialCoordinate] = []
+        for (index, body) in OrboSpineContract.canonicalBodies.enumerated() {
+            let base = 40.0 + (Double(index) * 20.0)
+            let step = OrboSpineContract.supportDegrees(for: body) * 0.4
+            let motion: Motion = body == .mercury ? .retrograde : .direct
+            let second = motion == .retrograde ? base - step : base + step
+
+            supports.append(coordinate(body, base, motion, 2_000.0))
+            supports.append(coordinate(body, second, motion, 2_001.0))
+        }
+
+        let terra = [
+            try XCTUnwrap(TerraMarrowSample(
+                turnDegrees: 100,
+                tiltDegrees: 23.4,
+                julianDay: bone.start
+            )),
+            try XCTUnwrap(TerraMarrowSample(
+                turnDegrees: 102,
+                tiltDegrees: 23.5,
+                julianDay: bone.end
+            )),
+        ]
+
+        let locate = try XCTUnwrap(OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            terraSamples: terra
+        ))
+        return Horae(locate: locate)
+    }
+
     private func makeRuntime() throws -> OrboSpineRuntime {
         let bone = try XCTUnwrap(OrboSpineBoneSpan(
             start: JulianDay(1_000)!,
