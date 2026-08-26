@@ -8,11 +8,14 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS MVP / FROZEN")
+                    Text("IRIS IX5 / HORAE TIMESPINE")
                         .font(.caption.monospaced())
 
+                    Text("11 tracts · 35 Horae cross-sections")
+                        .font(.caption2.monospaced())
+
                     IrisChart3DView(
-                        scene: IrisI4Fixture.scene,
+                        scene: IrisIX5Harness.viewport.scene,
                         presentation: IrisChart3DPresentation(
                             azimuthDegrees: 65,
                             inclinationDegrees: 28,
@@ -30,46 +33,100 @@ struct OrboApp: App {
     }
 }
 
-/// Fixed typed input for the Iris MVP temporal-strand renderer proof only.
-/// The host supplies every body, degree, motion, and time. Iris chooses none of them.
-/// These coordinates are not an ephemeris claim.
-private enum IrisI4Fixture {
+/// IX5 host-side integration harness.
+///
+/// The old Iris fixture handed prebuilt visual coordinates directly to Iris. This
+/// harness instead supplies deterministic support matter to the real
+/// OrboSpine Locate -> Horae -> Iris route, then lets Iris choose only the visible
+/// interval and sample density. The support values are a visualization harness,
+/// not an ephemeris claim; certified production OrboSpine matter is not bundled
+/// into the app target yet.
+private enum IrisIX5Harness {
     private static let baseJulianDay = 2_461_000.5
-    private static let stepDays = 0.25
 
-    private static let strands: [(body: MundaneBody, motion: Motion, degrees: [Double])] = [
-        (.sun, .direct, [0, 4, 8, 12, 16, 20, 24, 28, 32]),
-        (.mercury, .direct, [90, 97, 104, 111, 118, 125, 132, 139, 146]),
-        (.mars, .direct, [180, 183, 186, 189, 192, 195, 198, 201, 204]),
-        (.jupiter, .retrograde, [270, 266, 262, 258, 254, 250, 246, 242, 238]),
+    private static let bodyPlans: [(
+        body: MundaneBody,
+        startDegrees: Double,
+        dailyDegrees: Double
+    )] = [
+        (.sun, 29.2, 0.95),
+        (.moon, 62.0, 5.0),
+        (.mercury, 1.0, -0.8),
+        (.venus, 96.0, 0.7),
+        (.mars, 128.0, 0.5),
+        (.jupiter, 158.0, 0.15),
+        (.saturn, 188.0, 0.08),
+        (.uranus, 218.0, 0.03),
+        (.neptune, 248.0, 0.02),
+        (.pluto, 278.0, 0.01),
+        (.trueNorthNode, 308.0, -0.04),
     ]
 
-    static let scene = IrisScene3D(
-        coordinates: strands.flatMap { strand in
-            strand.degrees.enumerated().map { index, degree in
+    static let viewport: IrisTimespineViewport = {
+        let bone = OrboSpineBoneSpan(
+            start: JulianDay(baseJulianDay)!,
+            end: JulianDay(baseJulianDay + 9.0)!
+        )!
+
+        let supports = bodyPlans.flatMap { plan in
+            (0...8).map { index in
                 coordinate(
-                    strand.body,
-                    degree: degree,
-                    motion: strand.motion,
-                    julianDay: baseJulianDay + (Double(index) * stepDays)
+                    body: plan.body,
+                    physicalDegrees: normalize(
+                        plan.startDegrees + (Double(index) * plan.dailyDegrees)
+                    ),
+                    motion: plan.dailyDegrees < 0 ? .retrograde : .direct,
+                    julianDay: baseJulianDay + Double(index)
                 )
             }
         }
-    )
+
+        let terra = [
+            TerraMarrowSample(
+                turnDegrees: 100,
+                tiltDegrees: 23.4,
+                julianDay: bone.start
+            )!,
+            TerraMarrowSample(
+                turnDegrees: 109,
+                tiltDegrees: 23.5,
+                julianDay: bone.end
+            )!,
+        ]
+
+        let locate = OrboSpineLocate(
+            bone: bone,
+            celestialSupports: supports,
+            terraSamples: terra
+        )!
+        let horae = Horae(locate: locate)
+
+        return try! IrisTimespineViewport(
+            horae: horae,
+            start: JulianDay(baseJulianDay + 0.25)!,
+            end: JulianDay(baseJulianDay + 8.75)!,
+            sampleCount: 35
+        )
+    }()
 
     private static func coordinate(
-        _ body: MundaneBody,
-        degree: Double,
+        body: MundaneBody,
+        physicalDegrees: Double,
         motion: Motion,
         julianDay: Double
     ) -> OrboSpineCelestialCoordinate {
         OrboSpineCelestialCoordinate(
             body: body,
             directionalDegree: OrboSpineDirectionalDegree(
-                physicalDegrees: degree,
+                physicalDegrees: physicalDegrees,
                 motion: motion
             )!,
             julianDay: JulianDay(julianDay)!
         )
+    }
+
+    private static func normalize(_ degrees: Double) -> Double {
+        let value = degrees.truncatingRemainder(dividingBy: 360)
+        return value < 0 ? value + 360 : value
     }
 }
