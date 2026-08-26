@@ -15,6 +15,11 @@ public enum HoraeControlError: Error, Equatable {
         body: MundaneBody,
         directionalDegree: OrboSpineDirectionalDegree
     )
+    case constraintUnsatisfied(
+        body: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree,
+        julianDay: JulianDay
+    )
 }
 
 /// Presentation-neutral control intent accepted by Horae.
@@ -39,6 +44,16 @@ public enum HoraeControlIntent: Hashable, Sendable {
     )
     case driveBody(
         to: MundaneBody,
+        at: JulianDay
+    )
+    case driveBodyAtDegree(
+        to: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree,
+        from: JulianDay
+    )
+    case driveConstrainedBody(
+        to: MundaneBody,
+        directionalDegree: OrboSpineDirectionalDegree,
         at: JulianDay
     )
 }
