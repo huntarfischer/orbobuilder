@@ -24,27 +24,32 @@ public struct IrisChart3DView: View {
 
     public var body: some View {
         Chart3D(scene.points, id: \.self) { point in
-            let appearance = IrisBodyExpression.appearance(
+            let bodyAppearance = IrisBodyExpression.appearance(
                 for: point.source.body,
                 sizeMode: presentation.bodySizeMode
             )
+            let trackPlacement = IrisTrackExpression.placement(
+                for: point,
+                order: presentation.trackOrder,
+                expansion: presentation.trackExpansion
+            )
 
-            if appearance.form == .sphere {
+            if bodyAppearance.form == .sphere {
                 PointMark(
-                    x: .value("X", point.x),
-                    y: .value("Y", point.y),
-                    z: .value("Julian Day", point.z)
+                    x: .value("X", trackPlacement.x),
+                    y: .value("Y", trackPlacement.y),
+                    z: .value("Julian Day", trackPlacement.z)
                 )
                 .symbol(.sphere)
-                .symbolSize(CGFloat(appearance.symbolSize))
+                .symbolSize(CGFloat(bodyAppearance.symbolSize))
                 .foregroundStyle(zodiacColor(for: point))
             } else {
                 PointMark(
-                    x: .value("X", point.x),
-                    y: .value("Y", point.y),
-                    z: .value("Julian Day", point.z)
+                    x: .value("X", trackPlacement.x),
+                    y: .value("Y", trackPlacement.y),
+                    z: .value("Julian Day", trackPlacement.z)
                 )
-                .symbolSize(CGFloat(appearance.symbolSize))
+                .symbolSize(CGFloat(bodyAppearance.symbolSize))
                 .foregroundStyle(zodiacColor(for: point))
             }
         }
@@ -52,8 +57,15 @@ public struct IrisChart3DView: View {
         .chart3DCameraProjection(
             presentation.cameraProjection == .perspective ? .perspective : .orthographic
         )
-        .chartXScale(domain: -1.05...1.05)
-        .chartYScale(domain: -1.05...1.05)
+        .chartXScale(domain: -chartExtent...chartExtent)
+        .chartYScale(domain: -chartExtent...chartExtent)
+    }
+
+    private var chartExtent: Double {
+        IrisTrackExpression.maximumRadius(
+            order: presentation.trackOrder,
+            expansion: presentation.trackExpansion
+        ) * 1.05
     }
 
     private func zodiacColor(for point: IrisScenePoint3D) -> Color {
