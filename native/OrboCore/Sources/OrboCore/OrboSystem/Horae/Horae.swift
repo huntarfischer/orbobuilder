@@ -170,6 +170,30 @@ public struct Horae: Sendable {
         )
     }
 
+    /// Presentation-neutral ingress for a visualization owner such as Iris.
+    /// Each intent is routed to one already-proven Horae control path and returns
+    /// the same single HoraeOutput cable.
+    public func respond(to intent: HoraeControlIntent) throws -> HoraeOutput {
+        switch intent {
+        case let .driveUT(julianDay, body):
+            return try driveUT(to: julianDay, body: body)
+        case let .driveConstrainedUT(julianDay, body, directionalDegree):
+            return try driveUT(
+                to: julianDay,
+                body: body,
+                directionalDegree: directionalDegree
+            )
+        case let .driveDirectionalDegree(directionalDegree, body, currentJulianDay):
+            return try driveDirectionalDegree(
+                to: directionalDegree,
+                body: body,
+                from: currentJulianDay
+            )
+        case let .driveBody(body, julianDay):
+            return try driveBody(to: body, at: julianDay)
+        }
+    }
+
     /// Uses the current real-world instant only to supply UT, then follows the
     /// exact same output path as SEEK.
     public func live() throws -> HoraeOutput {
