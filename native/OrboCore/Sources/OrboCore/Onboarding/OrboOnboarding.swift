@@ -66,6 +66,21 @@ public struct Engraving: Hashable, Sendable {
             engraved: engraved
         )
     }
+
+    /// Clotho resolves only AstroDNA. Every other Engraving resolution is preserved.
+    internal func resolving(astroDNA: AstroDNA) -> Engraving {
+        Engraving(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation,
+            topos: topos,
+            astroDNA: astroDNA,
+            tapestry: tapestry,
+            engraved: engraved
+        )
+    }
 }
 
 /// Orbo owns onboarding. Completing onboarding creates the unfinished Engraving

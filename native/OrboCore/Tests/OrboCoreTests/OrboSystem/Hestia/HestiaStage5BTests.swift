@@ -16,7 +16,7 @@ final class HestiaStage5BTests: XCTestCase {
 
     private func sealedTapestry(rawValue: Int) throws -> (AstroDNA, AtroposPackage) {
         let astroDNA = try astroDNA(rawValue: rawValue)
-        let output = Clotho.gather(from: astroDNA)
+        let output = LegacyMoiraiBridge.gather(from: astroDNA)
         let grid = Lachesis.allot(output.packet, into: DegreeGrid())
         let tapestry = try Atropos.inspect(recipe: output.recipe, grid: grid).get()
         return (astroDNA, tapestry)

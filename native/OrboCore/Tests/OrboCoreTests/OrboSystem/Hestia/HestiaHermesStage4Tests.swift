@@ -19,7 +19,7 @@ final class HestiaHermesStage4Tests: XCTestCase {
     }
 
     private func tapestry(for astroDNA: AstroDNA) throws -> AtroposPackage {
-        let output = Clotho.gather(from: astroDNA)
+        let output = LegacyMoiraiBridge.gather(from: astroDNA)
         let grid = Lachesis.allot(output.packet, into: DegreeGrid())
         return try Atropos.inspect(recipe: output.recipe, grid: grid).get()
     }
