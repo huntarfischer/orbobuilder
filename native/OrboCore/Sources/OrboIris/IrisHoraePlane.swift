@@ -50,6 +50,10 @@ public struct IrisHoraePlane: Hashable, Sendable {
         frame.terra
     }
 
+    public var terraReadout: IrisTerraReadout {
+        frame.terraReadout
+    }
+
     public var bodyCoordinates: [OrboSpineCelestialCoordinate] {
         frame.output.celestial
     }
