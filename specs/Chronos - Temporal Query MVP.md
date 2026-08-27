@@ -1,9 +1,11 @@
 # Chronos — Temporal Query MVP
 
-**Status:** PLANNED / NOT IMPLEMENTED  
+**Status:** FROZEN / PROVEN  
 **Target:** Orbo 1.0 native  
 **Branch:** `feature/chronos-mvp`  
-**Base:** `feature/engraving-orbospine-graft`
+**Base:** `feature/engraving-orbospine-graft`  
+**Certified implementation head:** `91f86b68649a9c165f48505540bb5e387b64d1df`  
+**Certification date:** 2026-08-27
 
 ## 1. Purpose
 
@@ -737,3 +739,177 @@ The later graft must not change Horae's Door I ownership, create a Clotho door, 
 The MVP succeeds if this statement is true:
 
 > **Chronos queries time, preserves every lawful answer, orders temporal fact without interpreting it, and expresses the same chronology without changing its truth.**
+
+---
+
+## 17. Certification record
+
+### 17.1 Proven build
+
+The implementation certified for this MVP ends at:
+
+```text
+91f86b68649a9c165f48505540bb5e387b64d1df
+Prove Chronos Stage 5 expression and export
+```
+
+The accumulated native package proof on that implementation head is:
+
+```text
+TympanTests
+19 tests
+0 failures
+
+OrboCorePackageTests.xctest
+531 tests
+0 failures
+
+All tests
+531 tests
+0 failures
+0 unexpected
+```
+
+This is the authoritative freeze proof for the implementation bytes. The freeze commit changes this specification only.
+
+### 17.2 Branch-delta audit
+
+Compared with the isolated build base `ccedfcce7c93497582fe45ca61d698eca6b8b612`, the certified implementation is 17 commits ahead and 0 behind.
+
+The production delta is intentionally narrow:
+
+```text
+Chronos/
+  Chronos.swift
+  ChronosTypes.swift
+  ChronosHorae.swift
+  ChronosLibrary.swift
+  ChronosOperators.swift
+  ChronosExpression.swift
+
+OrboSpine/
+  OrboSpineLibrary.swift
+  OrboSpineRuntime.swift
+```
+
+The OrboSpine change is limited to the Stage 3 Door II ownership/read seam. No Locate or Link production file changed.
+
+### 17.3 Ownership audit
+
+The frozen source satisfies these boundaries:
+
+```text
+CIVIL TIME
+Chronos delegates civic resolution to CivilTime.
+Chronos owns no timezone-history or Julian-day conversion law.
+
+DOOR I / HORAE
+Chronos receives Horae for occurrence availability only.
+Chronos does not receive OrboSpineLocate.
+Chronos does not request or return HoraeOutput.
+Chronos does not move the Horae plane.
+
+DOOR II / LIBRARY
+OrboSpineLibraryCatalog owns the prepared station and shell rows exposed to Chronos.
+Chronos receives the Library catalog, not OrboSpineRuntime.
+Runtime compatibility views reference Library-owned matter rather than retaining a second station/shell chronology.
+
+DOOR III / HECATE
+Chronos contains no Link or Hecate relation engine.
+No synastry, composite, comparison, or convergence truth is manufactured here.
+```
+
+### 17.4 State and multiplicity audit
+
+Chronos is an enum of static query/expression behavior and retains no persistent temporal cursor.
+
+```text
+no currentUT
+no playback state
+no hidden now
+```
+
+Multiplicity remains lawful answer data:
+
+```text
+civil repeated hour -> two moments
+body/state occurrence -> zero / one / many moments
+equal nearest -> every equally-nearest hit
+```
+
+No operator is permitted to collapse a plural answer merely to choose one temporal plane.
+
+### 17.5 Operator audit
+
+Stage 4 operators act only on already-resolved `ChronosAnswer` truth.
+
+```text
+predicate identity
+scope
+before / after
+previous / next
+nearest
+containing
+order
+limit
+```
+
+Scope selects canonical addresses but does not clip or rewrite them. Relational operators require an explicit anchor and never substitute the current time.
+
+### 17.6 Expression audit
+
+Stage 5 expression receives only:
+
+```text
+ChronosAnswer
++
+ChronosExpressionRequest
+```
+
+An expression request contains format, projection, and optional civic rendering timezone. It has no predicate or source-query authority.
+
+Frozen formats:
+
+```text
+native
+TXT
+CSV
+PDF
+iCalendar (.ics)
+```
+
+Native returns the exact answer. Other formats project the same ordered hits. Optional civic rendering supplements, but does not replace, canonical Julian Day identity. iCalendar uses deterministic UTC event bounds and carries exact Orbo Julian-day fields.
+
+Expression does not rerun Chronos, CivilTime, Horae, Library, Locate, or any astronomical authority.
+
+### 17.7 Negative audit
+
+No Chronos production source owns or implements:
+
+```text
+ephemeris / astronomy
+second Timespine
+persistent currentUT
+playback
+interpretation or semantic ranking
+prediction or recommendation
+relationship / synastry / composite logic
+Hecate logic
+Locate ownership
+HoraeOutput ownership
+Clotho behavior
+Hestia persistence
+personal-Spine manufacture
+```
+
+Clotho remains outside this MVP and must be modernized only after the frozen Chronos work is reintegrated onto the current integration line.
+
+### 17.8 Freeze declaration
+
+**Chronos Temporal Query MVP is frozen and proven.**
+
+The freeze target is satisfied:
+
+> **Chronos queries time, preserves every lawful answer, orders temporal fact without interpreting it, and expresses the same chronology without changing its truth.**
+
+Any later addition of predicates, Library shelves, export richness, or consumers is post-MVP breadth and must preserve this ownership law rather than reopening it implicitly.
