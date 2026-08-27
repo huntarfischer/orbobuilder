@@ -2,7 +2,7 @@ import XCTest
 @testable import OrboCore
 
 final class EngravingPipeline1AtlasTests: XCTestCase {
-    func testCanonicalEngravingTravelsToAtlasAndReturnsWithOnlyToposResolved() throws {
+    func testCanonicalEngravingTravelsToAtlasAndReturnsWithToposAndTempusResolved() throws {
         var orbo = try completedDummyTraveler()
         let commissionedPackage = try orbo.commissionEngraving(
             subjectID: OrboPipelineFixture.subjectID,
@@ -18,6 +18,7 @@ final class EngravingPipeline1AtlasTests: XCTestCase {
         XCTAssertEqual(orbo.backOfHouse, .engravingInProgress)
         XCTAssertFalse(orbo.canEnterBigThree)
         XCTAssertNil(commissionedPackage.contents.topos)
+        XCTAssertNil(commissionedPackage.contents.tempus)
         XCTAssertNil(commissionedPackage.contents.astroDNA)
         XCTAssertNil(commissionedPackage.contents.tapestry)
         XCTAssertFalse(commissionedPackage.contents.engraved)
@@ -36,15 +37,8 @@ final class EngravingPipeline1AtlasTests: XCTestCase {
         XCTAssertEqual(afterDelivery[1].packageID, OrboPipelineFixture.packageID)
         XCTAssertEqual(afterDelivery[1].address, atlasAddress)
 
-        let resolvedEngraving: Engraving
-        switch Atlas().resolve(commissionedPackage.contents) {
-        case let .found(engraving):
-            resolvedEngraving = engraving
-        case let .ambiguous(topoi):
-            XCTFail("Canonical Madison native unexpectedly resolved ambiguously: \(topoi)")
-            return
-        case .notFound:
-            XCTFail("Canonical Madison native unexpectedly failed Atlas resolution")
+        guard case let .found(resolvedEngraving) = Atlas().resolve(commissionedPackage.contents) else {
+            XCTFail("Canonical Madison native unexpectedly failed complete Atlas resolution")
             return
         }
 
@@ -55,6 +49,10 @@ final class EngravingPipeline1AtlasTests: XCTestCase {
         XCTAssertEqual(topos.place.timezone.rawValue, "America/Chicago")
         XCTAssertEqual(topos.provenance.version, GeoplacementAtlas.version)
         XCTAssertEqual(topos.provenance.sourceDescription, GeoplacementAtlas.sourceDescription)
+
+        let tempus = try XCTUnwrap(resolvedEngraving.tempus)
+        XCTAssertEqual(tempus.provenance.source, .timeZoneDatabase)
+        XCTAssertEqual(tempus.provenance.timeZoneDataVersion, CivilTime.timeZoneDataVersion)
 
         XCTAssertEqual(resolvedEngraving.subjectID, commissionedPackage.contents.subjectID)
         XCTAssertEqual(resolvedEngraving.name, commissionedPackage.contents.name)

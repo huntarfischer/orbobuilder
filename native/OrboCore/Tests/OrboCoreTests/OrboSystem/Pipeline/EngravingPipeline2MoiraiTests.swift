@@ -22,15 +22,8 @@ final class EngravingPipeline2MoiraiTests: XCTestCase {
         )
         XCTAssertEqual(atlasAddress, OrboOnboarding.engravingItinerary[0])
 
-        let resolvedEngraving: Engraving
-        switch Atlas().resolve(commissionedPackage.contents) {
-        case let .found(engraving):
-            resolvedEngraving = engraving
-        case let .ambiguous(topoi):
-            XCTFail("Canonical Madison native unexpectedly resolved ambiguously: \(topoi)")
-            return
-        case .notFound:
-            XCTFail("Canonical Madison native unexpectedly failed Atlas resolution")
+        guard case let .found(resolvedEngraving) = Atlas().resolve(commissionedPackage.contents) else {
+            XCTFail("Canonical Madison native unexpectedly failed complete Atlas resolution")
             return
         }
 
@@ -85,6 +78,10 @@ final class EngravingPipeline2MoiraiTests: XCTestCase {
         XCTAssertEqual(topos.place.timezone.rawValue, "America/Chicago")
         XCTAssertEqual(topos.provenance.version, GeoplacementAtlas.version)
         XCTAssertEqual(topos.provenance.sourceDescription, GeoplacementAtlas.sourceDescription)
+
+        let tempus = try XCTUnwrap(atlasResolvedPackage.contents.tempus)
+        XCTAssertEqual(tempus.provenance.source, .timeZoneDatabase)
+        XCTAssertEqual(tempus.provenance.timeZoneDataVersion, CivilTime.timeZoneDataVersion)
 
         XCTAssertEqual(atlasResolvedPackage.packageID, commissionedPackage.packageID)
         XCTAssertEqual(atlasResolvedPackage.subjectID, commissionedPackage.subjectID)
