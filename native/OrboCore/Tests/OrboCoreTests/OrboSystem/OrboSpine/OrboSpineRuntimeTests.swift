@@ -24,6 +24,19 @@ final class OrboSpineRuntimeTests: XCTestCase {
         XCTAssertEqual(runtime.eclipses.first?.kind, .solar)
         XCTAssertEqual(runtime.eclipses.first?.type, .total)
 
+        XCTAssertEqual(runtime.library.stations(for: .mercury), runtime.stations)
+        let waveID = try XCTUnwrap(OrboSpineShellID(family: .wave, ordinal: 1))
+        XCTAssertEqual(
+            runtime.library.shell(waveID),
+            runtime.shellIntervals.first { $0.id == waveID }
+        )
+
+        let retainedFields = Set(
+            Mirror(reflecting: runtime).children.compactMap(\.label)
+        )
+        XCTAssertFalse(retainedFields.contains("stations"))
+        XCTAssertFalse(retainedFields.contains("shellIntervals"))
+
         let mercuryAtStation = try runtime.locate.coordinate(
             of: .mercury,
             at: JulianDay(1_000.5)!
