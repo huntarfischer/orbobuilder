@@ -53,11 +53,12 @@ public struct OrboSpineRuntime: Sendable {
     public let ports: SpinePorts
     public let linkPort: SpineAccessPort
 
-    public let stations: [OrboSpineStation]
+    /// Compatibility views of Library-owned prepared matter.
+    public var stations: [OrboSpineStation] { library.allStations }
     public let retrogradePassages: [OrboSpineRetrogradePassage]
     public let ringOccurrences: [OrboSpineRingOccurrence]
     public let eclipses: [OrboSpineEclipseOccurrence]
-    public let shellIntervals: [OrboSpineShellInterval]
+    public var shellIntervals: [OrboSpineShellInterval] { library.allShellIntervals }
 
     public let smeldSeams: SpineSmeldSeams
     public let provenance: OrboSpineRuntimeProvenance
@@ -110,19 +111,15 @@ public struct OrboSpineRuntime: Sendable {
         self.identity = OrboSpineContract.identity
         self.bone = bone
         self.locate = locate
-        self.library = OrboSpineLibraryCatalog()
+        self.library = OrboSpineLibraryCatalog(
+            stations: stations,
+            shellIntervals: shellIntervals
+        )
         self.ports = SpinePorts()
         self.linkPort = SpineLinkSet.port
-        self.stations = stations.sorted { $0.julianDay.value < $1.julianDay.value }
         self.retrogradePassages = retrogradePassages.sorted { $0.start.value < $1.start.value }
         self.ringOccurrences = ringOccurrences.sorted { $0.julianDay.value < $1.julianDay.value }
         self.eclipses = eclipses.sorted { $0.julianDay.value < $1.julianDay.value }
-        self.shellIntervals = shellIntervals.sorted {
-            if $0.id.family.rawValue != $1.id.family.rawValue {
-                return $0.id.family.rawValue < $1.id.family.rawValue
-            }
-            return $0.start.value < $1.start.value
-        }
         self.smeldSeams = SpineSmeldSeams()
         self.provenance = provenance
         self.inventory = OrboSpineRuntimeInventory(
