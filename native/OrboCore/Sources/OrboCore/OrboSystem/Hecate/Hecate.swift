@@ -1,11 +1,11 @@
-/// Stage 0 failures at Hecate's cast gate.
+/// Failures at Hecate's cast gate.
 public enum HecateFailure: Error, Hashable, Sendable {
     case unknownKleis(KleisID)
     case missingResources([HecateResourceKey])
+    case invalidCast(KleisID)
 }
 
 /// Hecate casts only from resources placed in her hands.
-/// Stage 0 proves the gate but performs no spell calculation yet.
 public enum Hecate {
     public static func prepareCast(
         _ kleisID: KleisID,
@@ -23,5 +23,25 @@ public enum Hecate {
         }
 
         return kleis
+    }
+
+    /// Casts canonical AstroDNA from the twelve AstroDNAGene values supplied to Hecate.
+    /// Hecate never seeks a missing gene and delegates AstroDNA validity to AstroDNA itself.
+    public static func castAstroDNA(
+        using suppliedGenes: [AstroDNAGene: RingFineState]
+    ) throws -> AstroDNA {
+        let suppliedResources = suppliedGenes.keys.map(AstroDNAKleis.resourceKey(for:))
+
+        _ = try prepareCast(
+            AstroDNAKleis.id,
+            using: suppliedResources,
+            from: .canonical
+        )
+
+        guard let astroDNA = AstroDNAKleis.cast(using: suppliedGenes) else {
+            throw HecateFailure.invalidCast(AstroDNAKleis.id)
+        }
+
+        return astroDNA
     }
 }

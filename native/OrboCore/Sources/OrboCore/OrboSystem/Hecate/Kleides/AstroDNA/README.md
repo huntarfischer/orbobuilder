@@ -2,4 +2,4 @@
 
 This shelf holds Hecate's AstroDNA spell family.
 
-Stage 0 intentionally contains no real spell implementation.
+Stage 1 contains the first live kleis: `AstroDNAKleis`, which requires the twelve canonical `AstroDNAGene` values and returns canonical `AstroDNA`.
