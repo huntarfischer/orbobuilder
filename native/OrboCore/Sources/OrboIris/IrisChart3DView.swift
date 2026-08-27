@@ -1,10 +1,12 @@
 import SwiftUI
 import Charts
+import OrboCore
 
 @available(iOS 26.0, macOS 26.0, *)
 public struct IrisChart3DView: View {
     public let scene: IrisScene3D
     public let plane: IrisHoraePlane?
+    public let focusedBody: MundaneBody?
     public let presentation: IrisChart3DPresentation
 
     @State private var pose: Chart3DPose
@@ -12,10 +14,12 @@ public struct IrisChart3DView: View {
     public init(
         scene: IrisScene3D,
         plane: IrisHoraePlane? = nil,
+        focusedBody: MundaneBody? = nil,
         presentation: IrisChart3DPresentation = IrisChart3DPresentation()
     ) {
         self.scene = scene
         self.plane = plane
+        self.focusedBody = focusedBody
         self.presentation = presentation
 
         let initialPose: Chart3DPose
@@ -122,7 +126,9 @@ public struct IrisChart3DView: View {
             mode: presentation.orientationMode
         )
         let renderedZ = temporalZ(for: point, fallback: trackPlacement.z)
-        let symbolSize = bodyAppearance.symbolSize * (active ? 1.45 : 1.0)
+        let isFocused = active && point.source.body == focusedBody
+        let symbolScale = isFocused ? 2.1 : (active ? 1.45 : 1.0)
+        let symbolSize = bodyAppearance.symbolSize * symbolScale
         let xLabel = active ? "Active X" : "X"
         let yLabel = active ? "Active Y" : "Y"
         let zLabel = active ? "Selected Julian Day" : "Julian Day"
