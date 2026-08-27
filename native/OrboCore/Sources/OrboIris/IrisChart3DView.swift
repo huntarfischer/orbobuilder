@@ -17,12 +17,21 @@ public struct IrisChart3DView: View {
         self.scene = scene
         self.plane = plane
         self.presentation = presentation
-        _pose = State(
-            initialValue: Chart3DPose(
+
+        let initialPose: Chart3DPose
+        switch presentation.cameraMode {
+        case .free3D:
+            initialPose = Chart3DPose(
                 azimuth: .degrees(presentation.azimuthDegrees),
                 inclination: .degrees(presentation.inclinationDegrees)
             )
-        )
+        case .celestialFace:
+            // Orbo's Horae plane is X/Y at fixed temporal Z. In Chart3D,
+            // looking along Z is the native front pose: conceptually top-down
+            // along the Timespine, even though the framework calls it "front".
+            initialPose = .front
+        }
+        _pose = State(initialValue: initialPose)
     }
 
     public var body: some View {
@@ -56,9 +65,14 @@ public struct IrisChart3DView: View {
     private var zodiacRimContent: some Chart3DContent {
         if let plane {
             ForEach(plane.rimPoints(radius: planeRimRadius), id: \.self) { rimPoint in
+                let oriented = IrisOrientationExpression.placement(
+                    x: rimPoint.x,
+                    y: rimPoint.y,
+                    mode: presentation.orientationMode
+                )
                 PointMark(
-                    x: .value("Zodiac Rim X", rimPoint.x),
-                    y: .value("Zodiac Rim Y", rimPoint.y),
+                    x: .value("Zodiac Rim X", oriented.x),
+                    y: .value("Zodiac Rim Y", oriented.y),
                     z: .value("Selected Julian Day", rimPoint.z)
                 )
                 .symbol(.sphere)
@@ -70,8 +84,12 @@ public struct IrisChart3DView: View {
 
     @Chart3DContentBuilder
     private var tractContent: some Chart3DContent {
-        ForEach(scene.points, id: \.self) { point in
-            bodyMark(for: point, active: false)
+        // A celestial Astrolabe face is the active Horae plane itself, not the
+        // history of every sampled tract painted onto that plane.
+        if !presentation.isCelestialAstrolabeFace {
+            ForEach(scene.points, id: \.self) { point in
+                bodyMark(for: point, active: false)
+            }
         }
     }
 
@@ -98,6 +116,11 @@ public struct IrisChart3DView: View {
             order: presentation.trackOrder,
             expansion: presentation.trackExpansion
         )
+        let oriented = IrisOrientationExpression.placement(
+            x: trackPlacement.x,
+            y: trackPlacement.y,
+            mode: presentation.orientationMode
+        )
         let renderedZ = temporalZ(for: point, fallback: trackPlacement.z)
         let symbolSize = bodyAppearance.symbolSize * (active ? 1.45 : 1.0)
         let xLabel = active ? "Active X" : "X"
@@ -106,8 +129,8 @@ public struct IrisChart3DView: View {
 
         if bodyAppearance.form == .sphere {
             PointMark(
-                x: .value(xLabel, trackPlacement.x),
-                y: .value(yLabel, trackPlacement.y),
+                x: .value(xLabel, oriented.x),
+                y: .value(yLabel, oriented.y),
                 z: .value(zLabel, renderedZ)
             )
             .symbol(.sphere)
@@ -115,8 +138,8 @@ public struct IrisChart3DView: View {
             .foregroundStyle(zodiacColor(for: point))
         } else {
             PointMark(
-                x: .value(xLabel, trackPlacement.x),
-                y: .value(yLabel, trackPlacement.y),
+                x: .value(xLabel, oriented.x),
+                y: .value(yLabel, oriented.y),
                 z: .value(zLabel, renderedZ)
             )
             .symbolSize(CGFloat(symbolSize))
