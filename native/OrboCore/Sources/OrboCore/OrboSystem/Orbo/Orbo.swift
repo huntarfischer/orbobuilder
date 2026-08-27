@@ -32,6 +32,26 @@ public struct Orbo: Hashable, Sendable {
         return session.currentBeat
     }
 
+    func knownBirthInput(subjectID: HermesSubjectID) -> OrboKnownBirthInput? {
+        guard let session = onboardingSession,
+              session.readyForEngraving,
+              session.birthTimeKnowledge == .known,
+              let name = session.name,
+              let birthDate = session.birthDate,
+              let birthTime = session.birthTime,
+              let birthLocation = session.birthLocation else {
+            return nil
+        }
+
+        return OrboKnownBirthInput(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation
+        )
+    }
+
     mutating func transitionFrontOfHouse(to state: OrboFrontOfHouseState) {
         frontOfHouse = state
     }
