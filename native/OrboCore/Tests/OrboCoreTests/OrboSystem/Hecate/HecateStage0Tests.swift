@@ -9,53 +9,29 @@ final class HecateStage0Tests: XCTestCase {
         XCTAssertEqual(KleisFamily.allCases, [.astroDNA, .lots, .parts])
     }
 
-    func testKleisRequiresAUniqueNonEmptyResourceSet() {
-        let id = KleisID(rawValue: "stage-0-kleis")!
+    func testFormulaRequiresAUniqueNonEmptyResourceSet() {
+        XCTAssertNil(makeFormula(requiredResources: []))
+        XCTAssertNil(makeFormula(requiredResources: [resourceA, resourceA]))
 
-        XCTAssertNil(
-            Kleis(id: id, family: .lots, requiredResources: [])
-        )
-        XCTAssertNil(
-            Kleis(
-                id: id,
-                family: .lots,
-                requiredResources: [resourceA, resourceA]
-            )
-        )
-
-        let kleis = Kleis(
-            id: id,
-            family: .lots,
-            requiredResources: [resourceA, resourceB]
-        )!
-
-        XCTAssertEqual(kleis.family, .lots)
-        XCTAssertEqual(kleis.requiredResources, [resourceA, resourceB])
+        let formula = makeFormula(requiredResources: [resourceA, resourceB])!
+        XCTAssertEqual(formula.requiredResources, [resourceA, resourceB])
     }
 
     func testKleidesRejectsDuplicateKleisIdentities() {
         let id = KleisID(rawValue: "same-kleis")!
-        let first = Kleis(
-            id: id,
-            family: .lots,
-            requiredResources: [resourceA]
-        )!
-        let second = Kleis(
-            id: id,
-            family: .parts,
-            requiredResources: [resourceB]
-        )!
+        let first = makeKleis(id: id, family: .lots, requiredResources: [resourceA])
+        let second = makeKleis(id: id, family: .parts, requiredResources: [resourceB])
 
         XCTAssertNil(Kleides([first, second]))
     }
 
     func testHecatePreparesKnownKleisOnlyWhenAllResourcesAreSupplied() throws {
         let id = KleisID(rawValue: "two-resource-kleis")!
-        let kleis = Kleis(
+        let kleis = makeKleis(
             id: id,
             family: .parts,
             requiredResources: [resourceA, resourceB]
-        )!
+        )
         let kleides = Kleides([kleis])!
 
         XCTAssertEqual(
@@ -97,5 +73,33 @@ final class HecateStage0Tests: XCTestCase {
                 .unknownKleis(unknown)
             )
         }
+    }
+
+    private func makeFormula(
+        requiredResources: [HecateResourceKey]
+    ) -> KleisFormula? {
+        KleisFormula(
+            requiredResources: requiredResources,
+            formula: "stage-0 test formula",
+            tradition: "Stage 0",
+            sectRule: .none,
+            isOrboDefault: false,
+            sources: ["Hecate Stage 0 test"],
+            status: .complete
+        )
+    }
+
+    private func makeKleis(
+        id: KleisID,
+        family: KleisFamily,
+        requiredResources: [HecateResourceKey]
+    ) -> Kleis {
+        Kleis(
+            id: id,
+            family: family,
+            context: .natal,
+            availability: KleisAvailability(l1: false, l2: false, l3: true)!,
+            formulas: [makeFormula(requiredResources: requiredResources)!]
+        )!
     }
 }

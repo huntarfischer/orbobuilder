@@ -4,10 +4,11 @@ import XCTest
 final class HecateStage1Tests: XCTestCase {
     func testAstroDNAKleisIsRegisteredFromCanonicalAstroDNAGenes() throws {
         let kleis = try XCTUnwrap(Kleides.canonical.kleis(AstroDNAKleis.id))
+        let formula = try XCTUnwrap(kleis.operationalFormula)
 
         XCTAssertEqual(kleis.family, .astroDNA)
         XCTAssertEqual(
-            kleis.requiredResources,
+            formula.requiredResources,
             AstroDNAGene.canonicalOrder.map(AstroDNAKleis.resourceKey(for:))
         )
     }

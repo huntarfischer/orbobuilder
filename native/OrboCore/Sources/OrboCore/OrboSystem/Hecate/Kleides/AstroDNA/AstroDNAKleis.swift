@@ -10,10 +10,22 @@ public enum AstroDNAKleis {
         HecateResourceKey(rawValue: "AstroDNA.\(gene.rawValue)")!
     }
 
+    public static let formula = KleisFormula(
+        requiredResources: requiredGenes.map(resourceKey(for:)),
+        formula: "canonical AstroDNAGene order -> AstroDNA(sequence:)",
+        tradition: "Orbo",
+        sectRule: .none,
+        isOrboDefault: false,
+        sources: ["AstroDNAGene canonical contract"],
+        status: .complete
+    )!
+
     public static let declaration = Kleis(
         id: id,
         family: .astroDNA,
-        requiredResources: requiredGenes.map(resourceKey(for:))
+        context: .natal,
+        availability: KleisAvailability(l1: true, l2: true, l3: true)!,
+        formulas: [formula]
     )!
 
     static func cast(
@@ -26,7 +38,7 @@ public enum AstroDNAKleis {
 }
 
 public extension Kleides {
-    /// Hecate's live spellbook at Stage 1.
+    /// Hecate's live spellbook before the Lots catalogue is ingested.
     static let canonical = Kleides([
         AstroDNAKleis.declaration,
     ])!

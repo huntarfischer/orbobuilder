@@ -15,9 +15,12 @@ public enum Hecate {
         guard let kleis = kleides.kleis(kleisID) else {
             throw HecateFailure.unknownKleis(kleisID)
         }
+        guard let formula = kleis.operationalFormula else {
+            throw HecateFailure.invalidCast(kleisID)
+        }
 
         let supplied = Set(suppliedResources)
-        let missing = kleis.requiredResources.filter { !supplied.contains($0) }
+        let missing = formula.requiredResources.filter { !supplied.contains($0) }
         guard missing.isEmpty else {
             throw HecateFailure.missingResources(missing)
         }
