@@ -1,6 +1,6 @@
 # Orbo — FOH / BOH MVP
 
-**Status:** PLANNED / IN IMPLEMENTATION  
+**Status:** FROZEN / PROVEN  
 **Branch:** `feature/orbo-mvp`  
 **Base:** `feature/iris-chronos-integration`  
 **Canonical onboarding source:** root `Orbo Onboarding Script.txt`
@@ -876,7 +876,26 @@ app compile if host changed
 
 ## Freeze
 
-Update this document to `FROZEN / PROVEN` only after authoritative green terminal proof. Record certified commit and test totals.
+**FROZEN / PROVEN**
+
+Certified implementation commit:
+
+```text
+c4035c366197d72f0ad9fb94a19ee301e5ede480
+```
+
+Authoritative terminal proof, 2026-08-27:
+
+```text
+TympanTests
+19 tests / 0 failures / 0 unexpected
+
+OrboCorePackageTests.xctest
+603 tests / 0 failures / 0 unexpected
+
+All tests
+603 tests / 0 failures / 0 unexpected
+```
 
 Freeze statement:
 
