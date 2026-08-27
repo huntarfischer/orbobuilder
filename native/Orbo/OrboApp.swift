@@ -7,7 +7,7 @@ struct OrboApp: App {
     var body: some Scene {
         WindowGroup {
             if #available(iOS 26.0, *) {
-                IrisLockedPerspectiveView()
+                IrisNativeMediumStudyView()
             } else {
                 Color.black
                     .ignoresSafeArea()
@@ -18,46 +18,85 @@ struct OrboApp: App {
 }
 
 @available(iOS 26.0, *)
-private struct IrisLockedPerspectiveView: View {
-    @State private var cameraMode: IrisCameraMode = .topDown
+private struct IrisNativeMediumStudyView: View {
+    private enum Medium: String, CaseIterable, Hashable {
+        case canvas = "Canvas"
+        case chart3D = "Chart3D"
+    }
+
+    @State private var medium: Medium = .canvas
+    @State private var concentricTracks = false
+    @State private var planetSizedBodies = true
+
+    private var trackExpansion: Double {
+        concentricTracks ? 1.0 : 0.0
+    }
+
+    private var bodySizeMode: IrisBodySizeMode {
+        planetSizedBodies ? .planetSized : .equal
+    }
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("IRIS / LOCKED ONE-MOMENT VIEW")
+            Text("IRIS / NATIVE MEDIUM STUDY")
                 .font(.caption.monospaced())
 
-            Text("11 bodies · one Horae moment")
+            Text("same Horae moment · same Iris laws · different native surface")
                 .font(.caption2.monospaced())
+                .multilineTextAlignment(.center)
 
-            Picker("Perspective", selection: $cameraMode) {
-                Text("Top").tag(IrisCameraMode.topDown)
-                Text("Vertical").tag(IrisCameraMode.vertical)
-                Text("Horizontal").tag(IrisCameraMode.horizontal)
+            Picker("Medium", selection: $medium) {
+                ForEach(Medium.allCases, id: \.self) { medium in
+                    Text(medium.rawValue).tag(medium)
+                }
             }
             .pickerStyle(.segmented)
 
-            IrisChart3DView(
-                scene: IrisLockedPerspectiveHarness.scene,
-                presentation: IrisChart3DPresentation(
-                    cameraProjection: .orthographic,
-                    cameraMode: cameraMode,
-                    orientationMode: .zodiacal
-                )
-            )
+            HStack {
+                Toggle("Concentric", isOn: $concentricTracks)
+                Toggle("Planet-sized", isOn: $planetSizedBodies)
+            }
+            .font(.caption)
+
+            Group {
+                switch medium {
+                case .canvas:
+                    IrisCanvasInstrumentView(
+                        plane: IrisNativeMediumHarness.plane,
+                        orientationMode: .zodiacal,
+                        bodySizeMode: bodySizeMode,
+                        trackOrder: .astroDNA,
+                        trackExpansion: trackExpansion
+                    )
+
+                case .chart3D:
+                    IrisChart3DView(
+                        scene: IrisScene3D(coordinates: []),
+                        plane: IrisNativeMediumHarness.plane,
+                        presentation: IrisChart3DPresentation(
+                            cameraProjection: .orthographic,
+                            cameraMode: .topDown,
+                            orientationMode: .zodiacal,
+                            bodySizeMode: bodySizeMode,
+                            trackOrder: .astroDNA,
+                            trackExpansion: trackExpansion,
+                            timeExpansion: 0.0
+                        )
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding()
     }
 }
 
-/// Host-side proof of the three canonical Iris viewpoints using exactly one
-/// Horae-resolved celestial state. Nothing moves through time in this proof.
-/// The same 11-body scene rotates between Top, Vertical, and Horizontal and is
-/// locked once each canonical pose settles.
+/// Host-side native-medium comparison using exactly one Horae-resolved state.
 ///
-/// Vertical and Horizontal are intentionally established now as stable spatial
-/// frames so later temporal manifestations can use them to reveal movement
-/// through time. Top remains the one-moment reading.
-private enum IrisLockedPerspectiveHarness {
+/// The fixture remains intentionally synthetic. This study is not testing new
+/// celestial truth; it is comparing two native rendering surfaces while holding
+/// the lawful Iris input and presentation grammar constant.
+private enum IrisNativeMediumHarness {
     private static let baseJulianDay = 2_461_000.5
     private static let selectedJulianDay = JulianDay(baseJulianDay + 4.5)!
 
@@ -122,7 +161,7 @@ private enum IrisLockedPerspectiveHarness {
         output: try! horae.seek(to: selectedJulianDay)
     )
 
-    static let scene = frame.scene
+    static let plane = IrisHoraePlane(frame: frame)
 
     private static func coordinate(
         body: MundaneBody,
