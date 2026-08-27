@@ -12,8 +12,8 @@ public extension Chronos {
         switch resolution {
         case let .resolved(answer):
             return .resolved(apply(query, to: answer))
-        case .unresolved:
-            return resolution
+        case let .unresolved(reason):
+            return .unresolved(reason)
         }
     }
 
