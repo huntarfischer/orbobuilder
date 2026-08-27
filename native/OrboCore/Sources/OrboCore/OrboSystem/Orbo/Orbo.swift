@@ -25,6 +25,12 @@ public struct Orbo: Hashable, Sendable {
         self.astrosphereIntroductionProgress = nil
     }
 
+    /// FOH eligibility derived from established BOH readiness. No chart value
+    /// or internal workflow detail crosses this seam.
+    public var canEnterBigThree: Bool {
+        backOfHouse == .nativeReady
+    }
+
     @discardableResult
     public mutating func beginOnboarding() -> OrboOnboardingBeat {
         if onboardingSession == nil {
@@ -146,6 +152,16 @@ public struct Orbo: Hashable, Sendable {
 
         case .layoutIntroduction:
             throw OrboFrontOfHouseFailure.astrosphereIntroductionComplete
+        }
+    }
+
+    /// Accepts a BOH consequence without exposing how that truth was produced.
+    /// Stage 6 intentionally carries no native chart payload; Stage 7 will
+    /// receive presentation-ready established truth separately.
+    public mutating func receiveBackOfHouseResult(_ result: OrboBackOfHouseResult) {
+        switch result {
+        case .nativeTruthReady:
+            backOfHouse = .nativeReady
         }
     }
 
