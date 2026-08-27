@@ -8,26 +8,26 @@ struct OrboApp: App {
         WindowGroup {
             if #available(iOS 26.0, *) {
                 VStack(spacing: 12) {
-                    Text("IRIS IX8 / TEMPORAL FLATTEN")
+                    Text("IRIS IX9 / CELESTIAL ASTROLABE")
                         .font(.caption.monospaced())
 
-                    Text("timeExpansion 0.20 · source UT unchanged")
+                    Text("flat Horae face · orthographic · zodiacal")
                         .font(.caption2.monospaced())
 
-                    Text(IrisIX8Harness.activePlane.terraReadout.displayText)
+                    Text(IrisIX9Harness.activePlane.terraReadout.displayText)
                         .font(.caption2.monospaced())
 
-                    Text("Horae plane anchors visible Z · Terra preserved")
+                    Text("0° Aries at 9 o'clock · local Horizon deferred")
                         .font(.caption2.monospaced())
 
                     IrisChart3DView(
-                        scene: IrisIX8Harness.viewport.scene,
-                        plane: IrisIX8Harness.activePlane,
+                        scene: IrisIX9Harness.viewport.scene,
+                        plane: IrisIX9Harness.activePlane,
                         presentation: IrisChart3DPresentation(
-                            azimuthDegrees: 65,
-                            inclinationDegrees: 28,
-                            cameraProjection: .perspective,
-                            timeExpansion: 0.20
+                            cameraProjection: .orthographic,
+                            cameraMode: .celestialFace,
+                            orientationMode: .zodiacal,
+                            timeExpansion: 0.0
                         )
                     )
                 }
@@ -41,16 +41,15 @@ struct OrboApp: App {
     }
 }
 
-/// IX8 host-side integration harness.
+/// IX9 host-side integration harness.
 ///
-/// Deterministic support matter enters the real OrboSpine Locate -> Horae route.
-/// Iris owns only the visible interval, sampling density, selected Horae plane,
-/// and presentation-only spatial compression around that plane. Every source
-/// coordinate retains its canonical Julian Day. Terra remains attached exactly
-/// as supplied by Horae. The support values are a visualization harness, not an
-/// ephemeris claim; certified production OrboSpine matter is not bundled into
-/// the app target yet.
-private enum IrisIX8Harness {
+/// The active celestial Astrolabe is not a regenerated chart. It is the same
+/// IX6 Horae plane viewed straight down the Timespine Z axis after IX8 collapses
+/// visible temporal depth to zero. Zodiacal orientation is Iris presentation
+/// only: canonical longitudes, UT, body identity, and Terra remain unchanged.
+/// Deterministic support matter still enters the real OrboSpine Locate -> Horae
+/// route; it is a visualization harness, not an ephemeris claim.
+private enum IrisIX9Harness {
     private static let baseJulianDay = 2_461_000.5
 
     private static let bodyPlans: [(
@@ -118,7 +117,7 @@ private enum IrisIX8Harness {
         )
     }()
 
-    /// Explicit current cross-section: the middle Horae frame of the visible window.
+    /// Exact current face: the middle Horae frame of the visible window.
     static let activePlane = IrisHoraePlane(frame: viewport.frames[17])
 
     private static func coordinate(
