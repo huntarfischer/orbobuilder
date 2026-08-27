@@ -30,6 +30,10 @@ public struct IrisChart3DPresentation: Hashable, Sendable {
     public let timeExpansion: Double
 
     public init(
+        // Retained as source compatibility for earlier Iris callers. Locked
+        // camera modes intentionally ignore arbitrary azimuth/inclination.
+        azimuthDegrees: Double = 20,
+        inclinationDegrees: Double = 7,
         cameraProjection: IrisCameraProjection = .orthographic,
         cameraMode: IrisCameraMode = .topDown,
         orientationMode: IrisOrientationMode = .scene,
@@ -38,6 +42,8 @@ public struct IrisChart3DPresentation: Hashable, Sendable {
         trackExpansion: Double = 1.0,
         timeExpansion: Double = 1.0
     ) {
+        _ = azimuthDegrees
+        _ = inclinationDegrees
         self.cameraProjection = cameraProjection
         self.cameraMode = cameraMode
         self.orientationMode = orientationMode
