@@ -26,9 +26,8 @@ public struct IrisChart3DView: View {
                 inclination: .degrees(presentation.inclinationDegrees)
             )
         case .celestialFace:
-            // Orbo's Horae plane is X/Y at fixed temporal Z. In Chart3D,
-            // looking along Z is the native front pose: conceptually top-down
-            // along the Timespine, even though the framework calls it "front".
+            // The Horae plane is X/Y at fixed temporal Z, so front is the
+            // framework pose that looks straight along the Timespine Z axis.
             initialPose = .front
         }
         _pose = State(initialValue: initialPose)
@@ -47,6 +46,7 @@ public struct IrisChart3DView: View {
         )
         .chartXScale(domain: -chartExtent...chartExtent)
         .chartYScale(domain: -chartExtent...chartExtent)
+        .chartZScale(domain: chartZDomain)
     }
 
     @Chart3DContentBuilder
@@ -165,6 +165,26 @@ public struct IrisChart3DView: View {
     private var chartExtent: Double {
         let extent = plane == nil ? maximumTrackRadius : planeSurfaceExtent
         return extent * 1.05
+    }
+
+    /// Chart3D needs a non-zero domain in every dimension. Once IX9 hides the
+    /// sampled tracts, every remaining mark is at one exact Julian Day. Give
+    /// that flat face a tiny presentation-only Z window so the renderer does
+    /// not collapse its own plot volume. No source UT is changed.
+    private var chartZDomain: ClosedRange<Double> {
+        if presentation.isCelestialAstrolabeFace, let plane {
+            return (plane.julianDay.value - 0.5)...(plane.julianDay.value + 0.5)
+        }
+
+        let values = scene.points.map(\.z)
+        guard let minimum = values.min(), let maximum = values.max() else {
+            let anchor = plane?.julianDay.value ?? 0.0
+            return (anchor - 0.5)...(anchor + 0.5)
+        }
+        guard minimum < maximum else {
+            return (minimum - 0.5)...(maximum + 0.5)
+        }
+        return minimum...maximum
     }
 
     private func temporalZ(
