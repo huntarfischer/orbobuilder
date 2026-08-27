@@ -19,14 +19,14 @@ struct OrboApp: App {
 
 @available(iOS 26.0, *)
 private struct IrisLockedPerspectiveView: View {
-    @State private var cameraMode: IrisCameraMode = .vertical
+    @State private var cameraMode: IrisCameraMode = .topDown
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("IRIS / LOCKED TEMPORAL VIEW")
+            Text("IRIS / LOCKED ONE-MOMENT VIEW")
                 .font(.caption.monospaced())
 
-            Text("11 bodies · 35 temporal samples")
+            Text("11 bodies · one Horae moment")
                 .font(.caption2.monospaced())
 
             Picker("Perspective", selection: $cameraMode) {
@@ -37,10 +37,11 @@ private struct IrisLockedPerspectiveView: View {
             .pickerStyle(.segmented)
 
             IrisChart3DView(
-                scene: IrisLockedPerspectiveHarness.viewport.scene,
+                scene: IrisLockedPerspectiveHarness.scene,
                 presentation: IrisChart3DPresentation(
-                    cameraProjection: .perspective,
-                    cameraMode: cameraMode
+                    cameraProjection: .orthographic,
+                    cameraMode: cameraMode,
+                    orientationMode: .zodiacal
                 )
             )
         }
@@ -48,14 +49,17 @@ private struct IrisLockedPerspectiveView: View {
     }
 }
 
-/// Host-side proof of the first Iris temporal visualization with no free-orbit
-/// camera. The 35 resolved moments remain one 3D temporal scene; the selector
-/// changes only which canonical locked perspective Iris uses to view it.
+/// Host-side proof of the three canonical Iris viewpoints using exactly one
+/// Horae-resolved celestial state. Nothing moves through time in this proof.
+/// The same 11-body scene rotates between Top, Vertical, and Horizontal and is
+/// locked once each canonical pose settles.
 ///
-/// Deterministic support matter enters the real OrboSpine Locate -> Horae -> Iris
-/// route. These support values are a visualization harness, not an ephemeris claim.
+/// Vertical and Horizontal are intentionally established now as stable spatial
+/// frames so later temporal manifestations can use them to reveal movement
+/// through time. Top remains the one-moment reading.
 private enum IrisLockedPerspectiveHarness {
     private static let baseJulianDay = 2_461_000.5
+    private static let selectedJulianDay = JulianDay(baseJulianDay + 4.5)!
 
     private static let bodyPlans: [(
         body: MundaneBody,
@@ -75,52 +79,50 @@ private enum IrisLockedPerspectiveHarness {
         (.trueNorthNode, 308.0, -0.04),
     ]
 
-    static let viewport: IrisTimespineViewport = {
-        let bone = OrboSpineBoneSpan(
-            start: JulianDay(baseJulianDay)!,
-            end: JulianDay(baseJulianDay + 9.0)!
-        )!
+    private static let bone = OrboSpineBoneSpan(
+        start: JulianDay(baseJulianDay)!,
+        end: JulianDay(baseJulianDay + 9.0)!
+    )!
 
-        let supports = bodyPlans.flatMap { plan in
-            (0...8).map { index in
-                coordinate(
-                    body: plan.body,
-                    physicalDegrees: normalize(
-                        plan.startDegrees + (Double(index) * plan.dailyDegrees)
-                    ),
-                    motion: plan.dailyDegrees < 0 ? .retrograde : .direct,
-                    julianDay: baseJulianDay + Double(index)
-                )
-            }
+    private static let supports: [OrboSpineCelestialCoordinate] = bodyPlans.flatMap { plan in
+        (0...8).map { index in
+            coordinate(
+                body: plan.body,
+                physicalDegrees: normalize(
+                    plan.startDegrees + (Double(index) * plan.dailyDegrees)
+                ),
+                motion: plan.dailyDegrees < 0 ? .retrograde : .direct,
+                julianDay: baseJulianDay + Double(index)
+            )
         }
+    }
 
-        let terra = [
-            TerraMarrowSample(
-                turnDegrees: 100,
-                tiltDegrees: 23.4,
-                julianDay: bone.start
-            )!,
-            TerraMarrowSample(
-                turnDegrees: 109,
-                tiltDegrees: 23.5,
-                julianDay: bone.end
-            )!,
-        ]
+    private static let terra = [
+        TerraMarrowSample(
+            turnDegrees: 100,
+            tiltDegrees: 23.4,
+            julianDay: bone.start
+        )!,
+        TerraMarrowSample(
+            turnDegrees: 109,
+            tiltDegrees: 23.5,
+            julianDay: bone.end
+        )!,
+    ]
 
-        let locate = OrboSpineLocate(
-            bone: bone,
-            celestialSupports: supports,
-            terraSamples: terra
-        )!
-        let horae = Horae(locate: locate)
+    private static let locate = OrboSpineLocate(
+        bone: bone,
+        celestialSupports: supports,
+        terraSamples: terra
+    )!
 
-        return try! IrisTimespineViewport(
-            horae: horae,
-            start: JulianDay(baseJulianDay + 0.25)!,
-            end: JulianDay(baseJulianDay + 8.75)!,
-            sampleCount: 35
-        )
-    }()
+    private static let horae = Horae(locate: locate)
+
+    static let frame = IrisHoraeFrame(
+        output: try! horae.seek(to: selectedJulianDay)
+    )
+
+    static let scene = frame.scene
 
     private static func coordinate(
         body: MundaneBody,
