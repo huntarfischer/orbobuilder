@@ -121,11 +121,13 @@ public struct Orbo: Hashable, Sendable {
         return ticketID
     }
 
-    /// Moves FOH into the Astrosphere introduction after BOH has handed the
-    /// Engraving to Hermes. No courier action is performed here.
+    /// Moves FOH into the Astrosphere introduction after the Engraving has
+    /// left Orbo. BOH may still be working or may already have established
+    /// native truth; neither condition blocks FOH hosting.
     @discardableResult
     public mutating func beginAstrosphereIntroduction() throws -> OrboAstrosphereIntroductionBeat {
-        guard backOfHouse == .engravingInProgress, engravingTicketID != nil else {
+        guard engravingTicketID != nil,
+              backOfHouse == .engravingInProgress || backOfHouse == .nativeReady else {
             throw OrboFrontOfHouseFailure.engravingNotInProgress
         }
 
