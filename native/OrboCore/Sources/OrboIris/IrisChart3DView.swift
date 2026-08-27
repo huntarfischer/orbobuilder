@@ -9,8 +9,6 @@ public struct IrisChart3DView: View {
     public let focusedBody: MundaneBody?
     public let presentation: IrisChart3DPresentation
 
-    @State private var pose: Chart3DPose
-
     public init(
         scene: IrisScene3D,
         plane: IrisHoraePlane? = nil,
@@ -21,30 +19,19 @@ public struct IrisChart3DView: View {
         self.plane = plane
         self.focusedBody = focusedBody
         self.presentation = presentation
-
-        let initialPose: Chart3DPose
-        switch presentation.cameraMode {
-        case .free3D:
-            initialPose = Chart3DPose(
-                azimuth: .degrees(presentation.azimuthDegrees),
-                inclination: .degrees(presentation.inclinationDegrees)
-            )
-        case .celestialFace:
-            // The Horae plane is X/Y at fixed temporal Z, so front is the
-            // framework pose that looks straight along the Timespine Z axis.
-            initialPose = .front
-        }
-        _pose = State(initialValue: initialPose)
     }
 
     public var body: some View {
         Chart3D {
             planeSurfaceContent
             zodiacRimContent
-            tractContent
+            temporalSampleContent
             activeBodyContent
         }
-        .chart3DPose($pose)
+        // Chart3D makes a bound pose user-rotatable by default. Iris supplies a
+        // read-only binding instead: our three canonical views may change only
+        // when Iris changes cameraMode, never because the user tumbles the chart.
+        .chart3DPose(lockedPoseBinding)
         .chart3DCameraProjection(
             presentation.cameraProjection == .perspective ? .perspective : .orthographic
         )
@@ -87,13 +74,9 @@ public struct IrisChart3DView: View {
     }
 
     @Chart3DContentBuilder
-    private var tractContent: some Chart3DContent {
-        // A celestial Astrolabe face is the active Horae plane itself, not the
-        // history of every sampled tract painted onto that plane.
-        if !presentation.isCelestialAstrolabeFace {
-            ForEach(scene.points, id: \.self) { point in
-                bodyMark(for: point, active: false)
-            }
+    private var temporalSampleContent: some Chart3DContent {
+        ForEach(scene.points, id: \.self) { point in
+            bodyMark(for: point, active: false)
         }
     }
 
@@ -153,6 +136,35 @@ public struct IrisChart3DView: View {
         }
     }
 
+    /// Orbo's temporal coordinate is Chart3D Z.
+    ///
+    /// - topDown looks straight along Z, so the temporal depth projects into the
+    ///   zodiacal X/Y face.
+    /// - vertical looks down Chart3D Y, exposing X/Z with time upright.
+    /// - horizontal looks down Chart3D X, exposing Z/Y with time sideways.
+    private var lockedPose: Chart3DPose {
+        switch presentation.cameraMode {
+        case .topDown:
+            return .front
+        case .vertical:
+            return .top
+        case .horizontal:
+            return Chart3DPose(
+                azimuth: .degrees(90),
+                inclination: .degrees(0)
+            )
+        }
+    }
+
+    /// Ignore Chart3D's interaction writes. The getter still changes when Iris
+    /// switches among the three canonical camera modes.
+    private var lockedPoseBinding: Binding<Chart3DPose> {
+        Binding(
+            get: { lockedPose },
+            set: { _ in }
+        )
+    }
+
     private var maximumTrackRadius: Double {
         IrisTrackExpression.maximumRadius(
             order: presentation.trackOrder,
@@ -173,15 +185,7 @@ public struct IrisChart3DView: View {
         return extent * 1.05
     }
 
-    /// Chart3D needs a non-zero domain in every dimension. Once IX9 hides the
-    /// sampled tracts, every remaining mark is at one exact Julian Day. Give
-    /// that flat face a tiny presentation-only Z window so the renderer does
-    /// not collapse its own plot volume. No source UT is changed.
     private var chartZDomain: ClosedRange<Double> {
-        if presentation.isCelestialAstrolabeFace, let plane {
-            return (plane.julianDay.value - 0.5)...(plane.julianDay.value + 0.5)
-        }
-
         let values = scene.points.map(\.z)
         guard let minimum = values.min(), let maximum = values.max() else {
             let anchor = plane?.julianDay.value ?? 0.0
