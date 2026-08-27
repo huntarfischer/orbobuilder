@@ -15,6 +15,7 @@ public struct Orbo: Hashable, Sendable {
     public private(set) var engravingCommission: HermesPackage<Engraving>?
     public private(set) var engravingTicketID: HermesTicketID?
     public private(set) var astrosphereIntroductionProgress: OrboAstrosphereIntroductionProgress?
+    public private(set) var bigThreeSession: OrboBigThreeSession?
 
     public init() {
         self.frontOfHouse = .resting
@@ -23,6 +24,7 @@ public struct Orbo: Hashable, Sendable {
         self.engravingCommission = nil
         self.engravingTicketID = nil
         self.astrosphereIntroductionProgress = nil
+        self.bigThreeSession = nil
     }
 
     /// FOH eligibility derived from established BOH readiness. No chart value
@@ -158,13 +160,65 @@ public struct Orbo: Hashable, Sendable {
     }
 
     /// Accepts a BOH consequence without exposing how that truth was produced.
-    /// Stage 6 intentionally carries no native chart payload; Stage 7 will
-    /// receive presentation-ready established truth separately.
+    /// Stage 6 intentionally carries no native chart payload; Stage 7 receives
+    /// presentation-ready established truth separately.
     public mutating func receiveBackOfHouseResult(_ result: OrboBackOfHouseResult) {
         switch result {
         case .nativeTruthReady:
             backOfHouse = .nativeReady
         }
+    }
+
+    /// Re-enters the canonical Part Four script only after native truth is
+    /// established and FOH has reached the end of its introduction. The three
+    /// placements are supplied; Orbo performs no derivation here.
+    @discardableResult
+    public mutating func beginBigThree(
+        with truth: OrboEstablishedBigThree
+    ) throws -> OrboBigThreeBeat {
+        guard canEnterBigThree else {
+            throw OrboBigThreeFailure.nativeTruthUnavailable
+        }
+        guard astrosphereIntroductionProgress == .layoutIntroduction else {
+            throw OrboBigThreeFailure.astrosphereIntroductionIncomplete
+        }
+
+        if let session = bigThreeSession {
+            return session.currentBeat
+        }
+
+        let session = OrboBigThreeSession(truth: truth)
+        bigThreeSession = session
+        return session.currentBeat
+    }
+
+    /// Advances only the authored Big Three screens. No BOH or chart machinery
+    /// is consulted or mutated.
+    @discardableResult
+    public mutating func advanceBigThree() throws -> OrboBigThreeBeat {
+        guard var session = bigThreeSession else {
+            throw OrboBigThreeFailure.notStarted
+        }
+
+        try session.advance()
+        bigThreeSession = session
+        return session.currentBeat
+    }
+
+    /// Records the player's tour choice in FOH and completes onboarding.
+    /// BOH commission identity and native readiness remain unchanged.
+    @discardableResult
+    public mutating func respondToBigThreeTour(
+        _ choice: OrboTourChoice
+    ) throws -> OrboBigThreeBeat {
+        guard var session = bigThreeSession else {
+            throw OrboBigThreeFailure.notStarted
+        }
+
+        try session.respondToTour(choice)
+        bigThreeSession = session
+        frontOfHouse = .ready
+        return session.currentBeat
     }
 
     mutating func transitionFrontOfHouse(to state: OrboFrontOfHouseState) {
