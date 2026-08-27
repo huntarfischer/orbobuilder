@@ -3,17 +3,24 @@ public enum OrboCommissionFailure: Error, Hashable, Sendable {
     case alreadyCommissioned
 }
 
+public enum OrboHermesFailure: Error, Hashable, Sendable {
+    case noEngravingCommission
+    case alreadyEntrusted
+}
+
 public struct Orbo: Hashable, Sendable {
     public private(set) var frontOfHouse: OrboFrontOfHouseState
     public private(set) var backOfHouse: OrboBackOfHouseState
     public private(set) var onboardingSession: OrboOnboardingSession?
     public private(set) var engravingCommission: HermesPackage<Engraving>?
+    public private(set) var engravingTicketID: HermesTicketID?
 
     public init() {
         self.frontOfHouse = .resting
         self.backOfHouse = .idle
         self.onboardingSession = nil
         self.engravingCommission = nil
+        self.engravingTicketID = nil
     }
 
     @discardableResult
@@ -84,6 +91,26 @@ public struct Orbo: Hashable, Sendable {
         engravingCommission = package
         backOfHouse = .engravingCommissioned
         return package
+    }
+
+    /// Entrusts the already-authored Engraving package to the real Hermes courier.
+    /// Orbo retains only Hermes' returned ticket identity; Hermes owns manifest and custody truth.
+    @discardableResult
+    public mutating func entrustEngraving(
+        to courier: inout HermesCourier,
+        occurredAt: AbsoluteInstant
+    ) throws -> HermesTicketID {
+        guard engravingTicketID == nil else {
+            throw OrboHermesFailure.alreadyEntrusted
+        }
+        guard let package = engravingCommission else {
+            throw OrboHermesFailure.noEngravingCommission
+        }
+
+        let ticketID = try courier.accept(package: package, occurredAt: occurredAt)
+        engravingTicketID = ticketID
+        backOfHouse = .engravingInProgress
+        return ticketID
     }
 
     mutating func transitionFrontOfHouse(to state: OrboFrontOfHouseState) {
