@@ -13,19 +13,55 @@ public enum OrboSpineLibraryShelf: String, CaseIterable, Codable, Hashable, Send
     case zeitgeist
 }
 
-/// Port II catalog over already-forged OrboSpine matter.
-/// D2 exposes stable core shelf identities only. It owns no astronomy, copies no truth rows,
-/// and does not own the Stack Smeld mount; SpineSmeldSeams remains the sole seam owner.
+/// Port II over already-forged OrboSpine matter.
+///
+/// The public empty initializer preserves the stable shelf catalog. Runtime assembly uses
+/// the internal matter-bearing initializer so prepared chronology has one owner at Door II.
+/// The Library exposes factual reads only; it still defines no consumer query language.
 public struct OrboSpineLibraryCatalog: Hashable, Sendable {
     public static let port = SpineAccessPort.library
 
     public let coreShelves: [OrboSpineLibraryShelf]
 
+    private let stationRows: [OrboSpineStation]
+    private let shellRows: [OrboSpineShellInterval]
+
     public init() {
         self.coreShelves = OrboSpineLibraryShelf.allCases
+        self.stationRows = []
+        self.shellRows = []
+    }
+
+    internal init(
+        stations: [OrboSpineStation],
+        shellIntervals: [OrboSpineShellInterval]
+    ) {
+        self.coreShelves = OrboSpineLibraryShelf.allCases
+        self.stationRows = stations.sorted { $0.julianDay.value < $1.julianDay.value }
+        self.shellRows = shellIntervals.sorted {
+            if $0.id.family.rawValue != $1.id.family.rawValue {
+                return $0.id.family.rawValue < $1.id.family.rawValue
+            }
+            return $0.start.value < $1.start.value
+        }
     }
 
     public func contains(_ shelf: OrboSpineLibraryShelf) -> Bool {
         coreShelves.contains(shelf)
     }
+
+    /// Prepared station rows for one canonical body, in temporal order.
+    public func stations(for body: MundaneBody) -> [OrboSpineStation] {
+        stationRows.filter { $0.body == body }
+    }
+
+    /// One exact prepared shell interval by canonical shell identity.
+    public func shell(_ id: OrboSpineShellID) -> OrboSpineShellInterval? {
+        shellRows.first { $0.id == id }
+    }
+
+    /// Compatibility views for the assembled runtime. These are the same Library-owned
+    /// arrays, not independently retained chronology.
+    internal var allStations: [OrboSpineStation] { stationRows }
+    internal var allShellIntervals: [OrboSpineShellInterval] { shellRows }
 }
