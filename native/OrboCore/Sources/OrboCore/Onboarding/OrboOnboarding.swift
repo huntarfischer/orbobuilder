@@ -6,11 +6,12 @@ public struct Engraving: Hashable, Sendable {
     public let birthLocation: String
 
     public let topos: Topos?
+    public let tempus: Tempus?
     public let astroDNA: AstroDNA?
     public let tapestry: AtroposPackage?
     public let engraved: Bool
 
-    /// Orbo creates an unfinished Engraving. Its four resolutions are completed
+    /// Orbo creates an unfinished Engraving. Its resolutions are completed
     /// in order by Atlas, the Moirai, and finally Hestia at the Hearth.
     public init(
         subjectID: HermesSubjectID,
@@ -25,6 +26,7 @@ public struct Engraving: Hashable, Sendable {
         self.birthTime = birthTime
         self.birthLocation = birthLocation
         self.topos = nil
+        self.tempus = nil
         self.astroDNA = nil
         self.tapestry = nil
         self.engraved = false
@@ -37,6 +39,7 @@ public struct Engraving: Hashable, Sendable {
         birthTime: CivilClockTime,
         birthLocation: String,
         topos: Topos?,
+        tempus: Tempus?,
         astroDNA: AstroDNA?,
         tapestry: AtroposPackage?,
         engraved: Bool
@@ -47,6 +50,7 @@ public struct Engraving: Hashable, Sendable {
         self.birthTime = birthTime
         self.birthLocation = birthLocation
         self.topos = topos
+        self.tempus = tempus
         self.astroDNA = astroDNA
         self.tapestry = tapestry
         self.engraved = engraved
@@ -61,6 +65,23 @@ public struct Engraving: Hashable, Sendable {
             birthTime: birthTime,
             birthLocation: birthLocation,
             topos: topos,
+            tempus: tempus,
+            astroDNA: astroDNA,
+            tapestry: tapestry,
+            engraved: engraved
+        )
+    }
+
+    /// Resolves only Tempus. Every other Engraving resolution is preserved.
+    internal func resolving(tempus: Tempus) -> Engraving {
+        Engraving(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation,
+            topos: topos,
+            tempus: tempus,
             astroDNA: astroDNA,
             tapestry: tapestry,
             engraved: engraved
@@ -76,6 +97,7 @@ public struct Engraving: Hashable, Sendable {
             birthTime: birthTime,
             birthLocation: birthLocation,
             topos: topos,
+            tempus: tempus,
             astroDNA: astroDNA,
             tapestry: tapestry,
             engraved: engraved
