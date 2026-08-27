@@ -100,48 +100,17 @@ final class IrisZodiacExpressionTests: XCTestCase {
             y: point.y,
             mode: .scene
         )
-
         XCTAssertEqual(oriented.x, point.x, accuracy: 0.000_001)
         XCTAssertEqual(oriented.y, point.y, accuracy: 0.000_001)
         XCTAssertEqual(point.source, source)
     }
 
-    func testCelestialAstrolabeFaceRequiresFlatOrthographicZodiacalFaceState() {
-        let face = IrisChart3DPresentation(
-            cameraProjection: .orthographic,
-            cameraMode: .celestialFace,
-            orientationMode: .zodiacal,
-            timeExpansion: 0.0
+    func testCameraModesAreExactlyTheThreeLockedViews() {
+        XCTAssertEqual(
+            IrisCameraMode.allCases,
+            [.topDown, .vertical, .horizontal]
         )
-        XCTAssertTrue(face.isCelestialAstrolabeFace)
-
-        XCTAssertFalse(IrisChart3DPresentation(
-            cameraProjection: .perspective,
-            cameraMode: .celestialFace,
-            orientationMode: .zodiacal,
-            timeExpansion: 0.0
-        ).isCelestialAstrolabeFace)
-
-        XCTAssertFalse(IrisChart3DPresentation(
-            cameraProjection: .orthographic,
-            cameraMode: .free3D,
-            orientationMode: .zodiacal,
-            timeExpansion: 0.0
-        ).isCelestialAstrolabeFace)
-
-        XCTAssertFalse(IrisChart3DPresentation(
-            cameraProjection: .orthographic,
-            cameraMode: .celestialFace,
-            orientationMode: .scene,
-            timeExpansion: 0.0
-        ).isCelestialAstrolabeFace)
-
-        XCTAssertFalse(IrisChart3DPresentation(
-            cameraProjection: .orthographic,
-            cameraMode: .celestialFace,
-            orientationMode: .zodiacal,
-            timeExpansion: 0.1
-        ).isCelestialAstrolabeFace)
+        XCTAssertEqual(IrisCameraMode.allCases.count, 3)
     }
 
     private func orientedPoint(at physicalDegrees: Double) throws -> IrisPlanarPlacement {
