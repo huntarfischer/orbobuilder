@@ -7,6 +7,7 @@ enum OrboPipelineFixture {
     static let handoffAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_000)!
     static let atlasDeliveryAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_060)!
     static let atlasRecoveryAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_120)!
+    static let moiraiDeliveryAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_180)!
     static let name = "Traveler"
     static let birthDate = CivilDate(year: 1990, month: 5, day: 17)!
     static let birthTime = CivilClockTime(hour: 14, minute: 32)!
