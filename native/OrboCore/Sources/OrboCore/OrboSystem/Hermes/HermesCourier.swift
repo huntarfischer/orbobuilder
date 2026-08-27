@@ -8,6 +8,7 @@ public struct HermesCourier: Sendable {
         case packageKindMismatch
         case itineraryMismatch
         case addressMismatch
+        case incompleteAtlasEngraving
         case invalidState
         case manifestRejectedEvent
     }
@@ -104,6 +105,8 @@ public struct HermesCourier: Sendable {
 
     /// Recovers the same entrusted package after an intermediate stop.
     /// Contents may have changed; package identity, subject, sender, kind, and itinerary may not.
+    /// Once an actual Engraving has entered the itinerary, Atlas-established Topos and Tempus
+    /// are invariants Hermes will not allow a later stop to erase.
     public mutating func recover<Contents: Hashable & Sendable>(
         ticketID: HermesTicketID,
         package: HermesPackage<Contents>,
@@ -119,6 +122,12 @@ public struct HermesCourier: Sendable {
         guard package.sender == journey.sender else { throw Failure.senderMismatch }
         guard package.kind == journey.packageKind else { throw Failure.packageKindMismatch }
         guard package.addresses == journey.addresses else { throw Failure.itineraryMismatch }
+
+        if let engraving = package.contents as? Engraving {
+            guard engraving.topos != nil, engraving.tempus != nil else {
+                throw Failure.incompleteAtlasEngraving
+            }
+        }
 
         let address = journey.addresses[deliveredIndex]
         try append(
