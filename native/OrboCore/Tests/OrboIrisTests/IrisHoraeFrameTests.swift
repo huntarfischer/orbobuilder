@@ -166,6 +166,96 @@ final class IrisHoraeFrameTests: XCTestCase {
         XCTAssertEqual(plane.julianDay, plane.terraReadout.julianDay)
     }
 
+    func testControlSessionAbsoluteUTAcceptsOnlyHoraeResolvedOutput() throws {
+        let horae = try makeViewportHorae()
+        let initial = try XCTUnwrap(JulianDay(2_000.5))
+        let target = try XCTUnwrap(JulianDay(2_001.25))
+        var session = try IrisHoraeControlSession(
+            horae: horae,
+            initialJulianDay: initial
+        )
+        let expected = try horae.respond(to: .seekUT(to: target))
+
+        try session.seek(to: target, through: horae)
+
+        XCTAssertEqual(session.frame.output, expected)
+        XCTAssertEqual(session.frame.julianDay, target)
+        XCTAssertEqual(session.plane.frame, session.frame)
+        XCTAssertNil(session.focusedBody)
+        XCTAssertEqual(session.domain, horae.controlDomain)
+    }
+
+    func testControlSessionRelativeUTStartsFromCurrentHoraeResolvedUT() throws {
+        let horae = try makeViewportHorae()
+        let initial = try XCTUnwrap(JulianDay(2_000.25))
+        let offset = try XCTUnwrap(HoraeUTOffset(hours: 12))
+        var session = try IrisHoraeControlSession(
+            horae: horae,
+            initialJulianDay: initial
+        )
+        let expectedFirst = try horae.respond(
+            to: .shiftUT(from: initial, by: offset)
+        )
+
+        try session.shift(by: offset, through: horae)
+        XCTAssertEqual(session.frame.output, expectedFirst)
+
+        let firstResolvedUT = session.frame.julianDay
+        let expectedSecond = try horae.respond(
+            to: .shiftUT(from: firstResolvedUT, by: offset)
+        )
+        try session.shift(by: offset, through: horae)
+
+        XCTAssertEqual(session.frame.output, expectedSecond)
+        XCTAssertEqual(session.frame.julianDay.value, 2_001.25, accuracy: 0.000_001)
+    }
+
+    func testControlSessionBodyFocusTravelsThroughHoraeWithoutMovingUT() throws {
+        let horae = try makeViewportHorae()
+        let julianDay = try XCTUnwrap(JulianDay(2_000.75))
+        var session = try IrisHoraeControlSession(
+            horae: horae,
+            initialJulianDay: julianDay
+        )
+        let expected = try horae.respond(
+            to: .driveBody(to: .mars, at: julianDay)
+        )
+
+        try session.focus(on: .mars, through: horae)
+
+        XCTAssertEqual(session.frame.output, expected)
+        XCTAssertEqual(session.frame.julianDay, julianDay)
+        XCTAssertEqual(session.focusedBody, .mars)
+        XCTAssertEqual(session.frame.controlState?.address.body, .mars)
+        XCTAssertEqual(session.frame.controlState?.bodyRole, .driven)
+        XCTAssertEqual(session.frame.controlState?.directionalDegreeRole, .resolved)
+        XCTAssertEqual(session.frame.controlState?.julianDayRole, .pinned)
+        XCTAssertEqual(session.frame.output.celestial.count, 11)
+    }
+
+    func testControlSessionKeepsPresentationFocusWhileHoraeMovesTime() throws {
+        let horae = try makeViewportHorae()
+        var session = try IrisHoraeControlSession(
+            horae: horae,
+            initialJulianDay: try XCTUnwrap(JulianDay(2_000.5))
+        )
+        try session.focus(on: .mercury, through: horae)
+        let originalFocus = session.focusedBody
+        let originalTerra = session.frame.terra
+        let offset = try XCTUnwrap(HoraeUTOffset(hours: 6))
+        let expected = try horae.respond(
+            to: .shiftUT(from: session.frame.julianDay, by: offset)
+        )
+
+        try session.shift(by: offset, through: horae)
+
+        XCTAssertEqual(session.frame.output, expected)
+        XCTAssertEqual(session.focusedBody, originalFocus)
+        XCTAssertEqual(session.focusedBody, .mercury)
+        XCTAssertNotEqual(session.frame.terra, originalTerra)
+        XCTAssertEqual(session.frame.output.celestial.map(\.body), OrboSpineContract.canonicalBodies)
+    }
+
     private func makeViewportHorae() throws -> Horae {
         let bone = try XCTUnwrap(OrboSpineBoneSpan(
             start: JulianDay(2_000)!,
