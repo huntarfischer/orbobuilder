@@ -14,6 +14,7 @@ public struct Orbo: Hashable, Sendable {
     public private(set) var onboardingSession: OrboOnboardingSession?
     public private(set) var engravingCommission: HermesPackage<Engraving>?
     public private(set) var engravingTicketID: HermesTicketID?
+    public private(set) var astrosphereIntroductionProgress: OrboAstrosphereIntroductionProgress?
 
     public init() {
         self.frontOfHouse = .resting
@@ -21,6 +22,7 @@ public struct Orbo: Hashable, Sendable {
         self.onboardingSession = nil
         self.engravingCommission = nil
         self.engravingTicketID = nil
+        self.astrosphereIntroductionProgress = nil
     }
 
     @discardableResult
@@ -111,6 +113,40 @@ public struct Orbo: Hashable, Sendable {
         engravingTicketID = ticketID
         backOfHouse = .engravingInProgress
         return ticketID
+    }
+
+    /// Moves FOH into the Astrosphere introduction after BOH has handed the
+    /// Engraving to Hermes. No courier action is performed here.
+    @discardableResult
+    public mutating func beginAstrosphereIntroduction() throws -> OrboAstrosphereIntroductionBeat {
+        guard backOfHouse == .engravingInProgress, engravingTicketID != nil else {
+            throw OrboFrontOfHouseFailure.engravingNotInProgress
+        }
+
+        if let progress = astrosphereIntroductionProgress {
+            return OrboAstrosphereIntroductionBeat(progress: progress)
+        }
+
+        astrosphereIntroductionProgress = .astrosphereIntroduction
+        frontOfHouse = .introducingAstrosphere
+        return OrboAstrosphereIntroductionBeat(progress: .astrosphereIntroduction)
+    }
+
+    /// Advances only FOH. BOH, Hermes custody, and the manifest are untouched.
+    @discardableResult
+    public mutating func advanceAstrosphereIntroduction() throws -> OrboAstrosphereIntroductionBeat {
+        guard let progress = astrosphereIntroductionProgress else {
+            throw OrboFrontOfHouseFailure.astrosphereIntroductionNotStarted
+        }
+
+        switch progress {
+        case .astrosphereIntroduction:
+            astrosphereIntroductionProgress = .layoutIntroduction
+            return OrboAstrosphereIntroductionBeat(progress: .layoutIntroduction)
+
+        case .layoutIntroduction:
+            throw OrboFrontOfHouseFailure.astrosphereIntroductionComplete
+        }
     }
 
     mutating func transitionFrontOfHouse(to state: OrboFrontOfHouseState) {
