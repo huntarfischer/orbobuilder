@@ -11,4 +11,9 @@ enum OrboPipelineFixture {
     static let birthLocation = "Madison, WI"
     static let astrologyInterest: OrboAstrologyInterest = .interested
     static let readingDepth: OrboReadingDepth = .l2
+    static let bigThreeTruth = OrboEstablishedBigThree(
+        ascendantSign: "Gemini",
+        moonSign: "Leo",
+        sunSign: "Pisces"
+    )!
 }
