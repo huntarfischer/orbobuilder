@@ -9,6 +9,8 @@ public struct IrisChart3DView: View {
     public let focusedBody: MundaneBody?
     public let presentation: IrisChart3DPresentation
 
+    @State private var pose: Chart3DPose
+
     public init(
         scene: IrisScene3D,
         plane: IrisHoraePlane? = nil,
@@ -19,6 +21,7 @@ public struct IrisChart3DView: View {
         self.plane = plane
         self.focusedBody = focusedBody
         self.presentation = presentation
+        _pose = State(initialValue: Self.pose(for: presentation.cameraMode))
     }
 
     public var body: some View {
@@ -28,16 +31,22 @@ public struct IrisChart3DView: View {
             temporalSampleContent
             activeBodyContent
         }
-        // Chart3D makes a bound pose user-rotatable by default. Iris supplies a
-        // read-only binding instead: our three canonical views may change only
-        // when Iris changes cameraMode, never because the user tumbles the chart.
-        .chart3DPose(lockedPoseBinding)
+        .chart3DPose($pose)
         .chart3DCameraProjection(
             presentation.cameraProjection == .perspective ? .perspective : .orthographic
         )
         .chartXScale(domain: -chartExtent...chartExtent)
         .chartYScale(domain: -chartExtent...chartExtent)
         .chartZScale(domain: chartZDomain)
+        // The first Iris instrument has canonical viewpoints, not a tumble camera.
+        // Disabling Chart3D hit testing keeps its native drag-to-rotate gesture out
+        // of the interaction model. A later Iris overlay can own body gestures.
+        .allowsHitTesting(false)
+        .onChange(of: presentation.cameraMode) { _, mode in
+            withAnimation(.easeInOut(duration: 0.55)) {
+                pose = Self.pose(for: mode)
+            }
+        }
     }
 
     @Chart3DContentBuilder
@@ -138,12 +147,11 @@ public struct IrisChart3DView: View {
 
     /// Orbo's temporal coordinate is Chart3D Z.
     ///
-    /// - topDown looks straight along Z, so the temporal depth projects into the
-    ///   zodiacal X/Y face.
-    /// - vertical looks down Chart3D Y, exposing X/Z with time upright.
-    /// - horizontal looks down Chart3D X, exposing Z/Y with time sideways.
-    private var lockedPose: Chart3DPose {
-        switch presentation.cameraMode {
+    /// - topDown looks straight along Z.
+    /// - vertical looks down Chart3D Y, placing Z vertically in screen space.
+    /// - horizontal looks down Chart3D X, placing Z horizontally in screen space.
+    private static func pose(for mode: IrisCameraMode) -> Chart3DPose {
+        switch mode {
         case .topDown:
             return .front
         case .vertical:
@@ -154,15 +162,6 @@ public struct IrisChart3DView: View {
                 inclination: .degrees(0)
             )
         }
-    }
-
-    /// Ignore Chart3D's interaction writes. The getter still changes when Iris
-    /// switches among the three canonical camera modes.
-    private var lockedPoseBinding: Binding<Chart3DPose> {
-        Binding(
-            get: { lockedPose },
-            set: { _ in }
-        )
     }
 
     private var maximumTrackRadius: Double {
