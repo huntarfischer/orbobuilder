@@ -28,6 +28,38 @@ public enum Hecate {
         return kleis
     }
 
+    /// Casts the local Ascendant from the supplied universal Terra state and Topos.
+    public static func castAscendant(
+        terra: TerraMarrowSample,
+        topos: Topos
+    ) throws -> RingFineState {
+        _ = try prepareCast(
+            AscendantKleis.id,
+            using: [AscendantKleis.terraResource, AscendantKleis.toposResource],
+            from: .canonical
+        )
+
+        guard let ascendant = AscendantKleis.cast(terra: terra, topos: topos) else {
+            throw HecateFailure.invalidCast(AscendantKleis.id)
+        }
+
+        return ascendant
+    }
+
+    /// Casts Sect through the frozen Orbo Sect law from supplied Ascendant and Sun.
+    public static func castSect(
+        ascendant: CelestialLongitude,
+        sun: CelestialLongitude
+    ) throws -> Sect {
+        _ = try prepareCast(
+            SectKleis.id,
+            using: [SectKleis.ascendantResource, SectKleis.sunResource],
+            from: .canonical
+        )
+
+        return SectKleis.cast(ascendant: ascendant, sun: sun)
+    }
+
     /// Casts canonical AstroDNA from the twelve AstroDNAGene values supplied to Hecate.
     /// Hecate never seeks a missing gene and delegates AstroDNA validity to AstroDNA itself.
     public static func castAstroDNA(

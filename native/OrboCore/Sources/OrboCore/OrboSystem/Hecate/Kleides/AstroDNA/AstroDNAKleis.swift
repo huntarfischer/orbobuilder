@@ -38,8 +38,13 @@ public enum AstroDNAKleis {
 }
 
 public extension Kleides {
-    /// Hecate's canonical spellbook: AstroDNA plus the admitted Lots catalogue.
+    /// Hecate's canonical spellbook: foundational natal casts, AstroDNA,
+    /// and the admitted Lots catalogue.
     static let canonical = Kleides(
-        [AstroDNAKleis.declaration] + LotsKleidesCatalogue.declarations
+        [
+            AscendantKleis.declaration,
+            SectKleis.declaration,
+            AstroDNAKleis.declaration,
+        ] + LotsKleidesCatalogue.declarations
     )!
 }
