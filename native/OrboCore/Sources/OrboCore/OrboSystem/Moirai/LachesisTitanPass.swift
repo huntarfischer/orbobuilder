@@ -21,7 +21,35 @@ public struct LachesisTitanPass: Sendable {
     }
 }
 
+/// The canonical Lachesis intake result.
+///
+/// Lachesis preserves Clotho's complete sister-to-sister packet while gathering
+/// Titan testimony from the already-cast AstroDNA and Sect it contains.
+public struct LachesisOutput: Sendable {
+    public let packet: PatternPacket
+    public let titanPass: LachesisTitanPass
+
+    internal init(
+        packet: PatternPacket,
+        titanPass: LachesisTitanPass
+    ) {
+        self.packet = packet
+        self.titanPass = titanPass
+    }
+}
+
 public extension Lachesis {
+    /// Receives Clotho's complete PatternPacket without altering its contents.
+    ///
+    /// Lachesis uses only the already-cast AstroDNA and Sect required by the
+    /// existing Titan's Pass. All other Hecate matter remains carried unchanged.
+    static func receive(_ packet: PatternPacket) -> LachesisOutput {
+        LachesisOutput(
+            packet: packet,
+            titanPass: petition(packet.astroDNA, sect: packet.sect)
+        )
+    }
+
     /// Conducts the Titan's Pass over one already-cast AstroDNA.
     ///
     /// Lachesis petitions each keeper and gathers the resulting testimonies.
