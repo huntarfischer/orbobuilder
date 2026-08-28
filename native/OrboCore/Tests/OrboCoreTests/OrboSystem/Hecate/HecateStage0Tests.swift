@@ -5,8 +5,8 @@ final class HecateStage0Tests: XCTestCase {
     private let resourceA = HecateResourceKey(rawValue: "resource-a")!
     private let resourceB = HecateResourceKey(rawValue: "resource-b")!
 
-    func testKleidesBeginsWithAstroDNALotsAndPartsFamilies() {
-        XCTAssertEqual(KleisFamily.allCases, [.astroDNA, .lots, .parts])
+    func testKleidesBeginsWithAstroDNALotsPartsAndSectFamilies() {
+        XCTAssertEqual(KleisFamily.allCases, [.astroDNA, .lots, .parts, .sect])
     }
 
     func testFormulaRequiresAUniqueNonEmptyResourceSet() {
