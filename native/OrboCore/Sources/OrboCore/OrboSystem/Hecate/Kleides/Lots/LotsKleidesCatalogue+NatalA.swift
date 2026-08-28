@@ -1,25 +1,63 @@
 extension LotsKleidesCatalogue {
     static let natalA: [Kleis] = [
         page("Fortune", aliases: ["Lot of Fortune", "Lot of the Moon", "Pars Fortunae", "Tychē", "Part of Fortune", "Lunar horoscope"], context: .natal, l1: true, l2: true, formulas: [
-            formula(["Asc", "Mo", "Su", "Sect"], "Asc + Mo - Su", "Mainstream Hellenistic / Valens", .reverse, source: "Report: Foundational Hellenistic", status: .complete),
+            KleisFormula(
+                requiredResources: resources(["Asc", "Mo", "Su", "Sect"]),
+                formula: "Asc + Mo - Su",
+                tradition: "Mainstream Hellenistic / Valens",
+                sectRule: .reverse,
+                isOrboDefault: true,
+                sources: ["Report: Foundational Hellenistic"],
+                status: .complete
+            )!,
             formula(["Asc", "Mo", "Su"], "Asc + Mo - Su", "Ptolemy", .same, source: "Report: Foundational Hellenistic", status: .complete),
             formula(["Asc", "Su", "Mo", "Sect"], "Asc + Mo - Su", "al-Bīrūnī / Abū Maʿshar", .reverse, source: "Report: al-Bīrūnī/Abū Maʿshar — Seven planetary fortunes", status: .complete),
         ]),
         page("Spirit", aliases: ["Lot of Spirit", "Daimon", "Lot of the Sun", "Pars Daemonis", "Daemon and religion"], context: .natal, l1: true, l2: true, formulas: [
-            formula(["Asc", "Su", "Mo", "Sect"], "Asc + Su - Mo", "Hellenistic mainstream", .reverse, source: "Report: Foundational Hellenistic", status: .complete),
+            KleisFormula(
+                requiredResources: resources(["Asc", "Su", "Mo", "Sect"]),
+                formula: "Asc + Su - Mo",
+                tradition: "Hellenistic mainstream",
+                sectRule: .reverse,
+                isOrboDefault: true,
+                sources: ["Report: Foundational Hellenistic"],
+                status: .complete
+            )!,
             formula(["Asc", "Su", "Mo", "Sect"], "Asc + Su - Mo", "al-Bīrūnī / Abū Maʿshar", .reverse, source: "Report: al-Bīrūnī/Abū Maʿshar — Seven planetary fortunes", status: .complete),
         ]),
-        page("Eros", aliases: ["Love", "Valens Love"], context: .natal, l1: true, l2: true, formulas: [
+        page("Valens Eros", aliases: ["Eros", "Love", "Valens Love"], context: .natal, l1: false, l2: false, formulas: [
             formula(["Asc", "Sp", "F", "Sect"], "Asc + Sp - F", "Valens", .reverse, source: "Report: Foundational Hellenistic", status: .complete),
         ]),
-        page("Necessity", aliases: ["Valens Necessity", "Anankē"], context: .natal, l1: true, l2: true, formulas: [
+        page("Valens Necessity", aliases: ["Necessity", "Anankē"], context: .natal, l1: false, l2: false, formulas: [
             formula(["Asc", "F", "Sp", "Sect"], "Asc + F - Sp", "Valens", .reverse, source: "Report: Foundational Hellenistic", status: .complete),
         ]),
-        page("Planetary Love (Venus)", aliases: ["Planetary Love", "Lot of Venus"], context: .natal, l1: false, l2: false, formulas: [
-            formula(["unresolved"], "various later planetary forms", "Paulus line", .unresolved, condition: "Report gives no exact planetary formula", source: "Report: Foundational Hellenistic", status: .unresolved),
+        page("Eros", aliases: ["Planetary Love (Venus)", "Planetary Love", "Lot of Venus"], context: .natal, l1: true, l2: true, formulas: [
+            KleisFormula(
+                requiredResources: resources(["Asc", "Ve", "Sp", "Sect"]),
+                formula: "Asc + Ve - Sp",
+                tradition: "Pauline/Hermetic",
+                sectRule: .reverse,
+                isOrboDefault: true,
+                sources: [
+                    "Legacy Orbo engines: astrodna.js / zr.js",
+                    "Report: Foundational Hellenistic — planetary Love/Venus identity only; exact formula not supplied",
+                ],
+                status: .complete
+            )!,
         ]),
-        page("Planetary Necessity (Mercury)", aliases: ["Planetary Necessity", "Lot of Mercury"], context: .natal, l1: false, l2: false, formulas: [
-            formula(["unresolved"], "various later planetary forms", "Paulus line", .unresolved, condition: "Report gives no exact planetary formula", source: "Report: Foundational Hellenistic", status: .unresolved),
+        page("Necessity", aliases: ["Planetary Necessity (Mercury)", "Planetary Necessity", "Lot of Mercury"], context: .natal, l1: true, l2: true, formulas: [
+            KleisFormula(
+                requiredResources: resources(["Asc", "F", "Me", "Sect"]),
+                formula: "Asc + F - Me",
+                tradition: "Pauline/Hermetic",
+                sectRule: .reverse,
+                isOrboDefault: true,
+                sources: [
+                    "Legacy Orbo engines: astrodna.js / zr.js",
+                    "Report: Foundational Hellenistic — planetary Necessity/Mercury identity only; exact formula not supplied",
+                ],
+                status: .complete
+            )!,
         ]),
         page("Basis", aliases: ["Foundation"], context: .natal, l1: false, l2: false, formulas: [
             formula(["Love", "Necessity", "Horizon"], "choose whichever of Love or Necessity is below horizon", "Valens", .none, condition: "same principle by day/night", source: "Report: Foundational Hellenistic", status: .complete),

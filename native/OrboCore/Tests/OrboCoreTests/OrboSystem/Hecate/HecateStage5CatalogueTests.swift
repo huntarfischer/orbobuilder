@@ -34,37 +34,46 @@ final class HecateStage5CatalogueTests: XCTestCase {
         XCTAssertTrue(lots.allSatisfy { $0.availability.l3 })
     }
 
-    func testNoLotFormulaHasOrboDefaultBeforeDefaultsPass() {
-        XCTAssertTrue(
-            lots
-                .flatMap { $0.formulas }
-                .allSatisfy { !$0.isOrboDefault }
+    func testExactlyFirstFourLotsCarryOrboDefaultsAfterDefaultsPass() {
+        let defaults = lots.flatMap { page in
+            page.formulas
+                .filter { $0.isOrboDefault }
+                .map { _ in page.id.rawValue }
+        }
+
+        XCTAssertEqual(defaults.count, 4)
+        XCTAssertEqual(
+            Set(defaults),
+            Set(["Fortune", "Spirit", "Eros", "Necessity"])
         )
     }
 
-    func testCataloguePreservesFormulaStatusCounts() {
+    func testCataloguePreservesFormulaStatusCountsAfterIdentityReconciliation() {
         let formulas = lots.flatMap { $0.formulas }
 
-        XCTAssertEqual(formulas.filter { $0.status == .complete }.count, 171)
+        XCTAssertEqual(formulas.filter { $0.status == .complete }.count, 173)
         XCTAssertEqual(formulas.filter { $0.status == .partial }.count, 7)
-        XCTAssertEqual(formulas.filter { $0.status == .unresolved }.count, 4)
+        XCTAssertEqual(formulas.filter { $0.status == .unresolved }.count, 2)
     }
 
-    func testUnresolvedSourceRowsRemainUnresolvedRatherThanInvented() throws {
-        for id in [
-            "Planetary Love (Venus)",
-            "Planetary Necessity (Mercury)",
-            "Exaltation",
-        ] {
+    func testUnresolvedHistoricalMaterialRemainsExplicitlyUnresolved() throws {
+        let exaltation = try XCTUnwrap(
+            Kleides.canonical.kleis(KleisID(rawValue: "Exaltation")!)
+        )
+        let formula = try XCTUnwrap(exaltation.formulas.first)
+
+        XCTAssertEqual(formula.status, .unresolved)
+        XCTAssertEqual(formula.requiredResources.map(\.rawValue), ["unresolved"])
+
+        for id in ["Eros", "Necessity"] {
             let page = try XCTUnwrap(
                 Kleides.canonical.kleis(KleisID(rawValue: id)!)
             )
-            let formula = try XCTUnwrap(page.formulas.first)
-
-            XCTAssertEqual(formula.status, .unresolved)
-            XCTAssertEqual(
-                formula.requiredResources.map(\.rawValue),
-                ["unresolved"]
+            XCTAssertTrue(page.formulas.allSatisfy { $0.status == .complete })
+            XCTAssertFalse(
+                page.formulas
+                    .flatMap { $0.requiredResources }
+                    .contains(HecateResourceKey(rawValue: "unresolved")!)
             )
         }
     }
@@ -78,10 +87,10 @@ final class HecateStage5CatalogueTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(pagesByFormula.count, 86)
+        XCTAssertEqual(pagesByFormula.count, 87)
         XCTAssertEqual(
             pagesByFormula.values.filter { $0.count > 1 }.count,
-            35
+            34
         )
     }
 

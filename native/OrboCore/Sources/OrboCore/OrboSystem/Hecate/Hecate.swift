@@ -47,4 +47,90 @@ public enum Hecate {
 
         return astroDNA
     }
+
+    public static func castFortune(
+        ascendant: CelestialLongitude,
+        moon: CelestialLongitude,
+        sun: CelestialLongitude,
+        sect: Sect
+    ) throws -> CelestialLongitude {
+        try castReversingLot(
+            OrboLotCasting.fortuneID,
+            using: OrboLotCasting.resources(["Asc", "Mo", "Su", "Sect"]),
+            ascendant: ascendant,
+            first: moon,
+            second: sun,
+            sect: sect
+        )
+    }
+
+    public static func castSpirit(
+        ascendant: CelestialLongitude,
+        sun: CelestialLongitude,
+        moon: CelestialLongitude,
+        sect: Sect
+    ) throws -> CelestialLongitude {
+        try castReversingLot(
+            OrboLotCasting.spiritID,
+            using: OrboLotCasting.resources(["Asc", "Su", "Mo", "Sect"]),
+            ascendant: ascendant,
+            first: sun,
+            second: moon,
+            sect: sect
+        )
+    }
+
+    public static func castEros(
+        ascendant: CelestialLongitude,
+        venus: CelestialLongitude,
+        spirit: CelestialLongitude,
+        sect: Sect
+    ) throws -> CelestialLongitude {
+        try castReversingLot(
+            OrboLotCasting.erosID,
+            using: OrboLotCasting.resources(["Asc", "Ve", "Sp", "Sect"]),
+            ascendant: ascendant,
+            first: venus,
+            second: spirit,
+            sect: sect
+        )
+    }
+
+    public static func castNecessity(
+        ascendant: CelestialLongitude,
+        fortune: CelestialLongitude,
+        mercury: CelestialLongitude,
+        sect: Sect
+    ) throws -> CelestialLongitude {
+        try castReversingLot(
+            OrboLotCasting.necessityID,
+            using: OrboLotCasting.resources(["Asc", "F", "Me", "Sect"]),
+            ascendant: ascendant,
+            first: fortune,
+            second: mercury,
+            sect: sect
+        )
+    }
+
+    private static func castReversingLot(
+        _ kleisID: KleisID,
+        using suppliedResources: [HecateResourceKey],
+        ascendant: CelestialLongitude,
+        first: CelestialLongitude,
+        second: CelestialLongitude,
+        sect: Sect
+    ) throws -> CelestialLongitude {
+        _ = try prepareCast(
+            kleisID,
+            using: suppliedResources,
+            from: .canonical
+        )
+
+        return OrboLotCasting.cast(
+            ascendant: ascendant,
+            first: first,
+            second: second,
+            sect: sect
+        )
+    }
 }
