@@ -32,8 +32,8 @@ public struct ClothoOutput: Hashable, Sendable {
 }
 
 /// Clotho receives the commission, queries Door One with birth date, birth time,
-/// and Topos, spins the returned natal states into AstroDNA, resolves the
-/// Engraving, and hands Pattern + AstroDNA forward for Lachesis.
+/// and Topos, gathers the returned natal states, asks Hecate to cast AstroDNA,
+/// resolves the Engraving, and hands Pattern + AstroDNA forward for Lachesis.
 public enum Clotho {
     public static func spin<Port: ClothoPortI>(
         _ engraving: Engraving,
@@ -52,14 +52,14 @@ public enum Clotho {
             topos: topos
         )
 
-        let sequence = try AstroDNAGene.canonicalOrder.map { gene -> RingFineState in
-            guard let state = nodeStates[gene] else {
-                throw ClothoFailure.missingNatalGene(gene)
-            }
-            return state
+        for gene in AstroDNAGene.canonicalOrder where nodeStates[gene] == nil {
+            throw ClothoFailure.missingNatalGene(gene)
         }
 
-        guard let astroDNA = AstroDNA(sequence: sequence) else {
+        let astroDNA: AstroDNA
+        do {
+            astroDNA = try Hecate.castAstroDNA(using: nodeStates)
+        } catch {
             throw ClothoFailure.invalidAstroDNA
         }
 
