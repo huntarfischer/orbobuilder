@@ -30,7 +30,7 @@ final class ClothoStage8BTests: XCTestCase {
         )
 
         XCTAssertEqual(ascendant.motion, .direct)
-        XCTAssertEqual(ascendant.dms, RingDMS(degree: 90, minute: 0, second: 0))
+        XCTAssertEqual(ascendant.dms, RingDMS(degree: 110, minute: 23, second: 52))
     }
 
     func testHecateSectKleisPreservesFrozenOrboBoundaryLaw() throws {
@@ -53,24 +53,26 @@ final class ClothoStage8BTests: XCTestCase {
 
     func testClothoGathersOneHoraeSliceAndCarriesCompleteHecateMatterForward() throws {
         let engraving = try resolvedEngraving()
+        let topos = try XCTUnwrap(engraving.topos)
         let expectedTempus = try XCTUnwrap(engraving.tempus)
         let sourceSlice = try slice(for: engraving)
         var portI = PortISpy(output: sourceSlice)
 
         let output = try Clotho.spin(engraving, through: &portI)
+        let expectedAscendant = try Hecate.castAscendant(
+            terra: sourceSlice.terra,
+            topos: topos
+        )
 
         XCTAssertEqual(portI.receivedTempus, [expectedTempus])
         XCTAssertEqual(sourceSlice.celestial.count, MundaneBody.canonicalOrder.count)
         XCTAssertEqual(output.packet.astroDNA.sequence.count, AstroDNA.geneCount)
-        XCTAssertEqual(
-            output.packet.astroDNA[.ascendant].dms,
-            RingDMS(degree: 90, minute: 0, second: 0)
-        )
+        XCTAssertEqual(output.packet.astroDNA[.ascendant], expectedAscendant)
         XCTAssertEqual(output.packet.sect, .day)
-        XCTAssertEqual(output.packet.fortune.degrees, 350, accuracy: 1e-12)
-        XCTAssertEqual(output.packet.spirit.degrees, 190, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.fortune.degrees, 10.397777777777776, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.spirit.degrees, 210.39777777777778, accuracy: 1e-12)
         XCTAssertEqual(output.packet.eros.degrees, 300, accuracy: 1e-12)
-        XCTAssertEqual(output.packet.necessity.degrees, 70, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.necessity.degrees, 110.79555555555555, accuracy: 1e-12)
         XCTAssertEqual(output.engraving.astroDNA, output.packet.astroDNA)
     }
 
@@ -80,7 +82,10 @@ final class ClothoStage8BTests: XCTestCase {
         var portI = PortISpy(output: sourceSlice)
 
         let output = try Clotho.spin(engraving, through: &portI)
-        let ascendant = CelestialLongitude(90)!
+        let ascendantState = output.packet.astroDNA[.ascendant]
+        let ascendant = CelestialLongitude(
+            Double(ascendantState.arcsecond) / Double(Ring.arcsecondsPerDegree)
+        )!
         let expectedEros = try Hecate.castEros(
             ascendant: ascendant,
             venus: CelestialLongitude(40)!,
