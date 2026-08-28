@@ -6,6 +6,7 @@ public enum OrboCommissionFailure: Error, Hashable, Sendable {
 public enum OrboHermesFailure: Error, Hashable, Sendable {
     case noEngravingCommission
     case alreadyEntrusted
+    case invalidHearthLitNotice
 }
 
 public struct Orbo: Hashable, Sendable {
@@ -121,6 +122,27 @@ public struct Orbo: Hashable, Sendable {
         engravingTicketID = ticketID
         backOfHouse = .engravingInProgress
         return ticketID
+    }
+
+    /// Receives Hestia's Hearth Lit notice after Hermes has carried it to Orbo.
+    /// The notice carries readiness only; Orbo does not inspect native chart matter.
+    public mutating func receiveHearthLitNotice(
+        _ package: HermesPackage<HearthLitNotice>
+    ) throws {
+        guard let commission = engravingCommission else {
+            throw OrboHermesFailure.noEngravingCommission
+        }
+        guard engravingTicketID != nil,
+              package.sender == Hestia.address,
+              package.kind == Hestia.hearthLitNoticeKind,
+              package.addresses == [OrboOnboarding.orboAddress],
+              package.subjectID == package.contents.subjectID,
+              package.subjectID == commission.subjectID,
+              package.contents.hearthLit else {
+            throw OrboHermesFailure.invalidHearthLitNotice
+        }
+
+        receiveBackOfHouseResult(.nativeTruthReady)
     }
 
     /// Moves FOH into the Astrosphere introduction after the Engraving has

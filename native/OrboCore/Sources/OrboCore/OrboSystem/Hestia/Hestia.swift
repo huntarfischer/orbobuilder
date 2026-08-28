@@ -26,6 +26,16 @@ public struct HestiaCorrection: Hashable, Sendable {
     }
 }
 
+public struct HearthLitNotice: Hashable, Sendable {
+    public let subjectID: HermesSubjectID
+    public let hearthLit: Bool
+
+    public init(subjectID: HermesSubjectID) {
+        self.subjectID = subjectID
+        self.hearthLit = true
+    }
+}
+
 public enum HestiaDestination: Hashable, Sendable {
     case holdings
     case hearth
@@ -50,7 +60,18 @@ public struct Hestia: Hashable, Sendable {
         case savedSubjectAlreadyAdmitted
         case nativeCannotEnterHoldings
         case subjectAlreadyInHoldings
+        case unexpectedEngravingPackage
+        case engravingSubjectMismatch
+        case missingTopos
+        case missingTempus
+        case missingAstroDNA
+        case missingAtroposSeal
+        case engravingAlreadyComplete
+        case hearthUnlit
     }
+
+    public static let address = OrboOnboarding.engravingItinerary[2]
+    public static let hearthLitNoticeKind = HermesPackageKind(rawValue: "orbo.hearth-lit.v1")!
 
     private(set) var holdings: Holdings
     private(set) var hearth: Hearth
@@ -60,15 +81,86 @@ public struct Hestia: Hashable, Sendable {
         hearth.nativeSubjectID
     }
 
+    public var hearthLit: Bool {
+        hearth.hearthLit
+    }
+
     public init(nativeSubjectID: HermesSubjectID) {
         self.holdings = Holdings()
         self.hearth = Hearth(nativeSubjectID: nativeSubjectID)
         self.hall = Hall()
     }
 
-    /// Receives one completed Moirai delivery and immediately chooses its disposition.
-    /// The package carries both canonical AstroDNA and the finished Tapestry.
-    /// Rejection is a Handback to Hermes.
+    /// Receives the canonical traveling Engraving package at the final stop.
+    /// Hestia verifies package completeness and admission law only. Atropos's
+    /// sealed Tapestry is trusted and never recalculated or reinspected here.
+    @discardableResult
+    public mutating func receive(
+        _ package: HermesPackage<Engraving>
+    ) throws -> Engraving {
+        guard package.sender == OrboOnboarding.orboAddress,
+              package.kind == OrboOnboarding.engravingPackageKind,
+              package.addresses == OrboOnboarding.engravingItinerary,
+              package.addresses.last == Self.address else {
+            throw Failure.unexpectedEngravingPackage
+        }
+
+        let engraving = package.contents
+        guard package.subjectID == engraving.subjectID,
+              engraving.subjectID == nativeSubjectID else {
+            throw Failure.engravingSubjectMismatch
+        }
+        guard engraving.topos != nil else { throw Failure.missingTopos }
+        guard engraving.tempus != nil else { throw Failure.missingTempus }
+        guard engraving.astroDNA != nil else { throw Failure.missingAstroDNA }
+        guard engraving.tapestry != nil else { throw Failure.missingAtroposSeal }
+        guard !engraving.engraved else { throw Failure.engravingAlreadyComplete }
+        guard hearth.resident == nil, hearth.engraving == nil else {
+            throw Failure.nativeAlreadyEstablished
+        }
+
+        return try hearth.hang(engraving)
+    }
+
+    /// Native kept truth is unavailable until the Hearth has been lit.
+    public func nativeEngraving() -> Engraving? {
+        guard hearthLit else { return nil }
+        return hearth.engraving
+    }
+
+    /// Canonical native Tapestry query. The Hearth gate applies before lookup.
+    public func canonicalTapestry(for subjectID: HermesSubjectID) -> AtroposTapestryPackage? {
+        guard subjectID == nativeSubjectID else { return nil }
+        return nativeEngraving()?.tapestry
+    }
+
+    /// Once the Hearth is lit, Hestia may send Hermes with the news to any
+    /// interested system actor. Pass 9B uses this path to notify Orbo.
+    public func sendHearthLitNotice(
+        to recipient: HermesAddress,
+        via courier: inout HermesCourier,
+        occurredAt: AbsoluteInstant,
+        packageID: HermesPackageID = HermesPackageID()
+    ) throws -> (package: HermesPackage<HearthLitNotice>, ticketID: HermesTicketID) {
+        guard hearthLit, hearth.engraving != nil else {
+            throw Failure.hearthUnlit
+        }
+
+        let notice = HearthLitNotice(subjectID: nativeSubjectID)
+        let package = HermesPackage(
+            packageID: packageID,
+            subjectID: nativeSubjectID,
+            sender: Self.address,
+            kind: Self.hearthLitNoticeKind,
+            addresses: [recipient],
+            contents: notice
+        )!
+        let ticketID = try courier.accept(package: package, occurredAt: occurredAt)
+        return (package, ticketID)
+    }
+
+    /// Legacy Messenger receipt path retained through Pass 9B for codec-1 and
+    /// historical tests. Canonical onboarding uses receive(HermesPackage<Engraving>).
     public mutating func receive(
         _ parcel: HermesParcel<MoiraiPackage>,
         receivedAt: AbsoluteInstant
@@ -132,14 +224,14 @@ public struct Hestia: Hashable, Sendable {
         )
     }
 
-    /// Finished Tapestries enter Hearth or Hall through Hestia.
+    /// Legacy finished Tapestries enter Hearth or Hall through Hestia.
     mutating func admit(
         subjectID: HermesSubjectID,
         astroDNA: AstroDNA,
         tapestry: AtroposPackage
     ) throws {
         if subjectID == nativeSubjectID {
-            guard hearth.resident == nil else {
+            guard hearth.resident == nil, hearth.engraving == nil else {
                 throw Failure.nativeAlreadyEstablished
             }
 
@@ -181,7 +273,7 @@ public struct Hestia: Hashable, Sendable {
         hall.resident(for: subjectID)
     }
 
-    /// Hestia is the query surface for the Tapestries she keeps.
+    /// Legacy query surface retained through Pass 9B for downstream callers.
     public func tapestry(for subjectID: HermesSubjectID) -> AtroposPackage? {
         if subjectID == nativeSubjectID {
             return hearth.resident?.tapestry
@@ -189,6 +281,8 @@ public struct Hestia: Hashable, Sendable {
         return hall.resident(for: subjectID)?.tapestry
     }
 
+    /// Legacy grid correspondence check retained only for codec-1 and the old
+    /// Messenger path. Canonical Hestia receipt never invokes this function.
     static func tapestry(
         _ tapestry: AtroposPackage,
         matches astroDNA: AstroDNA

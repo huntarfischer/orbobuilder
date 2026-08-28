@@ -8,7 +8,7 @@ public struct Engraving: Hashable, Sendable {
     public let topos: Topos?
     public let tempus: Tempus?
     public let astroDNA: AstroDNA?
-    public let tapestry: AtroposPackage?
+    public let tapestry: AtroposTapestryPackage?
     public let engraved: Bool
 
     /// Orbo creates an unfinished Engraving. Its resolutions are completed
@@ -41,7 +41,7 @@ public struct Engraving: Hashable, Sendable {
         topos: Topos?,
         tempus: Tempus?,
         astroDNA: AstroDNA?,
-        tapestry: AtroposPackage?,
+        tapestry: AtroposTapestryPackage?,
         engraved: Bool
     ) {
         self.subjectID = subjectID
@@ -101,6 +101,38 @@ public struct Engraving: Hashable, Sendable {
             astroDNA: astroDNA,
             tapestry: tapestry,
             engraved: engraved
+        )
+    }
+
+    /// The Moirai attach Atropos's canonical seal without completing the Engraving.
+    internal func resolving(tapestry: AtroposTapestryPackage) -> Engraving {
+        Engraving(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation,
+            topos: topos,
+            tempus: tempus,
+            astroDNA: astroDNA,
+            tapestry: tapestry,
+            engraved: engraved
+        )
+    }
+
+    /// Hestia completes the Engraving only when she hangs it on the native Hearth.
+    internal func hungOnHearth() -> Engraving {
+        Engraving(
+            subjectID: subjectID,
+            name: name,
+            birthDate: birthDate,
+            birthTime: birthTime,
+            birthLocation: birthLocation,
+            topos: topos,
+            tempus: tempus,
+            astroDNA: astroDNA,
+            tapestry: tapestry,
+            engraved: true
         )
     }
 }
