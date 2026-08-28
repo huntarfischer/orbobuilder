@@ -1,11 +1,12 @@
 import Foundation
 
-/// The first three shelves of Hecate's Kleides.
+/// The first four shelves of Hecate's Kleides.
 /// AstroDNA remains independent unless a truer family is established later.
 public enum KleisFamily: String, CaseIterable, Codable, Hashable, Sendable {
     case astroDNA
     case lots
     case parts
+    case sect
 }
 
 /// The casting context in which one kleis belongs.
