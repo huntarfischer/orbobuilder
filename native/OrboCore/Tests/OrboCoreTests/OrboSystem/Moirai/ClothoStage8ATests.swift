@@ -2,60 +2,29 @@ import XCTest
 @testable import OrboCore
 
 final class ClothoStage8ATests: XCTestCase {
-    private struct NatalPosition {
-        let degree: Int
-        let minute: Int
-        let second: Int
-        let retrograde: Bool
-
-        var rawValue: Int {
-            var value = degree * Ring.arcsecondsPerDegree + minute * 60 + second
-            if retrograde {
-                value += Ring.arcseconds
-            }
-            return value
-        }
+    private struct Position {
+        let degrees: Double
+        let motion: Motion
     }
 
     private struct PortISpy: ClothoPortI {
-        var nodes: [AstroDNAGene: RingFineState]
+        var output: HoraeOutput
         var callCount = 0
 
-        mutating func queryNatalState(
-            birthDate: CivilDate,
-            birthTime: CivilClockTime,
-            topos: Topos
-        ) throws -> [AstroDNAGene: RingFineState] {
+        mutating func queryNatalSlice(at tempus: Tempus) throws -> HoraeOutput {
             callCount += 1
-            return nodes
+            return output
         }
     }
 
-    private let subjectID = HermesSubjectID(rawValue: "subject.native")!
-    private let birthDate = CivilDate(year: 1985, month: 4, day: 10)!
-    private let birthTime = CivilClockTime(hour: 20, minute: 16)!
-
-    private let natalPositions: [AstroDNAGene: NatalPosition] = [
-        .ascendant: NatalPosition(degree: 221, minute: 29, second: 37, retrograde: false),
-        .moon: NatalPosition(degree: 277, minute: 34, second: 12, retrograde: false),
-        .sun: NatalPosition(degree: 21, minute: 8, second: 19, retrograde: false),
-        .mercury: NatalPosition(degree: 8, minute: 20, second: 41, retrograde: true),
-        .venus: NatalPosition(degree: 9, minute: 49, second: 22, retrograde: true),
-        .mars: NatalPosition(degree: 49, minute: 16, second: 5, retrograde: false),
-        .jupiter: NatalPosition(degree: 312, minute: 33, second: 44, retrograde: false),
-        .saturn: NatalPosition(degree: 237, minute: 9, second: 17, retrograde: true),
-        .uranus: NatalPosition(degree: 257, minute: 49, second: 31, retrograde: true),
-        .neptune: NatalPosition(degree: 273, minute: 36, second: 26, retrograde: true),
-        .pluto: NatalPosition(degree: 213, minute: 42, second: 14, retrograde: true),
-        .northNode: NatalPosition(degree: 49, minute: 50, second: 53, retrograde: true),
-    ]
-
     func testClothoCarriesTheCanonicalHecateAstroDNACastForward() throws {
-        let nodes = try nodeStates()
-        let expectedAstroDNA = try Hecate.castAstroDNA(using: nodes)
-        var portI = PortISpy(nodes: nodes)
+        let engraving = try resolvedEngraving()
+        let sourceSlice = try slice(for: engraving)
+        let expectedNodes = try nodeStates(for: engraving, slice: sourceSlice)
+        let expectedAstroDNA = try Hecate.castAstroDNA(using: expectedNodes)
+        var portI = PortISpy(output: sourceSlice)
 
-        let output = try Clotho.spin(try resolvedEngraving(), through: &portI)
+        let output = try Clotho.spin(engraving, through: &portI)
 
         XCTAssertEqual(portI.callCount, 1)
         XCTAssertEqual(output.packet.pattern, .engraving)
@@ -64,45 +33,114 @@ final class ClothoStage8ATests: XCTestCase {
     }
 
     func testClothoMapsFailedHecateAstroDNACastToExistingFailure() throws {
-        var nodes = try nodeStates()
-        let ascendant = try XCTUnwrap(natalPositions[.ascendant])
-        nodes[.ascendant] = try XCTUnwrap(
-            RingFineState(ascendant.rawValue + Ring.arcseconds)
-        )
+        let engraving = try resolvedEngraving()
+        let badSun = Position(degrees: 20, motion: .retrograde)
+        let sourceSlice = try slice(for: engraving, overrides: [.sun: badSun])
+        let expectedNodes = try nodeStates(for: engraving, slice: sourceSlice)
 
-        XCTAssertThrowsError(try Hecate.castAstroDNA(using: nodes))
+        XCTAssertThrowsError(try Hecate.castAstroDNA(using: expectedNodes))
 
-        var portI = PortISpy(nodes: nodes)
-        XCTAssertThrowsError(try Clotho.spin(try resolvedEngraving(), through: &portI)) { error in
+        var portI = PortISpy(output: sourceSlice)
+        XCTAssertThrowsError(try Clotho.spin(engraving, through: &portI)) { error in
             XCTAssertEqual(error as? ClothoFailure, .invalidAstroDNA)
         }
         XCTAssertEqual(portI.callCount, 1)
     }
 
     private func resolvedEngraving() throws -> Engraving {
-        let engraving = OrboOnboarding.complete(
-            subjectID: subjectID,
+        let unfinished = OrboOnboarding.complete(
+            subjectID: HermesSubjectID(rawValue: "subject.native")!,
             name: "Ean",
-            birthDate: birthDate,
-            birthTime: birthTime,
+            birthDate: CivilDate(year: 1985, month: 4, day: 10)!,
+            birthTime: CivilClockTime(hour: 20, minute: 16)!,
             birthLocation: "Madison, WI"
         ).contents
 
-        guard case let .found(topos) = Atlas().resolve(engraving.birthLocation) else {
-            XCTFail("Expected Atlas to resolve Madison")
+        guard case let .found(engraving) = Atlas().resolve(unfinished) else {
+            XCTFail("Expected Atlas to resolve Madison and Tempus")
             throw TestError.unexpectedAtlasResolution
         }
-        return engraving.resolving(topos: topos)
+        return engraving
     }
 
-    private func nodeStates() throws -> [AstroDNAGene: RingFineState] {
-        Dictionary(
-            uniqueKeysWithValues: try AstroDNAGene.canonicalOrder.map { gene in
-                let position = try XCTUnwrap(natalPositions[gene])
-                let state = try XCTUnwrap(RingFineState(position.rawValue))
-                return (gene, state)
-            }
+    private func slice(
+        for engraving: Engraving,
+        overrides: [MundaneBody: Position] = [:]
+    ) throws -> HoraeOutput {
+        let defaults: [MundaneBody: Position] = [
+            .sun: Position(degrees: 20, motion: .direct),
+            .moon: Position(degrees: 280, motion: .direct),
+            .mercury: Position(degrees: 10, motion: .retrograde),
+            .venus: Position(degrees: 40, motion: .retrograde),
+            .mars: Position(degrees: 50, motion: .direct),
+            .jupiter: Position(degrees: 100, motion: .direct),
+            .saturn: Position(degrees: 150, motion: .retrograde),
+            .uranus: Position(degrees: 200, motion: .retrograde),
+            .neptune: Position(degrees: 250, motion: .retrograde),
+            .pluto: Position(degrees: 300, motion: .retrograde),
+            .trueNorthNode: Position(degrees: 60, motion: .retrograde),
+        ]
+        let topos = try XCTUnwrap(engraving.topos)
+        let julianDay = JulianDay(2_446_166.5)!
+        let terra = TerraMarrowSample(
+            turnDegrees: CelestialLongitude(-topos.place.longitude.degrees)!.degrees,
+            tiltDegrees: 23.44,
+            julianDay: julianDay
+        )!
+        let celestial = try MundaneBody.canonicalOrder.map { body in
+            let position = try XCTUnwrap(overrides[body] ?? defaults[body])
+            return OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: try XCTUnwrap(
+                    OrboSpineDirectionalDegree(
+                        physicalDegrees: position.degrees,
+                        motion: position.motion
+                    )
+                ),
+                julianDay: julianDay
+            )
+        }
+
+        return HoraeOutput(
+            julianDay: julianDay,
+            celestial: celestial,
+            terra: terra
         )
+    }
+
+    private func nodeStates(
+        for engraving: Engraving,
+        slice: HoraeOutput
+    ) throws -> [AstroDNAGene: RingFineState] {
+        var nodes: [AstroDNAGene: RingFineState] = [:]
+        for coordinate in slice.celestial {
+            let longitude = CelestialLongitude(coordinate.directionalDegree.physicalDegrees)!
+            nodes[gene(for: coordinate.body)] = Ring.fineState(
+                of: longitude,
+                motion: coordinate.directionalDegree.motion
+            )
+        }
+        nodes[.ascendant] = try Hecate.castAscendant(
+            terra: slice.terra,
+            topos: XCTUnwrap(engraving.topos)
+        )
+        return nodes
+    }
+
+    private func gene(for body: MundaneBody) -> AstroDNAGene {
+        switch body {
+        case .sun: return .sun
+        case .moon: return .moon
+        case .mercury: return .mercury
+        case .venus: return .venus
+        case .mars: return .mars
+        case .jupiter: return .jupiter
+        case .saturn: return .saturn
+        case .uranus: return .uranus
+        case .neptune: return .neptune
+        case .pluto: return .pluto
+        case .trueNorthNode: return .northNode
+        }
     }
 
     private enum TestError: Error {
