@@ -38,38 +38,23 @@ final class LachesisTitanPassTests: XCTestCase {
         XCTAssertEqual(pass.oceanus.objectTemplates.map(\.gene), AstroDNAGene.canonicalOrder)
     }
 
-    func testLachesisPresentsOnlyLawfulCoordinateMatterToAsteria() throws {
+    func testLachesisPresentsAstroDNAOnlyToAsteriaWhenNoPacketLotsExist() throws {
         let dna = try makeSyntheticDNA()
         let pass = Lachesis.petition(dna, sect: nil)
         let subjects = pass.asteria.refractions.map(\.subject)
 
-        let astroDNASubjects = subjects.filter { $0.provenance == "AstroDNA" }
-        let ringSubjects = subjects.filter { $0.provenance == "Ring" }
-
-        XCTAssertEqual(astroDNASubjects.count, AstroDNAGene.canonicalOrder.count)
-        XCTAssertEqual(Set(subjects.map(\.provenance)), Set(["AstroDNA", "Ring"]))
+        XCTAssertEqual(subjects.count, AstroDNAGene.canonicalOrder.count)
+        XCTAssertEqual(Set(subjects.map(\.provenance)), Set(["AstroDNA"]))
+        XCTAssertFalse(subjects.contains { $0.provenance == "Ring" })
         XCTAssertFalse(subjects.contains { $0.provenance == "Tympan" })
         XCTAssertFalse(subjects.contains { $0.provenance == "Mater" })
 
-        for (gene, subject) in zip(AstroDNAGene.canonicalOrder, astroDNASubjects) {
+        for (gene, subject) in zip(AstroDNAGene.canonicalOrder, subjects) {
             XCTAssertEqual(subject.identity, gene.displayName)
             XCTAssertEqual(subject.coordinate.arcsecond, dna[gene].arcsecond)
         }
 
-        let expectedRingTargets = pass.oceanus.objectTemplates.flatMap { object in
-            object.marks.map(\.targetArcsecond)
-        }.sorted()
-        let actualRingTargets = ringSubjects.map { $0.coordinate.arcsecond }.sorted()
-
-        XCTAssertEqual(ringSubjects.count, expectedRingTargets.count)
-        XCTAssertEqual(actualRingTargets, expectedRingTargets)
-
-        let expectedSubjects = makeAsteriaSubjects(
-            from: dna,
-            oceanus: Oceanus.testify(dna)
-        )
-        let direct = Asteria.testify(expectedSubjects)
-
+        let direct = Asteria.testify(subjects)
         XCTAssertEqual(pass.asteria.refractions, direct.refractions)
         XCTAssertEqual(pass.asteria.projections, direct.projections)
     }
@@ -82,33 +67,6 @@ final class LachesisTitanPassTests: XCTestCase {
                 (planet, dna.longitude(of: gene(for: planet)))
             }
         )
-    }
-
-    private func makeAsteriaSubjects(
-        from dna: AstroDNA,
-        oceanus: OceanusPass
-    ) -> [ArcSubject] {
-        var subjects = AstroDNAGene.canonicalOrder.map { gene in
-            ArcSubject(
-                identity: gene.displayName,
-                provenance: "AstroDNA",
-                coordinate: ArcCoordinate(dna[gene].arcsecond)!
-            )
-        }
-
-        for object in oceanus.objectTemplates {
-            for mark in object.marks {
-                subjects.append(
-                    ArcSubject(
-                        identity: "\(object.gene.displayName):\(mark.mark.rawValue):\(mark.targetArcsecond)",
-                        provenance: "Ring",
-                        coordinate: ArcCoordinate(mark.targetArcsecond)!
-                    )
-                )
-            }
-        }
-
-        return subjects
     }
 
     private func makeSyntheticDNA() throws -> AstroDNA {
