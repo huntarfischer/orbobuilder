@@ -39,40 +39,89 @@ public struct TapestryPlacement: Hashable, Sendable {
     }
 }
 
-/// The empty Tympan subsection of one Tapestry degree.
-///
-/// Lachesis will later collapse Themis's testimony here.
+/// Themis's whole-sign house testimony allotted to one Tapestry degree.
 public struct TapestryTympan: Hashable, Sendable {
-    public var isEmpty: Bool { true }
+    public let house: House?
 
-    internal init() {}
+    public var isEmpty: Bool { house == nil }
+
+    internal init(house: House? = nil) {
+        self.house = house
+    }
 }
 
-/// The empty Mater subsection of one Tapestry degree.
-///
-/// Lachesis will later collapse Rhea's testimony here.
+/// Rhea's exact qualified planetary conditions allotted to one degree.
 public struct TapestryMater: Hashable, Sendable {
-    public var isEmpty: Bool { true }
+    public let conditions: [Mater.QualifiedTemper]
 
-    internal init() {}
+    public var isEmpty: Bool { conditions.isEmpty }
+
+    internal init(conditions: [Mater.QualifiedTemper] = []) {
+        self.conditions = conditions
+    }
 }
 
-/// The empty Ring subsection of one Tapestry degree.
+/// One exact Oceanus Ring mark allotted to its target degree.
 ///
-/// Lachesis will later collapse Oceanus's testimony here.
+/// Source identity and exact source state remain attached so the Tapestry mark
+/// can be traced directly back to the independent OceanusPass testimony.
+public struct TapestryRingValue: Hashable, Sendable {
+    public let gene: AstroDNAGene
+    public let source: RingFineState
+    public let mark: RingMark
+    public let targetArcsecond: Int
+
+    public var degreeAddress: DegreeAddress {
+        DegreeAddress(rawValue: targetArcsecond / Ring.arcsecondsPerDegree)!
+    }
+
+    internal init(
+        gene: AstroDNAGene,
+        source: RingFineState,
+        mark: RingMark,
+        targetArcsecond: Int
+    ) {
+        self.gene = gene
+        self.source = source
+        self.mark = mark
+        self.targetArcsecond = targetArcsecond
+    }
+}
+
+/// Oceanus's exact Ring testimony allotted to one Tapestry degree.
 public struct TapestryRing: Hashable, Sendable {
-    public var isEmpty: Bool { true }
+    public let values: [TapestryRingValue]
 
-    internal init() {}
+    public var isEmpty: Bool { values.isEmpty }
+
+    internal init(values: [TapestryRingValue] = []) {
+        self.values = values
+    }
 }
 
-/// The empty Arc subsection of one Tapestry degree.
+/// One Asteria subject's exact Arc projection for one Tapestry degree.
 ///
-/// Lachesis will later collapse Asteria's testimony here.
-public struct TapestryArc: Hashable, Sendable {
-    public var isEmpty: Bool { true }
+/// The subject identifies which independent Arc testimony this cell belongs to;
+/// the ArcDegreeCell preserves the exact possible/impossible/partial projection.
+public struct TapestryArcValue: Hashable, Sendable {
+    public let subject: ArcSubject
+    public let cell: ArcDegreeCell
 
-    internal init() {}
+    internal init(subject: ArcSubject, cell: ArcDegreeCell) {
+        self.subject = subject
+        self.cell = cell
+    }
+}
+
+/// Asteria's independent Arc projections allotted to one Tapestry degree.
+public struct TapestryArc: Hashable, Sendable {
+    public let values: [TapestryArcValue]
+
+    public var isEmpty: Bool { values.isEmpty }
+
+    internal init(values: [TapestryArcValue] = []) {
+        self.values = values
+    }
 }
 
 /// One canonical zodiacal degree of the Tapestry.
