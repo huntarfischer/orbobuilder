@@ -23,8 +23,8 @@ public struct Hearth: Hashable, Sendable {
 
     public let nativeSubjectID: HermesSubjectID
 
-    /// Legacy resident storage remains through Pass 9B so codec-1 persistence
-    /// can continue to compile unchanged. Canonical onboarding hangs Engraving.
+    /// Legacy resident storage remains until the Pass 9 legacy sweep.
+    /// Canonical onboarding hangs the finished Engraving instead.
     public private(set) var resident: HearthResident?
     public private(set) var engraving: Engraving?
     public private(set) var hearthLit: Bool
@@ -34,6 +34,34 @@ public struct Hearth: Hashable, Sendable {
         self.resident = nil
         self.engraving = nil
         self.hearthLit = false
+    }
+
+    /// Restores canonical kept truth without replaying Hestia's hanging act.
+    /// Only the two lawful canonical states are admitted: unlit/empty or
+    /// lit/finished-and-complete.
+    internal init?(
+        restoringNativeSubjectID nativeSubjectID: HermesSubjectID,
+        engraving: Engraving?,
+        hearthLit: Bool
+    ) {
+        if hearthLit {
+            guard let engraving,
+                  engraving.subjectID == nativeSubjectID,
+                  engraving.engraved,
+                  engraving.topos != nil,
+                  engraving.tempus != nil,
+                  engraving.astroDNA != nil,
+                  engraving.tapestry != nil else {
+                return nil
+            }
+        } else {
+            guard engraving == nil else { return nil }
+        }
+
+        self.nativeSubjectID = nativeSubjectID
+        self.resident = nil
+        self.engraving = engraving
+        self.hearthLit = hearthLit
     }
 
     public mutating func establish(_ resident: HearthResident) throws {

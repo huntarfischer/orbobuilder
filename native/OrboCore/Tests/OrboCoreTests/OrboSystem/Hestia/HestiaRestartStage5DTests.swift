@@ -3,155 +3,59 @@ import XCTest
 @testable import OrboCore
 
 final class HestiaRestartStage5DTests: XCTestCase {
-    private let moirai = HermesAddress(rawValue: "orbo.moirai")!
-    private let hestiaAddress = HermesAddress(rawValue: "orbo.hestia")!
-    private let moiraiPackage = HermesParcelKind(rawValue: "orbo.moirai-package.v1")!
-    private let instant = AbsoluteInstant(unixSecondsSince1970: 0)!
-
-    private func subject(_ rawValue: String) throws -> HermesSubjectID {
-        try XCTUnwrap(HermesSubjectID(rawValue: rawValue))
-    }
-
-    private func astroDNA(rawValue: Int) throws -> AstroDNA {
-        try XCTUnwrap(
-            AstroDNA(
-                rawSequence: Array(
-                    repeating: rawValue,
-                    count: AstroDNA.geneCount
-                )
-            )
-        )
-    }
-
-    private func tapestry(for astroDNA: AstroDNA) throws -> AtroposPackage {
-        let output = LegacyMoiraiBridge.gather(from: astroDNA)
-        let grid = Lachesis.allot(output.packet, into: DegreeGrid())
-        return try Atropos.inspect(recipe: output.recipe, grid: grid).get()
-    }
-
-    private func parcel(
-        subjectID: HermesSubjectID,
-        astroDNA: AstroDNA,
-        tapestry: AtroposPackage,
-        ticketUUID: String,
-        parcelUUID: String
-    ) -> HermesParcel<MoiraiPackage> {
-        HermesParcel(
-            parcelID: HermesParcelID(UUID(uuidString: parcelUUID)!),
-            ticketID: HermesTicketID(UUID(uuidString: ticketUUID)!),
-            subjectID: subjectID,
-            sender: moirai,
-            kind: moiraiPackage,
-            finalAddressee: hestiaAddress,
-            payload: MoiraiPackage(astroDNA: astroDNA, tapestry: tapestry)
-        )
-    }
+    private typealias F = HestiaCanonicalPersistenceFixture
 
     private func temporaryURL() -> URL {
         FileManager.default.temporaryDirectory
-            .appendingPathComponent("hestia-stage5d-\(UUID().uuidString).json")
+            .appendingPathComponent("hestia-restart-codec2-\(UUID().uuidString).json")
     }
 
-    func testFullHouseSurvivesSaveDiscardAndLoadThroughHestiaQueries() throws {
-        let native = try subject("native")
-        let heldA = try subject("held-a")
-        let heldB = try subject("held-b")
-        let savedC = try subject("saved-c")
-        let savedD = try subject("saved-d")
+    func testFullHouseSurvivesSaveDiscardAndLoadThroughCanonicalNativeQueries() throws {
+        let native = try F.subject("native")
+        let heldA = try F.subject("held-a")
+        let heldB = try F.subject("held-b")
+        let savedC = try F.subject("saved-c")
+        let savedD = try F.subject("saved-d")
+        let savedCDNA = try F.astroDNA(rawValue: 10_800)
+        let savedDDNA = try F.astroDNA(rawValue: 14_400)
 
-        let nativeDNA = try astroDNA(rawValue: 0)
-        let heldADNA = try astroDNA(rawValue: 3_600)
-        let heldBDNA = try astroDNA(rawValue: 7_200)
-        let savedCDNA = try astroDNA(rawValue: 10_800)
-        let savedDDNA = try astroDNA(rawValue: 14_400)
+        var house: Hestia? = try F.litHestia(subjectID: native)
+        try house?.hold(subjectID: heldA, astroDNA: F.astroDNA(rawValue: 3_600))
+        try house?.hold(subjectID: heldB, astroDNA: F.astroDNA(rawValue: 7_200))
+        try house?.admit(subjectID: savedC, astroDNA: savedCDNA, tapestry: F.legacyTapestry(for: savedCDNA))
+        try house?.admit(subjectID: savedD, astroDNA: savedDDNA, tapestry: F.legacyTapestry(for: savedDDNA))
 
-        let nativeTapestry = try tapestry(for: nativeDNA)
-        let savedCTapestry = try tapestry(for: savedCDNA)
-        let savedDTapestry = try tapestry(for: savedDDNA)
-
-        var house: Hestia? = Hestia(nativeSubjectID: native)
-        try house?.hold(subjectID: heldA, astroDNA: heldADNA)
-        try house?.hold(subjectID: heldB, astroDNA: heldBDNA)
-        try house?.admit(
-            subjectID: native,
-            astroDNA: nativeDNA,
-            tapestry: nativeTapestry
-        )
-        try house?.admit(
-            subjectID: savedC,
-            astroDNA: savedCDNA,
-            tapestry: savedCTapestry
-        )
-        try house?.admit(
-            subjectID: savedD,
-            astroDNA: savedDDNA,
-            tapestry: savedDTapestry
-        )
-
+        let before = try XCTUnwrap(house)
+        let beforeEngraving = try XCTUnwrap(before.nativeEngraving())
+        let beforeTapestry = try XCTUnwrap(before.canonicalTapestry(for: native))
         let url = temporaryURL()
         defer { try? FileManager.default.removeItem(at: url) }
-        try HestiaPersistence.save(try XCTUnwrap(house), to: url)
+        try HestiaPersistence.save(before, to: url)
 
         house = nil
         var restored = try HestiaPersistence.load(from: url)
 
-        XCTAssertEqual(restored.nativeSubjectID, native)
-        XCTAssertEqual(
-            restored.native(),
-            HearthResident(
-                subjectID: native,
-                astroDNA: nativeDNA,
-                tapestry: nativeTapestry
-            )
-        )
-        XCTAssertEqual(
-            restored.holding(heldA),
-            Holding(subjectID: heldA, astroDNA: heldADNA)
-        )
-        XCTAssertEqual(
-            restored.holding(heldB),
-            Holding(subjectID: heldB, astroDNA: heldBDNA)
-        )
-        XCTAssertEqual(
-            restored.saved(savedC),
-            HallResident(
-                subjectID: savedC,
-                astroDNA: savedCDNA,
-                tapestry: savedCTapestry
-            )
-        )
-        XCTAssertEqual(
-            restored.saved(savedD),
-            HallResident(
-                subjectID: savedD,
-                astroDNA: savedDDNA,
-                tapestry: savedDTapestry
-            )
-        )
-        XCTAssertEqual(restored.tapestry(for: native), nativeTapestry)
-        XCTAssertEqual(restored.tapestry(for: savedC), savedCTapestry)
-        XCTAssertEqual(restored.tapestry(for: savedD), savedDTapestry)
+        XCTAssertEqual(restored, before)
+        XCTAssertTrue(restored.hearthLit)
+        XCTAssertEqual(restored.nativeEngraving(), beforeEngraving)
+        XCTAssertEqual(restored.canonicalTapestry(for: native), beforeTapestry)
         XCTAssertEqual(restored.holdings.holdings.map(\.subjectID), [heldA, heldB])
         XCTAssertEqual(restored.hall.residents.map(\.subjectID), [savedC, savedD])
 
-        let extra = try subject("extra")
-        try restored.hold(subjectID: extra, astroDNA: try astroDNA(rawValue: 18_000))
+        let extra = try F.subject("extra")
+        try restored.hold(subjectID: extra, astroDNA: F.astroDNA(rawValue: 18_000))
         XCTAssertNotNil(restored.holding(extra))
     }
 
     func testRestoredHestiaStillEnforcesHouseBoundaries() throws {
-        let native = try subject("native")
-        let held = try subject("held")
-        let saved = try subject("saved")
-        let nativeDNA = try astroDNA(rawValue: 0)
-        let heldDNA = try astroDNA(rawValue: 3_600)
-        let savedDNA = try astroDNA(rawValue: 7_200)
-        let heldTapestry = try tapestry(for: heldDNA)
-        let savedTapestry = try tapestry(for: savedDNA)
-
-        var original = Hestia(nativeSubjectID: native)
+        let native = try F.subject("native")
+        let held = try F.subject("held")
+        let saved = try F.subject("saved")
+        let heldDNA = try F.astroDNA(rawValue: 3_600)
+        let savedDNA = try F.astroDNA(rawValue: 7_200)
+        var original = try F.litHestia(subjectID: native)
         try original.hold(subjectID: held, astroDNA: heldDNA)
-        try original.admit(subjectID: saved, astroDNA: savedDNA, tapestry: savedTapestry)
+        try original.admit(subjectID: saved, astroDNA: savedDNA, tapestry: F.legacyTapestry(for: savedDNA))
 
         let url = temporaryURL()
         defer { try? FileManager.default.removeItem(at: url) }
@@ -159,92 +63,39 @@ final class HestiaRestartStage5DTests: XCTestCase {
         var restored = try HestiaPersistence.load(from: url)
 
         XCTAssertThrowsError(
-            try restored.hold(subjectID: native, astroDNA: nativeDNA)
+            try restored.hold(subjectID: native, astroDNA: F.astroDNA(rawValue: 0))
         ) { error in
             XCTAssertEqual(error as? Hestia.Failure, .nativeCannotEnterHoldings)
         }
-
-        let heldParcel = parcel(
-            subjectID: held,
-            astroDNA: heldDNA,
-            tapestry: heldTapestry,
-            ticketUUID: "00000000-0000-0000-0000-0000000005D1",
-            parcelUUID: "00000000-0000-0000-0000-0000000005D2"
-        )
-        XCTAssertThrowsError(
-            try restored.receive(
-                heldParcel,
-                receivedAt: instant
-            )
-        ) { error in
-            XCTAssertEqual(error as? Hestia.Failure, .subjectAlreadyInHoldings)
-        }
-
         XCTAssertThrowsError(
             try restored.hold(subjectID: saved, astroDNA: savedDNA)
         ) { error in
             XCTAssertEqual(error as? Hestia.Failure, .savedSubjectAlreadyAdmitted)
         }
-
         XCTAssertNotNil(restored.holding(held))
         XCTAssertNotNil(restored.saved(saved))
         XCTAssertNil(restored.holding(native))
+        XCTAssertTrue(restored.hearthLit)
     }
 
-    func testRestoredHestiaHandbackLeavesHouseUnchanged() throws {
-        let native = try subject("native")
-        let held = try subject("held")
-        let saved = try subject("saved")
-        let stranger = try subject("stranger")
+    func testRestartRestoresLitStateWithoutManufacturingHermesHistory() throws {
+        let native = try F.subject("native")
+        let original = try F.litHestia(subjectID: native)
+        let restored = try HestiaPersistence.decode(HestiaPersistence.encode(original))
+        var hermes = HermesCourier()
+        let noticeAt = AbsoluteInstant(unixSecondsSince1970: 1_777_100_000)!
 
-        let nativeDNA = try astroDNA(rawValue: 0)
-        let heldDNA = try astroDNA(rawValue: 3_600)
-        let savedDNA = try astroDNA(rawValue: 7_200)
-        let strangerDNA = try astroDNA(rawValue: 10_800)
-        let wrongDNA = try astroDNA(rawValue: 14_400)
+        XCTAssertTrue(restored.hearthLit)
+        XCTAssertNotNil(restored.nativeEngraving())
 
-        var original = Hestia(nativeSubjectID: native)
-        try original.hold(subjectID: held, astroDNA: heldDNA)
-        try original.admit(
-            subjectID: native,
-            astroDNA: nativeDNA,
-            tapestry: try tapestry(for: nativeDNA)
+        let notice = try restored.sendHearthLitNotice(
+            to: OrboOnboarding.orboAddress,
+            via: &hermes,
+            occurredAt: noticeAt
         )
-        try original.admit(
-            subjectID: saved,
-            astroDNA: savedDNA,
-            tapestry: try tapestry(for: savedDNA)
+        XCTAssertEqual(
+            hermes.manifest.events(for: notice.ticketID).map(\.kind),
+            [.ticketOpened]
         )
-
-        let url = temporaryURL()
-        defer { try? FileManager.default.removeItem(at: url) }
-        try HestiaPersistence.save(original, to: url)
-        var restored = try HestiaPersistence.load(from: url)
-        let beforeHandback = restored
-
-        let badParcel = parcel(
-            subjectID: stranger,
-            astroDNA: strangerDNA,
-            tapestry: try tapestry(for: wrongDNA),
-            ticketUUID: "00000000-0000-0000-0000-0000000005D3",
-            parcelUUID: "00000000-0000-0000-0000-0000000005D4"
-        )
-
-        let disposition = try restored.receive(
-            badParcel,
-            receivedAt: instant
-        )
-        guard case let .rejected(receipt, correction) = disposition else {
-            return XCTFail("Expected Handback")
-        }
-
-        XCTAssertEqual(receipt.ticketID, badParcel.ticketID)
-        XCTAssertEqual(receipt.parcelID, badParcel.parcelID)
-        XCTAssertEqual(correction.subjectID, stranger)
-        XCTAssertEqual(correction.rejectedTapestry, badParcel.payload.tapestry)
-        XCTAssertEqual(restored, beforeHandback)
-        XCTAssertNil(restored.holding(stranger))
-        XCTAssertNil(restored.saved(stranger))
-        XCTAssertNil(restored.tapestry(for: stranger))
     }
 }

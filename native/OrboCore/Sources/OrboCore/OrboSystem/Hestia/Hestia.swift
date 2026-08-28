@@ -91,6 +91,18 @@ public struct Hestia: Hashable, Sendable {
         self.hall = Hall()
     }
 
+    /// Persistence restores the already-kept house directly. Admission is not
+    /// replayed and no astrological correspondence is rechecked.
+    internal init(
+        restoringHoldings holdings: Holdings,
+        hearth: Hearth,
+        hall: Hall
+    ) {
+        self.holdings = holdings
+        self.hearth = hearth
+        self.hall = hall
+    }
+
     /// Receives the canonical traveling Engraving package at the final stop.
     /// Hestia verifies package completeness and admission law only. Atropos's
     /// sealed Tapestry is trusted and never recalculated or reinspected here.
@@ -159,8 +171,8 @@ public struct Hestia: Hashable, Sendable {
         return (package, ticketID)
     }
 
-    /// Legacy Messenger receipt path retained through Pass 9B for codec-1 and
-    /// historical tests. Canonical onboarding uses receive(HermesPackage<Engraving>).
+    /// Legacy Messenger receipt path retained until the Pass 9 legacy sweep.
+    /// Canonical onboarding uses receive(HermesPackage<Engraving>).
     public mutating func receive(
         _ parcel: HermesParcel<MoiraiPackage>,
         receivedAt: AbsoluteInstant
@@ -273,7 +285,7 @@ public struct Hestia: Hashable, Sendable {
         hall.resident(for: subjectID)
     }
 
-    /// Legacy query surface retained through Pass 9B for downstream callers.
+    /// Legacy query surface retained until the Pass 9 legacy sweep.
     public func tapestry(for subjectID: HermesSubjectID) -> AtroposPackage? {
         if subjectID == nativeSubjectID {
             return hearth.resident?.tapestry
@@ -281,8 +293,8 @@ public struct Hestia: Hashable, Sendable {
         return hall.resident(for: subjectID)?.tapestry
     }
 
-    /// Legacy grid correspondence check retained only for codec-1 and the old
-    /// Messenger path. Canonical Hestia receipt never invokes this function.
+    /// Legacy grid correspondence check retained only for the old Messenger
+    /// path. Canonical Hestia receipt and codec-2 persistence never invoke it.
     static func tapestry(
         _ tapestry: AtroposPackage,
         matches astroDNA: AstroDNA

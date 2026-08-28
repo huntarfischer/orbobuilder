@@ -3,245 +3,167 @@ import XCTest
 @testable import OrboCore
 
 final class HestiaPersistenceStage5CTests: XCTestCase {
-    private func subject(_ rawValue: String) throws -> HermesSubjectID {
-        try XCTUnwrap(HermesSubjectID(rawValue: rawValue))
-    }
+    private typealias F = HestiaCanonicalPersistenceFixture
 
-    private func astroDNA(rawValue: Int) throws -> AstroDNA {
-        try XCTUnwrap(
-            AstroDNA(
-                rawSequence: Array(
-                    repeating: rawValue,
-                    count: AstroDNA.geneCount
-                )
-            )
-        )
-    }
-
-    private func tapestry(for astroDNA: AstroDNA) throws -> AtroposPackage {
-        let output = LegacyMoiraiBridge.gather(from: astroDNA)
-        let grid = Lachesis.allot(output.packet, into: DegreeGrid())
-        return try Atropos.inspect(recipe: output.recipe, grid: grid).get()
-    }
-
-    private func sealed(rawValue: Int) throws -> (AstroDNA, AtroposPackage) {
-        let dna = try astroDNA(rawValue: rawValue)
-        return (dna, try tapestry(for: dna))
-    }
-
-    func testEmptyHouseRoundTrips() throws {
-        let native = try subject("native")
+    func testEmptyHouseRoundTripsUnlit() throws {
+        let native = try F.subject("native")
         let hestia = Hestia(nativeSubjectID: native)
-
-        let restored = try HestiaPersistence.decode(
-            HestiaPersistence.encode(hestia)
-        )
-
+        let restored = try HestiaPersistence.decode(HestiaPersistence.encode(hestia))
+        XCTAssertEqual(restored, hestia)
         XCTAssertEqual(restored.nativeSubjectID, native)
-        XCTAssertNil(restored.native())
+        XCTAssertFalse(restored.hearthLit)
+        XCTAssertNil(restored.nativeEngraving())
+        XCTAssertNil(restored.canonicalTapestry(for: native))
         XCTAssertTrue(restored.holdings.holdings.isEmpty)
         XCTAssertTrue(restored.hall.residents.isEmpty)
     }
 
     func testHoldingsRoundTripExactly() throws {
-        let native = try subject("native")
-        let first = try subject("first")
-        let second = try subject("second")
+        let native = try F.subject("native")
+        let first = try F.subject("first")
+        let second = try F.subject("second")
         var hestia = Hestia(nativeSubjectID: native)
-        try hestia.hold(subjectID: first, astroDNA: astroDNA(rawValue: 0))
-        try hestia.hold(subjectID: second, astroDNA: astroDNA(rawValue: 3600))
-
-        let restored = try HestiaPersistence.decode(
-            HestiaPersistence.encode(hestia)
-        )
-
+        try hestia.hold(subjectID: first, astroDNA: F.astroDNA(rawValue: 0))
+        try hestia.hold(subjectID: second, astroDNA: F.astroDNA(rawValue: 3_600))
+        let restored = try HestiaPersistence.decode(HestiaPersistence.encode(hestia))
         XCTAssertEqual(restored.holdings, hestia.holdings)
         XCTAssertEqual(restored.holding(first), hestia.holding(first))
         XCTAssertEqual(restored.holding(second), hestia.holding(second))
+        XCTAssertFalse(restored.hearthLit)
     }
 
-    func testHearthRoundTripsExactlyWithoutDuplicatingNativeIdentity() throws {
-        let native = try subject("native")
-        let (dna, tapestry) = try sealed(rawValue: 0)
-        var hestia = Hestia(nativeSubjectID: native)
-        try hestia.admit(subjectID: native, astroDNA: dna, tapestry: tapestry)
-
+    func testCanonicalHearthRoundTripsExactFinishedEngravingAndTapestry() throws {
+        let native = try F.subject("native")
+        let hestia = try F.litHestia(subjectID: native)
+        let beforeEngraving = try XCTUnwrap(hestia.nativeEngraving())
+        let beforeTapestry = try XCTUnwrap(hestia.canonicalTapestry(for: native))
         let data = try HestiaPersistence.encode(hestia)
         let restored = try HestiaPersistence.decode(data)
-
-        XCTAssertEqual(restored.nativeSubjectID, native)
-        XCTAssertEqual(restored.native(), hestia.native())
-        XCTAssertEqual(restored.tapestry(for: native), tapestry)
-
-        let root = try XCTUnwrap(
-            JSONSerialization.jsonObject(with: data) as? [String: Any]
-        )
-        XCTAssertNil(root["nativeSubjectID"])
+        XCTAssertTrue(restored.hearthLit)
+        XCTAssertEqual(restored.nativeEngraving(), beforeEngraving)
+        XCTAssertEqual(restored.canonicalTapestry(for: native), beforeTapestry)
+        XCTAssertEqual(restored.canonicalTapestry(for: native)?.tapestry, beforeTapestry.tapestry)
+        XCTAssertEqual(restored, hestia)
+        let root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         let hearth = try XCTUnwrap(root["hearth"] as? [String: Any])
-        let resident = try XCTUnwrap(hearth["resident"] as? [String: Any])
-        XCTAssertNil(resident["subjectID"])
+        XCTAssertEqual(hearth["hearthLit"] as? Bool, true)
+        XCTAssertNotNil(hearth["engraving"])
+        XCTAssertNil(hearth["resident"])
     }
 
     func testHallRoundTripsExactlyAndPreservesOrder() throws {
-        let native = try subject("native")
-        let first = try subject("first")
-        let second = try subject("second")
-        let (firstDNA, firstTapestry) = try sealed(rawValue: 3600)
-        let (secondDNA, secondTapestry) = try sealed(rawValue: 7200)
+        let native = try F.subject("native")
+        let first = try F.subject("first")
+        let second = try F.subject("second")
+        let firstDNA = try F.astroDNA(rawValue: 3_600)
+        let secondDNA = try F.astroDNA(rawValue: 7_200)
         var hestia = Hestia(nativeSubjectID: native)
-        try hestia.admit(subjectID: first, astroDNA: firstDNA, tapestry: firstTapestry)
-        try hestia.admit(subjectID: second, astroDNA: secondDNA, tapestry: secondTapestry)
-
-        let restored = try HestiaPersistence.decode(
-            HestiaPersistence.encode(hestia)
-        )
-
+        try hestia.admit(subjectID: first, astroDNA: firstDNA, tapestry: F.legacyTapestry(for: firstDNA))
+        try hestia.admit(subjectID: second, astroDNA: secondDNA, tapestry: F.legacyTapestry(for: secondDNA))
+        let restored = try HestiaPersistence.decode(HestiaPersistence.encode(hestia))
         XCTAssertEqual(restored.hall.residents, hestia.hall.residents)
         XCTAssertEqual(restored.hall.residents.map(\.subjectID), [first, second])
+        XCTAssertFalse(restored.hearthLit)
     }
 
-    func testTapestriesRestoreExactlyWithoutReweaving() throws {
-        let native = try subject("native")
-        let saved = try subject("saved")
-        let (nativeDNA, nativeTapestry) = try sealed(rawValue: 0)
-        let (savedDNA, savedTapestry) = try sealed(rawValue: 3600)
-        var hestia = Hestia(nativeSubjectID: native)
-        try hestia.admit(
-            subjectID: native,
-            astroDNA: nativeDNA,
-            tapestry: nativeTapestry
-        )
-        try hestia.admit(
-            subjectID: saved,
-            astroDNA: savedDNA,
-            tapestry: savedTapestry
-        )
-
-        let restored = try HestiaPersistence.decode(
-            HestiaPersistence.encode(hestia)
-        )
-
-        XCTAssertEqual(restored.tapestry(for: native), nativeTapestry)
-        XCTAssertEqual(restored.tapestry(for: saved), savedTapestry)
-        XCTAssertEqual(
-            restored.tapestry(for: native)?.grid.cells,
-            nativeTapestry.grid.cells
-        )
-        XCTAssertEqual(
-            restored.tapestry(for: saved)?.grid.cells,
-            savedTapestry.grid.cells
-        )
-    }
-
-    func testUnsupportedPersistenceCodecIsRejected() throws {
-        let native = try subject("native")
-        let data = try HestiaPersistence.encode(Hestia(nativeSubjectID: native))
-        var root = try XCTUnwrap(
-            JSONSerialization.jsonObject(with: data) as? [String: Any]
-        )
-        root["codec"] = 999
-        let changed = try JSONSerialization.data(withJSONObject: root)
-
-        XCTAssertThrowsError(try HestiaPersistence.decode(changed)) { error in
-            XCTAssertEqual(
-                error as? HestiaPersistenceFailure,
-                .unsupportedCodec(999)
-            )
-        }
-    }
-
-    func testInvalidHouseAndMismatchedTapestryAreRejected() throws {
-        let native = try subject("native")
-        let saved = try subject("saved")
-        let (nativeDNA, nativeTapestry) = try sealed(rawValue: 0)
-        var hestia = Hestia(nativeSubjectID: native)
-        try hestia.hold(subjectID: saved, astroDNA: astroDNA(rawValue: 3600))
-        try hestia.admit(
-            subjectID: native,
-            astroDNA: nativeDNA,
-            tapestry: nativeTapestry
-        )
-
-        let data = try HestiaPersistence.encode(hestia)
-
-        var invalidHouseRoot = try XCTUnwrap(
-            JSONSerialization.jsonObject(with: data) as? [String: Any]
-        )
-        let houseHearth = try XCTUnwrap(
-            invalidHouseRoot["hearth"] as? [String: Any]
-        )
-        let nativeID = try XCTUnwrap(houseHearth["nativeSubjectID"])
-        var holdings = try XCTUnwrap(
-            invalidHouseRoot["holdings"] as? [[String: Any]]
-        )
-        var firstHolding = holdings[0]
-        firstHolding["subjectID"] = nativeID
-        holdings[0] = firstHolding
-        invalidHouseRoot["holdings"] = holdings
-        let invalidHouseData = try JSONSerialization.data(
-            withJSONObject: invalidHouseRoot
-        )
-
-        XCTAssertThrowsError(
-            try HestiaPersistence.decode(invalidHouseData)
-        ) { error in
-            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidHouse)
-        }
-
-        var mismatchRoot = try XCTUnwrap(
-            JSONSerialization.jsonObject(with: data) as? [String: Any]
-        )
-        var mismatchHearth = try XCTUnwrap(
-            mismatchRoot["hearth"] as? [String: Any]
-        )
-        var resident = try XCTUnwrap(
-            mismatchHearth["resident"] as? [String: Any]
-        )
-        var dna = try XCTUnwrap(resident["astroDNA"] as? [String: Any])
-        dna["sequence"] = Array(
-            repeating: 3600,
-            count: AstroDNA.geneCount
-        )
-        resident["astroDNA"] = dna
-        mismatchHearth["resident"] = resident
-        mismatchRoot["hearth"] = mismatchHearth
-        let mismatchData = try JSONSerialization.data(withJSONObject: mismatchRoot)
-
-        XCTAssertThrowsError(try HestiaPersistence.decode(mismatchData)) { error in
-            XCTAssertEqual(
-                error as? HestiaPersistenceFailure,
-                .invalidTapestry
-            )
-        }
-    }
-
-    func testAtomicFileSaveAndLoadRoundTripsHouse() throws {
-        let native = try subject("native")
-        let held = try subject("held")
-        let saved = try subject("saved")
-        let (nativeDNA, nativeTapestry) = try sealed(rawValue: 0)
-        let (savedDNA, savedTapestry) = try sealed(rawValue: 3600)
-        var hestia = Hestia(nativeSubjectID: native)
-        try hestia.hold(subjectID: held, astroDNA: astroDNA(rawValue: 7200))
-        try hestia.admit(
-            subjectID: native,
-            astroDNA: nativeDNA,
-            tapestry: nativeTapestry
-        )
-        try hestia.admit(
-            subjectID: saved,
-            astroDNA: savedDNA,
-            tapestry: savedTapestry
-        )
-
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("hestia-stage5c-\(UUID().uuidString).json")
+    func testFullCanonicalHouseRoundTripsExactlyThroughAtomicFileSave() throws {
+        let native = try F.subject("native")
+        let held = try F.subject("held")
+        let saved = try F.subject("saved")
+        let savedDNA = try F.astroDNA(rawValue: 7_200)
+        var hestia = try F.litHestia(subjectID: native)
+        try hestia.hold(subjectID: held, astroDNA: F.astroDNA(rawValue: 3_600))
+        try hestia.admit(subjectID: saved, astroDNA: savedDNA, tapestry: F.legacyTapestry(for: savedDNA))
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("hestia-codec2-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: url) }
-
         try HestiaPersistence.save(hestia, to: url)
         let restored = try HestiaPersistence.load(from: url)
-
         XCTAssertEqual(restored, hestia)
+        XCTAssertTrue(restored.hearthLit)
+        XCTAssertNotNil(restored.holding(held))
+        XCTAssertNotNil(restored.saved(saved))
         XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+    }
+
+    func testUnsupportedPersistenceCodecIsRejectedBeforeSnapshotDecode() throws {
+        let native = try F.subject("native")
+        let data = try HestiaPersistence.encode(Hestia(nativeSubjectID: native))
+        var root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        root["codec"] = 1
+        root["hearth"] = ["nativeSubjectID": "old-codec-shape"]
+        let changed = try JSONSerialization.data(withJSONObject: root)
+        XCTAssertThrowsError(try HestiaPersistence.decode(changed)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .unsupportedCodec(1))
+        }
+    }
+
+    func testImpossibleHearthStatesAreRejected() throws {
+        let native = try F.subject("native")
+        let unlitData = try HestiaPersistence.encode(Hestia(nativeSubjectID: native))
+        var unlitRoot = try XCTUnwrap(JSONSerialization.jsonObject(with: unlitData) as? [String: Any])
+        var unlitHearth = try XCTUnwrap(unlitRoot["hearth"] as? [String: Any])
+        unlitHearth["hearthLit"] = true
+        unlitRoot["hearth"] = unlitHearth
+        let impossibleLit = try JSONSerialization.data(withJSONObject: unlitRoot)
+        XCTAssertThrowsError(try HestiaPersistence.decode(impossibleLit)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidHearth)
+        }
+
+        let litData = try HestiaPersistence.encode(try F.litHestia(subjectID: native))
+        var litRoot = try XCTUnwrap(JSONSerialization.jsonObject(with: litData) as? [String: Any])
+        var litHearth = try XCTUnwrap(litRoot["hearth"] as? [String: Any])
+        litHearth["hearthLit"] = false
+        litRoot["hearth"] = litHearth
+        let impossibleUnlit = try JSONSerialization.data(withJSONObject: litRoot)
+        XCTAssertThrowsError(try HestiaPersistence.decode(impossibleUnlit)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidHearth)
+        }
+    }
+
+    func testCorruptCanonicalTapestryAddressIsRejectedStructurally() throws {
+        let native = try F.subject("native")
+        let data = try HestiaPersistence.encode(try F.litHestia(subjectID: native))
+        var root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        var hearth = try XCTUnwrap(root["hearth"] as? [String: Any])
+        var engraving = try XCTUnwrap(hearth["engraving"] as? [String: Any])
+        var tapestry = try XCTUnwrap(engraving["tapestry"] as? [String: Any])
+        var degrees = try XCTUnwrap(tapestry["degrees"] as? [[String: Any]])
+        degrees[0]["address"] = 1
+        tapestry["degrees"] = degrees
+        engraving["tapestry"] = tapestry
+        hearth["engraving"] = engraving
+        root["hearth"] = hearth
+        let corrupted = try JSONSerialization.data(withJSONObject: root)
+        XCTAssertThrowsError(try HestiaPersistence.decode(corrupted)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidTapestry)
+        }
+    }
+
+    func testHouseOverlapIsRejectedOnRestore() throws {
+        let native = try F.subject("native")
+        let held = try F.subject("held")
+        var hestia = Hestia(nativeSubjectID: native)
+        try hestia.hold(subjectID: held, astroDNA: F.astroDNA(rawValue: 3_600))
+        let data = try HestiaPersistence.encode(hestia)
+        var root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let hearth = try XCTUnwrap(root["hearth"] as? [String: Any])
+        let nativeID = try XCTUnwrap(hearth["nativeSubjectID"])
+        var holdings = try XCTUnwrap(root["holdings"] as? [[String: Any]])
+        holdings[0]["subjectID"] = nativeID
+        root["holdings"] = holdings
+        let invalid = try JSONSerialization.data(withJSONObject: root)
+        XCTAssertThrowsError(try HestiaPersistence.decode(invalid)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidHouse)
+        }
+    }
+
+    func testCodec2RefusesLegacyNativeResidentInsteadOfSerializingOldGridRoad() throws {
+        let native = try F.subject("native")
+        let dna = try F.astroDNA(rawValue: 0)
+        var hestia = Hestia(nativeSubjectID: native)
+        try hestia.admit(subjectID: native, astroDNA: dna, tapestry: F.legacyTapestry(for: dna))
+        XCTAssertThrowsError(try HestiaPersistence.encode(hestia)) { error in
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .invalidHearth)
+        }
     }
 }
