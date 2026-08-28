@@ -24,7 +24,7 @@ public struct LachesisTitanPass: Sendable {
 /// The canonical Lachesis intake result.
 ///
 /// Lachesis preserves Clotho's complete sister-to-sister packet while gathering
-/// Titan testimony from the already-cast AstroDNA and Sect it contains.
+/// four independent Titan testimonies from the authoritative matter it contains.
 public struct LachesisOutput: Sendable {
     public let packet: PatternPacket
     public let titanPass: LachesisTitanPass
@@ -40,28 +40,53 @@ public struct LachesisOutput: Sendable {
 
 public extension Lachesis {
     /// Receives Clotho's complete PatternPacket without altering its contents.
-    ///
-    /// Lachesis uses only the already-cast AstroDNA and Sect required by the
-    /// existing Titan's Pass. All other Hecate matter remains carried unchanged.
     static func receive(_ packet: PatternPacket) -> LachesisOutput {
         LachesisOutput(
             packet: packet,
-            titanPass: petition(packet.astroDNA, sect: packet.sect)
+            titanPass: petition(packet)
         )
     }
 
-    /// Conducts the Titan's Pass over one already-cast AstroDNA.
+    /// Conducts the canonical Titan's Pass from one complete PatternPacket.
     ///
-    /// Lachesis petitions each keeper and gathers the resulting testimonies.
-    /// She does not set, bear, encircle, refract, reinterpret, or merge their
-    /// truths. Asteria receives only lawful coordinate-bearing matter.
+    /// The audiences are synchronous and deliberately ordered:
+    /// Themis returns before Rhea is petitioned; Rhea returns before Oceanus;
+    /// Oceanus returns before Asteria. The order is Lachesis's meter only.
+    /// No Titan testimony is ever supplied to another Titan.
+    static func petition(_ packet: PatternPacket) -> LachesisTitanPass {
+        conductTitanPass(
+            astroDNA: packet.astroDNA,
+            sect: packet.sect,
+            asteriaSubjects: asteriaSubjects(from: packet)
+        )
+    }
+
+    /// Compatibility petition for callers that possess only AstroDNA and Sect.
+    ///
+    /// It preserves the same independent, synchronous Titan order but can
+    /// present only AstroDNA coordinates to Asteria because no Hecate Lots were
+    /// supplied. Canonical Clotho intake uses `petition(_ packet:)` above.
     static func petition(
         _ astroDNA: AstroDNA,
         sect: Sect?
     ) -> LachesisTitanPass {
+        conductTitanPass(
+            astroDNA: astroDNA,
+            sect: sect,
+            asteriaSubjects: astroDNASubjects(from: astroDNA)
+        )
+    }
+
+    private static func conductTitanPass(
+        astroDNA: AstroDNA,
+        sect: Sect?,
+        asteriaSubjects: [ArcSubject]
+    ) -> LachesisTitanPass {
+        // First audience: Themis must return before Lachesis proceeds.
         let ascendant = astroDNA.longitude(of: .ascendant)
         let themis = Themis.testify(ascendant.sign)
 
+        // Second audience: Rhea receives only planetary matter and Sect.
         let planetaryLongitudes = Dictionary(
             uniqueKeysWithValues: Planet.canonicalOrder.map { planet in
                 (planet, astroDNA.longitude(of: gene(for: planet)))
@@ -69,29 +94,12 @@ public extension Lachesis {
         )
         let rhea = Rhea.testify(planetaryLongitudes, sect: sect)
 
+        // Third audience: Oceanus receives AstroDNA only.
         let oceanus = Oceanus.testify(astroDNA)
 
-        var arcSubjects = AstroDNAGene.canonicalOrder.map { gene in
-            ArcSubject(
-                identity: gene.displayName,
-                provenance: "AstroDNA",
-                coordinate: ArcCoordinate(astroDNA[gene].arcsecond)!
-            )
-        }
-
-        for object in oceanus.objectTemplates {
-            for mark in object.marks {
-                arcSubjects.append(
-                    ArcSubject(
-                        identity: "\(object.gene.displayName):\(mark.mark.rawValue):\(mark.targetArcsecond)",
-                        provenance: "Ring",
-                        coordinate: ArcCoordinate(mark.targetArcsecond)!
-                    )
-                )
-            }
-        }
-
-        let asteria = Asteria.testify(arcSubjects)
+        // Fourth audience: Asteria receives source coordinates directly from
+        // Lachesis, never Oceanus's Ring testimony.
+        let asteria = Asteria.testify(asteriaSubjects)
 
         return LachesisTitanPass(
             themis: themis,
@@ -99,6 +107,56 @@ public extension Lachesis {
             oceanus: oceanus,
             asteria: asteria
         )
+    }
+
+    private static func asteriaSubjects(from packet: PatternPacket) -> [ArcSubject] {
+        var subjects = astroDNASubjects(from: packet.astroDNA)
+        subjects.append(
+            ArcSubject(
+                identity: "Fortune",
+                provenance: "Hecate",
+                coordinate: arcCoordinate(for: packet.fortune)
+            )
+        )
+        subjects.append(
+            ArcSubject(
+                identity: "Spirit",
+                provenance: "Hecate",
+                coordinate: arcCoordinate(for: packet.spirit)
+            )
+        )
+        subjects.append(
+            ArcSubject(
+                identity: "Eros",
+                provenance: "Hecate",
+                coordinate: arcCoordinate(for: packet.eros)
+            )
+        )
+        subjects.append(
+            ArcSubject(
+                identity: "Necessity",
+                provenance: "Hecate",
+                coordinate: arcCoordinate(for: packet.necessity)
+            )
+        )
+        return subjects
+    }
+
+    private static func astroDNASubjects(from astroDNA: AstroDNA) -> [ArcSubject] {
+        AstroDNAGene.canonicalOrder.map { gene in
+            ArcSubject(
+                identity: gene.displayName,
+                provenance: "AstroDNA",
+                coordinate: ArcCoordinate(astroDNA[gene].arcsecond)!
+            )
+        }
+    }
+
+    private static func arcCoordinate(for longitude: CelestialLongitude) -> ArcCoordinate {
+        let arcsecond = Int(
+            (longitude.degrees * Double(Arc.arcsecondsPerDegree)).rounded(.down)
+        )
+        return ArcCoordinate(arcsecond)!
     }
 
     private static func gene(for planet: Planet) -> AstroDNAGene {
