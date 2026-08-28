@@ -20,7 +20,7 @@ public enum SectKleis {
 
     public static let declaration = Kleis(
         id: id,
-        family: .lots,
+        family: .sect,
         context: .natal,
         availability: KleisAvailability(l1: true, l2: true, l3: true)!,
         formulas: [formula]
