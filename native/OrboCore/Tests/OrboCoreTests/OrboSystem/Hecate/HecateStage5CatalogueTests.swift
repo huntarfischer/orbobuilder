@@ -7,7 +7,7 @@ final class HecateStage5CatalogueTests: XCTestCase {
     }
 
     func testCanonicalKleidesContainsCompleteLotsCatalogue() {
-        XCTAssertEqual(Kleides.canonical.all.count, 163)
+        XCTAssertEqual(Kleides.canonical.all.count, 165)
         XCTAssertEqual(lots.count, 162)
         XCTAssertEqual(lots.flatMap { $0.formulas }.count, 182)
     }
