@@ -23,7 +23,7 @@ final class LachesisStage8CTests: XCTestCase {
 
     func testLachesisCanonicalIntakeMatchesExistingTitanPetition() throws {
         let packet = try makePacket()
-        let expected = Lachesis.petition(packet.astroDNA, sect: packet.sect)
+        let expected = Lachesis.petition(packet)
 
         let actual = Lachesis.receive(packet).titanPass
 
