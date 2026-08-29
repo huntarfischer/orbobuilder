@@ -40,7 +40,7 @@ extension PartsKleidesCatalogue {
             "parts.natal.miscellaneous.requirementsNecessitiesEgyptians",
             sourceLabel: "Requirements and necessities a/t Egyptians",
             division: .miscellaneous,
-            formulas: [sourceFormula(["Asc", "c3", "Ma"], day: "Asc + Cusp of 3rd - Mars", night: "Asc + Cusp of 3rd - Mars", mark: .same)]
+            formulas: [sourceFormula(["Asc", "c3", "Ma"], day: "Asc + Cusp of 3rd - Mars", night: "Asc + Cusp of 3rd - Mars", mark: .same, tradition: "Egyptians (as attributed by al-Biruni)")]
         ),
         natalPage(
             "parts.natal.miscellaneous.realisationNeedsDesires",
