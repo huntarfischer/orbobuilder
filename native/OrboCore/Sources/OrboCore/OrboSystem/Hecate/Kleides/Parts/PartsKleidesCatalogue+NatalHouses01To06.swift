@@ -16,8 +16,8 @@ extension PartsKleidesCatalogue {
         natalHouse(4, "deathOfParents", "Death of parents", ["Asc", "Ju", "Sa"], "Asc + Jupiter - Saturn", "Asc + Saturn - Jupiter", .reverse),
         natalHouse(4, "grandparents", "Grandparents", ["Asc", "Sa", "II"], "Asc + Saturn - II", "Asc + II - Saturn", .reverse, status: .partial),
         natalHouse(4, "ancestorsAndRelations", "Ancestors and relations", ["Asc", "Ma", "Sa"], "Asc + Mars - Saturn", "Asc + Saturn - Mars", .reverse, sourceOccurrenceCount: 2),
-        natalHouse(4, "realEstateHermes", "Real estate a/t Hermes", ["Asc", "Mo", "Sa"], "Asc + Moon - Saturn", "Asc + Saturn - Moon", .reverse),
-        natalHouse(4, "realEstatePersians", "Real estate a/t some Persians", ["Asc", "Ju", "Me"], "Asc + Jupiter - Mercury", "Asc + Mercury - Jupiter", .reverse),
+        natalHouse(4, "realEstateHermes", "Real estate a/t Hermes", ["Asc", "Mo", "Sa"], "Asc + Moon - Saturn", "Asc + Saturn - Moon", .reverse, tradition: "Hermes (as attributed by al-Biruni)"),
+        natalHouse(4, "realEstatePersians", "Real estate a/t some Persians", ["Asc", "Ju", "Me"], "Asc + Jupiter - Mercury", "Asc + Mercury - Jupiter", .reverse, tradition: "some Persians (as attributed by al-Biruni)"),
         natalHouse(4, "agricultureTillage", "Agriculture, tillage", ["Asc", "Sa", "Ve"], "Asc + Saturn - Venus", "Asc + Saturn - Venus", .same),
         natalHouse(4, "issueOfAffairs", "Issue of affairs [end of matter]", ["Asc", "LastSyzygyLord", "Sa"], "Asc + Lord of last syzygy - Saturn", "Asc + Lord of last syzygy - Saturn", .same),
 
@@ -27,8 +27,8 @@ extension PartsKleidesCatalogue {
         natalHouse(5, "conditionOfFemales", "Condition of females", ["Asc", "Ve", "Mo"], "Asc + Venus - Moon", "Asc + Venus - Moon", .same),
         natalHouse(5, "expectedBirthSex", "Whether expected birth is male or female", ["Asc", "Mo", "MoonLord"], "Asc + Moon - lord of Moon", "Asc + lord of Moon - Moon", .reverse),
 
-        natalHouse(6, "diseaseHermes", "Disease, defects, time of onset a/t Hermes", ["Asc", "Ma", "Sa"], "Asc + Mars - Saturn", "Asc + Saturn - Mars", .reverse),
-        natalHouse(6, "diseaseAncients", "Disease, defects, time of onset a/t some of the ancients", ["Asc", "Ma", "Me"], "Asc + Mars - Mercury", "Asc + Mars - Mercury", .same),
+        natalHouse(6, "diseaseHermes", "Disease, defects, time of onset a/t Hermes", ["Asc", "Ma", "Sa"], "Asc + Mars - Saturn", "Asc + Saturn - Mars", .reverse, tradition: "Hermes (as attributed by al-Biruni)"),
+        natalHouse(6, "diseaseAncients", "Disease, defects, time of onset a/t some of the ancients", ["Asc", "Ma", "Me"], "Asc + Mars - Mercury", "Asc + Mars - Mercury", .same, tradition: "some of the ancients (as attributed by al-Biruni)"),
         natalHouse(6, "captivity", "Captivity", ["Asc", "LordOfTimeDispositor", "LordOfTime"], "Asc + dispositor lord of time - lord of time", "Asc + dispositor lord of time - lord of time", .same),
         natalHouse(6, "slaves", "Slaves", ["Asc", "Mo", "Me"], "Asc + Moon - Mercury", "Asc + Moon - Mercury", .same),
     ]
