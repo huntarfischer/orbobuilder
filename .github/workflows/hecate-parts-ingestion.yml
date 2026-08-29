@@ -11,7 +11,7 @@ on:
 
 jobs:
   orbocore-tests:
-    runs-on: macos-26
+    runs-on: macos-26-intel
     steps:
       - name: Checkout
         uses: actions/checkout@v4
