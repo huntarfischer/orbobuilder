@@ -219,7 +219,11 @@ public enum PartsKleidesCatalogue {
         natalPlanetary +
         natalHouses01To06 +
         natalHouses07To12 +
-        natalMiscellaneous
+        natalMiscellaneous +
+        annualConjunction +
+        mundaneWeather +
+        agricultural +
+        horary
 
     public static func declarations(from entries: [PartCatalogueEntry]) -> [Kleis] {
         entries.map(\.kleis)
