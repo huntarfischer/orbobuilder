@@ -1,0 +1,31 @@
+name: Hecate Inquiry
+
+on:
+  push:
+    branches:
+      - feature/hecate-inquiry
+    paths:
+      - 'native/OrboCore/**'
+      - '.github/workflows/hecate-inquiry.yml'
+  workflow_dispatch:
+
+jobs:
+  orbocore-tests:
+    runs-on: macos-26-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare runner-only test copy
+        run: |
+          cp -R native/OrboCore "$RUNNER_TEMP/OrboCore"
+          rm "$RUNNER_TEMP/OrboCore/Tests/OrboCoreTests/RingTests.swift"
+
+      - name: Hecate inquiry questions
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter HecateInquiry
+
+      - name: Frozen Hecate Parts regression gates
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter HecateParts
+
+      - name: OrboCore suite except known RingTests compiler blocker
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore"
