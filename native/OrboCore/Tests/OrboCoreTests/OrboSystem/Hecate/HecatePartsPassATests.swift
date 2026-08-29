@@ -169,8 +169,11 @@ final class HecatePartsPassATests: XCTestCase {
     }
 
     func testPartsCatalogueDoesNotRegisterWithCanonicalKleidesYet() {
-        XCTAssertTrue(PartsKleidesCatalogue.entries.isEmpty)
-        XCTAssertTrue(PartsKleidesCatalogue.declarations.isEmpty)
+        XCTAssertFalse(PartsKleidesCatalogue.entries.isEmpty)
+        XCTAssertEqual(
+            PartsKleidesCatalogue.declarations,
+            PartsKleidesCatalogue.entries.map(\.kleis)
+        )
         XCTAssertFalse(Kleides.canonical.all.contains(where: { $0.family == .parts }))
     }
 
