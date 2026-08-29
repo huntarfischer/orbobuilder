@@ -10,6 +10,7 @@ public struct PartFormulaEntry: Hashable, Codable, Sendable {
     public enum SourceSectMark: String, CaseIterable, Codable, Hashable, Sendable {
         case same = "S"
         case reverse = "R"
+        case unmarked = "unmarked"
     }
 
     public let kleisFormula: KleisFormula
@@ -100,16 +101,19 @@ public struct PartCatalogueEntry: Hashable, Codable, Sendable {
 
 /// Static Part pages prepared for Hecate's existing `.parts` shelf.
 ///
-/// Pass B admits only Al-Biruni's 97 natal Parts. They remain documentary
-/// catalogue matter and are intentionally not registered in `Kleides.canonical`.
+/// Passes B and C admit Al-Biruni's 97 natal and 58 non-natal Parts. They
+/// remain documentary catalogue matter and are intentionally not registered
+/// in `Kleides.canonical`.
 public enum PartsKleidesCatalogue {
-    static let sourceCitation = "Al-Biruni, Book of Instruction v.476; R. Ramsay Wright translation (1934); Deborah Houlding compilation"
+    static let sourceCitation = "Al-Biruni, Book of Instruction vv.476-479; R. Ramsay Wright translation (1934); Deborah Houlding compilation"
 
     static func sourceFormula(
         _ requirements: [String],
         day: String,
         night: String,
         mark: PartFormulaEntry.SourceSectMark,
+        tradition: String = "al-Biruni / Abu Ma'shar",
+        conditions: [String] = [],
         status: KleisFormulaStatus = .complete
     ) -> PartFormulaEntry {
         var required = requirements
@@ -117,14 +121,24 @@ public enum PartsKleidesCatalogue {
             required.append("Sect")
         }
 
-        let sectRule: KleisSectRule = mark == .same ? .same : .reverse
+        let sectRule: KleisSectRule
+        switch mark {
+        case .same:
+            sectRule = .same
+        case .reverse:
+            sectRule = .reverse
+        case .unmarked:
+            sectRule = .none
+        }
+
         let storedFormula = status == .unresolved ? "source formula unresolved" : day
 
         let formula = KleisFormula(
             requiredResources: required.map { HecateResourceKey(rawValue: $0)! },
             formula: storedFormula,
-            tradition: "al-Biruni / Abu Ma'shar",
+            tradition: tradition,
             sectRule: sectRule,
+            conditions: conditions,
             isOrboDefault: false,
             sources: [sourceCitation],
             status: status
@@ -185,6 +199,20 @@ public enum PartsKleidesCatalogue {
                 ),
             ]
         )
+    }
+
+    static func nonNatalPage(
+        _ id: String,
+        sourceLabel: String,
+        context: KleisContext,
+        formulas: [PartFormulaEntry]
+    ) -> PartCatalogueEntry {
+        PartCatalogueEntry(
+            id: KleisID(rawValue: id)!,
+            sourceLabel: sourceLabel,
+            context: context,
+            formulas: formulas
+        )!
     }
 
     public static let entries: [PartCatalogueEntry] =
