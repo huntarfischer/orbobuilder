@@ -135,9 +135,12 @@ final class HecatePartsPassCTests: XCTestCase {
         XCTAssertEqual(information.nightCalculation, "Asc + Mercury - Moon")
     }
 
-    func testPassCStillDoesNotRegisterOrCastPartsCanonically() {
-        XCTAssertFalse(Kleides.canonical.all.contains(where: { $0.family == .parts }))
-        XCTAssertEqual(Kleides.canonical.all.count, 165)
+    func testPassCCorpusRemainsDirectCatalogueMatter() {
+        XCTAssertEqual(
+            PartsKleidesCatalogue.declarations,
+            PartsKleidesCatalogue.entries.map(\.kleis)
+        )
+        XCTAssertEqual(PartsKleidesCatalogue.declarations.count, 155)
     }
 
     private func entry(_ rawID: String) -> PartCatalogueEntry {
