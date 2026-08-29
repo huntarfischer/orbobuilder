@@ -1,31 +1,3 @@
-public struct HestiaCorrection: Hashable, Sendable {
-    public let originalTicketID: HermesTicketID
-    public let originalParcelID: HermesParcelID
-    public let subjectID: HermesSubjectID
-    public let astroDNA: AstroDNA
-    public let rejectedTapestry: AtroposPackage
-    public let serviceDestination: HermesAddress
-    public let finalAddressee: HermesAddress
-
-    public init(
-        originalTicketID: HermesTicketID,
-        originalParcelID: HermesParcelID,
-        subjectID: HermesSubjectID,
-        astroDNA: AstroDNA,
-        rejectedTapestry: AtroposPackage,
-        serviceDestination: HermesAddress,
-        finalAddressee: HermesAddress
-    ) {
-        self.originalTicketID = originalTicketID
-        self.originalParcelID = originalParcelID
-        self.subjectID = subjectID
-        self.astroDNA = astroDNA
-        self.rejectedTapestry = rejectedTapestry
-        self.serviceDestination = serviceDestination
-        self.finalAddressee = finalAddressee
-    }
-}
-
 public struct HearthLitNotice: Hashable, Sendable {
     public let subjectID: HermesSubjectID
     public let hearthLit: Bool
@@ -33,24 +5,6 @@ public struct HearthLitNotice: Hashable, Sendable {
     public init(subjectID: HermesSubjectID) {
         self.subjectID = subjectID
         self.hearthLit = true
-    }
-}
-
-public enum HestiaDestination: Hashable, Sendable {
-    case holdings
-    case hearth
-    case hall
-}
-
-public enum HestiaDeliveryDisposition: Hashable, Sendable {
-    case accepted(destination: HestiaDestination, receipt: HermesReceipt)
-    case rejected(receipt: HermesReceipt, correction: HestiaCorrection)
-
-    public var receipt: HermesReceipt {
-        switch self {
-        case let .accepted(_, receipt), let .rejected(receipt, _):
-            return receipt
-        }
     }
 }
 
@@ -127,7 +81,7 @@ public struct Hestia: Hashable, Sendable {
         guard engraving.astroDNA != nil else { throw Failure.missingAstroDNA }
         guard engraving.tapestry != nil else { throw Failure.missingAtroposSeal }
         guard !engraving.engraved else { throw Failure.engravingAlreadyComplete }
-        guard hearth.resident == nil, hearth.engraving == nil else {
+        guard hearth.engraving == nil else {
             throw Failure.nativeAlreadyEstablished
         }
 
@@ -147,7 +101,7 @@ public struct Hestia: Hashable, Sendable {
     }
 
     /// Once the Hearth is lit, Hestia may send Hermes with the news to any
-    /// interested system actor. Pass 9B uses this path to notify Orbo.
+    /// interested system actor.
     public func sendHearthLitNotice(
         to recipient: HermesAddress,
         via courier: inout HermesCourier,
@@ -169,48 +123,6 @@ public struct Hestia: Hashable, Sendable {
         )!
         let ticketID = try courier.accept(package: package, occurredAt: occurredAt)
         return (package, ticketID)
-    }
-
-    /// Legacy Messenger receipt path retained until the Pass 9 legacy sweep.
-    /// Canonical onboarding uses receive(HermesPackage<Engraving>).
-    public mutating func receive(
-        _ parcel: HermesParcel<MoiraiPackage>,
-        receivedAt: AbsoluteInstant
-    ) throws -> HestiaDeliveryDisposition {
-        let receipt = HermesReceipt(
-            ticketID: parcel.ticketID,
-            parcelID: parcel.parcelID,
-            recipient: parcel.finalAddressee,
-            receivedAt: receivedAt
-        )
-        let astroDNA = parcel.payload.astroDNA
-        let tapestry = parcel.payload.tapestry
-
-        guard Self.tapestry(tapestry, matches: astroDNA) else {
-            return .rejected(
-                receipt: receipt,
-                correction: HestiaCorrection(
-                    originalTicketID: parcel.ticketID,
-                    originalParcelID: parcel.parcelID,
-                    subjectID: parcel.subjectID,
-                    astroDNA: astroDNA,
-                    rejectedTapestry: tapestry,
-                    serviceDestination: parcel.sender,
-                    finalAddressee: parcel.finalAddressee
-                )
-            )
-        }
-
-        try admit(
-            subjectID: parcel.subjectID,
-            astroDNA: astroDNA,
-            tapestry: tapestry
-        )
-
-        return .accepted(
-            destination: parcel.subjectID == nativeSubjectID ? .hearth : .hall,
-            receipt: receipt
-        )
     }
 
     /// Keeps a lightweight saved subject in Holdings.
@@ -236,27 +148,16 @@ public struct Hestia: Hashable, Sendable {
         )
     }
 
-    /// Legacy finished Tapestries enter Hearth or Hall through Hestia.
+    /// Admits one already-sealed non-native Tapestry to the Hall. Hestia trusts
+    /// Atropos's seal and enforces only house placement and identity boundaries.
     mutating func admit(
         subjectID: HermesSubjectID,
         astroDNA: AstroDNA,
-        tapestry: AtroposPackage
+        tapestry: AtroposTapestryPackage
     ) throws {
-        if subjectID == nativeSubjectID {
-            guard hearth.resident == nil, hearth.engraving == nil else {
-                throw Failure.nativeAlreadyEstablished
-            }
-
-            try hearth.establish(
-                HearthResident(
-                    subjectID: subjectID,
-                    astroDNA: astroDNA,
-                    tapestry: tapestry
-                )
-            )
-            return
+        guard subjectID != nativeSubjectID else {
+            throw Failure.nativeAlreadyEstablished
         }
-
         guard holdings.holding(for: subjectID) == nil else {
             throw Failure.subjectAlreadyInHoldings
         }
@@ -273,41 +174,11 @@ public struct Hestia: Hashable, Sendable {
         )
     }
 
-    public func native() -> HearthResident? {
-        hearth.resident
-    }
-
     public func holding(_ subjectID: HermesSubjectID) -> Holding? {
         holdings.holding(for: subjectID)
     }
 
     public func saved(_ subjectID: HermesSubjectID) -> HallResident? {
         hall.resident(for: subjectID)
-    }
-
-    /// Legacy query surface retained until the Pass 9 legacy sweep.
-    public func tapestry(for subjectID: HermesSubjectID) -> AtroposPackage? {
-        if subjectID == nativeSubjectID {
-            return hearth.resident?.tapestry
-        }
-        return hall.resident(for: subjectID)?.tapestry
-    }
-
-    /// Legacy grid correspondence check retained only for the old Messenger
-    /// path. Canonical Hestia receipt and codec-2 persistence never invoke it.
-    static func tapestry(
-        _ tapestry: AtroposPackage,
-        matches astroDNA: AstroDNA
-    ) -> Bool {
-        let threads = tapestry.grid.cells.flatMap(\.threads)
-        guard threads.count == AstroDNA.geneCount else { return false }
-
-        var seen: Set<AstroDNAGene> = []
-        for thread in threads {
-            guard seen.insert(thread.gene).inserted else { return false }
-            guard thread.exactState == astroDNA[thread.gene] else { return false }
-        }
-
-        return seen.count == AstroDNA.geneCount
     }
 }

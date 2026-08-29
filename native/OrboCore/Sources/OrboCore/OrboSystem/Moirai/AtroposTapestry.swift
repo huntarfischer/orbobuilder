@@ -1,3 +1,6 @@
+/// Atropos is the Moirai's quality-control and sealing authority.
+public enum Atropos {}
+
 /// Failure surfaced while Atropos compares Lachesis's finished Tapestry with
 /// the independent testimony that was supplied to her.
 ///
@@ -13,10 +16,6 @@ public enum AtroposTapestryFailure: Error, Hashable, Sendable {
 }
 
 /// Atropos's seal around the exact canonical Tapestry she inspected.
-///
-/// This is the new Tapestry-native seal. The older grid-based AtroposPackage
-/// remains temporarily available for downstream legacy callers until they are
-/// migrated to the canonical Moirai path.
 public struct AtroposTapestryPackage: Hashable, Sendable {
     public let tapestry: Tapestry
 

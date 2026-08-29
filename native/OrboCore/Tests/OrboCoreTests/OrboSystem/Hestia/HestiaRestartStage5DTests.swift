@@ -7,23 +7,23 @@ final class HestiaRestartStage5DTests: XCTestCase {
 
     private func temporaryURL() -> URL {
         FileManager.default.temporaryDirectory
-            .appendingPathComponent("hestia-restart-codec2-\(UUID().uuidString).json")
+            .appendingPathComponent("hestia-restart-codec3-\(UUID().uuidString).json")
     }
 
-    func testFullHouseSurvivesSaveDiscardAndLoadThroughCanonicalNativeQueries() throws {
+    func testFullHouseSurvivesSaveDiscardAndLoadThroughCanonicalQueries() throws {
         let native = try F.subject("native")
         let heldA = try F.subject("held-a")
         let heldB = try F.subject("held-b")
-        let savedC = try F.subject("saved-c")
-        let savedD = try F.subject("saved-d")
-        let savedCDNA = try F.astroDNA(rawValue: 10_800)
-        let savedDDNA = try F.astroDNA(rawValue: 14_400)
+        let savedCID = try F.subject("saved-c")
+        let savedDID = try F.subject("saved-d")
+        let savedC = try F.canonicalHallResident(subjectID: savedCID)
+        let savedD = try F.canonicalHallResident(subjectID: savedDID)
 
         var house: Hestia? = try F.litHestia(subjectID: native)
         try house?.hold(subjectID: heldA, astroDNA: F.astroDNA(rawValue: 3_600))
         try house?.hold(subjectID: heldB, astroDNA: F.astroDNA(rawValue: 7_200))
-        try house?.admit(subjectID: savedC, astroDNA: savedCDNA, tapestry: F.legacyTapestry(for: savedCDNA))
-        try house?.admit(subjectID: savedD, astroDNA: savedDDNA, tapestry: F.legacyTapestry(for: savedDDNA))
+        try house?.admit(subjectID: savedCID, astroDNA: savedC.astroDNA, tapestry: savedC.tapestry)
+        try house?.admit(subjectID: savedDID, astroDNA: savedD.astroDNA, tapestry: savedD.tapestry)
 
         let before = try XCTUnwrap(house)
         let beforeEngraving = try XCTUnwrap(before.nativeEngraving())
@@ -40,7 +40,9 @@ final class HestiaRestartStage5DTests: XCTestCase {
         XCTAssertEqual(restored.nativeEngraving(), beforeEngraving)
         XCTAssertEqual(restored.canonicalTapestry(for: native), beforeTapestry)
         XCTAssertEqual(restored.holdings.holdings.map(\.subjectID), [heldA, heldB])
-        XCTAssertEqual(restored.hall.residents.map(\.subjectID), [savedC, savedD])
+        XCTAssertEqual(restored.hall.residents.map(\.subjectID), [savedCID, savedDID])
+        XCTAssertEqual(restored.saved(savedCID), savedC)
+        XCTAssertEqual(restored.saved(savedDID), savedD)
 
         let extra = try F.subject("extra")
         try restored.hold(subjectID: extra, astroDNA: F.astroDNA(rawValue: 18_000))
@@ -50,12 +52,11 @@ final class HestiaRestartStage5DTests: XCTestCase {
     func testRestoredHestiaStillEnforcesHouseBoundaries() throws {
         let native = try F.subject("native")
         let held = try F.subject("held")
-        let saved = try F.subject("saved")
-        let heldDNA = try F.astroDNA(rawValue: 3_600)
-        let savedDNA = try F.astroDNA(rawValue: 7_200)
+        let savedID = try F.subject("saved")
+        let saved = try F.canonicalHallResident(subjectID: savedID)
         var original = try F.litHestia(subjectID: native)
-        try original.hold(subjectID: held, astroDNA: heldDNA)
-        try original.admit(subjectID: saved, astroDNA: savedDNA, tapestry: F.legacyTapestry(for: savedDNA))
+        try original.hold(subjectID: held, astroDNA: F.astroDNA(rawValue: 3_600))
+        try original.admit(subjectID: savedID, astroDNA: saved.astroDNA, tapestry: saved.tapestry)
 
         let url = temporaryURL()
         defer { try? FileManager.default.removeItem(at: url) }
@@ -68,12 +69,12 @@ final class HestiaRestartStage5DTests: XCTestCase {
             XCTAssertEqual(error as? Hestia.Failure, .nativeCannotEnterHoldings)
         }
         XCTAssertThrowsError(
-            try restored.hold(subjectID: saved, astroDNA: savedDNA)
+            try restored.hold(subjectID: savedID, astroDNA: saved.astroDNA)
         ) { error in
             XCTAssertEqual(error as? Hestia.Failure, .savedSubjectAlreadyAdmitted)
         }
         XCTAssertNotNil(restored.holding(held))
-        XCTAssertNotNil(restored.saved(saved))
+        XCTAssertEqual(restored.saved(savedID), saved)
         XCTAssertNil(restored.holding(native))
         XCTAssertTrue(restored.hearthLit)
     }

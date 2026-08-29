@@ -31,12 +31,6 @@ enum HestiaCanonicalPersistenceFixture {
         )
     }
 
-    static func legacyTapestry(for astroDNA: AstroDNA) throws -> AtroposPackage {
-        let output = LegacyMoiraiBridge.gather(from: astroDNA)
-        let grid = Lachesis.allot(output.packet, into: DegreeGrid())
-        return try Atropos.inspect(recipe: output.recipe, grid: grid).get()
-    }
-
     static func canonicalWorkedPackage(
         subjectID: HermesSubjectID
     ) throws -> HermesPackage<Engraving> {
@@ -65,6 +59,17 @@ enum HestiaCanonicalPersistenceFixture {
         )
         var portI = PortIStub(output: try slice(for: resolved))
         return try Moirai.process(resolvedPackage, through: &portI)
+    }
+
+    static func canonicalHallResident(
+        subjectID: HermesSubjectID
+    ) throws -> HallResident {
+        let worked = try canonicalWorkedPackage(subjectID: subjectID)
+        return HallResident(
+            subjectID: subjectID,
+            astroDNA: try XCTUnwrap(worked.contents.astroDNA),
+            tapestry: try XCTUnwrap(worked.contents.tapestry)
+        )
     }
 
     static func litHestia(

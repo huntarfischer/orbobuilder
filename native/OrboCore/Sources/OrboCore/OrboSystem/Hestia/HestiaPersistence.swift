@@ -8,7 +8,7 @@ public enum HestiaPersistenceFailure: Error, Hashable, Sendable {
 }
 
 public enum HestiaPersistence {
-    public static let codec = 2
+    public static let codec = 3
 
     public static func encode(_ hestia: Hestia) throws -> Data {
         let encoder = JSONEncoder()
@@ -92,10 +92,6 @@ private extension HestiaPersistence {
         let hall: [HallResidentRecord]
 
         init(hestia: Hestia) throws {
-            guard hestia.hearth.resident == nil else {
-                throw HestiaPersistenceFailure.invalidHearth
-            }
-
             codec = HestiaPersistence.codec
             holdings = hestia.holdings.holdings.map(HoldingRecord.init)
             hearth = try HearthRecord(hestia.hearth)
@@ -119,10 +115,6 @@ private extension HestiaPersistence {
         let engraving: EngravingRecord?
 
         init(_ hearth: Hearth) throws {
-            guard hearth.resident == nil else {
-                throw HestiaPersistenceFailure.invalidHearth
-            }
-
             if hearth.hearthLit {
                 guard let engraving = hearth.engraving,
                       engraving.engraved,
@@ -204,96 +196,21 @@ private extension HestiaPersistence {
     struct HallResidentRecord: Codable {
         let subjectID: HermesSubjectID
         let astroDNA: AstroDNA
-        let tapestry: LegacyTapestryRecord
+        let tapestry: CanonicalTapestryRecord
 
         init(_ resident: HallResident) {
             subjectID = resident.subjectID
             astroDNA = resident.astroDNA
-            tapestry = LegacyTapestryRecord(resident.tapestry)
+            tapestry = CanonicalTapestryRecord(resident.tapestry.tapestry)
         }
 
         func restore() throws -> HallResident {
-            HallResident(
+            let restoredTapestry = try tapestry.restore()
+            return HallResident(
                 subjectID: subjectID,
                 astroDNA: astroDNA,
-                tapestry: try tapestry.restore()
+                tapestry: AtroposTapestryPackage(restoringTapestry: restoredTapestry)
             )
-        }
-    }
-
-    // Hall remains on its legacy sealed representation until the Pass 9 legacy
-    // sweep. Codec 2 restores it structurally without asking Hestia to re-admit
-    // or recheck astrological correspondence.
-    struct LegacyTapestryRecord: Codable {
-        let cells: [LegacyCellRecord]
-
-        init(_ tapestry: AtroposPackage) {
-            cells = tapestry.grid.cells.map(LegacyCellRecord.init)
-        }
-
-        func restore() throws -> AtroposPackage {
-            guard cells.count == DegreeAddress.count else {
-                throw HestiaPersistenceFailure.invalidTapestry
-            }
-
-            var restoredCells: [DegreeCell] = []
-            restoredCells.reserveCapacity(DegreeAddress.count)
-
-            for (index, cell) in cells.enumerated() {
-                guard let address = DegreeAddress(rawValue: cell.address),
-                      address == DegreeAddress.canonicalOrder[index] else {
-                    throw HestiaPersistenceFailure.invalidTapestry
-                }
-
-                var restoredThreads: [ClothoThread] = []
-                restoredThreads.reserveCapacity(cell.threads.count)
-                for thread in cell.threads {
-                    guard let exactState = RingFineState(thread.exactState),
-                          let degreeAddress = DegreeAddress(rawValue: thread.degreeAddress),
-                          degreeAddress == address,
-                          exactState.coarseState.degree == degreeAddress.rawValue else {
-                        throw HestiaPersistenceFailure.invalidTapestry
-                    }
-                    restoredThreads.append(
-                        ClothoThread(
-                            restoringGene: thread.gene,
-                            exactState: exactState,
-                            degreeAddress: degreeAddress
-                        )
-                    )
-                }
-
-                restoredCells.append(
-                    DegreeCell(restoringAddress: address, threads: restoredThreads)
-                )
-            }
-
-            guard let grid = DegreeGrid(restoringCells: restoredCells) else {
-                throw HestiaPersistenceFailure.invalidTapestry
-            }
-            return AtroposPackage(restoringGrid: grid)
-        }
-    }
-
-    struct LegacyCellRecord: Codable {
-        let address: Int
-        let threads: [LegacyThreadRecord]
-
-        init(_ cell: DegreeCell) {
-            address = cell.address.rawValue
-            threads = cell.threads.map(LegacyThreadRecord.init)
-        }
-    }
-
-    struct LegacyThreadRecord: Codable {
-        let gene: AstroDNAGene
-        let exactState: Int
-        let degreeAddress: Int
-
-        init(_ thread: ClothoThread) {
-            gene = thread.gene
-            exactState = thread.exactState.rawValue
-            degreeAddress = thread.degreeAddress.rawValue
         }
     }
 

@@ -1,12 +1,12 @@
 public struct HallResident: Hashable, Sendable {
     public let subjectID: HermesSubjectID
     public let astroDNA: AstroDNA
-    public let tapestry: AtroposPackage
+    public let tapestry: AtroposTapestryPackage
 
     public init(
         subjectID: HermesSubjectID,
         astroDNA: AstroDNA,
-        tapestry: AtroposPackage
+        tapestry: AtroposTapestryPackage
     ) {
         self.subjectID = subjectID
         self.astroDNA = astroDNA
