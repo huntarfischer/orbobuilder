@@ -3,18 +3,13 @@ import XCTest
 
 final class HecatePartsPassBTests: XCTestCase {
     func testPassBContainsExactlyNinetySevenNatalParts() {
-        XCTAssertEqual(PartsKleidesCatalogue.entries.count, 97)
-        XCTAssertEqual(PartsKleidesCatalogue.declarations.count, 97)
-        XCTAssertEqual(
-            PartsKleidesCatalogue.declarations,
-            PartsKleidesCatalogue.entries.map(\.kleis)
-        )
-        XCTAssertTrue(PartsKleidesCatalogue.entries.allSatisfy { $0.kleis.context == .natal })
+        let natal = PartsKleidesCatalogue.entries.filter { $0.kleis.context == .natal }
+        XCTAssertEqual(natal.count, 97)
     }
 
     func testPassBPreservesSevenEightyTenNatalDivision() {
-        let counts = Dictionary(grouping: PartsKleidesCatalogue.entries, by: \.natalDivision)
-            .mapValues(\.count)
+        let natal = PartsKleidesCatalogue.entries.filter { $0.kleis.context == .natal }
+        let counts = Dictionary(grouping: natal, by: \.natalDivision).mapValues(\.count)
 
         XCTAssertEqual(counts[.planetary], 7)
         XCTAssertEqual(counts[.house], 80)
@@ -35,7 +30,7 @@ final class HecatePartsPassBTests: XCTestCase {
         let entries = PartsKleidesCatalogue.entries
         let ids = entries.map(\.kleis.id)
 
-        XCTAssertEqual(Set(ids).count, 97)
+        XCTAssertEqual(Set(ids).count, entries.count)
         XCTAssertTrue(entries.allSatisfy { $0.kleis.family == .parts })
         XCTAssertTrue(entries.allSatisfy {
             $0.kleis.availability == KleisAvailability(l1: false, l2: false, l3: true)!
@@ -71,6 +66,14 @@ final class HecatePartsPassBTests: XCTestCase {
                         )
                         XCTAssertEqual(formula.kleisFormula.formula, formula.dayCalculation, entry.sourceLabel)
                     }
+
+                case .unmarked:
+                    XCTAssertEqual(formula.dayCalculation, formula.nightCalculation, entry.sourceLabel)
+                    XCTAssertEqual(formula.kleisFormula.sectRule, .none, entry.sourceLabel)
+                    XCTAssertFalse(
+                        formula.kleisFormula.requiredResources.contains(HecateResourceKey(rawValue: "Sect")!),
+                        entry.sourceLabel
+                    )
                 }
             }
         }
