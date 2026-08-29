@@ -21,8 +21,8 @@ jobs:
           cp -R native/OrboCore "$RUNNER_TEMP/OrboCore"
           rm "$RUNNER_TEMP/OrboCore/Tests/OrboCoreTests/RingTests.swift"
 
-      - name: Hecate Parts Pass A focused gate
-        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter HecatePartsPassATests
+      - name: Hecate Parts focused gates
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter HecateParts
 
       - name: OrboCore suite except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
