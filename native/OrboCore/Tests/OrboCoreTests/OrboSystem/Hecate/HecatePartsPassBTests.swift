@@ -149,9 +149,11 @@ final class HecatePartsPassBTests: XCTestCase {
         )
     }
 
-    func testPassBDoesNotGraftPartsIntoCanonicalKleides() {
-        XCTAssertFalse(Kleides.canonical.all.contains(where: { $0.family == .parts }))
-        XCTAssertEqual(Kleides.canonical.all.count, 165)
+    func testPassBNatalDeclarationsRemainDirectCatalogueKleides() {
+        let natalEntries = PartsKleidesCatalogue.entries.filter { $0.kleis.context == .natal }
+        let natalDeclarations = PartsKleidesCatalogue.declarations.filter { $0.context == .natal }
+
+        XCTAssertEqual(natalDeclarations, natalEntries.map(\.kleis))
     }
 
     private func entry(_ rawID: String) -> PartCatalogueEntry {
