@@ -100,10 +100,98 @@ public struct PartCatalogueEntry: Hashable, Codable, Sendable {
 
 /// Static Part pages prepared for Hecate's existing `.parts` shelf.
 ///
-/// Pass A defines machinery only. No historical Part corpus is admitted here yet,
-/// and these declarations are intentionally not registered in `Kleides.canonical`.
+/// Pass B admits only Al-Biruni's 97 natal Parts. They remain documentary
+/// catalogue matter and are intentionally not registered in `Kleides.canonical`.
 public enum PartsKleidesCatalogue {
-    public static let entries: [PartCatalogueEntry] = []
+    static let sourceCitation = "Al-Biruni, Book of Instruction v.476; R. Ramsay Wright translation (1934); Deborah Houlding compilation"
+
+    static func sourceFormula(
+        _ requirements: [String],
+        day: String,
+        night: String,
+        mark: PartFormulaEntry.SourceSectMark,
+        status: KleisFormulaStatus = .complete
+    ) -> PartFormulaEntry {
+        var required = requirements
+        if mark == .reverse, status != .unresolved, !required.contains("Sect") {
+            required.append("Sect")
+        }
+
+        let sectRule: KleisSectRule = mark == .same ? .same : .reverse
+        let storedFormula = status == .unresolved ? "source formula unresolved" : day
+
+        let formula = KleisFormula(
+            requiredResources: required.map { HecateResourceKey(rawValue: $0)! },
+            formula: storedFormula,
+            tradition: "al-Biruni / Abu Ma'shar",
+            sectRule: sectRule,
+            isOrboDefault: false,
+            sources: [sourceCitation],
+            status: status
+        )!
+
+        return PartFormulaEntry(
+            kleisFormula: formula,
+            dayCalculation: day,
+            nightCalculation: night,
+            sourceSectMark: mark
+        )!
+    }
+
+    static func natalPage(
+        _ id: String,
+        sourceLabel: String,
+        division: PartNatalDivision,
+        houseCategory: Int? = nil,
+        sourceOccurrenceCount: Int = 1,
+        formulas: [PartFormulaEntry]
+    ) -> PartCatalogueEntry {
+        PartCatalogueEntry(
+            id: KleisID(rawValue: id)!,
+            sourceLabel: sourceLabel,
+            context: .natal,
+            natalDivision: division,
+            houseCategory: houseCategory,
+            sourceOccurrenceCount: sourceOccurrenceCount,
+            formulas: formulas
+        )!
+    }
+
+    static func natalHouse(
+        _ house: Int,
+        _ slug: String,
+        _ sourceLabel: String,
+        _ requirements: [String],
+        _ day: String,
+        _ night: String,
+        _ mark: PartFormulaEntry.SourceSectMark,
+        status: KleisFormulaStatus = .complete,
+        sourceOccurrenceCount: Int = 1
+    ) -> PartCatalogueEntry {
+        let houseID = house < 10 ? "0\(house)" : "\(house)"
+        return natalPage(
+            "parts.natal.house\(houseID).\(slug)",
+            sourceLabel: sourceLabel,
+            division: .house,
+            houseCategory: house,
+            sourceOccurrenceCount: sourceOccurrenceCount,
+            formulas: [
+                sourceFormula(
+                    requirements,
+                    day: day,
+                    night: night,
+                    mark: mark,
+                    status: status
+                ),
+            ]
+        )
+    }
+
+    public static let entries: [PartCatalogueEntry] =
+        natalPlanetary +
+        natalHouses01To06 +
+        natalHouses07To12 +
+        natalMiscellaneous
 
     public static func declarations(from entries: [PartCatalogueEntry]) -> [Kleis] {
         entries.map(\.kleis)
