@@ -1,18 +1,18 @@
 extension PartsKleidesCatalogue {
     static let natalHouses07To12: [PartCatalogueEntry] = [
-        natalHouse(7, "marriageMenHermes", "Marriage of men a/t Hermes", ["Asc", "Ve", "Sa"], "Asc + Venus - Saturn", "Asc + Venus - Saturn", .same),
-        natalHouse(7, "marriageMenValens", "Marriage of men a/t Vettius Valens", ["Asc", "Ve", "Su"], "Asc + Venus - Sun", "Asc + Venus - Sun", .same),
+        natalHouse(7, "marriageMenHermes", "Marriage of men a/t Hermes", ["Asc", "Ve", "Sa"], "Asc + Venus - Saturn", "Asc + Venus - Saturn", .same, tradition: "Hermes (as attributed by al-Biruni)"),
+        natalHouse(7, "marriageMenValens", "Marriage of men a/t Vettius Valens", ["Asc", "Ve", "Su"], "Asc + Venus - Sun", "Asc + Venus - Sun", .same, tradition: "Vettius Valens (as attributed by al-Biruni)"),
         natalHouse(7, "trickeryMenWomen", "Trickery and deception of men and women", ["Asc", "Ve", "Su"], "Asc + Venus - Sun", "Asc + Venus - Sun", .same),
         natalHouse(7, "intercourseMen", "Intercourse (men with women)", ["Asc", "Ve", "Su"], "Asc + Venus - Sun", "Asc + Venus - Sun", .same),
-        natalHouse(7, "marriageWomenHermes", "Marriage of women (Hermes)", ["Asc", "Sa", "Ve"], "Asc + Saturn - Venus", "Asc + Saturn - Venus", .same),
-        natalHouse(7, "marriageWomenValens", "Marriage of women (Valens)", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same),
+        natalHouse(7, "marriageWomenHermes", "Marriage of women (Hermes)", ["Asc", "Sa", "Ve"], "Asc + Saturn - Venus", "Asc + Saturn - Venus", .same, tradition: "Hermes (as attributed by al-Biruni)"),
+        natalHouse(7, "marriageWomenValens", "Marriage of women (Valens)", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same, tradition: "Vettius Valens (as attributed by al-Biruni)"),
         natalHouse(7, "misconductByWomen", "Misconduct by women", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same),
         natalHouse(7, "trickeryMenByWomen", "Trickery and deceit of men by women", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same),
         natalHouse(7, "intercourseWomen", "Intercourse (women with men)", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same),
         natalHouse(7, "unchastityOfWomen", "Unchastity of women", ["Asc", "Ma", "Mo"], "Asc + Mars - Moon", "Asc + Mars - Moon", .same),
         natalHouse(7, "chastityOfWomen", "Chastity of women", ["Asc", "Ve", "Mo"], "Asc + Venus - Moon", "Asc + Venus - Moon", .same),
-        natalHouse(7, "marriageMenWomenHermes", "Marriage of men and women a/t Hermes", ["Asc", "c7", "Ve"], "Asc + Cusp of 7th - Venus", "Asc + Cusp of 7th - Venus", .same),
-        natalHouse(7, "timeOfMarriageHermes", "Time of marriage (Hermes)", ["Asc", "Mo", "Su"], "Asc + Moon - Sun", "Asc + Moon - Sun", .same),
+        natalHouse(7, "marriageMenWomenHermes", "Marriage of men and women a/t Hermes", ["Asc", "c7", "Ve"], "Asc + Cusp of 7th - Venus", "Asc + Cusp of 7th - Venus", .same, tradition: "Hermes (as attributed by al-Biruni)"),
+        natalHouse(7, "timeOfMarriageHermes", "Time of marriage (Hermes)", ["Asc", "Mo", "Su"], "Asc + Moon - Sun", "Asc + Moon - Sun", .same, tradition: "Hermes (as attributed by al-Biruni)"),
         natalHouse(7, "fraudulentMarriage", "Fraudulent marriage & Facilitating it", ["Asc", "Ve", "Sa"], "Asc + Venus - Saturn", "Asc + Venus - Saturn", .same),
         natalHouse(7, "sonsInLaw", "Sons in law", ["Asc", "Ve", "Sa"], "Asc + Venus - Saturn", "Asc + Saturn - Venus", .reverse),
         natalHouse(7, "lawsuits", "Lawsuits", ["Asc", "Ju", "Ma"], "Asc + Jupiter - Mars", "Asc + Mars - Jupiter", .reverse),
@@ -56,8 +56,8 @@ extension PartsKleidesCatalogue {
         natalHouse(11, "libertyOfPerson", "Liberty of Person", ["Asc", "Su", "Me"], "Asc + Sun - Mercury", "Asc + Mercury - Sun", .reverse),
         natalHouse(11, "praiseAndAcceptation", "Praise and acceptation", ["Asc", "Ve", "Ju"], "Asc + Venus - Jupiter", "Asc + Jupiter - Venus", .reverse),
 
-        natalHouse(12, "enmityAncients", "Enmity a/t some of the ancients", ["Asc", "Ma", "Sa"], "Asc + Mars - Saturn", "Asc + Mars - Saturn", .same),
-        natalHouse(12, "enmityHermes", "Enmity a/t Hermes", ["Asc", "c12", "L12"], "Asc + Cusp of 12th - Lord of 12th", "Asc + Cusp of 12th - Lord of 12th", .same),
+        natalHouse(12, "enmityAncients", "Enmity a/t some of the ancients", ["Asc", "Ma", "Sa"], "Asc + Mars - Saturn", "Asc + Mars - Saturn", .same, tradition: "some of the ancients (as attributed by al-Biruni)"),
+        natalHouse(12, "enmityHermes", "Enmity a/t Hermes", ["Asc", "c12", "L12"], "Asc + Cusp of 12th - Lord of 12th", "Asc + Cusp of 12th - Lord of 12th", .same, tradition: "Hermes (as attributed by al-Biruni)"),
         natalHouse(12, "badLuck", "Bad luck", ["Asc", "F", "Sp"], "Asc + Fortune - Spirit", "Asc + Fortune - Spirit", .same),
     ]
 }
