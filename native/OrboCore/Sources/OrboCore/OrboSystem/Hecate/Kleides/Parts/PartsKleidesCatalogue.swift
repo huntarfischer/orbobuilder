@@ -1,3 +1,5 @@
+import Foundation
+
 public enum PartNatalDivision: String, CaseIterable, Codable, Hashable, Sendable {
     case planetary
     case house
