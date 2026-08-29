@@ -26,6 +26,9 @@ jobs:
       - name: Aether Pass C Orbo seam
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter AetherPassCTests
 
+      - name: Aether Pass D headless MVP boundary
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter AetherPassDTests
+
       - name: Aether remains presentation-neutral
         run: |
           if grep -R -n -E '^import (SwiftUI|UIKit|AppKit|QuartzCore|Metal|RealityKit|Charts)$' "$RUNNER_TEMP/OrboCore/Sources/OrboCore/OrboSystem/Aether"; then
