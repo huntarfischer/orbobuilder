@@ -100,10 +100,6 @@ public struct PartCatalogueEntry: Hashable, Codable, Sendable {
 }
 
 /// Static Part pages prepared for Hecate's existing `.parts` shelf.
-///
-/// Passes B and C admit Al-Biruni's 97 natal and 58 non-natal Parts. They
-/// remain documentary catalogue matter and are intentionally not registered
-/// in `Kleides.canonical`.
 public enum PartsKleidesCatalogue {
     static let sourceCitation = "Al-Biruni, Book of Instruction vv.476-479; R. Ramsay Wright translation (1934); Deborah Houlding compilation"
 
@@ -179,6 +175,7 @@ public enum PartsKleidesCatalogue {
         _ day: String,
         _ night: String,
         _ mark: PartFormulaEntry.SourceSectMark,
+        tradition: String = "al-Biruni / Abu Ma'shar",
         status: KleisFormulaStatus = .complete,
         sourceOccurrenceCount: Int = 1
     ) -> PartCatalogueEntry {
@@ -195,6 +192,7 @@ public enum PartsKleidesCatalogue {
                     day: day,
                     night: night,
                     mark: mark,
+                    tradition: tradition,
                     status: status
                 ),
             ]
