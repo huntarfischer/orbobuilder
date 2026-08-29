@@ -17,4 +17,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: OrboCore full Swift test suite
-        run: swift test --package-path native/OrboCore
+        run: swift test --package-path native/OrboCore -Xswiftc -Xfrontend -Xswiftc -solver-expression-time-threshold=60
