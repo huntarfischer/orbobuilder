@@ -1,0 +1,28 @@
+extension PartsKleidesCatalogue {
+    static let agricultural: [PartCatalogueEntry] = [
+        nonNatalPage("parts.agricultural.wheat", sourceLabel: "Wheat", context: .agricultural, formulas: [sourceFormula(["Asc", "Ju", "Su"], day: "Asc + Jupiter - Sun", night: "Asc + Sun - Jupiter", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.barleyMeal", sourceLabel: "Barley meal", context: .agricultural, formulas: [sourceFormula(["Asc", "Ju", "Mo"], day: "Asc + Jupiter - Moon", night: "Asc + Moon - Jupiter", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.riceMillet", sourceLabel: "Rice, Millet", context: .agricultural, formulas: [sourceFormula(["Asc", "Ve", "Ju"], day: "Asc + Venus - Jupiter", night: "Asc + Jupiter - Venus", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.maize", sourceLabel: "Maize", context: .agricultural, formulas: [sourceFormula(["Asc", "Sa", "Ju"], day: "Asc + Saturn - Jupiter", night: "Asc + Jupiter - Saturn", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.pulse", sourceLabel: "Pulse", context: .agricultural, formulas: [sourceFormula(["Asc", "Me", "Ve"], day: "Asc + Mercury - Venus", night: "Asc + Venus - Mercury", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.lentilsAndIron", sourceLabel: "Lentils and iron", context: .agricultural, formulas: [sourceFormula(["Asc", "Sa", "Ma"], day: "Asc + Saturn - Mars", night: "Asc + Mars - Saturn", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.beansOnions", sourceLabel: "Beans, onions", context: .agricultural, formulas: [sourceFormula(["Asc", "Ma", "Sa"], day: "Asc + Mars - Saturn", night: "Asc + Saturn - Mars", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.chickPeas", sourceLabel: "Chick peas", context: .agricultural, formulas: [sourceFormula(["Asc", "Su", "Ve"], day: "Asc + Sun - Venus", night: "Asc + Venus - Sun", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.sesameGrapes", sourceLabel: "Sesame, grapes", context: .agricultural, formulas: [sourceFormula(["Asc", "Ve", "Sa"], day: "Asc + Venus - Saturn", night: "Asc + Saturn - Venus", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.sugar", sourceLabel: "Sugar", context: .agricultural, formulas: [sourceFormula(["Asc", "Me", "Ve"], day: "Asc + Mercury - Venus", night: "Asc + Venus - Mercury", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.honey", sourceLabel: "Honey", context: .agricultural, formulas: [sourceFormula(["Asc", "Su", "Mo"], day: "Asc + Sun - Moon", night: "Asc + Moon - Sun", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.oil", sourceLabel: "Oil", context: .agricultural, formulas: [sourceFormula(["Asc", "Mo", "Ma"], day: "Asc + Moon - Mars", night: "Asc + Mars - Moon", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.nutsFlax", sourceLabel: "Nuts, flax", context: .agricultural, formulas: [sourceFormula(["Asc", "Ve", "Ma"], day: "Asc + Venus - Mars", night: "Asc + Mars - Venus", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.olives", sourceLabel: "Olives", context: .agricultural, formulas: [sourceFormula(["Asc", "Mo", "Me"], day: "Asc + Moon - Mercury", night: "Asc + Mercury - Moon", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.apricots", sourceLabel: "Apricots", context: .agricultural, formulas: [sourceFormula(["Asc", "Ma", "Sa"], day: "Asc + Mars - Saturn", night: "Asc + Saturn - Mars", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.waterMelons", sourceLabel: "Water melons", context: .agricultural, formulas: [sourceFormula(["Asc", "Me", "Ju"], day: "Asc + Mercury - Jupiter", night: "Asc + Jupiter - Mercury", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.salt", sourceLabel: "Salt", context: .agricultural, formulas: [sourceFormula(["Asc", "Ma", "Mo"], day: "Asc + Mars - Moon", night: "Asc + Moon - Mars", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.sweets", sourceLabel: "Sweets", context: .agricultural, formulas: [sourceFormula(["Asc", "Ve", "Su"], day: "Asc + Venus - Sun", night: "Asc + Sun - Venus", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.astringents", sourceLabel: "Astringents", context: .agricultural, formulas: [sourceFormula(["Asc", "Sa", "Me"], day: "Asc + Saturn - Mercury", night: "Asc + Mercury - Saturn", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.pungentThings", sourceLabel: "Pungent things", context: .agricultural, formulas: [sourceFormula(["Asc", "Sa", "Ma"], day: "Asc + Saturn - Mars", night: "Asc + Mars - Saturn", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.rawSilkCotton", sourceLabel: "Raw silk, cotton", context: .agricultural, formulas: [sourceFormula(["Asc", "Ve", "Me"], day: "Asc + Venus - Mercury", night: "Asc + Mercury - Venus", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.purgatives", sourceLabel: "Purgatives", context: .agricultural, formulas: [sourceFormula(["Asc", "Sa", "Me"], day: "Asc + Saturn - Mercury", night: "Asc + Mercury - Saturn", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.bitterPurgatives", sourceLabel: "Bitter purgatives", context: .agricultural, formulas: [sourceFormula(["Asc", "Ma", "Sa"], day: "Asc + Mars - Saturn", night: "Asc + Saturn - Mars", mark: .reverse)]),
+        nonNatalPage("parts.agricultural.acidPurgatives", sourceLabel: "Acid purgatives", context: .agricultural, formulas: [sourceFormula(["Asc", "Ju", "Sa"], day: "Asc + Jupiter - Saturn", night: "Asc + Saturn - Jupiter", mark: .reverse)]),
+    ]
+}
