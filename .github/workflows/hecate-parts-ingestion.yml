@@ -1,0 +1,20 @@
+name: Hecate Parts Ingestion
+
+on:
+  push:
+    branches:
+      - feature/hecate-parts-ingestion
+    paths:
+      - 'native/OrboCore/**'
+      - '.github/workflows/hecate-parts-ingestion.yml'
+  workflow_dispatch:
+
+jobs:
+  orbocore-tests:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OrboCore full Swift test suite
+        run: swift test --package-path native/OrboCore
