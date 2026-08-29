@@ -68,3 +68,20 @@ public struct AetherEnvironment: Hashable, Sendable {
         self.earthwardField = earthwardField
     }
 }
+
+public extension Aether {
+    /// Establishes one lawful Astrosphere environment from matter placed in
+    /// Aether's hands. Aether owns the resulting environment; Orbo only summons
+    /// the governor and Iris is not involved in establishing it.
+    static func establishEnvironment(
+        celestialField: AetherField,
+        starField: [AetherStar],
+        earthwardField: AetherField
+    ) -> AetherEnvironment {
+        AetherEnvironment(
+            celestialField: celestialField,
+            starField: starField,
+            earthwardField: earthwardField
+        )
+    }
+}
