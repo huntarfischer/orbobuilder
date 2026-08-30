@@ -1,5 +1,9 @@
 # Orbo Native Construction Contract
 
+> **Architectural preflight: read `ORBO_LAWBOOK.md` first.**
+>
+> The Lawbook is the governing authority for what Orbo is. This construction contract governs how native work proceeds. If this file, a specification, living code, tests, or a frozen implementation conflicts with the Lawbook, stop and surface the conflict. Do not silently reconcile it.
+
 This file is a mandatory preflight for any agent touching the native Orbo 1.0 rebuild.
 
 Read this before any native write.
