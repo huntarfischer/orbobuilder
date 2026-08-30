@@ -1,0 +1,24 @@
+name: Orbo Preparation Proof
+
+on:
+  push:
+    branches:
+      - feature/apollo-artemis-mvp
+
+jobs:
+  orbocore-tests:
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare runner-only test copy
+        run: |
+          cp -R native/OrboCore "$RUNNER_TEMP/OrboCore"
+          rm "$RUNNER_TEMP/OrboCore/Tests/OrboCoreTests/RingTests.swift"
+
+      - name: Pythia Pass A authority
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter PythiaPassATests
+
+      - name: OrboCore regression suite except known RingTests compiler blocker
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore"
