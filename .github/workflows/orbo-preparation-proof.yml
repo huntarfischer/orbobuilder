@@ -20,5 +20,8 @@ jobs:
       - name: Pythia Pass A authority
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter PythiaPassATests
 
+      - name: Apollo Hermes Pass B face ownership
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter AstrolabeFaceOwnershipPassBTests
+
       - name: OrboCore regression suite except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"

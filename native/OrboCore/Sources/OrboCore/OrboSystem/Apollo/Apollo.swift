@@ -1,11 +1,11 @@
-/// Apollo is Orbo's governor of the Astrolabe.
+/// Apollo is Orbo's governor of the Aegis, the celestial face of the Astrolabe.
 ///
-/// Pass A establishes ownership only. It does not define Astrolabe state,
-/// temporal law, celestial calculations, controls, or manifestation.
+/// Preparation Pass B narrows Apollo's ownership to the front face. It does not
+/// define Aegis state, temporal law, celestial calculations, controls, or manifestation.
 public enum Apollo {
     public enum GovernedInstrument: String, Hashable, Sendable {
-        case astrolabe
+        case aegis
     }
 
-    public static let governedInstrument: GovernedInstrument = .astrolabe
+    public static let governedInstrument: GovernedInstrument = .aegis
 }

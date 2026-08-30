@@ -2,8 +2,8 @@ import XCTest
 @testable import OrboCore
 
 final class ApolloArtemisPassATests: XCTestCase {
-    func testApolloExistsAndGovernsAstrolabe() {
-        XCTAssertEqual(Apollo.governedInstrument, .astrolabe)
+    func testApolloExistsAndGovernsAegis() {
+        XCTAssertEqual(Apollo.governedInstrument, .aegis)
     }
 
     func testArtemisExistsAndGovernsLunarPane() {
