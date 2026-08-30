@@ -148,7 +148,7 @@ Not every Hecate operation uses Door III. Hecate may cast from resources directl
 
 ## 3. Natal Path
 
-The intended living natal path is:
+The living natal path is:
 
 ```text
 birth facts
@@ -174,7 +174,7 @@ celestial state + Terra
 Ascendant + AstroDNA + chart truth
 ```
 
-Clotho's existing Door I contract is correct in shape. The production Clotho-to-Horae seam remains a bounded follow-up pass.
+**Current status:** `CONNECTED` — `Horae` conforms to Clotho's existing `ClothoPortI` contract. Clotho supplies one resolved `Tempus`; Horae seeks that exact UT through Door I / Locate and returns the canonical Timespine cross-section unchanged. No fallback sky, second time, or wider `OrboSpineRuntime` is introduced at the seam.
 
 ## 4. Moirai and Titans
 
@@ -261,13 +261,11 @@ CHRONOLOGY  -> Chronos -> Door II
 RELATION    -> Hecate  -> Door III
 ```
 
-## 8. Open Seam at This Date
+## 8. Connection Status at This Date
 
-This map records one bounded connection gap for the next pass:
+The three system-facing Timespine doors and the natal Clotho-to-Horae Door I seam are connected.
 
-1. **Natal Door I:** establish the production Clotho -> Horae seam for Clotho's existing Door I request.
-
-This is a connection gap, not an invitation to redesign the surrounding authorities.
+The next bounded pass is proof, not new routing: demonstrate that Horae, Chronos, and Hecate each receive their distinct truth through the three lawful doors against the shipped Mundane Timespine.
 
 ## 9. Date Law
 
