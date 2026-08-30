@@ -144,7 +144,7 @@ Link does not calculate relationships. Hecate does not become a Timespine storag
 
 Not every Hecate operation uses Door III. Hecate may cast from resources directly placed in her hands. Door III is specifically Hecate's relational entrance to Timespine matter.
 
-**Current status:** `OPEN SEAM` — Door III / Link exists and Hecate owns relational truth, but the explicit living Hecate-to-Link seam is the next bounded pass.
+**Current status:** `CONNECTED` — `HecateLink` reads existing `SpineLinkSet` truth through Door III without creating relations, expanding N-way links, or exposing `OrboSpineRuntime`.
 
 ## 3. Natal Path
 
@@ -261,14 +261,13 @@ CHRONOLOGY  -> Chronos -> Door II
 RELATION    -> Hecate  -> Door III
 ```
 
-## 8. Open Seams at This Date
+## 8. Open Seam at This Date
 
-This map records two bounded connection gaps for the next passes:
+This map records one bounded connection gap for the next pass:
 
-1. **Door III:** establish the explicit Hecate -> Door III / Link seam without changing the Door III law.
-2. **Natal Door I:** establish the production Clotho -> Horae seam for Clotho's existing Door I request.
+1. **Natal Door I:** establish the production Clotho -> Horae seam for Clotho's existing Door I request.
 
-These are connection gaps, not invitations to redesign the surrounding authorities.
+This is a connection gap, not an invitation to redesign the surrounding authorities.
 
 ## 9. Date Law
 
