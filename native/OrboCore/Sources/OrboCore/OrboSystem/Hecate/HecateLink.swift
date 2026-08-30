@@ -1,7 +1,7 @@
 /// Door III adapter from Hecate into the OrboSpine Link port.
 ///
-/// Hecate reads existing relation/addressability truth here. The adapter does
-/// not create relations, expand N-way links into pairs, or expose the wider
+/// Hecate receives existing relation/addressability matter here. The adapter
+/// does not create relations, reorder N-way members, or expose the wider
 /// OrboSpine runtime.
 public struct HecateLink: Sendable {
     public let link: SpineLinkSet
@@ -10,7 +10,7 @@ public struct HecateLink: Sendable {
         self.link = link
     }
 
-    public func links(containing address: SpineLinkAddress) -> [SpineLink] {
-        link.links(containing: address)
+    public var members: [SpineLinkAddress] {
+        link.members
     }
 }
