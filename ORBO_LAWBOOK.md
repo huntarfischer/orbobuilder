@@ -85,12 +85,16 @@ When is X?
 When are X and Y?
 ```
 
-## Law 7. Door III: Link
+## Law 7. Door III: Relation / Link
 **Status:** FROZEN
 
-Door III brings two or more explicitly identified points of the Spine together.
+Door III is the **RELATION** door.
 
-Door III does not decide what their relationship means.
+Its Timespine verb is **LINK**: to link is to bring two or more explicitly identified points of the Spine into relation by presenting them together.
+
+`RELATION` names what Door III is for. `LINK` is the Spine's vocabulary for performing that basic 2+ point operation.
+
+Door III does not decide what the relationship means or what ritual should be performed with the linked points.
 
 ## Law 8. Doors expose the Spine
 **Status:** FROZEN
@@ -108,10 +112,12 @@ The doors expose Timespine capability without becoming owners of the astrology p
 
 Hecate is placed at Door III because her domain is **RELATION**.
 
+Door III establishes the linked set of points. Hecate is the intelligence at the front of the door who decides what relational ritual to perform with those points.
+
 ## Law 10. Hecate, not Link, chooses the ritual
 **Status:** FROZEN
 
-Link retrieves the requested Timespine points.
+Link retrieves or presents the requested Timespine points together.
 
 Hecate determines what operation is performed with them.
 
@@ -124,6 +130,8 @@ If existing things remain themselves and the result describes what exists betwee
 RELATE → TABLE
 ```
 
+Examples include relational operations such as synastry, where the participants remain themselves and the result describes the relationship among them.
+
 ## Law 12. Cast
 **Status:** FROZEN
 
@@ -133,12 +141,16 @@ If the operation produces a new astrological value or astrological object:
 CAST → NEW VALUE / OBJECT
 ```
 
+Examples include a composite chart, midpoint, Lot, or Part when the ritual produces new astrological matter from the supplied relation.
+
 ## Law 13. The spellbook is a tool
 **Status:** FROZEN
 
 Kleides is one collection of relational casts available to Hecate.
 
 Kleides does not define the whole of Hecate.
+
+The spellbook contains preserved ways of relating supplied bodies, placements, coordinates, or other admitted astrological matter that resolve into a new value or object.
 
 ## Law 14. Exact retrieval, not hunting
 **Status:** FROZEN
@@ -153,6 +165,8 @@ She does not choose alternative moments, search for unspecified matter, or hunt 
 Titans may be summoned by Hecate as helpers required for a ritual.
 
 `SUMMON` is Hecate's internal action, not the caller's primary Door III command.
+
+The Titans provide their own frozen laws when Hecate needs them; they do not define Hecate or Door III.
 
 ## Law 16. No interpretation
 **Status:** FROZEN
