@@ -3,7 +3,7 @@
 **Date:** 2026-08-30  
 **Branch:** `feature/orbo-lawbook-2026-08-30`  
 **Law authority:** `ORBO_LAWBOOK.md`  
-**Status:** IMPLEMENTED / PACKAGE PROOF PENDING
+**Status:** PROVEN / GREEN
 
 ## Scope
 
@@ -81,38 +81,43 @@ The living OrboSpine Link implementation:
 4. foreign and unrecognized members fail instead of causing fallback/search behavior.
 5. each resolved point returns the canonical full celestial cross-section.
 
-Existing `SpineLinkTests` and `HecateLinkTests` remain unchanged and are included in the upstream proof workflow.
+Existing `SpineLinkTests` and `HecateLinkTests` remain unchanged.
 
-## Upstream proof workflow
+## Acceptance proof
 
-Added:
+Development-Mac package acceptance was completed on 2026-08-30 from the checked-out branch head containing Pass 2.
 
-```text
-.github/workflows/door-iii-pass2.yml
-```
-
-Runner-only proof removes the known `RingTests.swift` CI compiler blocker, then runs:
+Command from `native/OrboCore`:
 
 ```text
-OrboSpineLinkResolutionTests
-SpineLinkTests
-HecateLinkTests
-full OrboCore suite except runner-only RingTests exclusion
+swift test
 ```
 
-## Current proof state
-
-An isolated Swift typecheck of the new Door III source against the living API shapes passed.
-
-A repository package/Xcode run has not yet been observed for this branch in the current tool session. Therefore this pass is **not yet declared green or frozen**.
-
-Required acceptance remains:
+Result:
 
 ```text
-swift test --package-path native/OrboCore
+TympanTests
+19 tests
+0 failures
+
+OrboCorePackageTests.xctest
+759 tests
+0 failures
+0 unexpected
+
+All tests
+759 tests
+0 failures
+0 unexpected
 ```
 
-with zero failures on the development Mac.
+Target reported by the test runner:
+
+```text
+x86_64-apple-macos14.0
+```
+
+Pass 2 is therefore accepted as **PROVEN / GREEN**.
 
 ## Explicitly not in Pass 2
 
@@ -128,4 +133,4 @@ Door II / Chronos changes
 Link universal vocabulary redesign
 ```
 
-Pass 3 begins only after Pass 2 package acceptance.
+Pass 3 may begin only by explicit approval.
