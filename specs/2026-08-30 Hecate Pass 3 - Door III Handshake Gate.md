@@ -3,7 +3,7 @@
 **Date:** 2026-08-30  
 **Branch:** `feature/orbo-lawbook-2026-08-30`  
 **Law authority:** `ORBO_LAWBOOK.md`  
-**Status:** IMPLEMENTED / UPSTREAM GREEN / LOCAL PACKAGE ACCEPTANCE PENDING
+**Status:** PROVEN / GREEN / FROZEN
 
 ## Scope
 
@@ -67,17 +67,35 @@ Existing Link + Hecate Link regressions   PASS
 OrboCore regression suite                 PASS
 ```
 
-The runner-only suite retains the repository's existing exclusion of `RingTests.swift` for its known CI compiler blocker. This is not a substitute for the full development-Mac package acceptance.
+The runner-only suite retains the repository's existing exclusion of `RingTests.swift` for its known CI compiler blocker.
 
-## Local acceptance still required
+## Development-Mac acceptance
 
-From `native/OrboCore` on the development Mac:
+Full local package proof was completed on 2026-08-30 from `native/OrboCore` with:
 
 ```text
 swift test
 ```
 
-Pass 3 closes only when the complete local package suite reports zero failures.
+Result:
+
+```text
+TympanTests
+19 tests
+0 failures
+
+OrboCorePackageTests.xctest
+761 tests
+0 failures
+0 unexpected
+
+All tests
+761 tests
+0 failures
+0 unexpected
+```
+
+This is the acceptance gate for Pass 3.
 
 ## Explicitly not in Pass 3
 
@@ -95,4 +113,4 @@ Door III address redesign
 cross-Spine resolver orchestration
 ```
 
-Pass 4 may build Hecate outward from this proven handshake only after Pass 3 local acceptance.
+Pass 4 may now build Hecate outward from this frozen handshake.
