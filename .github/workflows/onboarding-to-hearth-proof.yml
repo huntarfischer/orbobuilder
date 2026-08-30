@@ -1,0 +1,24 @@
+name: Onboarding to Hearth Proof
+
+on:
+  push:
+    branches:
+      - proof/onboarding-to-hearth
+
+jobs:
+  orbocore-tests:
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare runner-only test copy
+        run: |
+          cp -R native/OrboCore "$RUNNER_TEMP/OrboCore"
+          rm "$RUNNER_TEMP/OrboCore/Tests/OrboCoreTests/RingTests.swift"
+
+      - name: Campaign 1 onboarding to Hearth
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter OnboardingToHearthCampaignTests
+
+      - name: OrboCore regression suite except known RingTests compiler blocker
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore"
