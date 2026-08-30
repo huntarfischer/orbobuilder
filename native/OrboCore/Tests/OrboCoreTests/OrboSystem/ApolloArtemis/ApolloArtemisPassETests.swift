@@ -2,12 +2,12 @@ import XCTest
 @testable import OrboCore
 
 final class ApolloArtemisPassETests: XCTestCase {
-    func testOrboSummonsApolloWithoutTakingAstrolabeGovernance() {
+    func testOrboSummonsApolloWithoutTakingAegisGovernance() {
         let orbo = Orbo()
         let governor = orbo.summonApollo()
 
-        XCTAssertEqual(governor.governedInstrument, .astrolabe)
-        XCTAssertEqual(Apollo.governedInstrument, .astrolabe)
+        XCTAssertEqual(governor.governedInstrument, .aegis)
+        XCTAssertEqual(Apollo.governedInstrument, .aegis)
     }
 
     func testOrboSummonsArtemisWithoutTakingLunarPaneGovernance() {
