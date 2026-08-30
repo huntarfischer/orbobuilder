@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/apollo-artemis-mvp
+      - orbo/8-30-26
 
 jobs:
   orbocore-tests:
