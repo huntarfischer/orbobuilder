@@ -85,8 +85,9 @@ final class ClothoHoraeGraftTests: XCTestCase {
         for (index, body) in OrboSpineContract.canonicalBodies.enumerated() {
             let base = 10.0 + Double(index * 25)
             let motion: Motion = body == .trueNorthNode ? .retrograde : .direct
-            let firstDegrees = motion == .retrograde ? base + 1.0 : base
-            let secondDegrees = motion == .retrograde ? base : base + 1.0
+            let delta = OrboSpineContract.supportDegrees(for: body) * 0.5
+            let firstDegrees = motion == .retrograde ? base + delta : base
+            let secondDegrees = motion == .retrograde ? base : base + delta
             supports.append(
                 coordinate(
                     body: body,
