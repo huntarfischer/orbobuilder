@@ -205,6 +205,18 @@ For the 2026-08-30 Hecate / Door III freeze, the authorized branch is:
 feature/orbo-lawbook-2026-08-30
 ```
 
+### 8a. Living architecture audit scope
+
+Architectural audits inspect the current authorized construction branch and its living source tree.
+
+Historical commits, `archive/` refs, superseded `proof/` refs, archived branches, and quarantined material are construction archaeology only. They are not evidence of the current Orbo architecture unless the user explicitly requests a historical, provenance, or archaeology audit.
+
+Do not surface an archived or historical implementation as a current architectural conflict merely because it remains preserved in repository history.
+
+When a historical proof used a temporary dependency, fixture, fake, stub, or deterministic port before the corresponding production seam existed, treat that matter as proof-era scaffolding unless the current authorized branch still uses it.
+
+For current architecture, prefer the living production implementation on the authorized branch over an older proof harness with the same conceptual owner.
+
 ## 9. Pass closure checklist
 
 Before saying a pass is complete, answer all of these:
