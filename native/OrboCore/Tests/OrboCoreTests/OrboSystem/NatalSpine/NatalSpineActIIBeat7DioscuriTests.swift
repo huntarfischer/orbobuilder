@@ -9,7 +9,7 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
 
     func testDioscuriApproveExactCandidate() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
-        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.commission)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
@@ -73,7 +73,7 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
             laneAfter: .retrograde
         )!
         let parent = NatalSpineActIIFixture.parentSource(
-            for: baseline.matter.substrate,
+            for: baseline.parent.commission,
             stations: [station]
         )
 
@@ -107,7 +107,7 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
             end: baseline.matter.bounds.bone.end
         )!
         let parent = NatalSpineActIIFixture.parentSource(
-            for: baseline.matter.substrate,
+            for: baseline.parent.commission,
             bone: tooShort
         )
 
@@ -336,7 +336,7 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
         return Baseline(
             matter: NatalSpineDioscuriMatter(candidate: candidate),
-            parent: NatalSpineActIIFixture.parentSource(for: candidate.substrate)
+            parent: NatalSpineActIIFixture.parentSource(for: candidate.commission)
         )
     }
 
