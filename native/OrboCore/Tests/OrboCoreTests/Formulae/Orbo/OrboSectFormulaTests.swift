@@ -2,51 +2,83 @@ import XCTest
 @testable import OrboCore
 
 final class OrboSectFormulaTests: XCTestCase {
-    func testSunExactlyOnAscendantDefaultsToDay() {
+    func testDayIncludesAscendantThroughDescendantBoundaries() {
         XCTAssertEqual(
             OrboFormulae.sect(
-                ascendant: CelestialLongitude(10)!,
-                sun: CelestialLongitude(10)!
+                ascendant: CelestialLongitude(0)!,
+                sun: CelestialLongitude(0)!
+            ),
+            .day
+        )
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(0)!,
+                sun: CelestialLongitude(90)!
+            ),
+            .day
+        )
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(0)!,
+                sun: CelestialLongitude(180)!
             ),
             .day
         )
     }
 
-    func testSunStrictlyOnAscendantToDescendantArcIsNight() {
+    func testNightBeginsImmediatelyAfterDescendantAndContinuesThrough359() {
         XCTAssertEqual(
             OrboFormulae.sect(
-                ascendant: CelestialLongitude(10)!,
-                sun: CelestialLongitude(100)!
+                ascendant: CelestialLongitude(0)!,
+                sun: CelestialLongitude(181)!
+            ),
+            .night
+        )
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(0)!,
+                sun: CelestialLongitude(359)!
             ),
             .night
         )
     }
 
-    func testSunExactlyOnDescendantDefaultsToDay() {
+    func testDayArcWrapsAcrossZero() {
         XCTAssertEqual(
             OrboFormulae.sect(
-                ascendant: CelestialLongitude(10)!,
-                sun: CelestialLongitude(190)!
+                ascendant: CelestialLongitude(359)!,
+                sun: CelestialLongitude(0)!
             ),
             .day
         )
-    }
-
-    func testSunStrictlyOnDescendantToAscendantArcIsDay() {
-        XCTAssertEqual(
-            OrboFormulae.sect(
-                ascendant: CelestialLongitude(10)!,
-                sun: CelestialLongitude(250)!
-            ),
-            .day
-        )
-    }
-
-    func testNightArcWrapsAcrossZeroOnThe359Ring() {
         XCTAssertEqual(
             OrboFormulae.sect(
                 ascendant: CelestialLongitude(221)!,
                 sun: CelestialLongitude(21)!
+            ),
+            .day
+        )
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(221)!,
+                sun: CelestialLongitude(40)!
+            ),
+            .day
+        )
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(221)!,
+                sun: CelestialLongitude(41)!
+            ),
+            .day
+        )
+    }
+
+    func testNightBeginsAt181DegreesAfterWrappedAscendant() {
+        XCTAssertEqual(
+            OrboFormulae.sect(
+                ascendant: CelestialLongitude(221)!,
+                sun: CelestialLongitude(42)!
             ),
             .night
         )
