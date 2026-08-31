@@ -4,10 +4,11 @@ import XCTest
 final class NatalSpineActIIBeat8SealTests: XCTestCase {
     func testHephaestusSealsOnlyTheDioscuriApprovedCandidate() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
-            parentProvenance: candidate.substrate.parentProvenance
+            parent: parent
         ).get()
 
         let sealed = Hephaestus.sealNatalSpine(approval)
@@ -26,6 +27,7 @@ final class NatalSpineActIIBeat8SealTests: XCTestCase {
 
     func testDioscuriRejectionCannotProduceApprovalForSeal() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
         let matter = NatalSpineDioscuriMatter(
             subjectID: candidate.subjectID,
             bounds: candidate.bounds,
@@ -38,7 +40,7 @@ final class NatalSpineActIIBeat8SealTests: XCTestCase {
         switch Dioscuri.inspectNatalSpine(
             matter,
             against: candidate.commission.schematics,
-            parentProvenance: candidate.substrate.parentProvenance
+            parent: parent
         ) {
         case .success:
             XCTFail("A divergent candidate must not cross the Dioscuri boundary to Hephaestus sealing.")
@@ -49,10 +51,11 @@ final class NatalSpineActIIBeat8SealTests: XCTestCase {
 
     func testSealBindsCertifiedSourceCardinalitiesNotNewForgeMatter() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
-            parentProvenance: candidate.substrate.parentProvenance
+            parent: parent
         ).get()
         let sealed = Hephaestus.sealNatalSpine(approval)
 
