@@ -36,6 +36,16 @@ public struct RelationRow: Hashable, Sendable {
     }
 }
 
+/// Named RELATE rituals Hecate can lawfully perform with already-linked matter.
+public enum HecateRelationRitual: Hashable, Sendable {
+    case momentToMoment
+}
+
+/// Explicit ritual eligibility failures. Door III resolution failures remain Door III failures.
+public enum HecateRelationRitualError: Error, Hashable, Sendable {
+    case participantCount(expected: Int, actual: Int)
+}
+
 public extension Hecate {
     /// RELATE preserves the linked points and describes what exists between them.
     ///
@@ -88,5 +98,23 @@ public extension Hecate {
         }
 
         return RelationTable(participants: points, rows: rows)
+    }
+
+    /// Performs one named RELATE ritual without changing the generic relation machinery.
+    static func relate(
+        _ ritual: HecateRelationRitual,
+        _ link: SpineLinkSet,
+        through doorIII: OrboSpineLink
+    ) throws -> RelationTable {
+        switch ritual {
+        case .momentToMoment:
+            guard link.members.count == 2 else {
+                throw HecateRelationRitualError.participantCount(
+                    expected: 2,
+                    actual: link.members.count
+                )
+            }
+            return try relate(link, through: doorIII)
+        }
     }
 }

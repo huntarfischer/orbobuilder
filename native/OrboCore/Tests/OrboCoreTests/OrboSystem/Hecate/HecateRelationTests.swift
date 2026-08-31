@@ -92,6 +92,53 @@ final class HecateRelationTests: XCTestCase {
         }
     }
 
+    func testMomentToMomentRitualReturnsTheExistingRawRelationTable() throws {
+        let doorIII = try makeDoorIII()
+        let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
+        let link = try XCTUnwrap(SpineLinkSet(members: [first, second]))
+
+        let generic = try Hecate.relate(link, through: doorIII)
+        let named = try Hecate.relate(.momentToMoment, link, through: doorIII)
+
+        XCTAssertEqual(named, generic)
+    }
+
+    func testMomentToMomentRitualRequiresExactlyTwoParticipants() throws {
+        let doorIII = try makeDoorIII()
+        let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
+        let third = OrboSpinePointAddress.occurrence(JulianDay(1_000.5)!).linkAddress()
+        let link = try XCTUnwrap(SpineLinkSet(members: [first, second, third]))
+
+        XCTAssertThrowsError(
+            try Hecate.relate(.momentToMoment, link, through: doorIII)
+        ) { error in
+            XCTAssertEqual(
+                error as? HecateRelationRitualError,
+                .participantCount(expected: 2, actual: 3)
+            )
+        }
+    }
+
+    func testMomentToMomentRitualSurfacesDoorIIIFailureUnchanged() throws {
+        let doorIII = try makeDoorIII()
+        let local = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let foreign = try XCTUnwrap(
+            SpineLinkAddress(
+                spineIdentity: "NatalSpine-A",
+                memberIdentity: "occurrence|1000.0"
+            )
+        )
+        let link = try XCTUnwrap(SpineLinkSet(members: [local, foreign]))
+
+        XCTAssertThrowsError(
+            try Hecate.relate(.momentToMoment, link, through: doorIII)
+        ) { error in
+            XCTAssertEqual(error as? OrboSpineLinkError, .foreignSpine(foreign))
+        }
+    }
+
     private func makeDoorIII() throws -> OrboSpineLink {
         OrboSpineLink(
             spineIdentity: OrboSpineContract.identity,
