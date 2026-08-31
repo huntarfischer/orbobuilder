@@ -27,6 +27,7 @@ public struct Hearth: Hashable, Sendable {
                   engraving.topos != nil,
                   engraving.tempus != nil,
                   engraving.astroDNA != nil,
+                  engraving.sect != nil,
                   engraving.tapestry != nil else {
                 return nil
             }
