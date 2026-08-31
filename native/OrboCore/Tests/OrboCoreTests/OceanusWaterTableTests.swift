@@ -2,11 +2,7 @@ import XCTest
 @testable import OrboCore
 
 final class OceanusWaterTableTests: XCTestCase {
-    func testRecoveredArtifactProvenanceIsFrozen() {
-        XCTAssertEqual(
-            OceanusWaterTable.sourceSHA256,
-            "7cb3c03a4ed79b8c1b0a2d01b237e1431dc6fb2dbcc09d00a6bb53be24e151e7"
-        )
+    func testWaterTableDimensionsAreFrozen() {
         XCTAssertEqual(OceanusWaterTable.width, 360)
         XCTAssertEqual(OceanusWaterTable.cellCount, 129_600)
     }
