@@ -36,8 +36,11 @@ final class NatalSpineActIIIntegrationTests: XCTestCase {
             NatalSpineCommission.hephaestusAddress
         )
 
-        let substrate = NatalSpineActIIFixture.navigableSubstrate(for: commission)
-        let parent = NatalSpineActIIFixture.parentSource(for: substrate)
+        let parent = NatalSpineActIIFixture.parentSource(for: commission)
+        let substrate = try Hephaestus.forgeNatalSpineSubstrate(
+            for: commission,
+            from: parent
+        )
         let themis = try Hephaestus.forgeNatalSpineThemis(for: commission, on: substrate)
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
         let rhea = try Hephaestus.forgeNatalSpineRhea(on: oceanus)
