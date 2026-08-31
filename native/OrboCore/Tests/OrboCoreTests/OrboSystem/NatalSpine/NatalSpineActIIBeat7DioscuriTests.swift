@@ -151,11 +151,14 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
 
     func testChangedClothoBoundsAreRejected() throws {
         let baseline = try baselineMatter()
+        let alteredEnd = AbsoluteInstant(
+            unixSecondsSince1970: baseline.bounds.end.unixSecondsSince1970 - 86_400
+        )!
         let alteredBounds = NatalSpineBounds(
             subjectID: baseline.subjectID,
             start: baseline.bounds.start,
             natal: baseline.bounds.natal,
-            end: JulianDay(baseline.bounds.end.value - 1)!
+            end: alteredEnd
         )!
         XCTAssertEqual(inspect(matter(baseline, bounds: alteredBounds)), .boundsMismatch)
     }
@@ -198,9 +201,7 @@ final class NatalSpineActIIBeat7DioscuriTests: XCTestCase {
         switch Dioscuri.inspectNatalSpine(
             matter,
             against: schematics,
-            parentProvenance: matter.substrate.parentProvenance == schematicsParentProvenance
-                ? schematicsParentProvenance
-                : schematicsParentProvenance
+            parentProvenance: schematicsParentProvenance
         ) {
         case .success:
             return nil
