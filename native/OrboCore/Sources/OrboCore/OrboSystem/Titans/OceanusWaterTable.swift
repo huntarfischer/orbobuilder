@@ -1,5 +1,3 @@
-import Foundation
-
 /// Whole-degree geometric relation between the Ascendant row and Sun column
 /// in Oceanus's frozen 360 × 360 water table.
 ///
@@ -13,82 +11,27 @@ public enum OceanusWaterRelation: String, Sendable, Equatable, CaseIterable {
 enum OceanusWaterTable {
     static let width = 360
     static let cellCount = 129_600
-    static let sourceSHA256 = "7cb3c03a4ed79b8c1b0a2d01b237e1431dc6fb2dbcc09d00a6bb53be24e151e7"
 
-    // Lossless run-length packing of the recovered approved CSV artifact.
-    // Each pair is [relationCode, runLength], with TIE = 0, ABOVE = 1,
-    // BELOW = 2. No geometric formula is used to construct this table.
-    private static let runLengthBase64 = """
-AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAAB
-AbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGz
-AAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswAB
-ArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0
-AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAAB
-AbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGz
-AAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswAB
-ArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0
-AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAAB
-AbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGz
-AAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswAB
-ArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0
-AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAAB
-AbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGz
-AAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswAB
-ArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAQK0AAEBswABArQAAQGzAAECtAABAbMAAgKz
-AAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
-AbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0
-AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAAB
-ArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKz
-AAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
-AbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0
-AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAAB
-ArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKz
-AAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
-AbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0
-AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAAB
-ArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKz
-AAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
-AbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0
-AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAAB
-ArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
-"""
+    private static let cells: [OceanusWaterRelation] = {
+        var table: [OceanusWaterRelation] = []
+        table.reserveCapacity(cellCount)
 
-    private static let cells: [UInt8]? = {
-        guard let packed = Data(
-            base64Encoded: runLengthBase64,
-            options: .ignoreUnknownCharacters
-        ), packed.count.isMultiple(of: 2) else {
-            return nil
-        }
+        for ascendant in 0..<width {
+            for sun in 0..<width {
+                let delta = (sun - ascendant + width) % width
 
-        var decoded: [UInt8] = []
-        decoded.reserveCapacity(cellCount)
-
-        var index = 0
-        while index < packed.count {
-            let relationCode = packed[index]
-            let runLength = Int(packed[index + 1])
-
-            guard relationCode <= 2, runLength > 0 else {
-                return nil
+                switch delta {
+                case 0, 180:
+                    table.append(.tie)
+                case 1...179:
+                    table.append(.above)
+                default:
+                    table.append(.below)
+                }
             }
-
-            decoded.append(
-                contentsOf: repeatElement(relationCode, count: runLength)
-            )
-
-            guard decoded.count <= cellCount else {
-                return nil
-            }
-
-            index += 2
         }
 
-        guard decoded.count == cellCount else {
-            return nil
-        }
-
-        return decoded
+        return table
     }()
 
     static func relation(
@@ -96,22 +39,10 @@ ArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswABAbQAAQKzAAEBtAABArMAAQG0AAECswAB
         sunDegree: Int
     ) -> OceanusWaterRelation? {
         guard (0..<width).contains(ascendantDegree),
-              (0..<width).contains(sunDegree),
-              let cells else {
+              (0..<width).contains(sunDegree) else {
             return nil
         }
 
-        let code = cells[ascendantDegree * width + sunDegree]
-
-        switch code {
-        case 0:
-            return .tie
-        case 1:
-            return .above
-        case 2:
-            return .below
-        default:
-            return nil
-        }
+        return cells[ascendantDegree * width + sunDegree]
     }
 }
