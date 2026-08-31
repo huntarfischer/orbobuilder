@@ -37,6 +37,7 @@ final class NatalSpineActIIIntegrationTests: XCTestCase {
         )
 
         let substrate = NatalSpineActIIFixture.navigableSubstrate(for: commission)
+        let parent = NatalSpineActIIFixture.parentSource(for: substrate)
         let themis = try Hephaestus.forgeNatalSpineThemis(for: commission, on: substrate)
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
         let rhea = try Hephaestus.forgeNatalSpineRhea(on: oceanus)
@@ -44,7 +45,7 @@ final class NatalSpineActIIIntegrationTests: XCTestCase {
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: commission.schematics,
-            parentProvenance: substrate.parentProvenance
+            parent: parent
         ).get()
         let sealed = Hephaestus.sealNatalSpine(approval)
         let released = Hephaestus.releaseNatalSpine(sealed)
