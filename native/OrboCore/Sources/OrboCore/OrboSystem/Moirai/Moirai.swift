@@ -18,7 +18,9 @@ public enum Moirai {
             tapestry: tapestry
         ).get()
 
-        let workedEngraving = clotho.engraving.resolving(tapestry: sealed)
+        let workedEngraving = clotho.engraving
+            .resolving(sect: clotho.packet.sect)
+            .resolving(tapestry: sealed)
         return HermesPackage(
             packageID: package.packageID,
             subjectID: package.subjectID,
