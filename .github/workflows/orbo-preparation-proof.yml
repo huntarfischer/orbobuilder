@@ -5,6 +5,7 @@ on:
     branches:
       - feature/apollo-artemis-mvp
       - orbo/8-30-26
+      - agent/natal-spine-sequestered
 
 jobs:
   orbocore-tests:
