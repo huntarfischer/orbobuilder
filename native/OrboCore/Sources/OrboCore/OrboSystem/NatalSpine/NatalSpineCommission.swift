@@ -53,7 +53,6 @@ public enum NatalSpineCommission {
 
 public enum OrboNatalSpineCommissionFailure: Error, Hashable, Sendable {
     case nativeTruthUnavailable
-    case subjectMismatch
     case alreadyCommissioned
 }
 
@@ -66,13 +65,8 @@ public extension Orbo {
         occurredAt: AbsoluteInstant,
         packageID: HermesPackageID = HermesPackageID()
     ) throws -> NatalSpineCommissionHandle {
-        guard backOfHouse == .nativeReady,
-              engravingTicketID != nil,
-              engravingCommission != nil else {
+        guard backOfHouse == .nativeReady else {
             throw OrboNatalSpineCommissionFailure.nativeTruthUnavailable
-        }
-        guard engravingCommission?.subjectID == subjectID else {
-            throw OrboNatalSpineCommissionFailure.subjectMismatch
         }
 
         let package = NatalSpineCommission.package(
