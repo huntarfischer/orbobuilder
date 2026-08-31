@@ -78,6 +78,7 @@ final class ClothoStage4Tests: XCTestCase {
         XCTAssertEqual(output.engraving.birthLocation, engraving.birthLocation)
         XCTAssertEqual(output.engraving.topos, originalTopos)
         XCTAssertEqual(output.engraving.tempus, originalTempus)
+        XCTAssertNil(output.engraving.sect)
         XCTAssertNil(output.engraving.tapestry)
         XCTAssertFalse(output.engraving.engraved)
 
