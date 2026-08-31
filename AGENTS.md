@@ -67,7 +67,7 @@ current Orbo repository
 
 Do not replace or bypass an already-qualified Orbo dependency merely because an external copy is easier to find.
 
-For current Pass 5 astronomical manufacture, **use the Swiss Ephemeris already established inside the Orbo repository and its existing Forge/Ephemeris construction path**. Do not fetch a separate Swiss copy, substitute another ephemeris, or build a parallel eclipse astronomy engine when the repository source can perform the work.
+For astronomical manufacture, **use the Swiss Ephemeris already established inside the Orbo repository and its existing Forge/Ephemeris construction path**. Do not fetch a separate Swiss copy, substitute another ephemeris, or build a parallel astronomy engine when the repository source can perform the work.
 
 When a repository capability exists but its exact location or mating surface is unclear, locate it inside the repository first. External search is not a substitute for repository archaeology.
 
@@ -101,7 +101,7 @@ The closure sequence is cumulative:
 6. build and run OrboLab when the component has a useful live readout
 7. inspect the live OrboCore readout
 8. build the affected native targets
-9. update the Native Port Manifest and the active pass/gate documentation
+9. update the Native Port Manifest when the pass changes a component represented there, and update the active pass/gate documentation
 10. only then promote status or move to the next construction piece
 
 Every later pass must keep every earlier native test green.
@@ -112,7 +112,7 @@ A meaningful native pass is not complete until its construction record is update
 
 Before moving to the next piece, all applicable records must be updated:
 
-- update `specs/Native Port Manifest.md`
+- update `specs/Native Port Manifest.md` when the pass changes a component represented by that port ledger
 - update or create the explicit dated gate record for the pass
 - update the active component/pass specification when the earned law, boundary, proof, or pending work changed
 - record the actual Xcode test count and failure count
@@ -120,7 +120,9 @@ Before moving to the next piece, all applicable records must be updated:
 - record what remains pending
 - do not promote a component beyond the proof actually completed
 
-A gate record supplements the Native Port Manifest. It does not replace the Manifest update.
+When the Native Port Manifest is not applicable because no tracked 4R port status changed, the dated gate must state that explicitly rather than manufacturing a false ledger change.
+
+A gate record supplements an applicable Native Port Manifest update. It does not replace one.
 
 The user must not have to remind the agent to run accumulated tests or continue the documentation trail.
 
@@ -195,10 +197,12 @@ Do not touch `main` during active construction unless the user explicitly direct
 
 Work on the current authorized construction branch.
 
-For the current Pass 5 work, that branch is:
+Do not infer a current branch from an older pass record. Verify the living branch before every write.
+
+For the 2026-08-30 Hecate / Door III freeze, the authorized branch is:
 
 ```text
-agent/timespine-celestial-time-build
+feature/orbo-lawbook-2026-08-30
 ```
 
 ## 9. Pass closure checklist
@@ -215,11 +219,11 @@ New/changed XCTest present?                    YES / NO
 Component tests green?                         YES / NO
 Entire accumulated Xcode suite green?          YES / NO
 Zero failures?                                 YES / NO
-OrboLab live readout checked, if applicable?   YES / NO
-Affected native build checked?                 YES / NO
-Native Port Manifest updated?                  YES / NO
+OrboLab live readout checked, if applicable?   YES / NO / N/A
+Affected native build checked?                 YES / NO / N/A
+Native Port Manifest updated, if applicable?   YES / NO / N/A
 Dated gate record updated/created?             YES / NO
-Active pass specification updated?             YES / NO
+Active pass specification updated?             YES / NO / N/A
 Pending work stated explicitly?                YES / NO
 Any deletion performed?                        MUST BE NO unless user explicitly authorized it
 Any non-Swift native dependency introduced?    MUST BE NO unless user explicitly authorized it
@@ -227,9 +231,9 @@ Any non-Swift native dependency introduced?    MUST BE NO unless user explicitly
 
 If any required answer is NO, the pass remains open.
 
-## 10. Current Pass 5 temporal law
+## 10. Current Timespine temporal law
 
-The Mundane Timespine is AstroDNA in motion.
+The Mundane Timespine is **celestial time laid through continuous chronological time**.
 
 For each body:
 
@@ -240,6 +244,8 @@ planetary celestial time <-> civic UT occurrence
 
 UT is the shared civic coordinate that distinguishes repeated occurrences. UT is not celestial time.
 
-P22 is the first proven/common construction span, not the permanent size limit of Forge or the Mundane Timespine.
+AstroDNA is downstream astrological matter. It is not the fundamental address language of the Timespine and must not be used to redefine the Timespine as "AstroDNA in motion."
+
+A proven construction span is evidence about a particular Forge product, not a permanent conceptual size limit of Forge or the Mundane Timespine.
 
 Forge must remain capable of manufacturing later spans or a larger final chronology without redesigning the organ.
