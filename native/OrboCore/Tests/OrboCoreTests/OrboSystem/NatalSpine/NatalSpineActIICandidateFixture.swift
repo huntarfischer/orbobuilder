@@ -2,6 +2,84 @@ import Foundation
 @testable import OrboCore
 
 extension NatalSpineActIIFixture {
+    struct ParentSource: NatalSpineForgeTimespineSource {
+        let substrate: NatalSpineCelestialSubstrate
+        let sourceBone: OrboSpineBoneSpan
+        let sourceStations: [OrboSpineStation]
+        let sourceProvenance: OrboSpineRuntimeProvenance
+
+        init(
+            substrate: NatalSpineCelestialSubstrate,
+            sourceStations: [OrboSpineStation]? = nil,
+            sourceProvenance: OrboSpineRuntimeProvenance? = nil,
+            sourceBone: OrboSpineBoneSpan? = nil
+        ) {
+            self.substrate = substrate
+            self.sourceStations = sourceStations ?? substrate.stations
+            self.sourceProvenance = sourceProvenance ?? substrate.parentProvenance
+            self.sourceBone = sourceBone ?? OrboSpineBoneSpan(
+                start: JulianDay(substrate.bounds.bone.start.value - 10)!,
+                end: JulianDay(substrate.bounds.bone.end.value + 10)!
+            )!
+        }
+
+        func coordinate(
+            of body: MundaneBody,
+            at julianDay: JulianDay
+        ) throws -> OrboSpineCelestialCoordinate {
+            let epsilon = 1e-9
+            let boundary: OrboSpineBoundary
+            if abs(julianDay.value - substrate.bounds.bone.start.value) <= epsilon {
+                boundary = .start
+            } else if abs(julianDay.value - substrate.bounds.bone.end.value) <= epsilon {
+                boundary = .endExclusive
+            } else if let support = substrate.supports.first(where: {
+                $0.body == body && abs($0.julianDay.value - julianDay.value) <= epsilon
+            }) {
+                return support
+            } else {
+                throw NatalSpineSubstrateFailure.missingCelestialMatter(body)
+            }
+
+            guard let anchor = substrate.boundaryAnchors.first(where: {
+                $0.body == body && $0.boundary == boundary
+            }) else {
+                throw NatalSpineSubstrateFailure.invalidBoundaryAnchor(body)
+            }
+            return OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: OrboSpineDirectionalDegree(
+                    physicalDegrees: anchor.physicalDegrees,
+                    motion: anchor.motion
+                )!,
+                julianDay: julianDay
+            )
+        }
+
+        func occurrences(
+            of body: MundaneBody,
+            at directionalDegree: OrboSpineDirectionalDegree
+        ) throws -> [OrboSpineCelestialCoordinate] {
+            substrate.supports.filter {
+                $0.body == body && $0.directionalDegree == directionalDegree
+            }
+        }
+    }
+
+    static func parentSource(
+        for substrate: NatalSpineCelestialSubstrate,
+        stations: [OrboSpineStation]? = nil,
+        provenance: OrboSpineRuntimeProvenance? = nil,
+        bone: OrboSpineBoneSpan? = nil
+    ) -> ParentSource {
+        ParentSource(
+            substrate: substrate,
+            sourceStations: stations,
+            sourceProvenance: provenance,
+            sourceBone: bone
+        )
+    }
+
     static func addressableCandidate(
         for commission: NatalSpineForgeCommission? = nil
     ) throws -> NatalSpineCandidate {
