@@ -90,9 +90,16 @@ final class NatalSpineActIIntegrationTests: XCTestCase {
         XCTAssertEqual(certified.contents.themis.subjectID, truth.subjectID)
         XCTAssertEqual(certified.contents.oceanus.subjectID, truth.subjectID)
         XCTAssertEqual(certified.contents.rhea.subjectID, truth.subjectID)
+
+        let firstExpectedHouse = try XCTUnwrap(
+            truth.tapestry.tapestry.degrees.first { $0.address.rawValue == 10 }?.tympan.house
+        )
+        let secondExpectedHouse = try XCTUnwrap(
+            truth.tapestry.tapestry.degrees.first { $0.address.rawValue == 40 }?.tympan.house
+        )
         XCTAssertEqual(
-            certified.contents.themis.spans(for: .sun).map(\.house.rawValue),
-            [1, 2]
+            certified.contents.themis.spans(for: .sun).map(\.house),
+            [firstExpectedHouse, secondExpectedHouse]
         )
         XCTAssertFalse(certified.contents.rhea.qualifications.isEmpty)
 
