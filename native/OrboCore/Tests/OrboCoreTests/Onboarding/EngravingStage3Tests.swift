@@ -28,6 +28,7 @@ final class EngravingStage3Tests: XCTestCase {
 
         XCTAssertNil(package.contents.topos)
         XCTAssertNil(package.contents.astroDNA)
+        XCTAssertNil(package.contents.sect)
         XCTAssertNil(package.contents.tapestry)
         XCTAssertFalse(package.contents.engraved)
     }
@@ -46,6 +47,7 @@ final class EngravingStage3Tests: XCTestCase {
         XCTAssertEqual(topos.place.timezone.rawValue, "America/Chicago")
 
         XCTAssertNil(resolved.astroDNA)
+        XCTAssertNil(resolved.sect)
         XCTAssertNil(resolved.tapestry)
         XCTAssertFalse(resolved.engraved)
     }
@@ -87,6 +89,7 @@ final class EngravingStage3Tests: XCTestCase {
             "Madison, WI, USA"
         )
         XCTAssertNil(augmentedPackage.contents.astroDNA)
+        XCTAssertNil(augmentedPackage.contents.sect)
         XCTAssertNil(augmentedPackage.contents.tapestry)
         XCTAssertFalse(augmentedPackage.contents.engraved)
 
