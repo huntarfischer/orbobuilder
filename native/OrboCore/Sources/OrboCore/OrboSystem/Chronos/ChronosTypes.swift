@@ -44,6 +44,44 @@ public struct ChronosSourceReference: RawRepresentable, Hashable, Sendable {
     }
 }
 
+/// Selection over explicit booleans already present on Mater.QualifiedTemper.
+/// Chronos never derives condition here; it only selects a condition Rhea already recorded.
+public enum NatalSpineMaterCondition: String, CaseIterable, Hashable, Sendable {
+    case sectDay
+    case sectNight
+    case traditionalDomicile
+    case modernDomicile
+    case traditionalDetriment
+    case modernDetriment
+    case exaltation
+    case atExaltationDegree
+    case triplicity
+    case bound
+    case face
+    case fall
+    case peregrine
+    case mutualReception
+
+    public func matches(_ temper: Mater.QualifiedTemper) -> Bool {
+        switch self {
+        case .sectDay: return temper.sectDay
+        case .sectNight: return temper.sectNight
+        case .traditionalDomicile: return temper.traditionalDomicile
+        case .modernDomicile: return temper.modernDomicile
+        case .traditionalDetriment: return temper.traditionalDetriment
+        case .modernDetriment: return temper.modernDetriment
+        case .exaltation: return temper.exaltation
+        case .atExaltationDegree: return temper.atExaltationDegree
+        case .triplicity: return temper.triplicity
+        case .bound: return temper.bound
+        case .face: return temper.face
+        case .fall: return temper.fall
+        case .peregrine: return temper.peregrine
+        case .mutualReception: return temper.mutualReception
+        }
+    }
+}
+
 public enum ChronosFactIdentity: Hashable, Sendable {
     case civilMoment(
         date: CivilDate,
@@ -56,6 +94,21 @@ public enum ChronosFactIdentity: Hashable, Sendable {
     )
     case station(body: MundaneBody)
     case shell(OrboSpineShellID)
+    case natalHousePassage(body: MundaneBody, house: House)
+    case natalRingRealization(
+        mundaneBody: MundaneBody?,
+        natalGene: AstroDNAGene?,
+        relation: RingMark?
+    )
+    case natalHouseCrossing(
+        body: MundaneBody?,
+        fromHouse: House?,
+        toHouse: House?
+    )
+    case natalMaterCondition(
+        condition: NatalSpineMaterCondition,
+        body: MundaneBody?
+    )
 }
 
 public struct ChronosHit: Hashable, Sendable {
@@ -121,6 +174,21 @@ public enum ChronosPredicate: Hashable, Sendable {
     )
     case station(body: MundaneBody)
     case shell(OrboSpineShellID)
+    case natalHousePassage(body: MundaneBody, house: House)
+    case natalRingRealization(
+        mundaneBody: MundaneBody?,
+        natalGene: AstroDNAGene?,
+        relation: RingMark?
+    )
+    case natalHouseCrossing(
+        body: MundaneBody?,
+        fromHouse: House?,
+        toHouse: House?
+    )
+    case natalMaterCondition(
+        condition: NatalSpineMaterCondition,
+        body: MundaneBody?
+    )
 }
 
 public enum ChronosScope: Hashable, Sendable {
