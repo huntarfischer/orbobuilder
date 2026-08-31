@@ -45,6 +45,7 @@ final class HestiaPersistenceStage5CTests: XCTestCase {
 
         XCTAssertTrue(restored.hearthLit)
         XCTAssertEqual(restored.nativeEngraving(), beforeEngraving)
+        XCTAssertEqual(restored.nativeEngraving()?.sect, beforeEngraving.sect)
         XCTAssertEqual(restored.canonicalTapestry(for: native), beforeTapestry)
         XCTAssertEqual(restored.canonicalTapestry(for: native)?.tapestry, beforeTapestry.tapestry)
         XCTAssertEqual(restored, hestia)
@@ -86,7 +87,7 @@ final class HestiaPersistenceStage5CTests: XCTestCase {
         try hestia.admit(subjectID: savedID, astroDNA: saved.astroDNA, tapestry: saved.tapestry)
 
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("hestia-codec3-\(UUID().uuidString).json")
+            .appendingPathComponent("hestia-codec4-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: url) }
 
         try HestiaPersistence.save(hestia, to: url)
@@ -103,12 +104,12 @@ final class HestiaPersistenceStage5CTests: XCTestCase {
         let native = try F.subject("native")
         let data = try HestiaPersistence.encode(Hestia(nativeSubjectID: native))
         var root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
-        root["codec"] = 2
+        root["codec"] = 3
         root["hearth"] = ["nativeSubjectID": "old-codec-shape"]
         let changed = try JSONSerialization.data(withJSONObject: root)
 
         XCTAssertThrowsError(try HestiaPersistence.decode(changed)) { error in
-            XCTAssertEqual(error as? HestiaPersistenceFailure, .unsupportedCodec(2))
+            XCTAssertEqual(error as? HestiaPersistenceFailure, .unsupportedCodec(3))
         }
     }
 
