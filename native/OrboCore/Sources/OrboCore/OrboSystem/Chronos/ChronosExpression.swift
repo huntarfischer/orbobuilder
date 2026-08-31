@@ -144,6 +144,10 @@ private extension Chronos {
             return [.startUT, .fact, .body, .source]
         case .shell:
             return [.startUT, .endUT, .fact, .source]
+        case .natalHousePassage:
+            return [.startUT, .endUT, .fact, .body, .source]
+        case .natalRingRealization, .natalHouseCrossing, .natalMaterCondition:
+            return [.startUT, .fact, .body, .source]
         }
     }
 
@@ -197,6 +201,14 @@ private extension Chronos {
             return nil
         case let .bodyState(body, _), let .station(body):
             return body
+        case let .natalHousePassage(body, _):
+            return body
+        case let .natalRingRealization(mundaneBody, _, _):
+            return mundaneBody
+        case let .natalHouseCrossing(body, _, _):
+            return body
+        case let .natalMaterCondition(_, body):
+            return body
         }
     }
 
@@ -222,6 +234,25 @@ private extension Chronos {
 
         case let .shell(id):
             return "\(shellFamilyName(id.family)) \(id.description)"
+
+        case let .natalHousePassage(body, house):
+            return "\(body.displayName) passage through native House \(house.rawValue)"
+
+        case let .natalRingRealization(mundaneBody, natalGene, relation):
+            let body = mundaneBody?.displayName ?? "Any body"
+            let target = natalGene?.displayName ?? "any natal target"
+            let relation = relation.map { String(describing: $0) } ?? "any relation"
+            return "\(body) \(relation) \(target)"
+
+        case let .natalHouseCrossing(body, fromHouse, toHouse):
+            let body = body?.displayName ?? "Any body"
+            let from = fromHouse.map { String($0.rawValue) } ?? "any house"
+            let to = toHouse.map { String($0.rawValue) } ?? "any house"
+            return "\(body) native House \(from) to House \(to) crossing"
+
+        case let .natalMaterCondition(condition, body):
+            let body = body?.displayName ?? "Any body"
+            return "\(body) Mater condition \(condition.rawValue)"
         }
     }
 
