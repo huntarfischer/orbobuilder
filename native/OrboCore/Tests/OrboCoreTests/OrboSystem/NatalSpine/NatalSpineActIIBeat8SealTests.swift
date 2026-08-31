@@ -4,7 +4,7 @@ import XCTest
 final class NatalSpineActIIBeat8SealTests: XCTestCase {
     func testHephaestusSealsOnlyTheDioscuriApprovedCandidate() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
-        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.commission)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
@@ -27,7 +27,7 @@ final class NatalSpineActIIBeat8SealTests: XCTestCase {
 
     func testDioscuriRejectionCannotProduceApprovalForSeal() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
-        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.commission)
         let matter = NatalSpineDioscuriMatter(
             subjectID: candidate.subjectID,
             bounds: candidate.bounds,
@@ -51,7 +51,7 @@ final class NatalSpineActIIBeat8SealTests: XCTestCase {
 
     func testSealBindsCertifiedSourceCardinalitiesNotNewForgeMatter() throws {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
-        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.commission)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
