@@ -7,6 +7,10 @@ on:
       - orbo/8-30-26
       - agent/natal-spine-sequestered
 
+concurrency:
+  group: orbo-preparation-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   orbocore-tests:
     runs-on: macos-26
