@@ -3,10 +3,16 @@ import Foundation
 
 extension NatalSpineActIIFixture {
     struct ParentSource: NatalSpineForgeTimespineSource {
+        private struct SupportKey: Hashable, Sendable {
+            let body: MundaneBody
+            let directionalDegree: OrboSpineDirectionalDegree
+        }
+
         let substrate: NatalSpineCelestialSubstrate
         let sourceBone: OrboSpineBoneSpan
         let sourceStations: [OrboSpineStation]
         let sourceProvenance: OrboSpineRuntimeProvenance
+        private let supportIndex: [SupportKey: [OrboSpineCelestialCoordinate]]
 
         init(
             substrate: NatalSpineCelestialSubstrate,
@@ -21,6 +27,9 @@ extension NatalSpineActIIFixture {
                 start: JulianDay(substrate.bounds.bone.start.value - 10)!,
                 end: JulianDay(substrate.bounds.bone.end.value + 10)!
             )!
+            self.supportIndex = Dictionary(grouping: substrate.supports) {
+                SupportKey(body: $0.body, directionalDegree: $0.directionalDegree)
+            }
         }
 
         func coordinate(
@@ -60,9 +69,9 @@ extension NatalSpineActIIFixture {
             of body: MundaneBody,
             at directionalDegree: OrboSpineDirectionalDegree
         ) throws -> [OrboSpineCelestialCoordinate] {
-            substrate.supports.filter {
-                $0.body == body && $0.directionalDegree == directionalDegree
-            }
+            supportIndex[
+                SupportKey(body: body, directionalDegree: directionalDegree)
+            ] ?? []
         }
     }
 
