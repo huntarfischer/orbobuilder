@@ -10,10 +10,11 @@ enum NatalSpineActIIIFixture {
 
     static func sealedSpine() throws -> SealedNatalSpine {
         let candidate = try NatalSpineActIIFixture.addressableCandidate()
+        let parent = NatalSpineActIIFixture.parentSource(for: candidate.substrate)
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: candidate.commission.schematics,
-            parentProvenance: candidate.substrate.parentProvenance
+            parent: parent
         ).get()
         return Hephaestus.sealNatalSpine(approval)
     }
