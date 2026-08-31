@@ -28,7 +28,7 @@ extension NatalSpineActIIFixture {
             at julianDay: JulianDay
         ) throws -> OrboSpineCelestialCoordinate {
             let epsilon = 1e-9
-            let boundary: OrboSpineBoundary
+            let boundary: OrboSpineBoundaryAnchorKind
             if abs(julianDay.value - substrate.bounds.bone.start.value) <= epsilon {
                 boundary = .start
             } else if abs(julianDay.value - substrate.bounds.bone.end.value) <= epsilon {
