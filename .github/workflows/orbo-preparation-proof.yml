@@ -25,5 +25,8 @@ jobs:
       - name: Apollo Hermes Pass B face ownership
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter AstrolabeFaceOwnershipPassBTests
 
+      - name: Natal Spine focused proof
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter NatalSpine
+
       - name: OrboCore regression suite except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
