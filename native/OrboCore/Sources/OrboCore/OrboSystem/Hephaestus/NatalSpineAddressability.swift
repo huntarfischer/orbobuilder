@@ -27,7 +27,9 @@ public struct NatalSpineAddress: Hashable, Sendable {
 /// The forged Titan layers remain traceable, while OrboSpineLocate supplies the
 /// one temporal engine for both UT -> celestial coordinate and celestial
 /// coordinate -> every UT occurrence. No second chronology is introduced.
-public struct NatalSpineCandidate: Sendable {
+/// Candidate identity is its immutable forged matter; Locate is derived solely
+/// from the substrate and therefore is not a second identity surface.
+public struct NatalSpineCandidate: Hashable, Sendable {
     public let commission: NatalSpineForgeCommission
     public let substrate: NatalSpineCelestialSubstrate
     public let themis: [NatalSpineForgedThemisSpan]
@@ -46,6 +48,22 @@ public struct NatalSpineCandidate: Sendable {
         self.oceanus = layer.oceanus
         self.rhea = layer.rhea
         self.locate = locate
+    }
+
+    public static func == (lhs: NatalSpineCandidate, rhs: NatalSpineCandidate) -> Bool {
+        lhs.commission == rhs.commission
+            && lhs.substrate == rhs.substrate
+            && lhs.themis == rhs.themis
+            && lhs.oceanus == rhs.oceanus
+            && lhs.rhea == rhs.rhea
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(commission)
+        hasher.combine(substrate)
+        hasher.combine(themis)
+        hasher.combine(oceanus)
+        hasher.combine(rhea)
     }
 
     public var subjectID: HermesSubjectID { commission.subjectID }
