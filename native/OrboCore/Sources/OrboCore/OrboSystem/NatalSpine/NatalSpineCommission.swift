@@ -6,6 +6,19 @@ public struct NatalSpineSchematicsRequest: Hashable, Sendable {
     }
 }
 
+public struct NatalSpineCommissionHandle: Hashable, Sendable {
+    public let package: HermesPackage<NatalSpineSchematicsRequest>
+    public let ticketID: HermesTicketID
+
+    public init(
+        package: HermesPackage<NatalSpineSchematicsRequest>,
+        ticketID: HermesTicketID
+    ) {
+        self.package = package
+        self.ticketID = ticketID
+    }
+}
+
 public enum NatalSpineCommission {
     public static let packageKind = HermesPackageKind(rawValue: "orbo.natal-spine-schematics.v1")!
 
@@ -40,5 +53,40 @@ public enum NatalSpineCommission {
 
 public enum OrboNatalSpineCommissionFailure: Error, Hashable, Sendable {
     case nativeTruthUnavailable
+    case subjectMismatch
     case alreadyCommissioned
+}
+
+public extension Orbo {
+    /// Opens the single Natal Spine commission only after Hestia has made native truth ready.
+    /// Orbo authors the request; Hermes owns the manifest and custody truth from acceptance onward.
+    func commissionNatalSpine(
+        subjectID: HermesSubjectID,
+        via courier: inout HermesCourier,
+        occurredAt: AbsoluteInstant,
+        packageID: HermesPackageID = HermesPackageID()
+    ) throws -> NatalSpineCommissionHandle {
+        guard backOfHouse == .nativeReady,
+              engravingTicketID != nil,
+              engravingCommission != nil else {
+            throw OrboNatalSpineCommissionFailure.nativeTruthUnavailable
+        }
+        guard engravingCommission?.subjectID == subjectID else {
+            throw OrboNatalSpineCommissionFailure.subjectMismatch
+        }
+
+        let package = NatalSpineCommission.package(
+            subjectID: subjectID,
+            packageID: packageID
+        )
+
+        let ticketID: HermesTicketID
+        do {
+            ticketID = try courier.accept(package: package, occurredAt: occurredAt)
+        } catch HermesCourier.Failure.packageAlreadyAccepted {
+            throw OrboNatalSpineCommissionFailure.alreadyCommissioned
+        }
+
+        return NatalSpineCommissionHandle(package: package, ticketID: ticketID)
+    }
 }
