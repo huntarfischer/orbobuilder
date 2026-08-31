@@ -40,7 +40,7 @@ public extension Chronos {
         return ordered
     }
 
-    private static func factIdentity(
+    static func factIdentity(
         for predicate: ChronosPredicate
     ) -> ChronosFactIdentity {
         switch predicate {
@@ -52,6 +52,22 @@ public extension Chronos {
             return .station(body: body)
         case let .shell(id):
             return .shell(id)
+        case let .natalHousePassage(body, house):
+            return .natalHousePassage(body: body, house: house)
+        case let .natalRingRealization(mundaneBody, natalGene, relation):
+            return .natalRingRealization(
+                mundaneBody: mundaneBody,
+                natalGene: natalGene,
+                relation: relation
+            )
+        case let .natalHouseCrossing(body, fromHouse, toHouse):
+            return .natalHouseCrossing(
+                body: body,
+                fromHouse: fromHouse,
+                toHouse: toHouse
+            )
+        case let .natalMaterCondition(condition, body):
+            return .natalMaterCondition(condition: condition, body: body)
         }
     }
 
