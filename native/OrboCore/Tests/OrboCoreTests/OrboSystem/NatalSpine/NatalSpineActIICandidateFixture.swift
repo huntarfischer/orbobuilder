@@ -2,64 +2,54 @@ import Foundation
 @testable import OrboCore
 
 extension NatalSpineActIIFixture {
+    /// Deterministic read-only parent Timespine used by Act II/III tests.
+    /// It owns no Ephemeris or forge capability. Hephaestus must derive every
+    /// child support, station, and boundary anchor from this parent exactly as
+    /// production does from OrboSpineRuntime.
     struct ParentSource: NatalSpineForgeTimespineSource {
-        private struct SupportKey: Hashable, Sendable {
-            let body: MundaneBody
-            let directionalDegree: OrboSpineDirectionalDegree
-        }
-
-        let substrate: NatalSpineCelestialSubstrate
+        let commission: NatalSpineForgeCommission
         let sourceBone: OrboSpineBoneSpan
         let sourceStations: [OrboSpineStation]
         let sourceProvenance: OrboSpineRuntimeProvenance
-        private let supportIndex: [SupportKey: [OrboSpineCelestialCoordinate]]
 
         init(
-            substrate: NatalSpineCelestialSubstrate,
-            sourceStations: [OrboSpineStation]? = nil,
+            commission: NatalSpineForgeCommission,
+            sourceStations: [OrboSpineStation] = [],
             sourceProvenance: OrboSpineRuntimeProvenance? = nil,
             sourceBone: OrboSpineBoneSpan? = nil
         ) {
-            self.substrate = substrate
-            self.sourceStations = sourceStations ?? substrate.stations
-            self.sourceProvenance = sourceProvenance ?? substrate.parentProvenance
-            self.sourceBone = sourceBone ?? OrboSpineBoneSpan(
-                start: JulianDay(substrate.bounds.bone.start.value - 10)!,
-                end: JulianDay(substrate.bounds.bone.end.value + 10)!
+            self.commission = commission
+            self.sourceStations = sourceStations
+            self.sourceProvenance = sourceProvenance ?? OrboSpineRuntimeProvenance(
+                candidateManifestSHA256: String(repeating: "d", count: 64),
+                astronomicalAuthority: "canonical-parent",
+                astronomicalSourceVersion: "verification-fixture"
             )!
-            self.supportIndex = Dictionary(grouping: substrate.supports) {
-                SupportKey(body: $0.body, directionalDegree: $0.directionalDegree)
-            }
+            let bone = commission.schematics.bounds.bone
+            self.sourceBone = sourceBone ?? OrboSpineBoneSpan(
+                start: JulianDay(bone.start.value - 10)!,
+                end: JulianDay(bone.end.value + 10)!
+            )!
         }
 
         func coordinate(
             of body: MundaneBody,
             at julianDay: JulianDay
         ) throws -> OrboSpineCelestialCoordinate {
-            let epsilon = 1e-9
-            let boundary: OrboSpineBoundaryAnchorKind
-            if abs(julianDay.value - substrate.bounds.bone.start.value) <= epsilon {
-                boundary = .start
-            } else if abs(julianDay.value - substrate.bounds.bone.end.value) <= epsilon {
-                boundary = .endExclusive
-            } else if let support = substrate.supports.first(where: {
-                $0.body == body && abs($0.julianDay.value - julianDay.value) <= epsilon
-            }) {
-                return support
-            } else {
-                throw NatalSpineSubstrateFailure.missingCelestialMatter(body)
+            let bone = commission.schematics.bounds.bone
+            guard julianDay.value >= bone.start.value,
+                  julianDay.value <= bone.end.value else {
+                throw OrboSpineLocateError.outsideBone
             }
 
-            guard let anchor = substrate.boundaryAnchors.first(where: {
-                $0.body == body && $0.boundary == boundary
-            }) else {
-                throw NatalSpineSubstrateFailure.invalidBoundaryAnchor(body)
-            }
+            let duration = bone.end.value - bone.start.value
+            let fraction = (julianDay.value - bone.start.value) / duration
+            let physical = normalize(phase(for: body) + 360.0 * fraction)
             return OrboSpineCelestialCoordinate(
                 body: body,
                 directionalDegree: OrboSpineDirectionalDegree(
-                    physicalDegrees: anchor.physicalDegrees,
-                    motion: anchor.motion
+                    physicalDegrees: physical,
+                    motion: .direct
                 )!,
                 julianDay: julianDay
             )
@@ -69,20 +59,56 @@ extension NatalSpineActIIFixture {
             of body: MundaneBody,
             at directionalDegree: OrboSpineDirectionalDegree
         ) throws -> [OrboSpineCelestialCoordinate] {
-            supportIndex[
-                SupportKey(body: body, directionalDegree: directionalDegree)
-            ] ?? []
+            guard directionalDegree.motion == .direct else { return [] }
+
+            let bone = commission.schematics.bounds.bone
+            let duration = bone.end.value - bone.start.value
+            let distance = normalize(
+                directionalDegree.physicalDegrees - phase(for: body)
+            )
+            let julianDay = JulianDay(
+                bone.start.value + (distance / 360.0) * duration
+            )!
+            guard bone.contains(julianDay) else { return [] }
+
+            return [
+                OrboSpineCelestialCoordinate(
+                    body: body,
+                    directionalDegree: directionalDegree,
+                    julianDay: julianDay
+                )
+            ]
+        }
+
+        private func phase(for body: MundaneBody) -> Double {
+            guard let event = commission.schematics.oceanus.realizations.first,
+                  event.mundaneBody == body else {
+                return 0
+            }
+
+            let bone = commission.schematics.bounds.bone
+            let duration = bone.end.value - bone.start.value
+            let eventFraction = (event.occurrence.julianDay.value - bone.start.value) / duration
+            return normalize(
+                event.occurrence.directionalDegree.physicalDegrees
+                    - 360.0 * eventFraction
+            )
+        }
+
+        private func normalize(_ degrees: Double) -> Double {
+            let value = degrees.truncatingRemainder(dividingBy: 360.0)
+            return value >= 0 ? value : value + 360.0
         }
     }
 
     static func parentSource(
-        for substrate: NatalSpineCelestialSubstrate,
-        stations: [OrboSpineStation]? = nil,
+        for commission: NatalSpineForgeCommission,
+        stations: [OrboSpineStation] = [],
         provenance: OrboSpineRuntimeProvenance? = nil,
         bone: OrboSpineBoneSpan? = nil
     ) -> ParentSource {
         ParentSource(
-            substrate: substrate,
+            commission: commission,
             sourceStations: stations,
             sourceProvenance: provenance,
             sourceBone: bone
@@ -101,98 +127,12 @@ extension NatalSpineActIIFixture {
     }
 
     static func navigableSubstrate(
-        for commission: NatalSpineForgeCommission,
-        provenance: OrboSpineRuntimeProvenance? = nil
+        for commission: NatalSpineForgeCommission
     ) -> NatalSpineCelestialSubstrate {
-        let bone = commission.schematics.bounds.bone
-        let event = commission.schematics.oceanus.realizations.first!
-        let pivot = event.occurrence.julianDay
-        let remaining = bone.end.value - pivot.value
-
-        var supports: [OrboSpineCelestialCoordinate] = []
-        var anchors: [OrboSpineBoundaryAnchor] = []
-
-        for body in MundaneBody.canonicalOrder {
-            let step = OrboSpineContract.supportDegrees(for: body)
-            let count = Int((360.0 / step).rounded())
-            let target = body == event.mundaneBody
-                ? event.occurrence.directionalDegree.physicalDegrees
-                : 0.0
-            let before = normalize(target - step)
-
-            supports.append(
-                OrboSpineCelestialCoordinate(
-                    body: body,
-                    directionalDegree: OrboSpineDirectionalDegree(
-                        physicalDegrees: before,
-                        motion: .direct
-                    )!,
-                    julianDay: bone.start
-                )
-            )
-            supports.append(
-                OrboSpineCelestialCoordinate(
-                    body: body,
-                    directionalDegree: OrboSpineDirectionalDegree(
-                        physicalDegrees: target,
-                        motion: .direct
-                    )!,
-                    julianDay: pivot
-                )
-            )
-
-            let totalSteps = count * 2
-            for index in 1..<totalSteps {
-                let fraction = Double(index) / Double(totalSteps)
-                let day = JulianDay(pivot.value + remaining * fraction)!
-                supports.append(
-                    OrboSpineCelestialCoordinate(
-                        body: body,
-                        directionalDegree: OrboSpineDirectionalDegree(
-                            physicalDegrees: normalize(target + Double(index) * step),
-                            motion: .direct
-                        )!,
-                        julianDay: day
-                    )
-                )
-            }
-
-            anchors.append(
-                OrboSpineBoundaryAnchor(
-                    body: body,
-                    boundary: .start,
-                    julianDay: bone.start,
-                    physicalDegrees: before,
-                    motion: .direct
-                )!
-            )
-            anchors.append(
-                OrboSpineBoundaryAnchor(
-                    body: body,
-                    boundary: .endExclusive,
-                    julianDay: bone.end,
-                    physicalDegrees: target,
-                    motion: .direct
-                )!
-            )
-        }
-
-        return NatalSpineCelestialSubstrate(
-            subjectID: commission.subjectID,
-            bounds: commission.schematics.bounds,
-            supports: supports,
-            stations: [],
-            boundaryAnchors: anchors,
-            parentProvenance: provenance ?? OrboSpineRuntimeProvenance(
-                candidateManifestSHA256: String(repeating: "d", count: 64),
-                astronomicalAuthority: "canonical-parent",
-                astronomicalSourceVersion: "verification-fixture"
-            )!
-        )!
-    }
-
-    private static func normalize(_ degrees: Double) -> Double {
-        let value = degrees.truncatingRemainder(dividingBy: 360.0)
-        return value >= 0 ? value : value + 360.0
+        let parent = parentSource(for: commission)
+        return try! Hephaestus.forgeNatalSpineSubstrate(
+            for: commission,
+            from: parent
+        )
     }
 }
