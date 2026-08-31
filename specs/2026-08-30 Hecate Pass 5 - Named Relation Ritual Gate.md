@@ -4,7 +4,9 @@
 **Branch:** `feature/orbo-lawbook-2026-08-30`  
 **Law authority:** `ORBO_LAWBOOK.md`  
 **Implementation head:** `5d57789252a89a9d65c168d6058878559f9c12f7`  
-**Status:** PROVEN / GREEN
+**Status:** PROVEN / GREEN / HISTORICAL
+
+> **Historical construction record:** This gate records the temporary `momentToMoment` seam exactly as it existed at Pass 5. The later approved point/field grammar retired that scaffolding and replaced the named relation with `Synastry`, alongside `Aspect`, `Midpoint`, and `Composite`. Current authority is `ORBO_LAWBOOK.md` plus the Pass 6 Hecate / Door III freeze gate. Do not restore `momentToMoment` from this historical record.
 
 ## Scope
 
