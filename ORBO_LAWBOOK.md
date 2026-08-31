@@ -141,7 +141,7 @@ If the operation produces a new astrological value or astrological object:
 CAST → NEW VALUE / OBJECT
 ```
 
-Examples include a composite chart, midpoint, Lot, or Part when the ritual produces new astrological matter from the supplied relation.
+Examples include a composite field, midpoint, Lot, or Part when the ritual produces new astrological matter from the supplied relation.
 
 ## Law 13. The spellbook is a tool
 **Status:** FROZEN
@@ -151,6 +151,8 @@ Kleides is one collection of relational casts available to Hecate.
 Kleides does not define the whole of Hecate.
 
 The spellbook contains preserved ways of relating supplied bodies, placements, coordinates, or other admitted astrological matter that resolve into a new value or object.
+
+Lots and Parts are organized shelves within Kleides. AstroDNA is a Kleis in Kleides but is neither a Lot nor a Part.
 
 ## Law 14. Exact retrieval, not hunting
 **Status:** FROZEN
@@ -204,6 +206,44 @@ If living code contradicts this Lawbook, stop and expose the conflict.
 Do not silently change the Lawbook to match the code.
 
 Do not silently change the architecture to preserve convenient code.
+
+---
+
+# V. HECATE RELATIONAL PRIMITIVES
+
+## Law 21. Point and field grammar
+**Status:** FROZEN
+
+Hecate's core relational grammar is determined by action and scale.
+
+At point scale:
+
+```text
+RELATE + two celestial points → ASPECT
+CAST   + two celestial points → MIDPOINT
+```
+
+At field scale:
+
+```text
+RELATE + two celestial fields → SYNASTRY TABLE
+CAST   + two celestial fields → COMPOSITE FIELD
+```
+
+Synastry is composed from point-to-point Aspects across the two supplied fields.
+
+Composite is composed from Midpoints between corresponding points of the two supplied fields.
+
+Aspect and Synastry preserve the supplied matter. Midpoint and Composite create derived astrological matter.
+
+## Law 22. Exact aspect default
+**Status:** FROZEN
+
+Aspect matching defaults to **0 arcminutes of orb** unless a caller or downstream system explicitly widens the tolerance.
+
+The exact angular separation is factual matter and does not change when an orb is widened.
+
+A widened orb is a lens over the exact relation. It never rewrites the underlying celestial geometry.
 
 ---
 

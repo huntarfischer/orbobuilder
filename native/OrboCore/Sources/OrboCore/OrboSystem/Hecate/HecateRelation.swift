@@ -13,32 +13,36 @@ public struct RelationTable: Hashable, Sendable {
     }
 }
 
-/// One raw relation between one celestial body on each of two existing participants.
+/// One point-to-point Aspect inside a field-level relation table.
 public struct RelationRow: Hashable, Sendable {
     public let leftParticipant: SpineLinkAddress
     public let leftBody: MundaneBody
     public let rightParticipant: SpineLinkAddress
     public let rightBody: MundaneBody
-    public let angularSeparation: RingSeparation
+    public let aspect: HecateAspect
+
+    public var angularSeparation: RingSeparation {
+        aspect.separation
+    }
 
     internal init(
         leftParticipant: SpineLinkAddress,
         leftBody: MundaneBody,
         rightParticipant: SpineLinkAddress,
         rightBody: MundaneBody,
-        angularSeparation: RingSeparation
+        aspect: HecateAspect
     ) {
         self.leftParticipant = leftParticipant
         self.leftBody = leftBody
         self.rightParticipant = rightParticipant
         self.rightBody = rightBody
-        self.angularSeparation = angularSeparation
+        self.aspect = aspect
     }
 }
 
-/// Named RELATE rituals Hecate can lawfully perform with already-linked matter.
+/// Named field-level RELATE rituals Hecate can lawfully perform with linked matter.
 public enum HecateRelationRitual: Hashable, Sendable {
-    case momentToMoment
+    case synastry
 }
 
 /// Explicit ritual eligibility failures. Door III resolution failures remain Door III failures.
@@ -47,13 +51,15 @@ public enum HecateRelationRitualError: Error, Hashable, Sendable {
 }
 
 public extension Hecate {
-    /// RELATE preserves the linked points and describes what exists between them.
+    /// Generic field relation over already-linked Timespine points.
     ///
-    /// Door III resolves the exact 2+ points. Hecate then uses Ring's frozen angular
-    /// geometry across every canonical body pairing for each participant pair.
+    /// Door III resolves the exact 2+ fields. Hecate then composes the table from
+    /// the point-level Aspect primitive across every canonical body pairing for
+    /// each participant pair. Exact 0′ orb is the default unless explicitly widened.
     static func relate(
         _ link: SpineLinkSet,
-        through doorIII: OrboSpineLink
+        through doorIII: OrboSpineLink,
+        orb: HecateAspectOrb = .exact
     ) throws -> RelationTable {
         let resolved = try HecateLink(link: link).resolve(through: doorIII)
         let points = resolved.points
@@ -78,9 +84,10 @@ public extension Hecate {
                         let rightLongitude = CelestialLongitude(
                             rightCoordinate.directionalDegree.physicalDegrees
                         )!
-                        let separation = Ring.separation(
-                            from: leftLongitude,
-                            to: rightLongitude
+                        let aspect = relateAspect(
+                            leftLongitude,
+                            rightLongitude,
+                            orb: orb
                         )
 
                         rows.append(
@@ -89,7 +96,7 @@ public extension Hecate {
                                 leftBody: leftCoordinate.body,
                                 rightParticipant: rightPoint.sourceAddress,
                                 rightBody: rightCoordinate.body,
-                                angularSeparation: separation
+                                aspect: aspect
                             )
                         )
                     }
@@ -100,21 +107,23 @@ public extension Hecate {
         return RelationTable(participants: points, rows: rows)
     }
 
-    /// Performs one named RELATE ritual without changing the generic relation machinery.
+    /// RELATE at field scale: Synastry preserves exactly two Timespine fields
+    /// and returns the complete table of their point-to-point Aspects.
     static func relate(
         _ ritual: HecateRelationRitual,
         _ link: SpineLinkSet,
-        through doorIII: OrboSpineLink
+        through doorIII: OrboSpineLink,
+        orb: HecateAspectOrb = .exact
     ) throws -> RelationTable {
         switch ritual {
-        case .momentToMoment:
+        case .synastry:
             guard link.members.count == 2 else {
                 throw HecateRelationRitualError.participantCount(
                     expected: 2,
                     actual: link.members.count
                 )
             }
-            return try relate(link, through: doorIII)
+            return try relate(link, through: doorIII, orb: orb)
         }
     }
 }

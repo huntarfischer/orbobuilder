@@ -16,6 +16,7 @@ final class HecateRelationTests: XCTestCase {
         XCTAssertTrue(table.rows.allSatisfy { row in
             row.leftParticipant == first && row.rightParticipant == second
         })
+        XCTAssertTrue(table.rows.allSatisfy { $0.aspect.orb == .exact })
     }
 
     func testThreePointsPreserveAllParticipantPairingsInSourceOrder() throws {
@@ -38,7 +39,7 @@ final class HecateRelationTests: XCTestCase {
         XCTAssertEqual(table.rows[rowsPerPair * 2].rightParticipant, third)
     }
 
-    func testKnownLongitudePairUsesRingSeparation() throws {
+    func testKnownLongitudePairUsesAspectPrimitive() throws {
         let doorIII = try makeDoorIII()
         let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
         let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
@@ -50,12 +51,17 @@ final class HecateRelationTests: XCTestCase {
                 $0.leftBody == .sun && $0.rightBody == .moon
             }
         )
-        let expected = Ring.separation(
-            from: CelestialLongitude(0)!,
-            to: CelestialLongitude(20.05)!
+        let expected = Hecate.relateAspect(
+            CelestialLongitude(0)!,
+            CelestialLongitude(20.05)!
         )
 
-        XCTAssertEqual(row.angularSeparation.degrees, expected.degrees, accuracy: 1e-12)
+        XCTAssertEqual(row.aspect, expected)
+        XCTAssertEqual(
+            row.angularSeparation.degrees,
+            expected.separation.degrees,
+            accuracy: 1e-12
+        )
     }
 
     func testRelationPreservesResolvedPointDirectionalIdentity() throws {
@@ -92,19 +98,46 @@ final class HecateRelationTests: XCTestCase {
         }
     }
 
-    func testMomentToMomentRitualReturnsTheExistingRawRelationTable() throws {
+    func testAspectDefaultsToExactZeroArcminuteOrb() {
+        let aspect = Hecate.relateAspect(
+            CelestialLongitude(0)!,
+            CelestialLongitude(90)!
+        )
+
+        XCTAssertEqual(aspect.orb, .exact)
+        XCTAssertEqual(aspect.orb.arcminutes, 0)
+        XCTAssertEqual(aspect.separation.degrees, 90, accuracy: 1e-12)
+        XCTAssertEqual(aspect.nearest.residual, 0, accuracy: 1e-12)
+        XCTAssertEqual(aspect.matchedMark, .square)
+    }
+
+    func testAspectCanBeExplicitlyWidenedWithoutChangingSeparation() throws {
+        let first = CelestialLongitude(0)!
+        let second = CelestialLongitude(90 + 1.0 / 60.0)!
+        let exact = Hecate.relateAspect(first, second)
+        let oneMinute = try XCTUnwrap(HecateAspectOrb(arcminutes: 1))
+        let widened = Hecate.relateAspect(first, second, orb: oneMinute)
+
+        XCTAssertNil(exact.matchedMark)
+        XCTAssertEqual(widened.matchedMark, .square)
+        XCTAssertEqual(exact.separation, widened.separation)
+        XCTAssertEqual(widened.orb.arcminutes, 1)
+    }
+
+    func testSynastryRitualReturnsTheExistingRelationTable() throws {
         let doorIII = try makeDoorIII()
         let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
         let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
         let link = try XCTUnwrap(SpineLinkSet(members: [first, second]))
 
         let generic = try Hecate.relate(link, through: doorIII)
-        let named = try Hecate.relate(.momentToMoment, link, through: doorIII)
+        let synastry = try Hecate.relate(.synastry, link, through: doorIII)
 
-        XCTAssertEqual(named, generic)
+        XCTAssertEqual(synastry, generic)
+        XCTAssertTrue(synastry.rows.allSatisfy { $0.aspect.orb == .exact })
     }
 
-    func testMomentToMomentRitualRequiresExactlyTwoParticipants() throws {
+    func testSynastryRitualRequiresExactlyTwoParticipants() throws {
         let doorIII = try makeDoorIII()
         let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
         let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
@@ -112,7 +145,7 @@ final class HecateRelationTests: XCTestCase {
         let link = try XCTUnwrap(SpineLinkSet(members: [first, second, third]))
 
         XCTAssertThrowsError(
-            try Hecate.relate(.momentToMoment, link, through: doorIII)
+            try Hecate.relate(.synastry, link, through: doorIII)
         ) { error in
             XCTAssertEqual(
                 error as? HecateRelationRitualError,
@@ -121,7 +154,7 @@ final class HecateRelationTests: XCTestCase {
         }
     }
 
-    func testMomentToMomentRitualSurfacesDoorIIIFailureUnchanged() throws {
+    func testSynastryRitualSurfacesDoorIIIFailureUnchanged() throws {
         let doorIII = try makeDoorIII()
         let local = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
         let foreign = try XCTUnwrap(
@@ -133,7 +166,96 @@ final class HecateRelationTests: XCTestCase {
         let link = try XCTUnwrap(SpineLinkSet(members: [local, foreign]))
 
         XCTAssertThrowsError(
-            try Hecate.relate(.momentToMoment, link, through: doorIII)
+            try Hecate.relate(.synastry, link, through: doorIII)
+        ) { error in
+            XCTAssertEqual(error as? OrboSpineLinkError, .foreignSpine(foreign))
+        }
+    }
+
+    func testMidpointUsesArcShortestPathAcrossZero() {
+        let first = CelestialLongitude(350)!
+        let second = CelestialLongitude(10)!
+        let midpoint = Hecate.castMidpoint(first, second)
+
+        XCTAssertEqual(midpoint.first, first)
+        XCTAssertEqual(midpoint.second, second)
+
+        guard case let .position(position) = midpoint.result else {
+            return XCTFail("Expected one midpoint position across the zero-degree seam")
+        }
+        XCTAssertEqual(position.degrees, 0, accuracy: 1e-12)
+    }
+
+    func testMidpointPreservesArcOppositionSeam() {
+        let midpoint = Hecate.castMidpoint(
+            CelestialLongitude(0)!,
+            CelestialLongitude(180)!
+        )
+
+        guard case .seam = midpoint.result else {
+            return XCTFail("Exact opposition must preserve Arc's two-pole Seam")
+        }
+    }
+
+    func testCompositeProducesCorrespondingMidpointForEveryCanonicalBody() throws {
+        let doorIII = try makeDoorIII()
+        let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
+        let link = try XCTUnwrap(SpineLinkSet(members: [first, second]))
+        let resolved = try HecateLink(link: link).resolve(through: doorIII)
+
+        let composite = try Hecate.castComposite(link, through: doorIII)
+
+        XCTAssertEqual(composite.sources, resolved.points)
+        XCTAssertEqual(composite.members.map(\.body), MundaneBody.canonicalOrder)
+        XCTAssertEqual(composite.members.count, MundaneBody.canonicalOrder.count)
+
+        for member in composite.members {
+            let firstCoordinate = try XCTUnwrap(
+                composite.sources[0].celestial.first { $0.body == member.body }
+            )
+            let secondCoordinate = try XCTUnwrap(
+                composite.sources[1].celestial.first { $0.body == member.body }
+            )
+            let expected = Hecate.castMidpoint(
+                CelestialLongitude(firstCoordinate.directionalDegree.physicalDegrees)!,
+                CelestialLongitude(secondCoordinate.directionalDegree.physicalDegrees)!
+            )
+
+            XCTAssertEqual(member.midpoint, expected)
+        }
+    }
+
+    func testCompositeRequiresExactlyTwoFields() throws {
+        let doorIII = try makeDoorIII()
+        let first = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let second = OrboSpinePointAddress.occurrence(JulianDay(1_001)!).linkAddress()
+        let third = OrboSpinePointAddress.occurrence(JulianDay(1_000.5)!).linkAddress()
+        let link = try XCTUnwrap(SpineLinkSet(members: [first, second, third]))
+
+        XCTAssertThrowsError(
+            try Hecate.castComposite(link, through: doorIII)
+        ) { error in
+            XCTAssertEqual(
+                error as? HecateCompositeError,
+                .participantCount(expected: 2, actual: 3)
+            )
+        }
+    }
+
+    func testCompositeSurfacesDoorIIIFailureUnchanged() throws {
+        let doorIII = try makeDoorIII()
+        let local = OrboSpinePointAddress.occurrence(JulianDay(1_000)!).linkAddress()
+        let foreign = try XCTUnwrap(
+            SpineLinkAddress(
+                spineIdentity: "NatalSpine-A",
+                memberIdentity: "occurrence|1000.0"
+            )
+        )
+        let link = try XCTUnwrap(SpineLinkSet(members: [local, foreign]))
+
+        XCTAssertThrowsError(
+            try Hecate.castComposite(link, through: doorIII)
         ) { error in
             XCTAssertEqual(error as? OrboSpineLinkError, .foreignSpine(foreign))
         }
