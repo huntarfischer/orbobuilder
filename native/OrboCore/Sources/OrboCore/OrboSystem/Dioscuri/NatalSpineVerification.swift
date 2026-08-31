@@ -1,7 +1,12 @@
 public enum NatalSpineDioscuriFailure: Error, Hashable, Sendable {
     case subjectMismatch
     case boundsMismatch
+    case parentBoneMismatch
     case provenanceMismatch
+    case parentMatterUnavailable(MundaneBody)
+    case celestialSupportMismatch(MundaneBody)
+    case stationMismatch
+    case boundaryAnchorMismatch(MundaneBody)
     case themisCountMismatch
     case themisRowMismatch(Int)
     case oceanusCountMismatch
@@ -63,24 +68,24 @@ struct NatalSpineDioscuriMatter: Hashable, Sendable {
 }
 
 public enum Dioscuri {
-    /// ACT II Beat 7. Compare the completed forge against the external,
-    /// Atropos-certified plans and the independently supplied parent provenance.
-    /// No astrology, chronology, repair, or sealing occurs here.
-    public static func inspectNatalSpine(
+    /// ACT II Beat 7. Compare the completed forge against both external sources
+    /// of truth: Atropos-certified native schematics and the canonical parent
+    /// Mundane OrboSpine. No astrology, chronology, repair, or sealing occurs here.
+    public static func inspectNatalSpine<Source: NatalSpineForgeTimespineSource>(
         _ candidate: NatalSpineCandidate,
         against schematics: AtroposNatalSpineSchematicsPackage,
-        parentProvenance: OrboSpineRuntimeProvenance
+        parent source: Source
     ) -> Result<NatalSpineDioscuriApproval, NatalSpineDioscuriFailure> {
         switch inspectNatalSpine(
             NatalSpineDioscuriMatter(candidate: candidate),
             against: schematics,
-            parentProvenance: parentProvenance
+            parent: source
         ) {
         case .success:
             return .success(
                 NatalSpineDioscuriApproval(
                     candidate: candidate,
-                    parentProvenance: parentProvenance
+                    parentProvenance: source.sourceProvenance
                 )
             )
         case let .failure(failure):
@@ -88,10 +93,10 @@ public enum Dioscuri {
         }
     }
 
-    static func inspectNatalSpine(
+    static func inspectNatalSpine<Source: NatalSpineForgeTimespineSource>(
         _ matter: NatalSpineDioscuriMatter,
         against schematics: AtroposNatalSpineSchematicsPackage,
-        parentProvenance: OrboSpineRuntimeProvenance
+        parent source: Source
     ) -> Result<Void, NatalSpineDioscuriFailure> {
         guard matter.subjectID == schematics.subjectID,
               matter.substrate.subjectID == schematics.subjectID else {
@@ -101,8 +106,21 @@ public enum Dioscuri {
               matter.substrate.bounds == schematics.bounds else {
             return .failure(.boundsMismatch)
         }
-        guard matter.substrate.parentProvenance == parentProvenance else {
+
+        let bone = schematics.bounds.bone
+        guard bone.start.value >= source.sourceBone.start.value,
+              bone.end.value < source.sourceBone.end.value else {
+            return .failure(.parentBoneMismatch)
+        }
+        guard matter.substrate.parentProvenance == source.sourceProvenance else {
             return .failure(.provenanceMismatch)
+        }
+        if let failure = verifyCelestialSubstrate(
+            matter.substrate,
+            bone: bone,
+            parent: source
+        ) {
+            return .failure(failure)
         }
 
         let themisSource = schematics.themis.spans
@@ -145,6 +163,91 @@ public enum Dioscuri {
         }
 
         return .success(())
+    }
+
+    private static func verifyCelestialSubstrate<Source: NatalSpineForgeTimespineSource>(
+        _ substrate: NatalSpineCelestialSubstrate,
+        bone: OrboSpineBoneSpan,
+        parent source: Source
+    ) -> NatalSpineDioscuriFailure? {
+        for body in MundaneBody.canonicalOrder {
+            var expectedSupports: [OrboSpineCelestialCoordinate] = []
+            let step = OrboSpineContract.supportDegrees(for: body)
+            let count = Int((360.0 / step).rounded())
+
+            for index in 0..<count {
+                let physical = Double(index) * step
+                for motion in [Motion.direct, Motion.retrograde] {
+                    let target = OrboSpineDirectionalDegree(
+                        physicalDegrees: physical,
+                        motion: motion
+                    )!
+                    do {
+                        expectedSupports.append(contentsOf:
+                            try source.occurrences(of: body, at: target)
+                                .filter { bone.contains($0.julianDay) }
+                        )
+                    } catch {
+                        return .parentMatterUnavailable(body)
+                    }
+                }
+            }
+
+            expectedSupports = Array(Set(expectedSupports))
+            let forgedSupports = substrate.supports.filter { $0.body == body }
+            guard sameMatter(forgedSupports, expectedSupports) else {
+                return .celestialSupportMismatch(body)
+            }
+
+            let start: OrboSpineCelestialCoordinate
+            let end: OrboSpineCelestialCoordinate
+            do {
+                start = try source.coordinate(of: body, at: bone.start)
+                end = try source.coordinate(of: body, at: bone.end)
+            } catch {
+                return .parentMatterUnavailable(body)
+            }
+            guard start.body == body,
+                  end.body == body,
+                  let startAnchor = OrboSpineBoundaryAnchor(
+                    body: body,
+                    boundary: .start,
+                    julianDay: bone.start,
+                    physicalDegrees: start.directionalDegree.physicalDegrees,
+                    motion: start.directionalDegree.motion
+                  ),
+                  let endAnchor = OrboSpineBoundaryAnchor(
+                    body: body,
+                    boundary: .endExclusive,
+                    julianDay: bone.end,
+                    physicalDegrees: end.directionalDegree.physicalDegrees,
+                    motion: end.directionalDegree.motion
+                  ) else {
+                return .parentMatterUnavailable(body)
+            }
+
+            let forgedAnchors = substrate.boundaryAnchors.filter { $0.body == body }
+            guard sameMatter(forgedAnchors, [startAnchor, endAnchor]) else {
+                return .boundaryAnchorMismatch(body)
+            }
+        }
+
+        let expectedStations = source.sourceStations.filter { bone.contains($0.julianDay) }
+        guard sameMatter(substrate.stations, expectedStations) else {
+            return .stationMismatch
+        }
+
+        return nil
+    }
+
+    private static func sameMatter<Value: Hashable>(
+        _ lhs: [Value],
+        _ rhs: [Value]
+    ) -> Bool {
+        guard lhs.count == rhs.count else { return false }
+        let left = Dictionary(grouping: lhs, by: { $0 }).mapValues { $0.count }
+        let right = Dictionary(grouping: rhs, by: { $0 }).mapValues { $0.count }
+        return left == right
     }
 
     private static func validFactReference(
