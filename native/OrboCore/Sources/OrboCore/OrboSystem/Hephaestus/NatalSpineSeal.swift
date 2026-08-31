@@ -29,7 +29,7 @@ public struct NatalSpineSeal: Hashable, Sendable {
 /// The exact candidate approved by the Dioscuri, now under Hephaestus's seal.
 /// The candidate itself remains the source of truth; the seal binds its commission,
 /// native, bounds, parent provenance, and certified layer cardinalities.
-public struct SealedNatalSpine: Sendable {
+public struct SealedNatalSpine: Hashable, Sendable {
     public let candidate: NatalSpineCandidate
     public let seal: NatalSpineSeal
 
@@ -60,5 +60,21 @@ public extension Hephaestus {
             rheaCount: candidate.rhea.count
         )
         return SealedNatalSpine(candidate: candidate, seal: seal)
+    }
+
+    /// ACT II Beat 9. Hephaestus returns the finished object inside the exact
+    /// commission envelope Orbo originally printed. Hermes will independently
+    /// enforce package, subject, sender, kind, and itinerary continuity on recovery.
+    static func releaseNatalSpine(
+        _ sealed: SealedNatalSpine
+    ) -> HermesPackage<SealedNatalSpine> {
+        HermesPackage(
+            packageID: sealed.packageID,
+            subjectID: sealed.subjectID,
+            sender: OrboOnboarding.orboAddress,
+            kind: NatalSpineCommission.packageKind,
+            addresses: NatalSpineCommission.itinerary,
+            contents: sealed
+        )!
     }
 }
