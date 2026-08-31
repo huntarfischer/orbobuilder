@@ -19,6 +19,7 @@ public struct Hestia: Hashable, Sendable {
         case missingTopos
         case missingTempus
         case missingAstroDNA
+        case missingSect
         case missingAtroposSeal
         case engravingAlreadyComplete
         case hearthUnlit
@@ -59,7 +60,8 @@ public struct Hestia: Hashable, Sendable {
 
     /// Receives the canonical traveling Engraving package at the final stop.
     /// Hestia verifies package completeness and admission law only. Atropos's
-    /// sealed Tapestry is trusted and never recalculated or reinspected here.
+    /// sealed Tapestry and Hecate's preserved Sect are trusted and never
+    /// recalculated or reinspected here.
     @discardableResult
     public mutating func receive(
         _ package: HermesPackage<Engraving>
@@ -79,6 +81,7 @@ public struct Hestia: Hashable, Sendable {
         guard engraving.topos != nil else { throw Failure.missingTopos }
         guard engraving.tempus != nil else { throw Failure.missingTempus }
         guard engraving.astroDNA != nil else { throw Failure.missingAstroDNA }
+        guard engraving.sect != nil else { throw Failure.missingSect }
         guard engraving.tapestry != nil else { throw Failure.missingAtroposSeal }
         guard !engraving.engraved else { throw Failure.engravingAlreadyComplete }
         guard hearth.engraving == nil else {
