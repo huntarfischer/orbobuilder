@@ -8,7 +8,6 @@ public struct Engraving: Hashable, Sendable {
     public let topos: Topos?
     public let tempus: Tempus?
     public let astroDNA: AstroDNA?
-    public let sect: Sect?
     public let tapestry: AtroposTapestryPackage?
     public let engraved: Bool
 
@@ -29,7 +28,6 @@ public struct Engraving: Hashable, Sendable {
         self.topos = nil
         self.tempus = nil
         self.astroDNA = nil
-        self.sect = nil
         self.tapestry = nil
         self.engraved = false
     }
@@ -43,7 +41,6 @@ public struct Engraving: Hashable, Sendable {
         topos: Topos?,
         tempus: Tempus?,
         astroDNA: AstroDNA?,
-        sect: Sect?,
         tapestry: AtroposTapestryPackage?,
         engraved: Bool
     ) {
@@ -55,7 +52,6 @@ public struct Engraving: Hashable, Sendable {
         self.topos = topos
         self.tempus = tempus
         self.astroDNA = astroDNA
-        self.sect = sect
         self.tapestry = tapestry
         self.engraved = engraved
     }
@@ -71,7 +67,6 @@ public struct Engraving: Hashable, Sendable {
             topos: topos,
             tempus: tempus,
             astroDNA: astroDNA,
-            sect: sect,
             tapestry: tapestry,
             engraved: engraved
         )
@@ -88,13 +83,12 @@ public struct Engraving: Hashable, Sendable {
             topos: topos,
             tempus: tempus,
             astroDNA: astroDNA,
-            sect: sect,
             tapestry: tapestry,
             engraved: engraved
         )
     }
 
-    /// Clotho resolves AstroDNA while preserving every other established truth.
+    /// Clotho resolves only AstroDNA. Every other Engraving resolution is preserved.
     internal func resolving(astroDNA: AstroDNA) -> Engraving {
         Engraving(
             subjectID: subjectID,
@@ -105,24 +99,6 @@ public struct Engraving: Hashable, Sendable {
             topos: topos,
             tempus: tempus,
             astroDNA: astroDNA,
-            sect: sect,
-            tapestry: tapestry,
-            engraved: engraved
-        )
-    }
-
-    /// Preserves the Sect already cast during Clotho's lawful onboarding work.
-    internal func resolving(sect: Sect) -> Engraving {
-        Engraving(
-            subjectID: subjectID,
-            name: name,
-            birthDate: birthDate,
-            birthTime: birthTime,
-            birthLocation: birthLocation,
-            topos: topos,
-            tempus: tempus,
-            astroDNA: astroDNA,
-            sect: sect,
             tapestry: tapestry,
             engraved: engraved
         )
@@ -139,7 +115,6 @@ public struct Engraving: Hashable, Sendable {
             topos: topos,
             tempus: tempus,
             astroDNA: astroDNA,
-            sect: sect,
             tapestry: tapestry,
             engraved: engraved
         )
@@ -156,7 +131,6 @@ public struct Engraving: Hashable, Sendable {
             topos: topos,
             tempus: tempus,
             astroDNA: astroDNA,
-            sect: sect,
             tapestry: tapestry,
             engraved: true
         )
