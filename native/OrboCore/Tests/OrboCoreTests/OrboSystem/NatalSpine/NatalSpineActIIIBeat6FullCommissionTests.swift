@@ -133,7 +133,7 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: certified.contents,
-            parentProvenance: timespine.sourceProvenance
+            parent: timespine
         ).get()
         let sealed = Hephaestus.sealNatalSpine(approval)
         XCTAssertEqual(sealed.packageID, originalPackageID)
