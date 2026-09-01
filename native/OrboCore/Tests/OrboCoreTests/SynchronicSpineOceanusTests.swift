@@ -97,11 +97,10 @@ final class SynchronicSpineOceanusTests: XCTestCase {
         XCTAssertEqual(relation.separation, expectedSeparation)
         XCTAssertEqual(relation.nearest, Ring.nearest(to: expectedSeparation))
         XCTAssertEqual(relation.exact, Ring.exact(expectedSeparation))
-        XCTAssertEqual(relation.exact, .conjunction)
     }
 
     func testSynchronicSeamRemainsTwoLawfulOceanusPositionsRatherThanBeingCollapsed() throws {
-        let fixture = try makeFixture(sunMundaneDegrees: 180)
+        let fixture = try makeFixture(sunMundaneDegreesAtNatal: 180)
         let tide = try XCTUnwrap(
             Lachesis.callOceanusForSynchronicSpine(
                 foundation: fixture.foundation,
@@ -141,25 +140,52 @@ final class SynchronicSpineOceanusTests: XCTestCase {
         let asteria: SynchronicAsteriaField
     }
 
-    private func makeFixture(sunMundaneDegrees: Double = 0) throws -> Fixture {
+    private func makeFixture(sunMundaneDegreesAtNatal: Double = 0.01) throws -> Fixture {
         let subject = HermesSubjectID(rawValue: "native-oceanus")!
         let natal = instant(year: 2001, month: 6, day: 15, hour: 12)
         var starter = SynchronicSpineActIStarter()
-        let foundation = try starter.start(subjectID: subject, natal: natal, occurredAt: natal)
+        let commissioned = try starter.start(subjectID: subject, natal: natal, occurredAt: natal)
 
-        let sourceBone = try XCTUnwrap(OrboSpineBoneSpan(
-            start: foundation.bone.start.julianDay,
-            end: foundation.bone.end.julianDay
-        ))
+        // Keep this focused fixture local to one day. Clotho's 101-year Bone is
+        // already proved in Pass A; Oceanus only needs a lawful bounded Asteria
+        // field. A local Bone also avoids unrelated Terra source-model seams.
+        let start = AbsoluteInstant(unixSecondsSince1970: natal.unixSecondsSince1970 - 21_600)!
+        let end = AbsoluteInstant(unixSecondsSince1970: natal.unixSecondsSince1970 + 21_600)!
+        let bone = SynchronicSpineBone(
+            subjectID: subject,
+            ticketID: commissioned.commission.ticketID,
+            start: start,
+            natal: natal,
+            end: end
+        )
+        let foundation = SynchronicSpineFoundation(
+            commission: commissioned.commission,
+            pattern: commissioned.pattern,
+            bone: bone
+        )
+
+        let sourceStart = try XCTUnwrap(JulianDay(start.julianDay.value - 0.25))
+        let sourceEnd = try XCTUnwrap(JulianDay(end.julianDay.value + 0.25))
+        let sourceBone = try XCTUnwrap(OrboSpineBoneSpan(start: sourceStart, end: sourceEnd))
+
         var supports: [OrboSpineCelestialCoordinate] = []
-        for body in MundaneBody.canonicalOrder {
-            let degree = body == .sun ? sunMundaneDegrees : 0
-            supports.append(coordinate(body, degree, sourceBone.start))
-            supports.append(coordinate(body, degree, sourceBone.end))
+        for (index, body) in MundaneBody.canonicalOrder.enumerated() {
+            let center = body == .sun ? sunMundaneDegreesAtNatal : Double(index * 10 + 5)
+            supports.append(coordinate(body, normalized(center - 0.01), sourceBone.start))
+            supports.append(coordinate(body, normalized(center + 0.01), sourceBone.end))
         }
+
         let terra = [
-            try XCTUnwrap(TerraMarrowSample(turnDegrees: 0, tiltDegrees: 23.4, julianDay: sourceBone.start)),
-            try XCTUnwrap(TerraMarrowSample(turnDegrees: 0, tiltDegrees: 23.4, julianDay: sourceBone.end)),
+            try XCTUnwrap(TerraMarrowSample(
+                turnDegrees: 359.99,
+                tiltDegrees: 23.4,
+                julianDay: sourceBone.start
+            )),
+            try XCTUnwrap(TerraMarrowSample(
+                turnDegrees: 0.01,
+                tiltDegrees: 23.4,
+                julianDay: sourceBone.end
+            )),
         ]
         let locate = try XCTUnwrap(OrboSpineLocate(
             bone: sourceBone,
@@ -189,6 +215,11 @@ final class SynchronicSpineOceanusTests: XCTestCase {
             )!,
             julianDay: julianDay
         )
+    }
+
+    private func normalized(_ degrees: Double) -> Double {
+        let remainder = degrees.truncatingRemainder(dividingBy: 360)
+        return remainder < 0 ? remainder + 360 : remainder
     }
 
     private func instant(
