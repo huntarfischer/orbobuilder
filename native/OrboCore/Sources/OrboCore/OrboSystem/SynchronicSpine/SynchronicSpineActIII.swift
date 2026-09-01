@@ -43,6 +43,13 @@ public struct PlantedSynchronicSpine: Sendable {
     public let blessing: SynchronicSpineHecateBlessing
 }
 
+public struct SynchronicSpineBlessingInHermesCustody: Hashable, Sendable {
+    public let sealID: UUID
+    public let subjectID: HermesSubjectID
+    public let ticketID: HermesTicketID
+    public let blessing: SynchronicSpineHecateBlessing
+}
+
 public struct SynchronicSpineAvailabilityAnnouncement: Hashable, Sendable {
     public static let message = "SYNCHRONIC SPINE AVAILABLE"
 
@@ -60,8 +67,6 @@ public struct SynchronicSpineAvailabilityAnnouncement: Hashable, Sendable {
 }
 
 public extension Horae {
-    /// Door I scan. Reads the forged temporal extent and constituent ownership;
-    /// it does not resolve or recalculate Synchronic astrology.
     static func scanSynchronicSpine(
         _ sealed: SealedSynchronicSpine
     ) throws -> SynchronicSpineHoraeScan {
@@ -91,8 +96,6 @@ public extension Horae {
 }
 
 public extension Chronos {
-    /// Door II classification mark. Exact future query vocabulary remains owned
-    /// by Chronos; Act III records only that this sealed Spine is admitted to it.
     static func classifySynchronicSpineForQuery(
         _ sealed: SealedSynchronicSpine,
         after scan: SynchronicSpineHoraeScan
@@ -112,8 +115,6 @@ public extension Chronos {
 }
 
 public extension Hecate {
-    /// Door III blessing. Hecate creates no Synchronic astrology here; she admits
-    /// the sealed Spine as lawful matter for calculations and comparisons.
     static func blessSynchronicSpine(
         _ sealed: SealedSynchronicSpine,
         after scan: SynchronicSpineHoraeScan,
@@ -133,6 +134,17 @@ public extension Hecate {
             subjectID: sealed.candidate.subjectID,
             ticketID: sealed.candidate.ticketID,
             capabilities: Set(SynchronicSpineBlessedCapability.allCases)
+        )
+    }
+
+    static func callHermesWithSynchronicSpineBlessing(
+        _ planted: PlantedSynchronicSpine
+    ) -> SynchronicSpineBlessingInHermesCustody {
+        SynchronicSpineBlessingInHermesCustody(
+            sealID: planted.sealed.sealID,
+            subjectID: planted.sealed.candidate.subjectID,
+            ticketID: planted.sealed.candidate.ticketID,
+            blessing: planted.blessing
         )
     }
 }
@@ -196,8 +208,12 @@ public struct SynchronicSpineActIIITimeGarden: Sendable {
             query: query,
             blessing: blessing
         )
+        let blessingInCustody = Hecate.callHermesWithSynchronicSpineBlessing(planted)
 
-        guard planted.blessing.ticketID == commission.ticketID else {
+        guard blessingInCustody.sealID == sealed.sealID,
+              blessingInCustody.subjectID == commission.subjectID,
+              blessingInCustody.ticketID == commission.ticketID,
+              blessingInCustody.blessing == planted.blessing else {
             throw SynchronicSpineTimeGardenFailure.closureRequiresPlantedBlessing
         }
 
