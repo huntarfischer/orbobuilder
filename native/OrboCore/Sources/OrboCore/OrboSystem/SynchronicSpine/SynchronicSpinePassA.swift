@@ -226,4 +226,19 @@ public struct SynchronicSpineActIStarter: Sendable {
         foundationsBySubject[subjectID] = ready
         return ready
     }
+
+    /// Keeps Hermes's mutable custody state inside the Act I lifecycle owner.
+    /// Atropos still performs the call; callers cannot reach through the starter
+    /// and mutate the courier directly.
+    @discardableResult
+    public mutating func receiveAtroposCertifiedSchematic(
+        _ schematic: CertifiedSynchronicSpineSchematic,
+        occurredAt: AbsoluteInstant
+    ) throws -> CertifiedSynchronicSpineSchematicReference {
+        try Atropos.callHermesForCertifiedSynchronicSpine(
+            schematic,
+            courier: &courier,
+            occurredAt: occurredAt
+        )
+    }
 }
