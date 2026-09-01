@@ -67,11 +67,11 @@ final class SynchronicSpineActIIntegrationTests: XCTestCase {
         XCTAssertEqual(schematic.contents.oceanus.tides.map(\.identity), SynchronicOceanusTideIdentity.canonicalOrder)
         XCTAssertEqual(schematic.contents.rhea.qualifiers.map(\.body), SynchronicAsteriaBody.canonicalOrder)
 
-        // Beat 8: Atropos calls Hermes. Hermes recovers the original package
-        // into custody; Hephaestus delivery belongs to Act II and must not occur.
-        let reference = try Atropos.callHermesForCertifiedSynchronicSpine(
+        // Beat 8: Atropos calls Hermes. The starter owns Hermes's mutable
+        // custody state; Hermes recovers the original package into custody.
+        // Hephaestus delivery belongs to Act II and must not occur.
+        let reference = try starter.receiveAtroposCertifiedSchematic(
             schematic,
-            courier: &starter.courier,
             occurredAt: foundation.bone.natal
         )
         let events = starter.courier.manifest.events(for: foundation.commission.ticketID)
