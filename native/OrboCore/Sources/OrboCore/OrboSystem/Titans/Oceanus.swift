@@ -7,10 +7,11 @@ public struct OceanusPass: Sendable {
     }
 }
 
-/// Keeper of Ring.
+/// Keeper of Ring and Oceanus's whole-degree water-table geometry.
 ///
-/// Oceanus does not reimplement angular relation. He is the authoritative
-/// entrance to the frozen Ring law.
+/// Oceanus does not reimplement Ring angular relation. He remains the
+/// authoritative entrance to frozen Ring law while separately exposing the
+/// approved ASC/Sun geometric water table.
 public enum Oceanus {
     public static func encircle(degree: Int) -> RingTemplate? {
         Ring.template(forDegree: degree)
@@ -28,6 +29,20 @@ public enum Oceanus {
             objectTemplates: AstroDNAGene.canonicalOrder.map { gene in
                 encircle(gene, in: dna)
             }
+        )
+    }
+
+    /// Reads the frozen whole-degree ASC/Sun geometry table.
+    ///
+    /// The table contains only ABOVE / BELOW / TIE geometry. Sect remains
+    /// owned by Hecate and is neither stored nor derived here.
+    public static func waterRelation(
+        ascendantDegree: Int,
+        sunDegree: Int
+    ) -> OceanusWaterRelation? {
+        OceanusWaterTable.relation(
+            ascendantDegree: ascendantDegree,
+            sunDegree: sunDegree
         )
     }
 }
