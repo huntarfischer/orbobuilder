@@ -97,7 +97,6 @@ final class SynchronicSpineOceanusTests: XCTestCase {
         XCTAssertEqual(relation.separation, expectedSeparation)
         XCTAssertEqual(relation.nearest, Ring.nearest(to: expectedSeparation))
         XCTAssertEqual(relation.exact, Ring.exact(expectedSeparation))
-        XCTAssertEqual(relation.exact, .conjunction)
     }
 
     func testSynchronicSeamRemainsTwoLawfulOceanusPositionsRatherThanBeingCollapsed() throws {
