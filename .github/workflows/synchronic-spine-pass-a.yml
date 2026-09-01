@@ -1,4 +1,4 @@
-name: Synchronic Spine Pass A
+name: Synchronic Spine Pass A + Asteria
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pass-a:
+  pass-a-asteria:
     runs-on: macos-26
     steps:
       - name: Checkout
@@ -20,6 +20,9 @@ jobs:
 
       - name: Focused Synchronic Spine Pass A
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpinePassATests
+
+      - name: Focused Synchronic Spine Asteria
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineAsteriaTests
 
       - name: Accumulated OrboCore except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
