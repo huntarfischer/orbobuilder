@@ -18,3 +18,5 @@ jobs:
 
       - name: Accumulated OrboCore
         run: swift test --package-path native/OrboCore
+
+# Branch-scoped green gate for Synchronic Spine Pass A.
