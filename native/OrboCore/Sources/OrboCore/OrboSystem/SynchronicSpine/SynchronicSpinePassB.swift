@@ -13,25 +13,37 @@ public struct SynchronicSpinePatternContents: Sendable {
     public let oceanus: SynchronicOceanusField
     public let rhea: SynchronicRheaField
 
+    /// Lachesis's declared inventory. Atropos independently compares these
+    /// values with the actual constituents rather than trusting the declaration.
+    public let boneCount: Int
+    public let asteriaPassCount: Int
+    public let themisImprintCount: Int
+    public let oceanusTideCount: Int
+    public let rheaQualifierCount: Int
+
     internal init(
         foundation: SynchronicSpineFoundation,
         asteria: SynchronicAsteriaField,
         themis: SynchronicThemisField,
         oceanus: SynchronicOceanusField,
-        rhea: SynchronicRheaField
+        rhea: SynchronicRheaField,
+        boneCount: Int = 1,
+        asteriaPassCount: Int? = nil,
+        themisImprintCount: Int? = nil,
+        oceanusTideCount: Int? = nil,
+        rheaQualifierCount: Int? = nil
     ) {
         self.foundation = foundation
         self.asteria = asteria
         self.themis = themis
         self.oceanus = oceanus
         self.rhea = rhea
+        self.boneCount = boneCount
+        self.asteriaPassCount = asteriaPassCount ?? asteria.passes.count
+        self.themisImprintCount = themisImprintCount ?? themis.imprints.count
+        self.oceanusTideCount = oceanusTideCount ?? oceanus.tides.count
+        self.rheaQualifierCount = rheaQualifierCount ?? rhea.qualifiers.count
     }
-
-    public var boneCount: Int { 1 }
-    public var asteriaPassCount: Int { asteria.passes.count }
-    public var themisImprintCount: Int { themis.imprints.count }
-    public var oceanusTideCount: Int { oceanus.tides.count }
-    public var rheaQualifierCount: Int { rhea.qualifiers.count }
 }
 
 public extension Lachesis {
