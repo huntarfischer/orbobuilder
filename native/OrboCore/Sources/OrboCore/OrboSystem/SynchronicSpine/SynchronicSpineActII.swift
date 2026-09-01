@@ -20,14 +20,19 @@ public struct SynchronicSpineCandidate: Sendable {
     internal init(
         candidateID: UUID = UUID(),
         schematic: CertifiedSynchronicSpineSchematic,
+        certificationID: UUID? = nil,
+        subjectID: HermesSubjectID? = nil,
+        ticketID: HermesTicketID? = nil,
+        bone: SynchronicSpineBone? = nil,
+        contents: SynchronicSpinePatternContents? = nil,
         doors: [SynchronicSpineDoor] = SynchronicSpineDoor.canonicalOrder
     ) {
         self.candidateID = candidateID
-        self.certificationID = schematic.certificationID
-        self.subjectID = schematic.contents.foundation.commission.subjectID
-        self.ticketID = schematic.contents.foundation.commission.ticketID
-        self.bone = schematic.contents.foundation.bone
-        self.contents = schematic.contents
+        self.certificationID = certificationID ?? schematic.certificationID
+        self.subjectID = subjectID ?? schematic.contents.foundation.commission.subjectID
+        self.ticketID = ticketID ?? schematic.contents.foundation.commission.ticketID
+        self.bone = bone ?? schematic.contents.foundation.bone
+        self.contents = contents ?? schematic.contents
         self.doors = doors
     }
 }
@@ -125,15 +130,38 @@ public enum SynchronicSpineDioscuri {
     ) -> SynchronicSpineForgeVerdict {
         var reasons: [SynchronicSpineForgeFailureReason] = []
         let expected = schematic.contents
+        let actual = candidate.contents
 
         if candidate.certificationID != schematic.certificationID { reasons.append(.certificationMismatch) }
-        if candidate.subjectID != expected.foundation.commission.subjectID { reasons.append(.subjectMismatch) }
-        if candidate.ticketID != expected.foundation.commission.ticketID { reasons.append(.ticketMismatch) }
-        if candidate.bone != expected.foundation.bone { reasons.append(.boneMismatch) }
-        if candidate.contents.asteria.passes.map(\.body) != expected.asteria.passes.map(\.body) { reasons.append(.asteriaMismatch) }
-        if candidate.contents.themis.imprints.map(\.offset) != expected.themis.imprints.map(\.offset) { reasons.append(.themisMismatch) }
-        if candidate.contents.oceanus.tides.map(\.identity) != expected.oceanus.tides.map(\.identity) { reasons.append(.oceanusMismatch) }
-        if candidate.contents.rhea.qualifiers.map(\.body) != expected.rhea.qualifiers.map(\.body) { reasons.append(.rheaMismatch) }
+        if candidate.subjectID != expected.foundation.commission.subjectID
+            || actual.foundation.commission.subjectID != expected.foundation.commission.subjectID {
+            reasons.append(.subjectMismatch)
+        }
+        if candidate.ticketID != expected.foundation.commission.ticketID
+            || actual.foundation.commission.ticketID != expected.foundation.commission.ticketID {
+            reasons.append(.ticketMismatch)
+        }
+        if candidate.bone != expected.foundation.bone
+            || actual.foundation.bone != expected.foundation.bone {
+            reasons.append(.boneMismatch)
+        }
+
+        if actual.asteriaPassCount != expected.asteriaPassCount
+            || actual.asteria.passes.map(\.body) != expected.asteria.passes.map(\.body) {
+            reasons.append(.asteriaMismatch)
+        }
+        if actual.themisImprintCount != expected.themisImprintCount
+            || actual.themis.imprints.map(\.offset) != expected.themis.imprints.map(\.offset) {
+            reasons.append(.themisMismatch)
+        }
+        if actual.oceanusTideCount != expected.oceanusTideCount
+            || actual.oceanus.tides.map(\.identity) != expected.oceanus.tides.map(\.identity) {
+            reasons.append(.oceanusMismatch)
+        }
+        if actual.rheaQualifierCount != expected.rheaQualifierCount
+            || actual.rhea.qualifiers.map(\.body) != expected.rhea.qualifiers.map(\.body) {
+            reasons.append(.rheaMismatch)
+        }
         if candidate.doors != SynchronicSpineDoor.canonicalOrder { reasons.append(.doorMismatch) }
 
         if reasons.isEmpty {
@@ -153,9 +181,6 @@ public struct SynchronicSpineActIIForge: Sendable {
         self.courier = courier
     }
 
-    /// Executes Act II exactly: Hermes delivers to Hephaestus, Hephaestus forges,
-    /// Dioscuri verify, Hephaestus seals, and Hermes recovers the sealed Spine
-    /// for the final Time Garden leg. The original Schematic never changes.
     public mutating func run(
         schematic: CertifiedSynchronicSpineSchematic,
         occurredAt: AbsoluteInstant
