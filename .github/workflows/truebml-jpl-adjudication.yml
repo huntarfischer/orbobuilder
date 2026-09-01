@@ -1,0 +1,72 @@
+name: True BML JPL DE441 Adjudication
+
+on:
+  push:
+    branches: [forge/true-bml-qualification]
+    paths:
+      - ".github/workflows/truebml-jpl-adjudication.yml"
+      - "tools/pass5/adjudicate_truebml_jpl.py"
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  SWISS_COMMIT: 3fd0f956d73898b91cc4f67cf18b21af656d1342
+  QUALIFICATION_RUN_ID: 33480516038
+  DE441_MD5: 4e3b924463d17b68ec9c4a18240300cd
+
+jobs:
+  adjudicate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout qualification branch
+        uses: actions/checkout@v4
+
+      - name: Download manufactured True BML qualification artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: truebml-qualification
+          path: .forge/truebml
+          github-token: ${{ github.token }}
+          run-id: ${{ env.QUALIFICATION_RUN_ID }}
+
+      - name: Build pinned Swiss C
+        run: |
+          mkdir -p .forge/swisseph
+          git -C .forge/swisseph init
+          git -C .forge/swisseph remote add origin https://github.com/aloistr/swisseph.git
+          git -C .forge/swisseph fetch --depth 1 origin "$SWISS_COMMIT"
+          git -C .forge/swisseph checkout --detach FETCH_HEAD
+          make -C .forge/swisseph libswe.so
+          test -f .forge/swisseph/libswe.so
+
+      - name: Stage original JPL DE441
+        run: |
+          mkdir -p .forge/jpl
+          curl --fail --location --retry 4 --retry-all-errors \
+            "https://ssd.jpl.nasa.gov/ftp/eph/planets/Linux/de441/linux_m13000p17000.441" \
+            --output .forge/jpl/de441.eph
+          echo "$DE441_MD5  .forge/jpl/de441.eph" | md5sum --check --status
+          ls -lh .forge/jpl/de441.eph
+
+      - name: Compile-check adjudicator
+        run: python -m py_compile tools/pass5/adjudicate_truebml_jpl.py
+
+      - name: Adjudicate candidate stations with original DE441
+        run: |
+          python tools/pass5/adjudicate_truebml_jpl.py \
+            --library .forge/swisseph/libswe.so \
+            --ephe-dir .forge/jpl \
+            --jpl-file de441.eph \
+            --stations .forge/truebml/stations/TrueBML.csv.gz \
+            --output-dir .forge/adjudication
+
+      - name: Upload DE441 adjudication
+        uses: actions/upload-artifact@v4
+        with:
+          name: truebml-jpl-de441-adjudication
+          if-no-files-found: error
+          retention-days: 14
+          path: .forge/adjudication/
