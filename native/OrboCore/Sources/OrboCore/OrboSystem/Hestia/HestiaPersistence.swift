@@ -8,7 +8,7 @@ public enum HestiaPersistenceFailure: Error, Hashable, Sendable {
 }
 
 public enum HestiaPersistence {
-    public static let codec = 3
+    public static let codec = 4
 
     public static func encode(_ hestia: Hestia) throws -> Data {
         let encoder = JSONEncoder()
@@ -122,6 +122,7 @@ private extension HestiaPersistence {
                       engraving.topos != nil,
                       engraving.tempus != nil,
                       engraving.astroDNA != nil,
+                      engraving.sect != nil,
                       engraving.tapestry != nil else {
                     throw HestiaPersistenceFailure.invalidHearth
                 }
@@ -147,6 +148,7 @@ private extension HestiaPersistence {
         let topos: Topos
         let tempus: Tempus
         let astroDNA: AstroDNA
+        let sect: Sect
         let tapestry: CanonicalTapestryRecord
         let engraved: Bool
 
@@ -154,6 +156,7 @@ private extension HestiaPersistence {
             guard let topos = engraving.topos,
                   let tempus = engraving.tempus,
                   let astroDNA = engraving.astroDNA,
+                  let sect = engraving.sect,
                   let tapestry = engraving.tapestry,
                   engraving.engraved else {
                 throw HestiaPersistenceFailure.invalidHearth
@@ -167,6 +170,7 @@ private extension HestiaPersistence {
             self.topos = topos
             self.tempus = tempus
             self.astroDNA = astroDNA
+            self.sect = sect
             self.tapestry = CanonicalTapestryRecord(tapestry.tapestry)
             engraved = true
         }
@@ -187,6 +191,7 @@ private extension HestiaPersistence {
                 topos: topos,
                 tempus: tempus,
                 astroDNA: astroDNA,
+                sect: sect,
                 tapestry: seal,
                 engraved: true
             )
@@ -730,6 +735,7 @@ private extension Engraving {
         topos: Topos?,
         tempus: Tempus?,
         astroDNA: AstroDNA?,
+        sect: Sect?,
         tapestry: AtroposTapestryPackage?,
         engraved: Bool
     ) {
@@ -741,6 +747,7 @@ private extension Engraving {
         self.topos = topos
         self.tempus = tempus
         self.astroDNA = astroDNA
+        self.sect = sect
         self.tapestry = tapestry
         self.engraved = engraved
     }

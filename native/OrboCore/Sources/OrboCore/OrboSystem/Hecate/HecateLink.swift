@@ -13,4 +13,10 @@ public struct HecateLink: Sendable {
     public var members: [SpineLinkAddress] {
         link.members
     }
+
+    /// Hands Hecate's exact Link request to the living Door III resolver and
+    /// receives the resolved Timespine points unchanged.
+    public func resolve(through doorIII: OrboSpineLink) throws -> OrboSpineResolvedLink {
+        try doorIII.resolve(link)
+    }
 }
