@@ -33,5 +33,8 @@ jobs:
       - name: Focused Synchronic Spine Rhea
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineRheaTests
 
+      - name: Focused Synchronic Spine Pass B integration
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpinePassBTests
+
       - name: Accumulated OrboCore except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
