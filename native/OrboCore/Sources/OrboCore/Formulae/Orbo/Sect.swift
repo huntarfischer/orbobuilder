@@ -8,10 +8,10 @@ public enum OrboFormulae {
     /// Directed distance from Ascendant to Sun determines which horizon
     /// semicircle contains the Sun:
     ///
-    /// - strictly greater than 0° and strictly less than 180°: night
-    /// - otherwise: day
+    /// - 0° through 180° inclusive: day
+    /// - strictly greater than 180° and strictly less than 360°: night
     ///
-    /// Exact contact with either Ascendant (0°) or Descendant (180°) defaults to day.
+    /// Exact contact with either Ascendant (0°) or Descendant (180°) is day.
     public static func sect(
         ascendant: CelestialLongitude,
         sun: CelestialLongitude
@@ -19,6 +19,6 @@ public enum OrboFormulae {
         let distance = (sun.degrees - ascendant.degrees + 360)
             .truncatingRemainder(dividingBy: 360)
 
-        return distance > 0 && distance < 180 ? .night : .day
+        return distance <= 180 ? .day : .night
     }
 }
