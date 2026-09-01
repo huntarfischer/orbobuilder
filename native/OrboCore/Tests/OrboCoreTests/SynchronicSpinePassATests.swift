@@ -17,7 +17,11 @@ final class SynchronicSpinePassATests: XCTestCase {
         XCTAssertEqual(foundation.commission.packageKind.rawValue, "synchronic-spine-schematic")
         XCTAssertEqual(
             foundation.commission.addresses,
-            [SynchronicSpineActIStarter.clotho, SynchronicSpineActIStarter.hephaestus]
+            [
+                SynchronicSpineActIStarter.clotho,
+                SynchronicSpineActIStarter.hephaestus,
+                SynchronicSpineActIStarter.timeGarden,
+            ]
         )
 
         let events = starter.courier.manifest.events(for: foundation.commission.ticketID)
