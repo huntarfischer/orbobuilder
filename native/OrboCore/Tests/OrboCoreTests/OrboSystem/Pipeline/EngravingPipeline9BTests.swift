@@ -79,7 +79,7 @@ final class EngravingPipeline9BTests: XCTestCase {
             XCTAssertEqual(error as? Hestia.Failure, .missingAstroDNA)
         }
         XCTAssertThrowsError(try hestia.receive(astroDNAOnlyPackage)) { error in
-            XCTAssertEqual(error as? Hestia.Failure, .missingAtroposSeal)
+            XCTAssertEqual(error as? Hestia.Failure, .missingSect)
         }
 
         XCTAssertFalse(hestia.hearthLit)

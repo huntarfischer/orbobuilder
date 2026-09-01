@@ -7,7 +7,7 @@ final class HestiaRestartStage5DTests: XCTestCase {
 
     private func temporaryURL() -> URL {
         FileManager.default.temporaryDirectory
-            .appendingPathComponent("hestia-restart-codec3-\(UUID().uuidString).json")
+            .appendingPathComponent("hestia-restart-codec4-\(UUID().uuidString).json")
     }
 
     func testFullHouseSurvivesSaveDiscardAndLoadThroughCanonicalQueries() throws {
@@ -38,6 +38,7 @@ final class HestiaRestartStage5DTests: XCTestCase {
         XCTAssertEqual(restored, before)
         XCTAssertTrue(restored.hearthLit)
         XCTAssertEqual(restored.nativeEngraving(), beforeEngraving)
+        XCTAssertEqual(restored.nativeEngraving()?.sect, beforeEngraving.sect)
         XCTAssertEqual(restored.canonicalTapestry(for: native), beforeTapestry)
         XCTAssertEqual(restored.holdings.holdings.map(\.subjectID), [heldA, heldB])
         XCTAssertEqual(restored.hall.residents.map(\.subjectID), [savedCID, savedDID])
