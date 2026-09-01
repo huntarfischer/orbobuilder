@@ -1,4 +1,4 @@
-name: Synchronic Spine Act I through Atropos
+name: Synchronic Spine Act I
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  act-i-through-atropos:
+  act-i:
     runs-on: macos-26
     steps:
       - name: Checkout
@@ -38,6 +38,9 @@ jobs:
 
       - name: Focused Synchronic Spine Atropos
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineAtroposTests
+
+      - name: Focused Synchronic Spine Act I integration
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineActIIntegrationTests
 
       - name: Accumulated OrboCore except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
