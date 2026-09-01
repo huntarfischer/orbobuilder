@@ -171,6 +171,7 @@ public struct SynchronicSpineActIStarter: Sendable {
     public static let orbo = HermesAddress(rawValue: "Orbo")!
     public static let clotho = HermesAddress(rawValue: "Clotho")!
     public static let hephaestus = HermesAddress(rawValue: "Hephaestus")!
+    public static let timeGarden = HermesAddress(rawValue: "Time Garden")!
     public static let packageKind = HermesPackageKind(rawValue: "synchronic-spine-schematic")!
 
     public private(set) var courier: HermesCourier
@@ -192,7 +193,7 @@ public struct SynchronicSpineActIStarter: Sendable {
 
         let request = SynchronicSpineCommissionRequest()
         let packageID = HermesPackageID()
-        let addresses = [Self.clotho, Self.hephaestus]
+        let addresses = [Self.clotho, Self.hephaestus, Self.timeGarden]
         guard let package = HermesPackage(
             packageID: packageID,
             subjectID: subjectID,
@@ -227,9 +228,6 @@ public struct SynchronicSpineActIStarter: Sendable {
         return ready
     }
 
-    /// Keeps Hermes's mutable custody state inside the Act I lifecycle owner.
-    /// Atropos still performs the call; callers cannot reach through the starter
-    /// and mutate the courier directly.
     @discardableResult
     public mutating func receiveAtroposCertifiedSchematic(
         _ schematic: CertifiedSynchronicSpineSchematic,
