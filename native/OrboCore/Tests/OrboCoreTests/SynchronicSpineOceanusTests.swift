@@ -97,6 +97,7 @@ final class SynchronicSpineOceanusTests: XCTestCase {
         XCTAssertEqual(relation.separation, expectedSeparation)
         XCTAssertEqual(relation.nearest, Ring.nearest(to: expectedSeparation))
         XCTAssertEqual(relation.exact, Ring.exact(expectedSeparation))
+        XCTAssertEqual(relation.exact, .conjunction)
     }
 
     func testSynchronicSeamRemainsTwoLawfulOceanusPositionsRatherThanBeingCollapsed() throws {
@@ -146,9 +147,9 @@ final class SynchronicSpineOceanusTests: XCTestCase {
         var starter = SynchronicSpineActIStarter()
         let commissioned = try starter.start(subjectID: subject, natal: natal, occurredAt: natal)
 
-        // Keep this focused fixture local to one day. Clotho's 101-year Bone is
-        // already proved in Pass A; Oceanus only needs a lawful bounded Asteria
-        // field. A local Bone also avoids unrelated Terra source-model seams.
+        // Clotho's 101-year Bone is proved separately. Oceanus only needs a
+        // lawful bounded Asteria field for relation tests, so this fixture uses
+        // a local Bone while preserving the same native and commission.
         let start = AbsoluteInstant(unixSecondsSince1970: natal.unixSecondsSince1970 - 21_600)!
         let end = AbsoluteInstant(unixSecondsSince1970: natal.unixSecondsSince1970 + 21_600)!
         let bone = SynchronicSpineBone(
@@ -166,13 +167,17 @@ final class SynchronicSpineOceanusTests: XCTestCase {
 
         let sourceStart = try XCTUnwrap(JulianDay(start.julianDay.value - 0.25))
         let sourceEnd = try XCTUnwrap(JulianDay(end.julianDay.value + 0.25))
+        let sourceLastSupport = try XCTUnwrap(JulianDay(sourceEnd.value - 1e-6))
         let sourceBone = try XCTUnwrap(OrboSpineBoneSpan(start: sourceStart, end: sourceEnd))
 
         var supports: [OrboSpineCelestialCoordinate] = []
         for (index, body) in MundaneBody.canonicalOrder.enumerated() {
             let center = body == .sun ? sunMundaneDegreesAtNatal : Double(index * 10 + 5)
             supports.append(coordinate(body, normalized(center - 0.01), sourceBone.start))
-            supports.append(coordinate(body, normalized(center + 0.01), sourceBone.end))
+            // OrboSpineBoneSpan is half-open. A support exactly at `end` is
+            // outside the Bone, so the final support sits infinitesimally
+            // inside it and Locate lawfully extrapolates the boundary.
+            supports.append(coordinate(body, normalized(center + 0.01), sourceLastSupport))
         }
 
         let terra = [
