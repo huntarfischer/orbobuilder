@@ -1,0 +1,20 @@
+name: Synchronic Spine Pass A
+
+on:
+  push:
+    branches:
+      - feature/synchronic-spine
+  workflow_dispatch:
+
+jobs:
+  pass-a:
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Focused Synchronic Spine Pass A
+        run: swift test --package-path native/OrboCore --filter SynchronicSpinePassATests
+
+      - name: Accumulated OrboCore
+        run: swift test --package-path native/OrboCore
