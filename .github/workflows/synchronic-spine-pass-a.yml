@@ -1,4 +1,4 @@
-name: Synchronic Spine Acts I-II
+name: Synchronic Spine Acts I-III
 
 on:
   push:
@@ -44,6 +44,9 @@ jobs:
 
       - name: Focused Synchronic Spine Act II forge
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineActIITests
+
+      - name: Focused Synchronic Spine Act III Time Garden
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineActIIITests
 
       - name: Accumulated OrboCore except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
