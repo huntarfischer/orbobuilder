@@ -1,4 +1,4 @@
-name: Synchronic Spine Pass B through Oceanus
+name: Synchronic Spine Pass B
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pass-b-through-oceanus:
+  pass-b:
     runs-on: macos-26
     steps:
       - name: Checkout
@@ -29,6 +29,9 @@ jobs:
 
       - name: Focused Synchronic Spine Oceanus
         run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineOceanusTests
+
+      - name: Focused Synchronic Spine Rhea
+        run: swift test --package-path "$RUNNER_TEMP/OrboCore" --filter SynchronicSpineRheaTests
 
       - name: Accumulated OrboCore except known RingTests compiler blocker
         run: swift test --package-path "$RUNNER_TEMP/OrboCore"
