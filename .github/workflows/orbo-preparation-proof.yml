@@ -6,6 +6,7 @@ on:
       - feature/apollo-artemis-mvp
       - orbo/8-30-26
       - agent/natal-spine-sequestered
+      - feature/natal-hestia-sect-2026-09-01
 
 concurrency:
   group: orbo-preparation-${{ github.ref }}
