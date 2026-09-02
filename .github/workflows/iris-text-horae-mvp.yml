@@ -1,0 +1,42 @@
+name: Iris Text Horae MVP gate
+
+on:
+  push:
+    branches:
+      - feature/iris-text-horae-mvp
+  workflow_dispatch:
+
+concurrency:
+  group: iris-text-horae-mvp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-gate:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Iris Text focused proof
+        run: swift test --package-path native/OrboCore --filter IrisHoraeTextReadoutTests
+      - name: Existing Horae-to-Iris proof
+        run: swift test --package-path native/OrboCore --filter IrisHoraeFrameTests
+      - name: Full package regression
+        run: swift test --package-path native/OrboCore
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Compile and test Orbo host
+        run: >-
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -parallel-testing-enabled NO
+          -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Preserve Xcode test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: IrisText-Orbo-Xcode-results
+          path: ${{ runner.temp }}/OrboTests.xcresult
+          if-no-files-found: ignore
