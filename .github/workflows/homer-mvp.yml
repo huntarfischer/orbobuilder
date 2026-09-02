@@ -22,5 +22,7 @@ jobs:
         run: swift test --package-path native/OrboCore --filter HomerSystemTests
       - name: Hecate Homer system tests
         run: swift test --package-path native/OrboCore --filter HecateHomerPortTests
+      - name: Horae Homer system tests
+        run: swift test --package-path native/OrboCore --filter HoraeHomerPortTests
       - name: Full package regression
         run: swift test --package-path native/OrboCore
