@@ -39,7 +39,7 @@ final class ApolloArtemisPassETests: XCTestCase {
         let lunarSubject = Apollo.presentToArtemis(astrolabeSubject)
 
         XCTAssertEqual(lunarSubject, astrolabeSubject)
-        XCTAssertEqual(Apollo.signalForIris(astrolabeSubject).subject, astrolabeSubject)
+        XCTAssertEqual(Apollo.signalForIris(astrolabeSubject).signal.subject, astrolabeSubject)
         XCTAssertEqual(Artemis.signalForIris(lunarSubject).subject, astrolabeSubject)
     }
 }
