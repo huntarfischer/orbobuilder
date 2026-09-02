@@ -2,7 +2,7 @@
 
 **Status:** Living native port authority for Orbo 1.0 construction.
 
-**Last updated:** 2026-08-17
+**Last updated:** 2026-09-02
 
 **Governing authorities:**
 
@@ -3852,16 +3852,16 @@ The Pass 5 P22 verification workflow reported both the repository-substrate and 
 This status proves the body substrate and its native construction contract only. It does not yet seal the complete Mundane Timespine or authorize skipping the remaining Pass 5 gates.
 
 
-## 2026-09-02 — Synchronic Act I upstream baseline (OPEN)
+## 2026-09-02 — Synchronic Act I upstream baseline (SUITE RESTORED)
 
 The authorized Act I branch descends directly from Natal Hestia Sect commit `8c4b55d`. The inherited macOS package gate reported 856 tests but excluded RingTests; the shared Orbo Xcode scheme omitted OrboCoreTests entirely. Those results do not establish the required full acceptance gate.
 
-Restoration keeps all Swift tests in their existing package and target. Xcode synchronizes the complete OrboCoreTests directory, uses the existing Fixtures resource and native test target, and includes it in the shared Orbo scheme. Ring’s seventh-division assertion is split into typed local expressions without changing its predicate. The Act I workflow runs Ring, Natal, the unexcluded package suite, the accumulated Xcode suite, and the OrboLab build. Existing historical file references are preserved.
+Restoration keeps all Swift tests in their existing package and target. Xcode synchronizes the complete OrboCoreTests directory, uses the existing Fixtures resource and native test target, and includes it in the shared Orbo scheme. Ring’s seventh-division assertion is split into typed local expressions without changing its predicate. The Pass A workflow runs Synchronic foundation, Ring, Natal, the unexcluded package suite, and the accumulated Xcode suite. OrboLab is outside this change. Existing historical file references are preserved.
 
-Actual Xcode count/failures: pending first restored run. No Synchronic constituent is promoted. See `specs/gates/2026-09-02 Synchronic Act I Gate.md` and `specs/Synchronic Spine - Act I MVP.md`.
+Restored baseline at `29271a9`: 868 package tests and 817 OrboCore Xcode tests, zero failures. The unrelated OrboLab build failed on archived type references and was removed from the Pass A gate; its cleanup remains set aside. See `specs/gates/2026-09-02 Synchronic Act I Gate.md` and `specs/Synchronic Spine - Act I MVP.md`.
 
-## 2026-09-02 — Synchronic Pass A implementation (PROOF PENDING)
+## 2026-09-02 — Synchronic Pass A implementation (UPSTREAM GREEN)
 
 Implemented the commission and foundation under the existing Orbo, Hermes, Moirai, Clotho, and Lachesis owners. Hestia supplies preserved native truth; Clotho reuses the Natal Gregorian bounds. One open ticket, one Pattern, and one exact half-open Bone survive the relay. Parent extent/provenance are bound without generating any Titan chronology. Sixteen focused XCTest cases cover the relay, malformed commission identities, replay, boundaries, leap-day clamping, inventory off-by-one, and handoff corruption.
 
-Only Pass A is authorized in the active task. Pass B/C and OrboLab changes are not part of this implementation. Focused, accumulated package, and Xcode counts for the new code are pending. See the dated Synchronic Act I gate and active MVP specification.
+Only Pass A is authorized in the active task. Pass B/C and OrboLab changes are not part of this implementation. Tested implementation: `d103f91330c15422152bfadf517c066fa2d247db`, [native run 33581163869](https://github.com/huntarfischer/orbobuilder/actions/runs/33581163869). Focused Pass A: **16/0**; Ring: **12/0**; Natal: **108/0**; accumulated package: **884/0**; normal Orbo.xcodeproj: **833 OrboCore/0** and **49 Iris/0** (tests/failures). The affected Orbo app built successfully. All 16 Pass A tests also ran inside the accumulated Xcode suite. The relay is proven through Lachesis ready, with the same ticket unresolved. No Titan field or later act is promoted. See the dated Synchronic Act I gate and active MVP specification.

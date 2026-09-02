@@ -1,39 +1,42 @@
 # Synchronic Act I gate — 2026-09-02
 
-Status: OPEN. Baseline restoration in progress; Passes A, B, and C pending.
+Status: **PASS A — UPSTREAM GREEN**. Passes B and C remain pending and outside this task.
 
 Branch: `feature/synchronic-spine-act-1`. Parent: `feature/natal-hestia-sect-2026-09-01` at `8c4b55d72e2f624914b21cb821e35aa1dfbdd471`.
 
-The inherited proof excluded RingTests and the shared Xcode scheme omitted the accumulated OrboCoreTests target. The restoration runs the existing full suite without exclusions, enables the existing native test target with synchronized source membership, and preserves its fixture bundle. No native production owner is changed by this preparation.
+Tested implementation: `d103f91330c15422152bfadf517c066fa2d247db`. [Native verification run 33581163869](https://github.com/huntarfischer/orbobuilder/actions/runs/33581163869) completed successfully.
 
-| Gate | Result |
-|---|---|
-| Ring focused | Pending |
-| Natal focused | Pending |
-| Full Swift package | Pending |
-| Full Orbo.xcodeproj test count / failures | Pending |
-| Orbo application build | Pending (part of Xcode test action) |
-| OrboLab build | Pending |
-| Live Synchronic readout | Not applicable to baseline; no Synchronic matter exists yet |
+## Earned behavior
 
-Proceed to Clotho only after the accumulated baseline is green. Record evidence here and in the Native Port Manifest before advancing each lawful owner. No production implementation, test, or fixture is deleted; no non-Swift native dependency is introduced.
+Orbo authors the Synchronic request for the native already kept by Hestia. Existing HermesCourier opens one ticket and delivers to the canonical Moirai stop. Moirai verifies actual delivery under that ticket and dispatches directly to Clotho. The printed journey is Moirai → Hephaestus → Time Garden.
 
-## First restored run
+Clotho reuses Hestia.natalSpineNativeTruth and her existing Gregorian boundNatalSpine calculation. The Bone runs from natal minus one Gregorian year to natal plus one hundred Gregorian years, START inclusive and END exclusive. The Pattern binds that exact Bone and requires 1 Bone, 12 Asteria Passes, 7 Themis Imprints, 3 Oceanus Tides, and 12 Rhea Qualifiers. Parent extent and provenance come from the existing OrboSpineRuntime. Equal parent/child END boundaries are accepted without an out-of-domain point read.
 
-Commit `47671428c079a1afb9a5cd6bfbc9cf27824e9bfb`, [run 33580161967](https://github.com/huntarfischer/orbobuilder/actions/runs/33580161967): Ring and Natal focused proofs passed; the full package executed **868 tests, zero failures**. Xcode stopped before tests because synchronized membership flattened the two fixture-smoke resources into one destination. Correct membership excludes each non-Swift resource from automatic target membership; the original Fixtures folder resource remains the sole bundle copy. Xcode count remains pending.
+Lachesis receives the identical foundation. Only the Bone is fulfilled. Hermes remains awaiting recovery at Moirai under the original unresolved commission. No Titan computation, certification, forging, or delivery to Hephaestus occurs in Pass A.
 
-## Pass A — implementation submitted for proof
+## Proof
 
-Active user scope: implement Pass A only. The prior baseline/OrboLab detour is ended; unrelated Lab changes are set aside.
+| Gate | Tests | Failures |
+|---|---:|---:|
+| SynchronicSpinePassATests, focused | 16 | 0 |
+| Ring focused | 12 | 0 |
+| Natal focused | 108 | 0 |
+| Accumulated Swift package, no exclusions | 884 | 0 |
+| Accumulated OrboCoreTests in Orbo.xcodeproj | 833 | 0 |
+| OrboIrisTests in Orbo.xcodeproj | 49 | 0 |
 
-Five native source files implement Orbo commissioning, immutable Pattern/Bone vocabulary, Clotho construction, Lachesis handoff, and the Moirai entry. Existing HermesCourier owns the sole ticket and delivery state. There is no parallel courier or new calendar engine. Sixteen focused Swift tests use the existing Natal fixture and an explicitly synthetic runtime assembly solely to test parent extent/binding. They do not certify astronomical chronology.
+The Xcode run includes all 16 new Pass A tests and reports TEST SUCCEEDED. Orbo built successfully as the native test host. The package additionally includes two existing Iris tests not registered in the shared Xcode Iris target; all accumulated OrboCore tests are included. No Iris target changes are part of this pass.
 
-| Gate | Result |
-|---|---|
-| SynchronicSpinePassATests | Pending |
-| Accumulated package | Pending |
-| Accumulated Xcode / affected Orbo build | Pending |
-| OrboLab | Outside this Pass A change; no readout introduced |
-| Pass B/C | Not implemented |
+Focused proof covers native readiness, wrong-subject rejection, distinct Synchronic purpose and itinerary, duplicate package rejection, actual Hermes delivery, foreign ticket/package rejection, unchanged native/AstroDNA/Sect/Tapestry, parent binding, exact Gregorian anniversaries, February 29 clamping, half-open boundaries, all inventory off-by-one cases, unchanged handoff, and altered Bone/Pattern rejection.
 
-The relay ends at Lachesis ready, while Hermes awaits recovery at Moirai. Pattern fulfillment and certification remain later work.
+The parent fixture is explicitly synthetic and tests full-domain extent/binding only. It does not certify astronomical chronology or claim Pass B materialization. Pass A adds no live UI readout; OrboLab changes are outside this task.
+
+## Preserved preparation record
+
+The inherited gate excluded RingTests and the shared Orbo scheme omitted OrboCoreTests. Commit `4767142`, [run 33580161967](https://github.com/huntarfischer/orbobuilder/actions/runs/33580161967), restored all 868 package tests with zero failures, but Xcode stopped on duplicate fixture resource destinations. Commit `29271a9`, [run 33580389318](https://github.com/huntarfischer/orbobuilder/actions/runs/33580389318), corrected resource membership and passed 817 OrboCore Xcode tests with zero failures. Its unrelated OrboLab step failed because the old readout references archived types. That cleanup was set aside and the Lab step removed from the Pass A workflow when the user explicitly narrowed the work to Pass A.
+
+No production implementation or fixture was deleted. No non-Swift native dependency was introduced. Existing owners and historical source references are preserved.
+
+## Remaining work
+
+Pass B: Asteria → Themis → Oceanus → Rhea, each earning its own gate. Pass C: exact-field handoff and Atropos certification/Hermes call. Neither is implemented or promoted here.

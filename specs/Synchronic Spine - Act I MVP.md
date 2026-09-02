@@ -1,6 +1,6 @@
 # Orbo Synchronic Spine — Act I MVP
 
-Status: authorized Act I implementation on `feature/synchronic-spine-act-1`, forked from the Natal Hestia Sect branch at `8c4b55d72e2f624914b21cb821e35aa1dfbdd471`. Current authorized scope is Pass A only. Its implementation is present; native proof is pending.
+Status: authorized Act I implementation on `feature/synchronic-spine-act-1`, forked from the Natal Hestia Sect branch at `8c4b55d72e2f624914b21cb821e35aa1dfbdd471`. Current authorized scope is Pass A only. Pass A is implemented and upstream green; Pass B/C remain pending.
 
 ## Outcome
 
@@ -190,3 +190,7 @@ Orbo commissions the native already kept at Hestia. The existing HermesCourier d
 Clotho reuses Hestia.natalSpineNativeTruth and boundNatalSpine without introducing another calendar calculation. The Pattern binds the exact commission-tagged Bone and declares 1/12/7/3/12. Parent extent and provenance are retained from the existing OrboSpineRuntime. Equal parent/child END boundaries are permitted because END is excluded, not a point query. Lachesis receives the same immutable foundation. All Titan construction remains pending Pass B.
 
 Pass A adds no live UI readout. The unrelated OrboLab cleanup has been set aside; its build was removed from this Pass A workflow. The accumulated native Xcode gate remains evidence to report, not permission to expand this task into unrelated repairs.
+
+## Pass A earned gate
+
+Implementation `d103f91330c15422152bfadf517c066fa2d247db` passed [run 33581163869](https://github.com/huntarfischer/orbobuilder/actions/runs/33581163869): 16 focused Pass A tests, 884 accumulated package tests, 833 OrboCore Xcode tests, and 49 Iris Xcode tests; all zero failures. Orbo built as the native test host. Pass A ends at Lachesis ready with the exact Pattern/Bone and original commission open. OrboLab has no Pass A readout and is outside this change. Pass B/C remain unimplemented. The dated gate records the scope and evidence.
