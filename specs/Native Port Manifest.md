@@ -3850,3 +3850,12 @@ The Pass 5 P22 verification workflow reported both the repository-substrate and 
 **P22 BODY SUBSTRATE PROVEN / RUNTIME READER PENDING**
 
 This status proves the body substrate and its native construction contract only. It does not yet seal the complete Mundane Timespine or authorize skipping the remaining Pass 5 gates.
+
+
+## 2026-09-02 — Synchronic Act I upstream baseline (OPEN)
+
+The authorized Act I branch descends directly from Natal Hestia Sect commit `8c4b55d`. The inherited macOS package gate reported 856 tests but excluded RingTests; the shared Orbo Xcode scheme omitted OrboCoreTests entirely. Those results do not establish the required full acceptance gate.
+
+Restoration keeps all Swift tests in their existing package and target. Xcode synchronizes the complete OrboCoreTests directory, uses the existing Fixtures resource and native test target, and includes it in the shared Orbo scheme. Ring’s seventh-division assertion is split into typed local expressions without changing its predicate. The Act I workflow runs Ring, Natal, the unexcluded package suite, the accumulated Xcode suite, and the OrboLab build. Existing historical file references are preserved.
+
+Actual Xcode count/failures: pending first restored run. No Synchronic constituent is promoted. See `specs/gates/2026-09-02 Synchronic Act I Gate.md` and `specs/Synchronic Spine - Act I MVP.md`.

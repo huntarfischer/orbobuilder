@@ -92,9 +92,12 @@ final class RingTests: XCTestCase {
                 360 % denominator == 0 && (mark * denominator) % 360 == 0
             }
         })
-        XCTAssertFalse((1...12).contains { denominator in
-            360 % denominator == 0 && ((360.0 / 7.0) * Double(denominator) / 360.0).rounded() == ((360.0 / 7.0) * Double(denominator) / 360.0)
-        })
+        let seventhTurn: Double = 360.0 / 7.0
+        let seventhIsWholeDegreeMark = (1...12).contains { (denominator: Int) -> Bool in
+            let turns: Double = seventhTurn * Double(denominator) / 360.0
+            return 360 % denominator == 0 && turns.rounded() == turns
+        }
+        XCTAssertFalse(seventhIsWholeDegreeMark)
         XCTAssertNil(RingMark(rawValue: 51))
         XCTAssertNil(RingMark(rawValue: 108))
         XCTAssertEqual(Ring.tieRule, .lower)
