@@ -1,0 +1,22 @@
+name: Iris Port standard gate
+
+on:
+  push:
+    branches:
+      - feature/iris-port-standard-2026-09-02
+  workflow_dispatch:
+
+concurrency:
+  group: iris-port-standard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-gate:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Iris Port focused proof
+        run: swift test --package-path native/OrboCore --filter IrisPortTests
+      - name: Full package regression
+        run: swift test --package-path native/OrboCore
