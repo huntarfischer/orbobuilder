@@ -24,6 +24,8 @@ jobs:
         run: swift test --package-path native/OrboCore --filter HecateHomerPortTests
       - name: Horae Homer system tests
         run: swift test --package-path native/OrboCore --filter HoraeHomerPortTests
+      - name: Hermes Homer journey tests
+        run: swift test --package-path native/OrboCore --filter HermesHomerPortTests
       - name: Orbo Homer lifecycle tests
         run: swift test --package-path native/OrboCore --filter OrboHomerPortTests
       - name: Orbo Homer downriver system tests
