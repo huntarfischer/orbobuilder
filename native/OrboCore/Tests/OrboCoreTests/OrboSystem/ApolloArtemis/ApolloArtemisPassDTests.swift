@@ -5,10 +5,10 @@ final class ApolloArtemisPassDTests: XCTestCase {
     func testApolloIrisPortCarriesExistingAstrolabeSubjectUnchanged() {
         let subject = Apollo.placeOnAstrolabe(identity: "subject-x")
 
-        let frame = Apollo.signalForIris(subject)
+        let port = Apollo.signalForIris(subject)
 
-        XCTAssertEqual(frame.subject, subject)
-        XCTAssertEqual(frame.subject.rawValue, "subject-x")
+        XCTAssertEqual(port.signal.subject, subject)
+        XCTAssertEqual(port.signal.subject.rawValue, "subject-x")
     }
 
     func testArtemisIrisPortCarriesApolloSourcedSubjectUnchanged() {
@@ -25,14 +25,14 @@ final class ApolloArtemisPassDTests: XCTestCase {
         let first = Apollo.placeOnAstrolabe(identity: "subject-a")
         let second = Apollo.placeOnAstrolabe(identity: "subject-b")
 
-        let firstAstrolabeFrame = Apollo.signalForIris(first)
-        let secondAstrolabeFrame = Apollo.signalForIris(second)
+        let firstAstrolabePort = Apollo.signalForIris(first)
+        let secondAstrolabePort = Apollo.signalForIris(second)
         let firstLunarFrame = Artemis.signalForIris(Apollo.presentToArtemis(first))
         let secondLunarFrame = Artemis.signalForIris(Apollo.presentToArtemis(second))
 
-        XCTAssertEqual(firstAstrolabeFrame.subject, first)
-        XCTAssertEqual(secondAstrolabeFrame.subject, second)
-        XCTAssertNotEqual(firstAstrolabeFrame, secondAstrolabeFrame)
+        XCTAssertEqual(firstAstrolabePort.signal.subject, first)
+        XCTAssertEqual(secondAstrolabePort.signal.subject, second)
+        XCTAssertNotEqual(firstAstrolabePort, secondAstrolabePort)
         XCTAssertEqual(firstLunarFrame.subject, first)
         XCTAssertEqual(secondLunarFrame.subject, second)
         XCTAssertNotEqual(firstLunarFrame, secondLunarFrame)

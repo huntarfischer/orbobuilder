@@ -5,11 +5,11 @@ import XCTest
 final class IrisTwinPortFrameTests: XCTestCase {
     func testIrisPreservesApolloAstrolabeSignalExactly() {
         let subject = Apollo.placeOnAstrolabe(identity: "subject-x")
-        let signal = Apollo.signalForIris(subject)
+        let port = Apollo.signalForIris(subject)
 
-        let frame = IrisAstrolabeFrame(signal: signal)
+        let frame = IrisAstrolabeFrame(port: port)
 
-        XCTAssertEqual(frame.signal, signal)
+        XCTAssertEqual(frame.signal, port.signal)
         XCTAssertEqual(frame.subject, subject)
     }
 
