@@ -87,6 +87,18 @@ final class OrboHomerDownriverSystemTests: XCTestCase {
         XCTAssertEqual(lightingResult.package.subjectID, commissioned.subjectID)
         XCTAssertEqual(lightingResult.package.contents.subjectID, commissioned.subjectID)
 
+        let hermesOpened = IrisHomerFrame(
+            port: Homer.POV(
+                try XCTUnwrap(courier.signalForHomer(ticketID: lightingResult.ticketID))
+            )
+        )
+        XCTAssertEqual(hermesOpened.pointOfView.currentState, .unresolved)
+        XCTAssertEqual(hermesOpened.pointOfView.events.map(\.kind), [.ticketOpened])
+        XCTAssertEqual(
+            hermesOpened.pointOfView.events.first?.packageID,
+            lightingResult.package.packageID
+        )
+
         try courier.recordReceipt(
             ticketID: engravingTicketID,
             packageID: commissioned.packageID,
@@ -102,12 +114,42 @@ final class OrboHomerDownriverSystemTests: XCTestCase {
             OrboOnboarding.orboAddress
         )
 
+        let hermesDelivered = IrisHomerFrame(
+            port: Homer.POV(
+                try XCTUnwrap(courier.signalForHomer(ticketID: lightingResult.ticketID))
+            )
+        )
+        XCTAssertEqual(
+            hermesDelivered.pointOfView.events.map(\.kind),
+            [.ticketOpened, .deliveredToAddressee]
+        )
+        XCTAssertEqual(
+            hermesDelivered.pointOfView.events.last?.address,
+            OrboOnboarding.orboAddress
+        )
+
         try orbo.receiveHearthLitNotice(lightingResult.package)
         try courier.recordReceipt(
             ticketID: lightingResult.ticketID,
             packageID: lightingResult.package.packageID,
             recipient: OrboOnboarding.orboAddress,
             receivedAt: instant(540)
+        )
+
+        let hermesResolved = IrisHomerFrame(
+            port: Homer.POV(
+                try XCTUnwrap(courier.signalForHomer(ticketID: lightingResult.ticketID))
+            )
+        )
+        XCTAssertEqual(hermesResolved.pointOfView.currentState, .resolved)
+        XCTAssertEqual(
+            hermesResolved.pointOfView.events.map(\.kind),
+            [.ticketOpened, .deliveredToAddressee, .receiptRecorded, .resolved]
+        )
+        XCTAssertEqual(hermesOpened.pointOfView.events.map(\.kind), [.ticketOpened])
+        XCTAssertEqual(
+            Mirror(reflecting: hermesResolved.pointOfView).children.compactMap(\.label),
+            ["ticketID", "currentState", "events"]
         )
 
         let returned = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
