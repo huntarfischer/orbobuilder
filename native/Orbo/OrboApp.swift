@@ -19,8 +19,16 @@ struct OrboApp: App {
 
 @available(iOS 26.0, *)
 private struct IrisLockedPerspectiveView: View {
-    @State private var manifestation: IrisManifestation = .chart3D
+    @State private var manifestation: IrisManifestation
     @State private var cameraMode: IrisCameraMode = .topDown
+
+    init() {
+        _manifestation = State(
+            initialValue: CommandLine.arguments.contains("--iris-text-proof")
+                ? .text
+                : .chart3D
+        )
+    }
 
     var body: some View {
         VStack(spacing: 12) {
