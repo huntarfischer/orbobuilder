@@ -19,40 +19,57 @@ struct OrboApp: App {
 
 @available(iOS 26.0, *)
 private struct IrisLockedPerspectiveView: View {
+    @State private var manifestation: IrisManifestation = .chart3D
     @State private var cameraMode: IrisCameraMode = .topDown
 
     var body: some View {
         VStack(spacing: 12) {
-            Text("IRIS / LOCKED ONE-MOMENT VIEW")
+            Text("IRIS / HORAE")
                 .font(.caption.monospaced())
 
-            Text("11 bodies · one Horae moment")
+            Text("11 bodies · one Horae moment · one frame")
                 .font(.caption2.monospaced())
 
-            Picker("Perspective", selection: $cameraMode) {
-                Text("Top").tag(IrisCameraMode.topDown)
-                Text("Vertical").tag(IrisCameraMode.vertical)
-                Text("Horizontal").tag(IrisCameraMode.horizontal)
+            Picker("Manifestation", selection: $manifestation) {
+                Text("3D").tag(IrisManifestation.chart3D)
+                Text("Text").tag(IrisManifestation.text)
             }
             .pickerStyle(.segmented)
 
-            IrisChart3DView(
-                scene: IrisLockedPerspectiveHarness.scene,
-                presentation: IrisChart3DPresentation(
-                    cameraProjection: .orthographic,
-                    cameraMode: cameraMode,
-                    orientationMode: .zodiacal
+            switch manifestation {
+            case .chart3D:
+                Picker("Perspective", selection: $cameraMode) {
+                    Text("Top").tag(IrisCameraMode.topDown)
+                    Text("Vertical").tag(IrisCameraMode.vertical)
+                    Text("Horizontal").tag(IrisCameraMode.horizontal)
+                }
+                .pickerStyle(.segmented)
+
+                IrisChart3DView(
+                    scene: IrisLockedPerspectiveHarness.frame.scene,
+                    presentation: IrisChart3DPresentation(
+                        cameraProjection: .orthographic,
+                        cameraMode: cameraMode,
+                        orientationMode: .zodiacal
+                    )
                 )
-            )
+
+            case .text:
+                IrisHoraeTextView(frame: IrisLockedPerspectiveHarness.frame)
+            }
         }
         .padding()
     }
 }
 
+private enum IrisManifestation: Hashable {
+    case chart3D
+    case text
+}
+
 /// Host-side proof of the three canonical Iris viewpoints using exactly one
 /// Horae-resolved celestial state. Nothing moves through time in this proof.
-/// The same 11-body scene rotates between Top, Vertical, and Horizontal and is
-/// locked once each canonical pose settles.
+/// The same 11-body frame can now be manifested either spatially or textually.
 ///
 /// Vertical and Horizontal are intentionally established now as stable spatial
 /// frames so later temporal manifestations can use them to reveal movement
@@ -121,8 +138,6 @@ private enum IrisLockedPerspectiveHarness {
     static let frame = IrisHoraeFrame(
         output: try! horae.seek(to: selectedJulianDay)
     )
-
-    static let scene = frame.scene
 
     private static func coordinate(
         body: MundaneBody,
