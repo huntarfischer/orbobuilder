@@ -109,42 +109,44 @@ final class EngravingPipeline9BTests: XCTestCase {
         }
     }
 
-    func testHestiaCannotSendHearthLitNoticeBeforeHearthIsLit() throws {
+    func testHestiaNoticeExistsOnlyFromTheLightingTransition() throws {
         let worked = try canonicalMoiraiPackage()
         var hestia = Hestia(nativeSubjectID: worked.subjectID)
         var hermes = HermesCourier()
-        let beforeLit = AbsoluteInstant(unixSecondsSince1970: 1_777_000_400)!
-        let afterLit = AbsoluteInstant(unixSecondsSince1970: 1_777_000_420)!
+        let litAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_420)!
         let deliveredAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_480)!
         let receivedAt = AbsoluteInstant(unixSecondsSince1970: 1_777_000_540)!
 
-        XCTAssertThrowsError(
-            try hestia.sendHearthLitNotice(
-                to: OrboOnboarding.orboAddress,
-                via: &hermes,
-                occurredAt: beforeLit
-            )
-        ) { error in
-            XCTAssertEqual(error as? Hestia.Failure, .hearthUnlit)
-        }
-
-        _ = try hestia.receive(worked)
-        let notice = try hestia.sendHearthLitNotice(
+        let notice = try hestia.receiveAndAnnounce(
+            worked,
             to: OrboOnboarding.orboAddress,
             via: &hermes,
-            occurredAt: afterLit
+            occurredAt: litAt
         )
 
+        XCTAssertTrue(hestia.hearthLit)
+        XCTAssertEqual(hestia.nativeEngraving(), notice.engraving)
         XCTAssertEqual(notice.package.sender, Hestia.address)
         XCTAssertEqual(notice.package.kind, Hestia.hearthLitNoticeKind)
         XCTAssertEqual(notice.package.addresses, [OrboOnboarding.orboAddress])
         XCTAssertEqual(notice.package.subjectID, worked.subjectID)
-        XCTAssertEqual(notice.package.contents.subjectID, worked.subjectID)
+        XCTAssertEqual(notice.package.contents.subjectID, notice.engraving.subjectID)
         XCTAssertTrue(notice.package.contents.hearthLit)
         XCTAssertEqual(
             hermes.manifest.events(for: notice.ticketID).map(\.kind),
             [.ticketOpened]
         )
+
+        XCTAssertThrowsError(
+            try hestia.receiveAndAnnounce(
+                worked,
+                to: OrboOnboarding.orboAddress,
+                via: &hermes,
+                occurredAt: litAt
+            )
+        ) { error in
+            XCTAssertEqual(error as? Hestia.Failure, .nativeAlreadyEstablished)
+        }
 
         let recipient = try hermes.deliverNext(
             ticketID: notice.ticketID,
@@ -227,10 +229,15 @@ final class EngravingPipeline9BTests: XCTestCase {
         XCTAssertEqual(orbo.backOfHouse, .engravingInProgress)
         XCTAssertFalse(orbo.canEnterBigThree)
 
-        let finished = try hestia.receive(moiraiWorked)
-        XCTAssertTrue(finished.engraved)
+        let notice = try hestia.receiveAndAnnounce(
+            moiraiWorked,
+            to: OrboOnboarding.orboAddress,
+            via: &hermes,
+            occurredAt: noticeEntrustedAt
+        )
+        XCTAssertTrue(notice.engraving.engraved)
         XCTAssertTrue(hestia.hearthLit)
-        XCTAssertEqual(hestia.nativeEngraving(), finished)
+        XCTAssertEqual(hestia.nativeEngraving(), notice.engraving)
 
         // Lighting the Hearth does not magically mutate Orbo. Hermes still has
         // to carry Hestia's news across the system boundary.
@@ -244,11 +251,6 @@ final class EngravingPipeline9BTests: XCTestCase {
             receivedAt: hestiaReceiptAt
         )
 
-        let notice = try hestia.sendHearthLitNotice(
-            to: OrboOnboarding.orboAddress,
-            via: &hermes,
-            occurredAt: noticeEntrustedAt
-        )
         XCTAssertEqual(
             try hermes.deliverNext(
                 ticketID: notice.ticketID,
