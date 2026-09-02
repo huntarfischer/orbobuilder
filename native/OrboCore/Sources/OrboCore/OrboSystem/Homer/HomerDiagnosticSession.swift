@@ -104,7 +104,7 @@ public struct HomerDiagnosticSession: Hashable, Sendable {
         currentLocation = nil
     }
 
-    func inspect<Location: HomerDiagnosticLocation, Result>(
+    mutating func inspect<Location: HomerDiagnosticLocation, Result>(
         _ location: Location.Type,
         actionID: HomerActionID,
         occurredAt: AbsoluteInstant,
@@ -121,7 +121,7 @@ public struct HomerDiagnosticSession: Hashable, Sendable {
         return result
     }
 
-    func act<Location: HomerDiagnosticLocation, Result>(
+    mutating func act<Location: HomerDiagnosticLocation, Result>(
         _ location: Location.Type,
         actionID: HomerActionID,
         occurredAt: AbsoluteInstant,
