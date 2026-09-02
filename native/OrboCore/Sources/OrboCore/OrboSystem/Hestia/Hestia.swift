@@ -88,7 +88,8 @@ public struct Hestia: Hashable, Sendable {
             throw Failure.nativeAlreadyEstablished
         }
 
-        return try hearth.hang(engraving)
+        let lighting = try hearth.hang(engraving)
+        return lighting.engraving
     }
 
     /// Native kept truth is unavailable until the Hearth has been lit.
