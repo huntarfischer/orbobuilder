@@ -80,24 +80,43 @@ final class HestiaRestartStage5DTests: XCTestCase {
         XCTAssertTrue(restored.hearthLit)
     }
 
-    func testRestartRestoresLitStateWithoutManufacturingHermesHistory() throws {
+    func testRestartRestoresLitStateWithoutReplayingLightingOrHermesHistory() throws {
         let native = try F.subject("native")
-        let original = try F.litHestia(subjectID: native)
-        let restored = try HestiaPersistence.decode(HestiaPersistence.encode(original))
+        let worked = try F.canonicalWorkedPackage(subjectID: native)
+        var original = Hestia(nativeSubjectID: native)
+        _ = try original.receive(worked)
+        var restored = try HestiaPersistence.decode(HestiaPersistence.encode(original))
         var hermes = HermesCourier()
+        let attemptedNoticeID = HermesPackageID()
         let noticeAt = AbsoluteInstant(unixSecondsSince1970: 1_777_100_000)!
 
         XCTAssertTrue(restored.hearthLit)
         XCTAssertNotNil(restored.nativeEngraving())
 
-        let notice = try restored.sendHearthLitNotice(
-            to: OrboOnboarding.orboAddress,
-            via: &hermes,
-            occurredAt: noticeAt
+        XCTAssertThrowsError(
+            try restored.receiveAndAnnounce(
+                worked,
+                to: OrboOnboarding.orboAddress,
+                via: &hermes,
+                occurredAt: noticeAt,
+                packageID: attemptedNoticeID
+            )
+        ) { error in
+            XCTAssertEqual(error as? Hestia.Failure, .nativeAlreadyEstablished)
+        }
+
+        let proofPackage = try XCTUnwrap(
+            HermesPackage(
+                packageID: attemptedNoticeID,
+                subjectID: native,
+                sender: Hestia.address,
+                kind: Hestia.hearthLitNoticeKind,
+                addresses: [OrboOnboarding.orboAddress],
+                contents: HearthLitNotice(subjectID: native)
+            )
         )
-        XCTAssertEqual(
-            hermes.manifest.events(for: notice.ticketID).map(\.kind),
-            [.ticketOpened]
+        XCTAssertNoThrow(
+            try hermes.accept(package: proofPackage, occurredAt: noticeAt)
         )
     }
 }
