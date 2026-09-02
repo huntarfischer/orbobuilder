@@ -40,6 +40,6 @@ final class ApolloArtemisPassETests: XCTestCase {
 
         XCTAssertEqual(lunarSubject, astrolabeSubject)
         XCTAssertEqual(Apollo.signalForIris(astrolabeSubject).signal.subject, astrolabeSubject)
-        XCTAssertEqual(Artemis.signalForIris(lunarSubject).subject, astrolabeSubject)
+        XCTAssertEqual(Artemis.signalForIris(lunarSubject).signal.subject, astrolabeSubject)
     }
 }
