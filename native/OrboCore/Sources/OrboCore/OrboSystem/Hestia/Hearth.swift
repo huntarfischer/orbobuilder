@@ -5,6 +5,21 @@ public struct Hearth: Hashable, Sendable {
         case alreadyEngraved
     }
 
+    /// The consequence authored only when this Hearth actually transitions
+    /// from unlit to lit by hanging its native Engraving.
+    public struct Lighting: Hashable, Sendable {
+        public let subjectID: HermesSubjectID
+        public let engraving: Engraving
+
+        fileprivate init(
+            subjectID: HermesSubjectID,
+            engraving: Engraving
+        ) {
+            self.subjectID = subjectID
+            self.engraving = engraving
+        }
+    }
+
     public let nativeSubjectID: HermesSubjectID
     public private(set) var engraving: Engraving?
     public private(set) var hearthLit: Bool
@@ -40,7 +55,7 @@ public struct Hearth: Hashable, Sendable {
         self.hearthLit = hearthLit
     }
 
-    public mutating func hang(_ engraving: Engraving) throws -> Engraving {
+    public mutating func hang(_ engraving: Engraving) throws -> Lighting {
         guard self.engraving == nil else {
             throw Failure.alreadyEstablished
         }
@@ -54,6 +69,9 @@ public struct Hearth: Hashable, Sendable {
         let finished = engraving.hungOnHearth()
         self.engraving = finished
         self.hearthLit = true
-        return finished
+        return Lighting(
+            subjectID: nativeSubjectID,
+            engraving: finished
+        )
     }
 }
