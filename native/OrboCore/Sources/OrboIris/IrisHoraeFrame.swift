@@ -7,6 +7,10 @@ import OrboCore
 public struct IrisHoraeFrame: Hashable, Sendable {
     public let output: HoraeOutput
 
+    public init(port: IrisPort<HoraeOutput>) {
+        self.output = port.signal
+    }
+
     public init(output: HoraeOutput) {
         self.output = output
     }
