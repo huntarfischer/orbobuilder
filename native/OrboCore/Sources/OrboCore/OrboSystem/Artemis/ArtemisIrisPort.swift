@@ -1,4 +1,4 @@
-/// One presentation-neutral frame exposed by Artemis's Lunar Pane Iris port.
+/// One presentation-neutral signal frame authored by Artemis's Lunar Pane for Iris.
 ///
 /// The subject must remain Apollo-sourced under the Pass C light law. This frame
 /// does not ask neighbors for clarification, interpret the subject, or grant Iris
@@ -12,13 +12,13 @@ public struct LunarPaneSignalFrame: Hashable, Sendable {
 }
 
 public extension Artemis {
-    /// HDMI-style outward seam from Artemis's Lunar Pane to Iris.
+    /// Standard outward Iris port from Artemis's Lunar Pane.
     ///
     /// The supplied subject is already Apollo-sourced. Artemis exposes that same
     /// subject without replacing it or acquiring another source of light.
     static func signalForIris(
         _ subject: AstrolabeSubjectIdentity
-    ) -> LunarPaneSignalFrame {
-        LunarPaneSignalFrame(subject: subject)
+    ) -> IrisPort<LunarPaneSignalFrame> {
+        IrisPort(signal: LunarPaneSignalFrame(subject: subject))
     }
 }
