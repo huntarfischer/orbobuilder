@@ -15,10 +15,10 @@ final class ApolloArtemisPassDTests: XCTestCase {
         let onAstrolabe = Apollo.placeOnAstrolabe(identity: "subject-x")
         let received = Apollo.presentToArtemis(onAstrolabe)
 
-        let frame = Artemis.signalForIris(received)
+        let port = Artemis.signalForIris(received)
 
-        XCTAssertEqual(frame.subject, received)
-        XCTAssertEqual(frame.subject, onAstrolabe)
+        XCTAssertEqual(port.signal.subject, received)
+        XCTAssertEqual(port.signal.subject, onAstrolabe)
     }
 
     func testTwinPortsMayExposeSuccessiveLawfulFramesWithoutRetainingState() {
@@ -27,14 +27,14 @@ final class ApolloArtemisPassDTests: XCTestCase {
 
         let firstAstrolabePort = Apollo.signalForIris(first)
         let secondAstrolabePort = Apollo.signalForIris(second)
-        let firstLunarFrame = Artemis.signalForIris(Apollo.presentToArtemis(first))
-        let secondLunarFrame = Artemis.signalForIris(Apollo.presentToArtemis(second))
+        let firstLunarPort = Artemis.signalForIris(Apollo.presentToArtemis(first))
+        let secondLunarPort = Artemis.signalForIris(Apollo.presentToArtemis(second))
 
         XCTAssertEqual(firstAstrolabePort.signal.subject, first)
         XCTAssertEqual(secondAstrolabePort.signal.subject, second)
         XCTAssertNotEqual(firstAstrolabePort, secondAstrolabePort)
-        XCTAssertEqual(firstLunarFrame.subject, first)
-        XCTAssertEqual(secondLunarFrame.subject, second)
-        XCTAssertNotEqual(firstLunarFrame, secondLunarFrame)
+        XCTAssertEqual(firstLunarPort.signal.subject, first)
+        XCTAssertEqual(secondLunarPort.signal.subject, second)
+        XCTAssertNotEqual(firstLunarPort, secondLunarPort)
     }
 }
