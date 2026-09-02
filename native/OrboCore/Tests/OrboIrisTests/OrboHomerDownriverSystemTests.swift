@@ -76,9 +76,16 @@ final class OrboHomerDownriverSystemTests: XCTestCase {
         )
 
         var hestia = Hestia(nativeSubjectID: commissioned.subjectID)
-        _ = try hestia.receive(workedPackage)
+        let lightingResult = try hestia.receiveAndAnnounce(
+            workedPackage,
+            to: OrboOnboarding.orboAddress,
+            via: &courier,
+            occurredAt: instant(420)
+        )
         XCTAssertTrue(hestia.hearthLit)
-        XCTAssertNotNil(hestia.nativeEngraving())
+        XCTAssertEqual(hestia.nativeEngraving(), lightingResult.engraving)
+        XCTAssertEqual(lightingResult.package.subjectID, commissioned.subjectID)
+        XCTAssertEqual(lightingResult.package.contents.subjectID, commissioned.subjectID)
 
         try courier.recordReceipt(
             ticketID: engravingTicketID,
@@ -87,23 +94,18 @@ final class OrboHomerDownriverSystemTests: XCTestCase {
             receivedAt: instant(360)
         )
 
-        let notice = try hestia.sendHearthLitNotice(
-            to: OrboOnboarding.orboAddress,
-            via: &courier,
-            occurredAt: instant(420)
-        )
         XCTAssertEqual(
             try courier.deliverNext(
-                ticketID: notice.ticketID,
+                ticketID: lightingResult.ticketID,
                 occurredAt: instant(480)
             ),
             OrboOnboarding.orboAddress
         )
 
-        try orbo.receiveHearthLitNotice(notice.package)
+        try orbo.receiveHearthLitNotice(lightingResult.package)
         try courier.recordReceipt(
-            ticketID: notice.ticketID,
-            packageID: notice.package.packageID,
+            ticketID: lightingResult.ticketID,
+            packageID: lightingResult.package.packageID,
             recipient: OrboOnboarding.orboAddress,
             receivedAt: instant(540)
         )
@@ -121,7 +123,7 @@ final class OrboHomerDownriverSystemTests: XCTestCase {
             .resolved
         )
         XCTAssertEqual(
-            courier.manifest.currentState(for: notice.ticketID),
+            courier.manifest.currentState(for: lightingResult.ticketID),
             .resolved
         )
     }
