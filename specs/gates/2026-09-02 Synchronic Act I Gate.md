@@ -17,3 +17,7 @@ The inherited proof excluded RingTests and the shared Xcode scheme omitted the a
 | Live Synchronic readout | Not applicable to baseline; no Synchronic matter exists yet |
 
 Proceed to Clotho only after the accumulated baseline is green. Record evidence here and in the Native Port Manifest before advancing each lawful owner. No production implementation, test, or fixture is deleted; no non-Swift native dependency is introduced.
+
+## First restored run
+
+Commit `47671428c079a1afb9a5cd6bfbc9cf27824e9bfb`, [run 33580161967](https://github.com/huntarfischer/orbobuilder/actions/runs/33580161967): Ring and Natal focused proofs passed; the full package executed **868 tests, zero failures**. Xcode stopped before tests because synchronized membership flattened the two fixture-smoke resources into one destination. Correct membership excludes each non-Swift resource from automatic target membership; the original Fixtures folder resource remains the sole bundle copy. Xcode count remains pending.

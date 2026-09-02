@@ -81,7 +81,15 @@
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
         D10000000000000000000002 /* Fixtures use the existing folder resource */ = {
             isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-            membershipExceptions = (Fixtures,);
+            membershipExceptions = (
+                "Fixtures/Golden/fixture-smoke.json",
+                "Fixtures/Parity/tympan-parity.json",
+                "Fixtures/Parity/civil-time-parity.json",
+                "Fixtures/Parity/ring-parity.json",
+                "Fixtures/Parity/mater-parity.json",
+                "Fixtures/Parity/astrodna-contract.json",
+                "Fixtures/Parity/fixture-smoke.json",
+            );
             target = B50000000000000000000001 /* OrboCoreTests */;
         };
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
