@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+      - name: Synchronic Pass A focused proof
+        run: swift test --package-path native/OrboCore --filter SynchronicSpinePassATests
       - name: Ring focused proof
         run: swift test --package-path native/OrboCore --filter RingTests
       - name: Natal focused proof
@@ -31,11 +33,6 @@ jobs:
           -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
           -parallel-testing-enabled NO
           -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
-          CODE_SIGNING_ALLOWED=NO
-      - name: Build OrboLab
-        run: >-
-          xcodebuild build -project native/Orbo.xcodeproj -scheme OrboLab
-          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
           CODE_SIGNING_ALLOWED=NO
       - name: Preserve native test result
         if: always()

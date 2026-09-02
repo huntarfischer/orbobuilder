@@ -1,6 +1,6 @@
 # Orbo Synchronic Spine — Act I MVP
 
-Status: authorized Act I implementation on `feature/synchronic-spine-act-1`, forked from the Natal Hestia Sect branch at `8c4b55d72e2f624914b21cb821e35aa1dfbdd471`. Upstream baseline gate is open.
+Status: authorized Act I implementation on `feature/synchronic-spine-act-1`, forked from the Natal Hestia Sect branch at `8c4b55d72e2f624914b21cb821e35aa1dfbdd471`. Current authorized scope is Pass A only. Its implementation is present; native proof is pending.
 
 ## Outcome
 
@@ -182,3 +182,11 @@ Native implementation and proof remain Swift/XCTest. Work stays on the authorize
 - [Parent runtime](https://github.com/huntarfischer/orbobuilder/blob/8c4b55d72e2f624914b21cb821e35aa1dfbdd471/native/OrboCore/Sources/OrboCore/OrboSystem/OrboSpine/OrboSpineRuntime.swift): Terra and celestial matter assembled under OrboSpine.
 
 Source revisions above are the inspected reference points, not a claim that any branch will remain at those commits when implementation begins.
+
+## Pass A implementation — 2026-09-02
+
+Orbo commissions the native already kept at Hestia. The existing HermesCourier delivers to the canonical Moirai address, which dispatches directly to Clotho. The printed journey is Moirai → Hephaestus → Time Garden; the three Garden door examinations belong to Act III, not extra courier stops copied from Natal. Moirai requires the original open ticket and its actual delivery event.
+
+Clotho reuses Hestia.natalSpineNativeTruth and boundNatalSpine without introducing another calendar calculation. The Pattern binds the exact commission-tagged Bone and declares 1/12/7/3/12. Parent extent and provenance are retained from the existing OrboSpineRuntime. Equal parent/child END boundaries are permitted because END is excluded, not a point query. Lachesis receives the same immutable foundation. All Titan construction remains pending Pass B.
+
+Pass A adds no live UI readout. The unrelated OrboLab cleanup has been set aside; its build was removed from this Pass A workflow. The accumulated native Xcode gate remains evidence to report, not permission to expand this task into unrelated repairs.

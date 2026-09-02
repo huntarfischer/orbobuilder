@@ -21,3 +21,19 @@ Proceed to Clotho only after the accumulated baseline is green. Record evidence 
 ## First restored run
 
 Commit `47671428c079a1afb9a5cd6bfbc9cf27824e9bfb`, [run 33580161967](https://github.com/huntarfischer/orbobuilder/actions/runs/33580161967): Ring and Natal focused proofs passed; the full package executed **868 tests, zero failures**. Xcode stopped before tests because synchronized membership flattened the two fixture-smoke resources into one destination. Correct membership excludes each non-Swift resource from automatic target membership; the original Fixtures folder resource remains the sole bundle copy. Xcode count remains pending.
+
+## Pass A — implementation submitted for proof
+
+Active user scope: implement Pass A only. The prior baseline/OrboLab detour is ended; unrelated Lab changes are set aside.
+
+Five native source files implement Orbo commissioning, immutable Pattern/Bone vocabulary, Clotho construction, Lachesis handoff, and the Moirai entry. Existing HermesCourier owns the sole ticket and delivery state. There is no parallel courier or new calendar engine. Sixteen focused Swift tests use the existing Natal fixture and an explicitly synthetic runtime assembly solely to test parent extent/binding. They do not certify astronomical chronology.
+
+| Gate | Result |
+|---|---|
+| SynchronicSpinePassATests | Pending |
+| Accumulated package | Pending |
+| Accumulated Xcode / affected Orbo build | Pending |
+| OrboLab | Outside this Pass A change; no readout introduced |
+| Pass B/C | Not implemented |
+
+The relay ends at Lachesis ready, while Hermes awaits recovery at Moirai. Pattern fulfillment and certification remain later work.
