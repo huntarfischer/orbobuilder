@@ -22,7 +22,6 @@ public struct Hestia: Hashable, Sendable {
         case missingSect
         case missingAtroposSeal
         case engravingAlreadyComplete
-        case hearthUnlit
     }
 
     public static let address = OrboOnboarding.engravingItinerary[2]
@@ -66,6 +65,43 @@ public struct Hestia: Hashable, Sendable {
     public mutating func receive(
         _ package: HermesPackage<Engraving>
     ) throws -> Engraving {
+        try receiveLighting(package).engraving
+    }
+
+    /// Receives the canonical Engraving and, from that exact successful Hearth
+    /// lighting transition, authors the one-way Hearth-lit announcement for
+    /// Hermes to carry. Persisted lit state alone cannot invoke this path.
+    public mutating func receiveAndAnnounce(
+        _ package: HermesPackage<Engraving>,
+        to recipient: HermesAddress,
+        via courier: inout HermesCourier,
+        occurredAt: AbsoluteInstant,
+        packageID: HermesPackageID = HermesPackageID()
+    ) throws -> (
+        engraving: Engraving,
+        package: HermesPackage<HearthLitNotice>,
+        ticketID: HermesTicketID
+    ) {
+        let lighting = try receiveLighting(package)
+        let notice = HearthLitNotice(subjectID: lighting.subjectID)
+        let noticePackage = HermesPackage(
+            packageID: packageID,
+            subjectID: lighting.subjectID,
+            sender: Self.address,
+            kind: Self.hearthLitNoticeKind,
+            addresses: [recipient],
+            contents: notice
+        )!
+        let ticketID = try courier.accept(
+            package: noticePackage,
+            occurredAt: occurredAt
+        )
+        return (lighting.engraving, noticePackage, ticketID)
+    }
+
+    private mutating func receiveLighting(
+        _ package: HermesPackage<Engraving>
+    ) throws -> Hearth.Lighting {
         guard package.sender == OrboOnboarding.orboAddress,
               package.kind == OrboOnboarding.engravingPackageKind,
               package.addresses == OrboOnboarding.engravingItinerary,
@@ -88,8 +124,7 @@ public struct Hestia: Hashable, Sendable {
             throw Failure.nativeAlreadyEstablished
         }
 
-        let lighting = try hearth.hang(engraving)
-        return lighting.engraving
+        return try hearth.hang(engraving)
     }
 
     /// Native kept truth is unavailable until the Hearth has been lit.
@@ -102,31 +137,6 @@ public struct Hestia: Hashable, Sendable {
     public func canonicalTapestry(for subjectID: HermesSubjectID) -> AtroposTapestryPackage? {
         guard subjectID == nativeSubjectID else { return nil }
         return nativeEngraving()?.tapestry
-    }
-
-    /// Once the Hearth is lit, Hestia may send Hermes with the news to any
-    /// interested system actor.
-    public func sendHearthLitNotice(
-        to recipient: HermesAddress,
-        via courier: inout HermesCourier,
-        occurredAt: AbsoluteInstant,
-        packageID: HermesPackageID = HermesPackageID()
-    ) throws -> (package: HermesPackage<HearthLitNotice>, ticketID: HermesTicketID) {
-        guard hearthLit, hearth.engraving != nil else {
-            throw Failure.hearthUnlit
-        }
-
-        let notice = HearthLitNotice(subjectID: nativeSubjectID)
-        let package = HermesPackage(
-            packageID: packageID,
-            subjectID: nativeSubjectID,
-            sender: Self.address,
-            kind: Self.hearthLitNoticeKind,
-            addresses: [recipient],
-            contents: notice
-        )!
-        let ticketID = try courier.accept(package: package, occurredAt: occurredAt)
-        return (package, ticketID)
     }
 
     /// Keeps a lightweight saved subject in Holdings.
