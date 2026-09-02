@@ -16,11 +16,11 @@ final class IrisTwinPortFrameTests: XCTestCase {
     func testIrisPreservesArtemisLunarPaneSignalExactly() {
         let onAstrolabe = Apollo.placeOnAstrolabe(identity: "subject-x")
         let received = Apollo.presentToArtemis(onAstrolabe)
-        let signal = Artemis.signalForIris(received)
+        let port = Artemis.signalForIris(received)
 
-        let frame = IrisLunarPaneFrame(signal: signal)
+        let frame = IrisLunarPaneFrame(port: port)
 
-        XCTAssertEqual(frame.signal, signal)
+        XCTAssertEqual(frame.signal, port.signal)
         XCTAssertEqual(frame.subject, received)
         XCTAssertEqual(frame.subject, onAstrolabe)
     }
