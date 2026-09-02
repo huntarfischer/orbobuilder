@@ -1,0 +1,24 @@
+name: Homer MVP gate
+
+on:
+  push:
+    branches:
+      - feature/homer-mvp-2026-09-02
+  workflow_dispatch:
+
+concurrency:
+  group: homer-mvp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-gate:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Homer connector contract tests
+        run: swift test --package-path native/OrboCore --filter HomerPortTests
+      - name: Homer end-to-end system tests
+        run: swift test --package-path native/OrboCore --filter HomerSystemTests
+      - name: Full package regression
+        run: swift test --package-path native/OrboCore
