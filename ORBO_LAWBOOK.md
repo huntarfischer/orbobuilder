@@ -94,7 +94,35 @@ The Dioscuri must see all three. The candidate may carry provenance and the cert
 
 ---
 
+## Law 5 — The Cable Carries a Snapshot, Not a Leash
+
+> **An Iris Port carries a typed snapshot outward from its source entity to Iris. It does not transfer ownership, control, or presentation across that boundary.**
+
+The source entity remains the owner of the signal. The Iris Port is one-way outward and preserves the signal as a strongly typed, entity-specific payload.
+
+Iris remains the owner of manifestation. The Iris Port owns no presentation and performs no domain work.
+
+An Iris Port must not create a live control or ownership relationship back to its source through callbacks, bindings, or equivalent mechanisms.
+
+The connector is universal. The payload is not. Each entity sends its own lawful signal through the same Iris Port standard.
+
+```text
+source entity
+    →
+IrisPort<Signal>
+    →
+Iris
+    →
+manifestation
+```
+
+---
+
 ## Change History
+
+### 2026-09-02
+
+- Added Law 5, `The Cable Carries a Snapshot, Not a Leash`, establishing the universal Iris Port boundary.
 
 ### 2026-08-31
 
