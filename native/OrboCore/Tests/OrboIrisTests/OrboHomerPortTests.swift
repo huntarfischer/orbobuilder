@@ -30,8 +30,8 @@ final class OrboHomerPortTests: XCTestCase {
         XCTAssertEqual(beforeCommission.pointOfView.backOfHouse, .idle)
 
         _ = try orbo.commissionEngraving(
-            subjectID: OrboPipelineFixture.subjectID,
-            packageID: OrboPipelineFixture.packageID
+            subjectID: OrboHomerTestFixture.subjectID,
+            packageID: OrboHomerTestFixture.packageID
         )
         let commissioned = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
         XCTAssertTrue(commissioned.pointOfView.engravingCommissioned)
@@ -41,7 +41,7 @@ final class OrboHomerPortTests: XCTestCase {
         var courier = HermesCourier()
         _ = try orbo.entrustEngraving(
             to: &courier,
-            occurredAt: OrboPipelineFixture.handoffAt
+            occurredAt: OrboHomerTestFixture.handoffAt
         )
         let entrusted = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
         XCTAssertTrue(entrusted.pointOfView.engravingCommissioned)
@@ -79,20 +79,29 @@ final class OrboHomerPortTests: XCTestCase {
         var orbo = try entrustedOrbo()
         orbo.receiveBackOfHouseResult(.nativeTruthReady)
 
-        var beforeLayout = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
+        let beforeLayout = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
         XCTAssertTrue(beforeLayout.pointOfView.canEnterBigThree)
         XCTAssertNil(beforeLayout.pointOfView.bigThreeProgress)
 
+        XCTAssertThrowsError(
+            try orbo.beginBigThree(with: OrboHomerTestFixture.bigThreeTruth)
+        ) { error in
+            XCTAssertEqual(
+                error as? OrboBigThreeFailure,
+                .astrosphereIntroductionIncomplete
+            )
+        }
+        XCTAssertNil(orbo.bigThreeSession)
+
         _ = try orbo.beginAstrosphereIntroduction()
         _ = try orbo.advanceAstrosphereIntroduction()
-        _ = try orbo.beginBigThree(with: OrboPipelineFixture.bigThreeTruth)
+        _ = try orbo.beginBigThree(with: OrboHomerTestFixture.bigThreeTruth)
 
         let inBigThree = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
         XCTAssertEqual(inBigThree.pointOfView.bigThreeProgress, .moment)
         XCTAssertEqual(inBigThree.pointOfView.backOfHouse, .nativeReady)
 
-        beforeLayout = IrisHomerFrame(port: Homer.POV(orbo.signalForHomer()))
-        XCTAssertEqual(beforeLayout.pointOfView.bigThreeProgress, .moment)
+        XCTAssertNil(beforeLayout.pointOfView.bigThreeProgress)
     }
 
     func testCompletedOnboardingProducesReadyFrontOfHouseSnapshot() throws {
@@ -101,7 +110,7 @@ final class OrboHomerPortTests: XCTestCase {
         _ = try orbo.advanceAstrosphereIntroduction()
         orbo.receiveBackOfHouseResult(.nativeTruthReady)
 
-        var beat = try orbo.beginBigThree(with: OrboPipelineFixture.bigThreeTruth)
+        var beat = try orbo.beginBigThree(with: OrboHomerTestFixture.bigThreeTruth)
         for _ in 0..<6 {
             beat = try orbo.advanceBigThree()
         }
@@ -119,29 +128,29 @@ final class OrboHomerPortTests: XCTestCase {
     private func readyForEngraving() throws -> Orbo {
         var orbo = Orbo()
         _ = orbo.beginOnboarding()
-        _ = try orbo.respondToOnboarding(.name(OrboPipelineFixture.name))
+        _ = try orbo.respondToOnboarding(.name(OrboHomerTestFixture.name))
         _ = try orbo.respondToOnboarding(
-            .astrologyInterest(OrboPipelineFixture.astrologyInterest)
+            .astrologyInterest(OrboHomerTestFixture.astrologyInterest)
         )
-        _ = try orbo.respondToOnboarding(.birthDate(OrboPipelineFixture.birthDate))
+        _ = try orbo.respondToOnboarding(.birthDate(OrboHomerTestFixture.birthDate))
         _ = try orbo.respondToOnboarding(
-            .birthLocation(OrboPipelineFixture.birthLocation)
+            .birthLocation(OrboHomerTestFixture.birthLocation)
         )
         _ = try orbo.respondToOnboarding(.birthTimeKnowledge(.known))
-        _ = try orbo.respondToOnboarding(.birthTime(OrboPipelineFixture.birthTime))
+        _ = try orbo.respondToOnboarding(.birthTime(OrboHomerTestFixture.birthTime))
         return orbo
     }
 
     private func entrustedOrbo() throws -> Orbo {
         var orbo = try readyForEngraving()
         _ = try orbo.commissionEngraving(
-            subjectID: OrboPipelineFixture.subjectID,
-            packageID: OrboPipelineFixture.packageID
+            subjectID: OrboHomerTestFixture.subjectID,
+            packageID: OrboHomerTestFixture.packageID
         )
         var courier = HermesCourier()
         _ = try orbo.entrustEngraving(
             to: &courier,
-            occurredAt: OrboPipelineFixture.handoffAt
+            occurredAt: OrboHomerTestFixture.handoffAt
         )
         return orbo
     }
