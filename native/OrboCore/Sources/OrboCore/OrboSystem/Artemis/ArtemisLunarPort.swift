@@ -108,6 +108,17 @@ public struct ArtemisLunarReading: Hashable, Sendable {
     public let rest: LunarRest
     public let provenance: [String]
     public var arrangement: LunarArrangement { ticket.subject.course.arrangement }
+    /// The accepted FACT rows alone choose which canonical placements may render.
+    public var placements: [AstrolabePlacement] {
+        ticket.rows.compactMap { row in
+            guard case let .fact(_, _, qualified) = row, let qualified else { return nil }
+            return ticket.subject.chart.placement(qualified.body)
+        }
+    }
+    public func address(of index: Int) -> String? {
+        guard ticket.rows.indices.contains(index) else { return nil }
+        return "\(ticket.subject.chart.subject.rawValue)/\(ticket.subject.chart.julianDay.value)/\(ticket.subject.course.rawValue)/\(ticket.subject.body?.rawValue ?? "all")/\(index)"
+    }
     fileprivate init(ticket: LunarTicket, caption: String, rest: LunarRest) {
         self.ticket = ticket; self.caption = caption; self.rest = rest
         self.provenance = Array(Set(ticket.doctrine)).sorted { $0.rawValue < $1.rawValue }.map(\.credit)
@@ -146,7 +157,7 @@ public extension Artemis {
         case .sky: caption = subject.body.map { "the sky · \($0.displayName)" } ?? "the sky of this moment"
         case .relations: caption = "contacts · \(subject.chart.name)"
         case .moon: caption = "the Moon of this moment"
-        case .almanac: caption = "almanac · prepared stations"
+        case .almanac: caption = "almanac · prepared chronology"
         case .timing: caption = "timing · next returns to this degree"
         }
         return ArtemisLunarReading(ticket: ticket, caption: caption, rest: .facts)
@@ -165,7 +176,7 @@ public extension Artemis {
     /// A shelf entry is keyed to an accepted parent row, never arbitrary ticket prose.
     static func expand(_ parent: ArtemisLunarReading, row index: Int, shelf: [String: String], source: String) throws -> ArtemisLunarReading? {
         guard parent.ticket.rows.indices.contains(index), !source.isEmpty else { throw LunarPortFailure.proseRequiresAddress }
-        let address = "\(parent.ticket.subject.chart.subject)/\(parent.ticket.subject.course.rawValue)/\(index)"
+        guard let address = parent.address(of: index), parent.ticket.plate != .prose else { throw LunarPortFailure.proseRequiresAddress }
         guard let text = shelf[address], !text.isEmpty else { return nil }
         let ticket = LunarTicket(plate: .prose, subject: parent.ticket.subject,
             rows: [.prose(address: address, text: text, source: source)], doctrine: parent.ticket.doctrine)

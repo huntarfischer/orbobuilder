@@ -45,7 +45,7 @@ struct IrisLunarPaneView: View {
                         .padding(.top, 4).padding(.bottom, 2)
                     ScrollView {
                         VStack(spacing: 0) {
-                            ForEach(reading.rows, id: \.gene) { placement in row(placement) }
+                            ForEach(accepted.placements, id: \.gene) { placement in row(placement) }
                             if let gene = reading.selectedGene, let condition = reading.chart.placement(gene)?.condition {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("CONDITION").font(.system(size: 9)).tracking(1.4)

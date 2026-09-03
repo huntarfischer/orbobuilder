@@ -25,27 +25,19 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
 
     private let stationRows: [OrboSpineStation]
     private let shellRows: [OrboSpineShellInterval]
-    private let ringRows: [OrboSpineRingOccurrence]
-    private let eclipseRows: [OrboSpineEclipseOccurrence]
 
     public init() {
         self.coreShelves = OrboSpineLibraryShelf.allCases
         self.stationRows = []
         self.shellRows = []
-        self.ringRows = []
-        self.eclipseRows = []
     }
 
     internal init(
         stations: [OrboSpineStation],
-        shellIntervals: [OrboSpineShellInterval],
-        ringOccurrences: [OrboSpineRingOccurrence] = [],
-        eclipses: [OrboSpineEclipseOccurrence] = []
+        shellIntervals: [OrboSpineShellInterval]
     ) {
         self.coreShelves = OrboSpineLibraryShelf.allCases
         self.stationRows = stations.sorted { $0.julianDay.value < $1.julianDay.value }
-        self.ringRows = ringOccurrences.sorted { $0.julianDay.value < $1.julianDay.value }
-        self.eclipseRows = eclipses.sorted { $0.julianDay.value < $1.julianDay.value }
         self.shellRows = shellIntervals.sorted {
             if $0.id.family.rawValue != $1.id.family.rawValue {
                 return $0.id.family.rawValue < $1.id.family.rawValue
@@ -72,7 +64,4 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
     /// arrays, not independently retained chronology.
     internal var allStations: [OrboSpineStation] { stationRows }
     internal var allShellIntervals: [OrboSpineShellInterval] { shellRows }
-    /// Existing prepared matter, now available at its declared Port II shelves.
-    public var ringOccurrences: [OrboSpineRingOccurrence] { ringRows }
-    public var eclipses: [OrboSpineEclipseOccurrence] { eclipseRows }
 }

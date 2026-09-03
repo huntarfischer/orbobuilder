@@ -1,4 +1,4 @@
-name: Astrolabe Act II
+name: Astrolabe Act I
 on:
   push:
     branches: [feature/astrolabe-lunar-pane-swift-2026-09-03]
@@ -71,7 +71,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Astrolabe-Act-II-Evidence
+          name: Astrolabe-Act-I-Evidence
           path: |
             ${{ runner.temp }}/OrboTests.xcresult
             ${{ runner.temp }}/Orbo-Interactions

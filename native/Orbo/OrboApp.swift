@@ -30,11 +30,16 @@ private final class OrboApplicationModel: ObservableObject {
     @Published var lunarPane: IrisLunarPaneFrame?
     @Published var isLive = true
     @Published var playing = false
+    @Published var heldBody: AstroDNAGene?
     @Published var horizonFrame = true
     @Published var aspects = ApolloAspectSettings()
     @Published var tabulaVisible = false
     @Published var tabulaSeat: HermesTabulaSeat = .natal
     @Published var almanacBody: MundaneBody?
+    @Published var almanacStreams: Set<ChronosAlmanacStream> = [.stations]
+    @Published var keptCourses: Set<LunarCourse> = [] {
+        didSet { UserDefaults.standard.set(keptCourses.map(\.rawValue).sorted(), forKey: activeHearthKey + ".lenses") }
+    }
     @Published var timingBody: MundaneBody = .moon
     @Published var lunarEvents = false
     @Published var keptHouses: [Hestia] = []
@@ -179,11 +184,12 @@ private final class OrboApplicationModel: ObservableObject {
         guard let frame else { return }
         returnStart = nil; playing = false; isLive = false
         scrub = ApolloScrub(body: gene, julianDay: frame.julianDay, angle: angle, radius: radius)
+        heldBody = gene
     }
     func moveScrub(angle: Double, radius: Double) { pendingScrub = (angle, radius) }
     func endScrub() {
         if let pendingScrub { applyScrub(angle: pendingScrub.0, radius: pendingScrub.1) }
-        pendingScrub = nil; scrub = nil
+        pendingScrub = nil; scrub = nil; heldBody = nil
     }
     private func applyScrub(angle: Double, radius: Double) {
         guard let horae, let aegis, var gesture = scrub else { return }
@@ -215,6 +221,12 @@ private final class OrboApplicationModel: ObservableObject {
         } catch { failure = String(describing: error); playing = false }
     }
 
+    func jumpTo(_ moment: JulianDay) {
+        returnStart = nil; playing = false
+        endScrub()
+        seek(moment)
+    }
+
     func selectCourse(_ course: LunarCourse) {
         guard let aegis, let horae, let runtime else { return }
         do {
@@ -225,10 +237,11 @@ private final class OrboApplicationModel: ObservableObject {
             case .relations: reading = try Artemis.relations(aegis.sky, settings: aspects)
             case .moon:
                 reading = lunarEvents
-                    ? try Artemis.lunarEvents(aegis.sky, using: horae, rings: runtime.ringOccurrences, eclipses: runtime.eclipses)
+                    ? try Artemis.lunarEvents(aegis.sky, using: horae, library: runtime.library)
                     : try Artemis.moon(aegis)
             case .almanac:
-                reading = try Artemis.chronology(Chronos.almanac(after: aegis.source.julianDay, body: almanacBody, using: runtime.library), chart: aegis.sky, course: .almanac)
+                reading = try Artemis.almanac(Chronos.almanacEvents(after: aegis.source.julianDay,
+                    body: almanacBody, streams: almanacStreams, using: runtime.library), chart: aegis.sky, body: almanacBody)
             case .timing:
                 guard let coordinate = aegis.source.celestial.first(where: { $0.body == timingBody }) else { return }
                 let answer = try Pythia.returns(body: timingBody, at: coordinate.directionalDegree, after: aegis.source.julianDay, using: horae)
@@ -245,6 +258,7 @@ private final class OrboApplicationModel: ObservableObject {
     }
     private var activeHearthKey: String { keeperDirectory.lastPathComponent + ".active" }
     private func restoreHearths() throws {
+        keptCourses = Set((UserDefaults.standard.stringArray(forKey: activeHearthKey + ".lenses") ?? []).compactMap(LunarCourse.init(rawValue:)))
         try FileManager.default.createDirectory(at: keeperDirectory, withIntermediateDirectories: true)
         keptHouses = try FileManager.default.contentsOfDirectory(at: keeperDirectory, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "json" }.map { try HestiaPersistence.load(from: $0) }
@@ -308,6 +322,7 @@ private final class OrboApplicationModel: ObservableObject {
 
     func shift(days: Double) {
         guard let horae, var session else { return }
+        returnStart = nil; playing = false
         do {
             try session.shift(by: HoraeUTOffset(days: days)!, through: horae)
             self.session = session
@@ -526,16 +541,20 @@ private struct OrboRuntimeView: View {
         controls.playing = model.playing
         controls.horizonFrame = model.horizonFrame
         controls.aspects = model.aspects
+        controls.heldBody = model.heldBody
+        controls.courses = [.natal, .sky] + LunarCourse.allCases.filter { model.keptCourses.contains($0) && $0 != .natal && $0 != .sky }
+        controls.selectAlmanacBody = { model.almanacBody = $0; model.selectCourse(.almanac) }
         if let aegis = model.aegis {
             controls.skyContacts = Apollo.contacts(in: aegis.sky, settings: model.aspects)
             controls.natalContacts = aegis.natal.map { Apollo.contacts(in: $0, settings: model.aspects) } ?? []
+            controls.crossContacts = aegis.natal.map { Apollo.contacts(from: aegis.sky, to: $0, settings: model.aspects) } ?? []
         }
         controls.togglePlayback = model.togglePlayback
         controls.toggleFrame = { model.horizonFrame.toggle() }
         controls.openTabula = { model.tabulaVisible = true }
-        controls.keepSky = model.keepHearth
+        controls.keepHearth = model.keepHearth
         controls.selectCourse = model.selectCourse
-        controls.seek = { model.playing = false; model.seek($0) }
+        controls.seek = model.jumpTo
         controls.beginScrub = { model.beginScrub($0, angle: $1, radius: $2) }
         controls.moveScrub = { model.moveScrub(angle: $0, radius: $1) }
         controls.endScrub = model.endScrub
@@ -564,11 +583,13 @@ private struct OrboRuntimeView: View {
                     Button(gene.displayName) { model.selectReading(.sky, gene: gene); model.tabulaVisible = false }
                 }
             case .moon:
+                keepCourse(.moon)
                 Button("Phase, illumination and mansion") { model.lunarEvents = false; openCourse(.moon) }
                 Button("Ingress, prepared contacts and next eclipse") { model.lunarEvents = true; openCourse(.moon) }
             case .image:
                 Toggle("Stars", isOn: $model.showStars)
             case .aspects:
+                keepCourse(.relations)
                 Toggle("Aspect web", isOn: $model.aspects.showWeb)
                 ForEach(RingMark.allCases, id: \.self) { mark in
                     Toggle(String(describing: mark), isOn: Binding(get: { model.aspects.enabled.contains(mark) }, set: {
@@ -586,12 +607,19 @@ private struct OrboRuntimeView: View {
                 }
                 Button("Another birth chart") { model.tabulaVisible = false; selectedTab = 1 }
             case .timing:
+                keepCourse(.timing)
                 Picker("Return of", selection: $model.timingBody) {
                     ForEach(MundaneBody.canonicalOrder, id: \.self) { Text($0.displayName).tag($0) }
                 }
                 Text("Returns to the selected body's current degree and direction.").font(.caption)
                 Button("Read returns") { openCourse(.timing) }
             case .almanac:
+                keepCourse(.almanac)
+                ForEach(ChronosAlmanacStream.allCases, id: \.self) { stream in
+                    Toggle(stream.rawValue.capitalized, isOn: Binding(get: { model.almanacStreams.contains(stream) }, set: {
+                        if $0 { model.almanacStreams.insert(stream) } else { model.almanacStreams.remove(stream) }
+                    }))
+                }
                 Picker("Body", selection: $model.almanacBody) {
                     Text("ALL").tag(MundaneBody?.none)
                     ForEach(MundaneBody.canonicalOrder, id: \.self) { Text($0.displayName).tag(Optional($0)) }
@@ -605,13 +633,19 @@ private struct OrboRuntimeView: View {
                 Slider(value: $model.aspects.magnetism, in: 0...1)
                 Text("Magnetism · \(Int(model.aspects.magnetism * 100))%")
             case .composite:
-                Text("Hecate · Spine Link")
-                Button("Read this moment's linked members", action: model.askHecate)
+                Text("Composite casting is not connected yet.").font(.caption)
+                Button("Hecate's view of this sky", action: model.askHecate)
                 ForEach(model.linkedCoordinates, id: \.body) { coordinate in
                     Text(IrisHoraeTextBodyRow(source: coordinate).displayText).font(.caption.monospaced())
                 }
             }
         }.foregroundStyle(Color(red: 0.78, green: 0.75, blue: 0.88)).tint(.yellow)
+    }
+
+    private func keepCourse(_ course: LunarCourse) -> some View {
+        Toggle("Keep on Lunar Pane", isOn: Binding(get: { model.keptCourses.contains(course) }, set: {
+            if $0 { model.keptCourses.insert(course) } else { model.keptCourses.remove(course) }
+        }))
     }
 
     private var birthForm: some View {

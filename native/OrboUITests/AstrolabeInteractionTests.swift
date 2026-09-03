@@ -75,6 +75,10 @@ final class AstrolabeInteractionTests: XCTestCase {
         wait(for: [plays], timeout: 5)
         app.buttons["orbo.play"].tap()
         XCTAssertEqual(app.buttons["orbo.play"].label, "Play sky")
+        let pausedClock = app.buttons["orbo.clock"].label
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertEqual(app.buttons["orbo.clock"].label, pausedClock)
 
         app.buttons["orbo.menu"].tap()
         app.buttons["Tabula"].tap()
@@ -90,7 +94,7 @@ final class AstrolabeInteractionTests: XCTestCase {
         app.buttons["Tabula"].tap()
         app.buttons["orbo.tabula.8"].tap()
         app.buttons["Read prepared stations"].tap()
-        XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "almanac · prepared stations")
+        XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "almanac · prepared chronology")
         capture("Act-II-Almanac", app)
         app.buttons["orbo.pane.close"].tap()
         app.buttons["orbo.menu"].tap()

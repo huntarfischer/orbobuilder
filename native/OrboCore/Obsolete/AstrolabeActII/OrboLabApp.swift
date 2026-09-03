@@ -86,18 +86,6 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("ASTROLABE / LUNAR PORT")
-                readout("plates", LunarPlate.allCases.map(\.rawValue).joined(separator: " / "))
-                readout("Moon owner", HermesTabulaSeat.moon.owner)
-                readout("Almanac owner", HermesTabulaSeat.almanac.owner)
-                readout("Timing owner", HermesTabulaSeat.timing.owner)
-                readout("Tabula seats", "\(Hermes.tabulaSeats.count)")
-                readout("Moon gesture gear", "\(Apollo.period(for: .moon)) days / turn")
-                readout("position source", "Horae / real Spine; gear predicts no longitude")
-                readout("Hestia codec", "\(HestiaPersistence.codec)")
-
-                Divider()
-
                 sectionTitle("ORBOSPINE")
                 readout("identity", OrboSpineContract.identity)
                 readout("class", "Mundane Timespine")

@@ -108,4 +108,50 @@ final class AstrolabeActIITests: XCTestCase {
         XCTAssertEqual(HermesTabulaSeat.timing.owner, "Pythia")
         XCTAssertEqual(HermesTabulaSeat.archive.owner, "Hestia")
     }
+
+    func testPreparedLunarShelvesAndFusedAlmanacRetainSpineMatter() throws {
+        let runtime = try SealedOrboSpineFixture.runtime()
+        XCTAssertEqual(runtime.library.eclipses, runtime.eclipses)
+        XCTAssertEqual(runtime.library.ringOccurrences, runtime.ringOccurrences)
+        let moment = JulianDay(2451545)!
+        let fused = Chronos.almanacEvents(after: moment, body: nil, streams: [.stations, .contacts, .eclipses], using: runtime.library)
+        XCTAssertFalse(fused.isEmpty)
+        XCTAssertLessThanOrEqual(fused.count, 30)
+        XCTAssertEqual(fused.map(\.moment.value), fused.map(\.moment.value).sorted())
+        XCTAssertTrue(Chronos.almanacEvents(after: moment, body: nil, streams: [], using: runtime.library).isEmpty)
+        for event in fused {
+            switch event {
+            case let .contact(contact): XCTAssertTrue(runtime.ringOccurrences.contains(contact))
+            case let .eclipse(eclipse): XCTAssertTrue(runtime.eclipses.contains(eclipse))
+            case let .station(station): XCTAssertTrue(runtime.stations.contains(station))
+            }
+        }
+    }
+
+    func testDisabledAspectCannotAttractAndZeroSpeedCannotInventCorrection() throws {
+        let runtime = try SealedOrboSpineFixture.runtime()
+        let horae = Horae(locate: runtime.locate)
+        let moment = JulianDay(2451545)!
+        func sample(_ jd: JulianDay, sun: Double) throws -> ApolloAegis {
+            let source = try horae.seek(to: jd)
+            let chart = AstrolabeChart(subject: Apollo.placeOnAstrolabe(identity: "magnet-contract"), kind: .sky,
+                name: "Magnet contract", julianDay: jd, place: nil, sect: nil,
+                placements: [AstrolabePlacement(gene: .sun, longitude: CelestialLongitude(sun)!, motion: .direct, house: nil, condition: nil),
+                             AstrolabePlacement(gene: .moon, longitude: CelestialLongitude(82)!, motion: .direct, house: nil, condition: nil)], houses: [])
+            return ApolloAegis(source: source, sky: chart, natal: nil, lunarSeparation: RingSeparation(82 - sun)!)
+        }
+        let a = try sample(moment, sun: 22.2)
+        let b = try sample(JulianDay(moment.value + 0.05)!, sun: 22.3)
+        var settings = ApolloAspectSettings()
+        settings.enabled = []
+        XCTAssertEqual(Apollo.magneticMoment(raw: moment, body: .sun, first: a, second: b, settings: settings, domain: horae.controlDomain), moment)
+        settings.enabled = [.sextile]
+        XCTAssertNotEqual(Apollo.magneticMoment(raw: moment, body: .sun, first: a, second: b, settings: settings, domain: horae.controlDomain), moment)
+        let stationary = try sample(JulianDay(moment.value + 0.05)!, sun: 22.2)
+        XCTAssertEqual(Apollo.magneticMoment(raw: moment, body: .sun, first: a, second: stationary, settings: settings, domain: horae.controlDomain), moment)
+        let exact = try sample(moment, sun: 22)
+        XCTAssertEqual(Apollo.contacts(in: exact.sky, settings: settings).first?.residual, 0)
+        XCTAssertEqual(settings.orb(for: .quincunx), 3)
+        XCTAssertEqual(settings.orb(for: .quintile), 2.4, accuracy: 1e-12)
+    }
 }

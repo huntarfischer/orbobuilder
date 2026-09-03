@@ -7,10 +7,14 @@ public struct IrisAstrolabeControls {
     public var aspects = ApolloAspectSettings()
     public var skyContacts: [ApolloContact] = []
     public var natalContacts: [ApolloContact] = []
+    public var crossContacts: [ApolloCrossContact] = []
+    public var heldBody: AstroDNAGene?
+    public var courses: [LunarCourse] = [.natal, .sky]
+    public var selectAlmanacBody: (MundaneBody?) -> Void = { _ in }
     public var togglePlayback: () -> Void = {}
     public var toggleFrame: () -> Void = {}
     public var openTabula: () -> Void = {}
-    public var keepSky: () -> Void = {}
+    public var keepHearth: () -> Void = {}
     public var selectCourse: (LunarCourse) -> Void = { _ in }
     public var seek: (JulianDay) -> Void = { _ in }
     public var beginScrub: (AstroDNAGene, Double, Double) -> Void = { _, _, _ in }

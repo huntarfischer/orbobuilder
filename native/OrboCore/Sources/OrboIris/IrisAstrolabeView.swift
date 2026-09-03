@@ -19,6 +19,7 @@ public struct IrisAstrolabeView: View {
     @State private var crowded: [AstrolabePlacement] = []
     @State private var crowdedKind: AstrolabeChart.Kind = .natal
     @State private var activeScrub: AstroDNAGene?
+    @Environment(\.scenePhase) private var scenePhase
 
     public init(frame: IrisAstrolabeFrame, pane: IrisLunarPaneFrame?, isLive: Bool, environment: AetherEnvironment,
                 select: @escaping (AstrolabeChart.Kind, AstroDNAGene?) -> Void,
@@ -59,7 +60,8 @@ public struct IrisAstrolabeView: View {
                         Spacer(minLength: 0)
                         if let pane, pane.signal.course != nil {
                             IrisLunarSurface(signal: pane.signal, hasNatal: aegis.natal != nil, height: proxy.size.height,
-                                select: select, course: controls.selectCourse, dismiss: dismissPane, goToMoment: controls.seek)
+                                select: select, course: controls.selectCourse, dismiss: dismissPane, goToMoment: controls.seek,
+                                availableCourses: controls.courses, selectAlmanacBody: controls.selectAlmanacBody)
                                 .frame(width: width)
                         } else {
                             Button { select(aegis.natal == nil ? .sky : .natal, nil) } label: {
@@ -83,6 +85,9 @@ public struct IrisAstrolabeView: View {
                 Button("Cancel", role: .cancel) {}
             }
             .accessibilityElement(children: .contain)
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { activeScrub = nil; controls.endScrub() }
+            }
         }
     }
 
@@ -214,6 +219,7 @@ public struct IrisAstrolabeView: View {
             if controls.aspects.showWeb {
                 threads(aegis.sky, contacts: controls.skyContacts, geometry: geometry, radius: radius * 0.71, opacity: 0.45)
                 if let natal = aegis.natal { threads(natal, contacts: controls.natalContacts, geometry: geometry, radius: radius * 0.60, opacity: 0.22) }
+                if let natal = aegis.natal { crossThreads(aegis.sky, natal: natal, geometry: geometry, radius: radius) }
             }
             Button(action: controls.togglePlayback) {
                 Image(systemName: controls.playing ? "pause.fill" : "play.fill")
@@ -221,7 +227,14 @@ public struct IrisAstrolabeView: View {
                     .frame(width: 60, height: 60).contentShape(Circle())
             }.buttonStyle(.plain).accessibilityLabel(controls.playing ? "Pause sky" : "Play sky")
                 .accessibilityIdentifier("orbo.play")
-                .simultaneousGesture(LongPressGesture(minimumDuration: 0.6).onEnded { _ in controls.keepSky() })
+                .highPriorityGesture(LongPressGesture(minimumDuration: 0.6).exclusively(before: TapGesture()).onEnded { action in
+                    switch action {
+                    case .first(true): controls.keepHearth()
+                    case .second: controls.togglePlayback()
+                    default: break
+                    }
+                })
+                .accessibilityAction(named: Text("Keep my Hearth"), controls.keepHearth)
             if let natal = aegis.natal { occupants(natal, geometry: geometry, radius: radius, lunar: nil) }
             occupants(aegis.sky, geometry: geometry, radius: radius, lunar: aegis.lunarSeparation.degrees)
             if let ascendant = aegis.sky.placement(.ascendant) {
@@ -319,6 +332,20 @@ public struct IrisAstrolabeView: View {
                 let current = polar(value.location)
                 controls.moveScrub(current.0, current.1)
             }.onEnded { _ in activeScrub = nil; controls.endScrub() }
+    }
+
+    private func crossThreads(_ sky: AstrolabeChart, natal: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double) -> some View {
+        let offsets = IrisAegisGeometry.trackOffsets(sky.placements.filter { $0.gene != .ascendant })
+        return ForEach(Array(controls.crossContacts.enumerated()), id: \.offset) { _, contact in
+            if let a = sky.placement(contact.moving), let b = natal.placement(contact.natal) {
+                let held = controls.heldBody == contact.moving
+                Path { path in
+                    path.move(to: geometry.point(longitude: a.longitude.degrees,
+                        radius: a.gene == .ascendant ? radius * 0.99 : radius * 0.75 - (offsets[a.gene] ?? 0)))
+                    path.addLine(to: geometry.point(longitude: b.longitude.degrees, radius: radius * 0.60))
+                }.stroke((contact.mark == .trine || contact.mark == .sextile ? Color.blue : Color.red).opacity(held ? 0.8 : 0.12), lineWidth: held ? 1.8 : 0.6)
+            }
+        }.allowsHitTesting(false)
     }
 
     private func moonBearing(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double,

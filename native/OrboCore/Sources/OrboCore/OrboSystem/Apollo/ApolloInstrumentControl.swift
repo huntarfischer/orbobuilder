@@ -31,6 +31,16 @@ public struct ApolloAspectSettings: Hashable, Sendable {
     public var showWeb = true
     public var magnetism: Double = 0.7
     public init() {}
+    public func orb(for mark: RingMark) -> Double {
+        let scale: Double
+        switch mark {
+        case .semisextile, .quincunx: scale = 0.5
+        case .semisquare, .sesquiquadrate: scale = 0.45
+        case .quintile, .biquintile: scale = 0.4
+        default: scale = 1
+        }
+        return max(0, orb) * scale
+    }
 }
 public extension Apollo {
     static func period(for gene: AstroDNAGene) -> Double {
@@ -72,15 +82,20 @@ public extension Apollo {
         return result
     }
     private static func nearestContact(arc: Double, settings: ApolloAspectSettings, cap: Double) -> (mark: RingMark, residual: Double)? {
-        let candidates = settings.enabled.sorted { $0.rawValue < $1.rawValue }.map { ($0, abs(arc - Double($0.rawValue))) }
-        guard let candidate = candidates.min(by: { $0.1 < $1.1 }), candidate.1 <= min(cap, settings.orb) else { return nil }
-        return candidate
+        var best: (mark: RingMark, residual: Double)?
+        for mark in settings.enabled.sorted(by: { $0.rawValue < $1.rawValue }) {
+            let residual = abs(arc - Double(mark.rawValue))
+            guard residual <= min(cap, settings.orb(for: mark)), best == nil || residual < best!.residual - 1e-12 else { continue }
+            best = (mark, residual)
+        }
+        return best
     }
     /// Uses two actual Spine samples, then adjusts the requested moment, never a drawn longitude.
     static func magneticMoment(raw: JulianDay, body: AstroDNAGene, first: ApolloAegis, second: ApolloAegis,
                                settings: ApolloAspectSettings, domain: HoraeControlDomain) -> JulianDay {
         let h = second.source.julianDay.value - first.source.julianDay.value
-        guard settings.magnetism > 0, h > 0, let a = first.sky.placement(body), let b = second.sky.placement(body) else { return raw }
+        guard first.source.julianDay == raw, settings.magnetism > 0, h > 0,
+              let a = first.sky.placement(body), let b = second.sky.placement(body) else { return raw }
         var best: (delta: Double, residual: Double, window: Double)?
         func consider(_ x: Double, _ y: Double, window: Double) {
             let velocity = wrappedAngle(y - x) / h
@@ -92,7 +107,7 @@ public extension Apollo {
             let two = wrappedAngle(b.longitude.degrees - y.degrees)
             if let hit = nearestContact(arc: abs(one), settings: settings, cap: 1.5) {
                 let signedMark = Double(hit.mark.rawValue) * (one < 0 ? -1 : 1)
-                consider(wrappedAngle(one - signedMark), wrappedAngle(two - signedMark), window: min(1.5, settings.orb))
+                consider(wrappedAngle(one - signedMark), wrappedAngle(two - signedMark), window: min(1.5, settings.orb(for: hit.mark)))
             }
         }
         for other in first.sky.placements where other.gene != body {
@@ -105,5 +120,26 @@ public extension Apollo {
         let u = 1 - best.residual / best.window
         let weight = min(1, max(0, settings.magnetism)) * u * u * (3 - 2 * u)
         return bounded(raw.value + best.delta * weight, to: domain)
+    }
+}
+
+public struct ApolloCrossContact: Hashable, Sendable {
+    public let moving: AstroDNAGene
+    public let natal: AstroDNAGene
+    public let mark: RingMark
+    public let residual: Double
+}
+public extension Apollo {
+    static func contacts(from sky: AstrolabeChart, to natal: AstrolabeChart, settings: ApolloAspectSettings) -> [ApolloCrossContact] {
+        var result: [ApolloCrossContact] = []
+        for moving in sky.placements {
+            for fixed in natal.placements {
+                let separation = Oceanus.separation(from: moving.longitude, to: fixed.longitude).degrees
+                if let hit = nearestContact(arc: min(separation, 360 - separation), settings: settings, cap: settings.orb) {
+                    result.append(ApolloCrossContact(moving: moving.gene, natal: fixed.gene, mark: hit.mark, residual: hit.residual))
+                }
+            }
+        }
+        return result.sorted { $0.residual > $1.residual }
     }
 }
