@@ -80,11 +80,13 @@ private final class OrboApplicationModel: ObservableObject {
 
     func submit(name: String, date: String, time: String, location: String) async {
         guard let horae, !working else { return }
-        let d = date.split(separator: "-", omittingEmptySubsequences: false).compactMap { Int($0) }
-        let t = time.split(separator: ":", omittingEmptySubsequences: false).compactMap { Int($0) }
+        let d = date.split(separator: "-", omittingEmptySubsequences: false)
+        let t = time.split(separator: ":", omittingEmptySubsequences: false)
         guard d.count == 3, t.count == 2,
-              let birthDate = CivilDate(year: d[0], month: d[1], day: d[2]),
-              let birthTime = CivilClockTime(hour: t[0], minute: t[1]) else {
+              let year = Int(d[0]), let month = Int(d[1]), let day = Int(d[2]),
+              let hour = Int(t[0]), let minute = Int(t[1]),
+              let birthDate = CivilDate(year: year, month: month, day: day),
+              let birthTime = CivilClockTime(hour: hour, minute: minute) else {
             failure = "Enter a date as YYYY-MM-DD and local birth time as HH:MM (24-hour)."
             return
         }

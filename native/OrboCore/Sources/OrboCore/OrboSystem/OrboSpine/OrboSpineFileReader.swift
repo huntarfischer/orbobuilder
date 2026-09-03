@@ -1200,7 +1200,9 @@ private enum OrboSpineFileReader {
         var index = 0
         while index < characters.count {
             let character = characters[index]
-            if character == "\"" {
+            // The forged eclipse labels contain a literal arcsecond quote
+            // inside an unquoted field. Only a field-opening quote is syntax.
+            if character == "\"", quoted || field.isEmpty {
                 if quoted, index + 1 < characters.count, characters[index + 1] == "\"" {
                     field.append("\"")
                     index += 1
