@@ -189,7 +189,7 @@ final class HecateStage7LotCastTests: XCTestCase {
         let moon = longitude(40)
         let sunAtAscendant = longitude(0)
         let sunAtDescendant = longitude(180)
-        let sunJustBeforeNight = longitude(179.999)
+        let sunJustAboveDescendant = longitude(180.001)
 
         let ascendantSect = OrboFormulae.sect(
             ascendant: ascendant,
@@ -201,7 +201,7 @@ final class HecateStage7LotCastTests: XCTestCase {
         )
         let daySect = OrboFormulae.sect(
             ascendant: ascendant,
-            sun: sunJustBeforeNight
+            sun: sunJustAboveDescendant
         )
 
         XCTAssertEqual(ascendantSect, .day)
@@ -220,16 +220,16 @@ final class HecateStage7LotCastTests: XCTestCase {
             sun: sunAtDescendant,
             sect: descendantSect
         )
-        let justBeforeNight = try Hecate.castFortune(
+        let justAboveDescendant = try Hecate.castFortune(
             ascendant: ascendant,
             moon: moon,
-            sun: sunJustBeforeNight,
+            sun: sunJustAboveDescendant,
             sect: daySect
         )
 
         XCTAssertEqual(atAscendant.degrees, 40, accuracy: 1e-12)
         XCTAssertEqual(atDescendant.degrees, 220, accuracy: 1e-12)
-        XCTAssertEqual(justBeforeNight.degrees, 220.001, accuracy: 1e-9)
+        XCTAssertEqual(justAboveDescendant.degrees, 219.999, accuracy: 1e-9)
     }
 
     private func page(_ id: String) throws -> Kleis {

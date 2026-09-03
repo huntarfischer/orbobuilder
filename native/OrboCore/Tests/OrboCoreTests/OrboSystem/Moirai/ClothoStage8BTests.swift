@@ -43,7 +43,7 @@ final class ClothoStage8BTests: XCTestCase {
         )
         XCTAssertEqual(
             try Hecate.castSect(ascendant: ascendant, sun: CelestialLongitude(179.999)!),
-            .day
+            .night
         )
         XCTAssertEqual(
             try Hecate.castSect(ascendant: ascendant, sun: CelestialLongitude(180)!),
@@ -51,7 +51,7 @@ final class ClothoStage8BTests: XCTestCase {
         )
         XCTAssertEqual(
             try Hecate.castSect(ascendant: ascendant, sun: CelestialLongitude(180.001)!),
-            .night
+            .day
         )
     }
 
@@ -72,11 +72,13 @@ final class ClothoStage8BTests: XCTestCase {
         XCTAssertEqual(sourceSlice.celestial.count, MundaneBody.canonicalOrder.count)
         XCTAssertEqual(output.packet.astroDNA.sequence.count, AstroDNA.geneCount)
         XCTAssertEqual(output.packet.astroDNA[.ascendant], expectedAscendant)
-        XCTAssertEqual(output.packet.sect, .night)
-        XCTAssertEqual(output.packet.fortune.degrees, 210.39777777777778, accuracy: 1e-12)
-        XCTAssertEqual(output.packet.spirit.degrees, 10.397777777777776, accuracy: 1e-12)
-        XCTAssertEqual(output.packet.eros.degrees, 80.79555555555557, accuracy: 1e-12)
-        XCTAssertEqual(output.packet.necessity.degrees, 270, accuracy: 1e-12)
+        // This unit-test slice has Asc 110° / Sun 20°, above the horizon.
+        // The real Ean birth slice is covered by AssembledOrboSystemTests.
+        XCTAssertEqual(output.packet.sect, .day)
+        XCTAssertEqual(output.packet.fortune.degrees, 10.397777777777776, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.spirit.degrees, 210.39777777777778, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.eros.degrees, 300, accuracy: 1e-12)
+        XCTAssertEqual(output.packet.necessity.degrees, 110.79555555555555, accuracy: 1e-12)
         XCTAssertEqual(output.engraving.astroDNA, output.packet.astroDNA)
     }
 

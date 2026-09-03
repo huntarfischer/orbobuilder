@@ -21,6 +21,12 @@ Branch: `feature/orbo-assembled-2026-09-02`; inspected base: `9be3d84`.
 
 ## Validation status
 
+### User-directed Sect correction
+
+The real-source acceptance exposed a reversed semicircle in the existing `OrboFormulae.sect`. The user explicitly confirmed that Ean's chart is **night** and directed the tests to require it. The single existing Sect formula is corrected: the Sun strictly between Ascendant and Descendant in increasing zodiac longitude is below the horizon (night); the opposite semicircle is day. Existing exact-horizon day treatment is retained. Hecate and Clotho continue calling that one formula. The real-source test requires night and Fortune near 325.04°; unit-test expectations for the reversed rule are corrected, including the older synthetic Clotho slice, which is a different sky from Ean's real chart.
+
+### Gate runs
+
 - First native Swift compilation: passed on GitHub Actions run 33703678860.
 - First real-file load: found the older CSV reader's quoted-field mismatch in the shell tables. Corrected using the existing certification parser.
 - Added real-system proofs for Ean, London and Sydney inputs, canonical source identity, Chronos, Hecate Link and Fortune, independent Hearths, and failure to resolve a place.
