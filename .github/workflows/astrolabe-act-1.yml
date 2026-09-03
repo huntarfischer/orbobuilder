@@ -7,6 +7,13 @@ concurrency:
   group: astrolabe-act-1-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  package-gate:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Full native package regression including real birth-to-Hearth
+        run: swift test --package-path native/OrboCore
   native-gate:
     runs-on: macos-26
     timeout-minutes: 60
@@ -22,8 +29,6 @@ jobs:
           -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
           -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
           CODE_SIGNING_ALLOWED=NO
-      - name: Full native package regression including real birth-to-Hearth
-        run: swift test --package-path native/OrboCore
       - name: Accumulated Xcode tests and Orbo build
         run: >-
           xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
@@ -38,7 +43,7 @@ jobs:
           app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/Orbo.app"
           xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
           xcrun simctl launch --terminate-running-process --stdout="$RUNNER_TEMP/Orbo-stdout.log" --stderr="$RUNNER_TEMP/Orbo-stderr.log" "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-instrument-proof
-          for stage in AEGIS PANE PLACEMENT; do
+          for stage in AEGIS PANE PLACEMENT LIVE; do
             ready=0
             for attempt in $(seq 1 600); do
               if grep -q "ORBO_${stage}_READY" "$RUNNER_TEMP/Orbo-stdout.log"; then ready=1; break; fi

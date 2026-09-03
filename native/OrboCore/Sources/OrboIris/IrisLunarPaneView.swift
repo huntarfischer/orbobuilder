@@ -1,6 +1,24 @@
 import SwiftUI
 import OrboCore
 
+/// The same circular limb is present while the Pane is lowered and raised.
+struct IrisLunarPaneMaterial: View {
+    var body: some View {
+        GeometryReader { proxy in
+            Circle()
+                .fill(LinearGradient(stops: [
+                    .init(color: Color(red: 0.36, green: 0.34, blue: 0.46).opacity(0.65), location: 0),
+                    .init(color: IrisAstrolabeStyle.ink.opacity(0.92), location: 0.10),
+                    .init(color: IrisAstrolabeStyle.ink.opacity(0.98), location: 0.25),
+                    .init(color: IrisAstrolabeStyle.ink, location: 1)
+                ], startPoint: .top, endPoint: .bottom))
+                .overlay(Circle().stroke(IrisAstrolabeStyle.text.opacity(0.45), lineWidth: 0.8))
+                .frame(width: proxy.size.width * 2.1, height: proxy.size.width * 2.1)
+                .position(x: proxy.size.width / 2, y: proxy.size.width * 1.05)
+        }.clipped().allowsHitTesting(false)
+    }
+}
+
 struct IrisLunarPaneView: View {
     let reading: ArtemisFactReading
     let hasNatal: Bool
@@ -10,12 +28,7 @@ struct IrisLunarPaneView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .top) {
-                Circle()
-                    .fill(LinearGradient(colors: [Color(red: 0.36, green: 0.34, blue: 0.46).opacity(0.7),
-                        IrisAstrolabeStyle.ink.opacity(0.97), IrisAstrolabeStyle.ink], startPoint: .top, endPoint: .bottom))
-                    .overlay(Circle().stroke(IrisAstrolabeStyle.text.opacity(0.45), lineWidth: 0.8))
-                    .frame(width: proxy.size.width * 2.1, height: proxy.size.width * 2.1)
-                    .position(x: proxy.size.width / 2, y: proxy.size.width * 1.05)
+                IrisLunarPaneMaterial()
                 VStack(spacing: 12) {
                     HStack(spacing: 26) {
                         if hasNatal { lens("NATAL", kind: .natal) }

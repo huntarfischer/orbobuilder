@@ -91,7 +91,7 @@ private struct FoundationLabView: View {
                 readout("class", "Mundane Timespine")
                 readout("build state", "sealed source connected in Orbo")
                 readout("native proof", "OrboCoreTests")
-                readout("live runtime", "Orbo / Sky and Inspect tabs")
+                readout("live runtime", "Orbo / Astrolabe and Inspect tabs")
                 readout("celestial core", "\(OrboSpineContract.canonicalBodies.count) canonical tracts")
                 readout("coordinate", "continuous directional degree [0,720)")
                 readout("direct lane", "[0,360) increasing")

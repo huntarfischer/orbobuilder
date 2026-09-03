@@ -119,6 +119,10 @@ private final class OrboApplicationModel: ObservableObject {
             try await Task.sleep(for: .seconds(15))
             selectReading(.natal, gene: .sun)
             FileHandle.standardOutput.write(Data("ORBO_PLACEMENT_READY\n".utf8))
+            try await Task.sleep(for: .seconds(15))
+            lunarPane = nil
+            goLive()
+            FileHandle.standardOutput.write(Data("ORBO_LIVE_READY\n".utf8))
         } catch { failure = String(describing: error) }
     }
 
@@ -289,6 +293,7 @@ private struct OrboRuntimeView: View {
                     sky(frame).tabItem { Label("Text", systemImage: "text.alignleft") }.tag(2)
                     diagnostics(frame).tabItem { Label("Inspect", systemImage: "list.bullet.rectangle") }.tag(3)
                 }
+                .preferredColorScheme(selectedTab == 0 ? .dark : nil)
             } else if model.failure == nil {
                 ProgressView("Opening Orbo…")
             }

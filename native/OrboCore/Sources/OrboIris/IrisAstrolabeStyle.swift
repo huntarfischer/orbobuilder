@@ -61,6 +61,8 @@ public struct IrisAegisGeometry {
 struct IrisMoonFace: View {
     let separation: Double
     let color: Color
+    /// The wheel supplies the Sun's screen bearing; the header uses waxing/waning.
+    var illuminationBearing: Double? = nil
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size.width
@@ -72,7 +74,7 @@ struct IrisMoonFace: View {
                     .frame(width: abs(cos(elongation * .pi / 180)) * size)
             }
             .clipShape(Circle())
-            .rotationEffect(.degrees(separation < 180 ? 0 : 180))
+            .rotationEffect(.degrees(illuminationBearing ?? (separation < 180 ? 0 : 180)))
             .overlay(Circle().stroke(color.opacity(0.45), lineWidth: 0.6))
         }
         .accessibilityLabel("Moon phase")

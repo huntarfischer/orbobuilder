@@ -3,6 +3,11 @@ import OrboCore
 @testable import OrboIris
 
 final class IrisAegisGeometryTests: XCTestCase {
+    func testPrototypeArtworkDecodesFromTheIrisBundle() {
+        XCTAssertNotNil(IrisAstrolabeArtwork.logo)
+        XCTAssertNotNil(IrisAstrolabeArtwork.companion)
+    }
+
     func testHorizonRendersAtLeftAndOppositionAtRight() {
         let geometry = IrisAegisGeometry(diameter: 400, horizon: 221.5)
         let asc = geometry.point(longitude: 221.5, radius: 180)

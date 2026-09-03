@@ -10,6 +10,20 @@ The Big Three, date, and live status are central instrument readouts. Natal sele
 
 Act I includes the two seats, horizon-oriented drawing when a place is supplied, select-to-read, sky/natal reading selection, the prototype palette and curved Pane anatomy. The current birthplace supplies the displayed local horizon and is named on screen. Before a place exists no ASC or houses are manufactured. Existing birth entry, text/3D, and diagnostics remain available. The pre-port app is preserved in `native/OrboCore/Obsolete/AppHarness/OrboAssembledApp.swift`.
 
+The wheel's house band follows the live ASC, as the prototype's `skin.houseNums` renderer does. The natal Pane retains natal whole-sign houses. The wheel's Moon uses the Sun's screen bearing; the header disc retains the prototype's waxing/waning convention. Both receive the same Ring separation from Apollo.
+
+## Transcription sources
+
+The original `Orbo Astrolabe.dc.html` remains unchanged. Its `_moonFace`, `_sheetDataSky`, `_chartFactRows`, sign/house drawing, and recessed natal track supplied the reference behavior. The existing `orbo-logo.png` and `orbo.png` are copied unchanged into the Iris resource bundle. Aether supplies the authored background palette and decorative stars, which are presentation matter rather than astronomical measurements.
+
+| Native owner | Act I responsibility |
+| --- | --- |
+| Apollo | Hold the Horae cross-section; prepare sky and kept natal placements; signal the Aegis to Iris |
+| Hecate, Themis, Rhea, Oceanus | Supply the existing ASC/Sect, houses, condition, and Ring-separation answers |
+| Hestia | Supply the canonical kept Tapestry and its exact natal positions and testimony |
+| Artemis | Receive Apollo's selected chart/body and signal the FACT reading to Iris |
+| Aether / Iris | Supply environment matter / render geometry, glyphs, and controls |
+
 ## Subsequent acts
 
 Planet scrubbing must be decoupled from fingertip longitude: gesture displacement drives temporal travel and displayed body positions return from the real Timespine. Gesture gearing, playback, full Tabula operation, aspect web/magnetism, and Pane spring/lens behavior belong to Act II. Other reading templates and technique/corpus connections belong to Act III. No MC, auxiliary bodies, event answers, or prose are invented for a missing native source.
