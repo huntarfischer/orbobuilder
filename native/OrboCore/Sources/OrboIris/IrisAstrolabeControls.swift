@@ -9,6 +9,7 @@ public struct IrisAstrolabeControls {
     public var natalContacts: [ApolloContact] = []
     public var crossContacts: [ApolloCrossContact] = []
     public var heldBody: AstroDNAGene?
+    public var focusedBody: AstroDNAGene?
     public var courses: [LunarCourse] = [.natal, .sky]
     public var selectAlmanacBody: (MundaneBody?) -> Void = { _ in }
     public var togglePlayback: () -> Void = {}

@@ -185,6 +185,14 @@ private final class OrboApplicationModel: ObservableObject {
         returnStart = nil; playing = false; isLive = false
         scrub = ApolloScrub(body: gene, julianDay: frame.julianDay, angle: angle, radius: radius)
         heldBody = gene
+        if let horae, var session,
+           let body = MundaneBody.canonicalOrder.first(where: { $0 == .trueNorthNode ? gene == .northNode : $0.displayName == gene.rawValue }) {
+            do {
+                try session.focus(on: body, through: horae)
+                self.session = session
+                try refreshInstrument()
+            } catch { failure = String(describing: error) }
+        }
     }
     func moveScrub(angle: Double, radius: Double) { pendingScrub = (angle, radius) }
     func endScrub() {
@@ -542,6 +550,9 @@ private struct OrboRuntimeView: View {
         controls.horizonFrame = model.horizonFrame
         controls.aspects = model.aspects
         controls.heldBody = model.heldBody
+        if let body = model.session?.focusedBody {
+            controls.focusedBody = body == .trueNorthNode ? .northNode : AstroDNAGene(rawValue: body.displayName)
+        }
         controls.courses = [.natal, .sky] + LunarCourse.allCases.filter { model.keptCourses.contains($0) && $0 != .natal && $0 != .sky }
         controls.selectAlmanacBody = { model.almanacBody = $0; model.selectCourse(.almanac) }
         if let aegis = model.aegis {

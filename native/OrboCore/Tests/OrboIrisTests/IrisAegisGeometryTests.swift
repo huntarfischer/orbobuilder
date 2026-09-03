@@ -24,6 +24,22 @@ final class IrisAegisGeometryTests: XCTestCase {
         XCTAssertEqual(placements.map(\.longitude.degrees), [359, 1, 40])
     }
 
+    func testClosestMoonWinsOverLaterPaintedUranusAndNatalDoesNotScrub() {
+        let moon = AstrolabePlacement(gene: .moon, longitude: CelestialLongitude(65)!, motion: .direct, house: nil, condition: nil)
+        let uranus = AstrolabePlacement(gene: .uranus, longitude: CelestialLongitude(69)!, motion: .direct, house: nil, condition: nil)
+        let geometry = IrisAegisGeometry(diameter: 400, horizon: 12)
+        let sky = [moon, uranus]
+        let offsets = IrisAegisGeometry.trackOffsets(sky)
+        let touch = geometry.point(longitude: moon.longitude.degrees, radius: 150 - (offsets[.moon] ?? 0))
+        XCTAssertEqual(geometry.placement(at: touch, sky: sky, natal: [])?.gene, .moon)
+        let reversedOffsets = IrisAegisGeometry.trackOffsets(Array(sky.reversed()))
+        let reversedTouch = geometry.point(longitude: moon.longitude.degrees, radius: 150 - (reversedOffsets[.moon] ?? 0))
+        XCTAssertEqual(geometry.placement(at: reversedTouch, sky: Array(sky.reversed()), natal: [])?.gene, .moon)
+        let natalTouch = geometry.point(longitude: 65, radius: 120)
+        XCTAssertEqual(geometry.placement(at: natalTouch, sky: sky, natal: [moon])?.kind, .natal)
+        XCTAssertNil(geometry.placement(at: .zero, sky: sky, natal: []))
+    }
+
     func testPrototypeArtworkDecodesFromTheIrisBundle() {
         XCTAssertNotNil(IrisAstrolabeArtwork.logo)
         XCTAssertNotNil(IrisAstrolabeArtwork.companion)

@@ -23,8 +23,14 @@ struct IrisLunarCourseView: View {
     }
     @ViewBuilder private func rowView(_ row: LunarRow) -> some View {
         switch row {
-        case let .fact(key, value, _):
-            HStack(alignment: .firstTextBaseline) { Text(key).foregroundStyle(IrisAstrolabeStyle.gold); Spacer(); Text(value).multilineTextAlignment(.trailing) }.font(.system(size: 13))
+        case let .fact(key, value, qualified):
+            HStack(alignment: .firstTextBaseline) {
+                Text(key).foregroundStyle(IrisAstrolabeStyle.gold)
+                Spacer()
+                if let qualified {
+                    Text(IrisAstrolabeStyle.position(qualified.longitude) + " " + String(describing: qualified.longitude.sign).capitalized + " " + IrisAstrolabeStyle.signs[qualified.longitude.sign.rawValue])
+                } else { Text(value).multilineTextAlignment(.trailing) }
+            }.font(.system(size: 13))
         case let .relation(left, mark, right, orb):
             HStack { Text(left); Text(mark).foregroundStyle(IrisAstrolabeStyle.gold); Text(right); Spacer(); if let orb { Text(String(format: "%.2f°", orb)).font(.caption.monospacedDigit()) } }.font(.system(size: 12))
         case let .ledger(mark, what, when, track):

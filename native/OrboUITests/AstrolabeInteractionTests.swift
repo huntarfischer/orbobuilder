@@ -67,6 +67,7 @@ final class AstrolabeInteractionTests: XCTestCase {
         finger.press(forDuration: 0.1, thenDragTo: finger.withOffset(CGVector(dx: 65, dy: -45)))
         XCTAssertEqual(app.buttons["orbo.live"].label, "RETURN TO LIVE")
         XCTAssertNotEqual(movingMoon.label, before)
+        XCTAssertEqual(movingMoon.value as? String, "Temporal gear", "The nearest Moon must keep its gear even when Uranus overlaps its hit area.")
         capture("Act-II-Scrub", app)
         app.buttons["orbo.play"].tap()
         XCTAssertEqual(app.buttons["orbo.play"].label, "Pause sky")

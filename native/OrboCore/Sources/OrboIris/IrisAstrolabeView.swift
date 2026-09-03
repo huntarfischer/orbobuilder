@@ -19,6 +19,7 @@ public struct IrisAstrolabeView: View {
     @State private var crowded: [AstrolabePlacement] = []
     @State private var crowdedKind: AstrolabeChart.Kind = .natal
     @State private var activeScrub: AstroDNAGene?
+    @State private var pickupAttempted = false
     @Environment(\.scenePhase) private var scenePhase
 
     public init(frame: IrisAstrolabeFrame, pane: IrisLunarPaneFrame?, isLive: Bool, environment: AetherEnvironment,
@@ -86,7 +87,7 @@ public struct IrisAstrolabeView: View {
             }
             .accessibilityElement(children: .contain)
             .onChange(of: scenePhase) { _, phase in
-                if phase != .active { activeScrub = nil; controls.endScrub() }
+                if phase != .active { activeScrub = nil; pickupAttempted = false; controls.endScrub() }
             }
         }
     }
@@ -250,7 +251,6 @@ public struct IrisAstrolabeView: View {
                         .overlay(Circle().stroke(selected ? IrisAstrolabeStyle.gold : IrisAstrolabeStyle.color(ascendant.longitude.sign), lineWidth: selected ? 2 : 1))
                         .frame(width: 44, height: 44).contentShape(Circle())
                 }.buttonStyle(.plain)
-                    .simultaneousGesture(scrubGesture(.ascendant, radius: radius))
                     .simultaneousGesture(TapGesture(count: 2).onEnded { controls.toggleFrame() })
                     .accessibilityLabel("Sky Ascendant, \(IrisAstrolabeStyle.position(ascendant.longitude))")
                     .accessibilityIdentifier("orbo.sky.Ascendant")
@@ -258,6 +258,7 @@ public struct IrisAstrolabeView: View {
                     .position(geometry.point(longitude: ascendant.longitude.degrees, radius: radius * 0.99))
             }
         }.frame(width: diameter, height: diameter).coordinateSpace(name: "aegis")
+            .simultaneousGesture(scrubGesture(aegis, geometry: geometry, radius: radius))
             .accessibilityElement(children: .contain)
     }
 
@@ -299,8 +300,8 @@ public struct IrisAstrolabeView: View {
                     if selected { Circle().stroke(IrisAstrolabeStyle.gold, lineWidth: 1).frame(width: 25, height: 25) }
                 }.frame(width: 30, height: 30).contentShape(Circle())
             }.buttonStyle(.plain)
-                .simultaneousGesture(scrubGesture(placement.gene, radius: radius), including: natal ? .none : .all)
                 .accessibilityLabel("\(chart.kind == .natal ? chart.name : "Sky") \(placement.gene.displayName), \(IrisAstrolabeStyle.position(placement.longitude))")
+                .accessibilityValue(!natal && controls.focusedBody == placement.gene ? "Temporal gear" : "")
                 .accessibilityIdentifier("orbo.\(chart.kind.rawValue).\(placement.gene.rawValue)")
                 .position(geometry.point(longitude: placement.longitude.degrees, radius: track))
         }
@@ -317,21 +318,25 @@ public struct IrisAstrolabeView: View {
         }.allowsHitTesting(false)
     }
 
-    private func scrubGesture(_ gene: AstroDNAGene, radius: Double) -> some Gesture {
+    private func scrubGesture(_ aegis: ApolloAegis, geometry: IrisAegisGeometry, radius: Double) -> some Gesture {
         DragGesture(minimumDistance: 6, coordinateSpace: .named("aegis"))
             .onChanged { value in
                 func polar(_ point: CGPoint) -> (Double, Double) {
                     let x = point.x - radius, y = radius - point.y
                     return (atan2(y, x) * 180 / .pi, hypot(x, y))
                 }
-                if activeScrub == nil {
-                    activeScrub = gene
+                if !pickupAttempted {
+                    pickupAttempted = true
+                    guard let hit = geometry.placement(at: value.startLocation, sky: aegis.sky.placements,
+                        natal: aegis.natal?.placements ?? []), hit.kind == .sky else { return }
+                    activeScrub = hit.gene
                     let start = polar(value.startLocation)
-                    controls.beginScrub(gene, start.0, start.1)
+                    controls.beginScrub(hit.gene, start.0, start.1)
                 }
+                guard activeScrub != nil else { return }
                 let current = polar(value.location)
                 controls.moveScrub(current.0, current.1)
-            }.onEnded { _ in activeScrub = nil; controls.endScrub() }
+            }.onEnded { _ in activeScrub = nil; pickupAttempted = false; controls.endScrub() }
     }
 
     private func crossThreads(_ sky: AstrolabeChart, natal: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double) -> some View {
