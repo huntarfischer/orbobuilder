@@ -13,4 +13,10 @@ public struct HecateLink: Sendable {
     public var members: [SpineLinkAddress] {
         link.members
     }
+
+    /// Hecate asks the mounted Door III for the exact supplied members.
+    /// Their order survives so the caller can supply them to existing Kleides.
+    public func coordinates(through source: SpineLink) throws -> [OrboSpineCelestialCoordinate] {
+        try members.map { try source.coordinate(at: $0) }
+    }
 }

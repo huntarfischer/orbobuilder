@@ -1189,9 +1189,34 @@ private enum OrboSpineFileReader {
     }
 
     private static func csvFields(_ line: String) -> [String] {
-        line.trimmingCharacters(in: CharacterSet(charactersIn: "\r"))
-            .split(separator: ",", omittingEmptySubsequences: false)
-            .map(String.init)
+        if !line.contains("\"") {
+            return line.trimmingCharacters(in: CharacterSet(charactersIn: "\r"))
+                .split(separator: ",", omittingEmptySubsequences: false).map(String.init)
+        }
+        let characters = Array(line.trimmingCharacters(in: CharacterSet(charactersIn: "\r")))
+        var fields: [String] = []
+        var field = ""
+        var quoted = false
+        var index = 0
+        while index < characters.count {
+            let character = characters[index]
+            if character == "\"" {
+                if quoted, index + 1 < characters.count, characters[index + 1] == "\"" {
+                    field.append("\"")
+                    index += 1
+                } else {
+                    quoted.toggle()
+                }
+            } else if character == ",", !quoted {
+                fields.append(field)
+                field = ""
+            } else {
+                field.append(character)
+            }
+            index += 1
+        }
+        fields.append(field)
+        return fields
     }
 
     private static func optionalText(

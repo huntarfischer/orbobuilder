@@ -36,7 +36,7 @@ public struct IrisTimespineViewport: Hashable, Sendable {
                 : start.value + (Double(index) * step)
             let julianDay = JulianDay(value)!
             resolved.append(
-                IrisHoraeFrame(output: try horae.seek(to: julianDay))
+                IrisHoraeFrame(port: Horae.signalForIris(try horae.seek(to: julianDay)))
             )
         }
 

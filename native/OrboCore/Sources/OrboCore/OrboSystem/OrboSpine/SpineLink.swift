@@ -28,3 +28,44 @@ public struct SpineLinkSet: Hashable, Sendable {
         self.members = members
     }
 }
+
+public enum SpineLinkFailure: Error, Equatable, Sendable {
+    case wrongSpine
+    case unavailableMember(String)
+    case coordinateMismatch
+}
+
+/// Door III bound to one mounted candidate. Celestial members use the same
+/// Locate authority as Door I; Link introduces no clock or interpolation.
+public struct SpineLink: Sendable {
+    public let spineIdentity: String
+    private let locate: OrboSpineLocate
+
+    internal init(provenance: OrboSpineRuntimeProvenance, locate: OrboSpineLocate) {
+        self.spineIdentity = provenance.candidateManifestSHA256
+        self.locate = locate
+    }
+
+    /// Addresses an already-resolved celestial member, after checking its source.
+    public func address(of coordinate: OrboSpineCelestialCoordinate) throws -> SpineLinkAddress {
+        guard try locate.coordinate(of: coordinate.body, at: coordinate.julianDay) == coordinate else {
+            throw SpineLinkFailure.coordinateMismatch
+        }
+        return SpineLinkAddress(
+            spineIdentity: spineIdentity,
+            memberIdentity: "\(coordinate.body.constructionDataName)@\(coordinate.julianDay.value)"
+        )!
+    }
+
+    /// Retrieves the existing member named by this candidate's address.
+    public func coordinate(at address: SpineLinkAddress) throws -> OrboSpineCelestialCoordinate {
+        guard address.spineIdentity == spineIdentity else { throw SpineLinkFailure.wrongSpine }
+        let parts = address.memberIdentity.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2,
+              let body = MundaneBody.canonicalOrder.first(where: { $0.constructionDataName == parts[0] }),
+              let value = Double(parts[1]), let julianDay = JulianDay(value) else {
+            throw SpineLinkFailure.unavailableMember(address.memberIdentity)
+        }
+        return try locate.coordinate(of: body, at: julianDay)
+    }
+}

@@ -1,3 +1,5 @@
+> September 3 app assembly: the sealed OrboSpine is now wired into application startup, existing Iris ports, Chronos/Hecate/Homer, and the real birth-to-Hearth route. Validation is pending; see [the assembly gate](gates/2026-09-03%20Orbo%20App%20Assembly%20Gate.md). Older component entries below retain their historical status.
+
 # Native Port Manifest
 
 **Status:** Living native port authority for Orbo 1.0 construction.

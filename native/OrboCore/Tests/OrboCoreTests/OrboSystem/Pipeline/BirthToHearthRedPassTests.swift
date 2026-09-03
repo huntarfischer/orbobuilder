@@ -12,7 +12,7 @@ final class BirthToHearthRedPassTests: XCTestCase {
         var orbo = Orbo()
         var hermes = HermesCourier()
         let atlas = Atlas()
-        let hestia = Hestia(nativeSubjectID: subjectID)
+        var hestia = Hestia(nativeSubjectID: subjectID)
 
         // The proof begins at the actual player-facing entrance, not at a
         // preconstructed birth input or backstage object.
@@ -142,7 +142,7 @@ final class BirthToHearthRedPassTests: XCTestCase {
             ]
         )
 
-        // RED ACCEPTANCE BOUNDARY
+        // REAL-SPINE ACCEPTANCE BOUNDARY
         //
         // Do not satisfy this assertion with a Port I stub, handcrafted sky,
         // synthetic OrboSpineLocate, prebuilt AstroDNA/Tapestry, direct Hearth
@@ -150,10 +150,16 @@ final class BirthToHearthRedPassTests: XCTestCase {
         // The living system must continue this same Engraving through Moirai's
         // real Clotho -> Horae -> Locate path, Lachesis/Titans, Atropos, Hermes,
         // and Hestia until the Hearth owns the canonical sealed Tapestry.
+        let runtime = try SealedOrboSpineFixture.runtime()
+        var horae = Horae(locate: runtime.locate)
+        try finishOrboEngraving(
+            atlasResolvedPackage, orbo: &orbo, horae: &horae,
+            hermes: &hermes, hestia: &hestia
+        )
         let tapestry = hestia.canonicalTapestry(for: subjectID)
         XCTAssertNotNil(
             tapestry,
-            "RED: full Orbo onboarding reaches the real Moirai stop, but Ean's canonical Tapestry does not yet reach Hestia's Hearth without synthetic middle matter."
+            "The real Moirai journey must deliver Ean's canonical Tapestry to Hestia."
         )
 
         // These become reachable only when the end-to-end acceptance path is real.

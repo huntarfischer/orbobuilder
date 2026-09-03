@@ -17,7 +17,7 @@ public struct IrisHoraeControlSession: Hashable, Sendable {
     ) throws {
         self.domain = horae.controlDomain
         self.frame = IrisHoraeFrame(
-            output: try horae.respond(to: .seekUT(to: initialJulianDay))
+            port: Horae.signalForIris(try horae.respond(to: .seekUT(to: initialJulianDay)))
         )
         self.focusedBody = nil
     }
@@ -33,7 +33,7 @@ public struct IrisHoraeControlSession: Hashable, Sendable {
         through horae: Horae
     ) throws {
         let output = try horae.respond(to: .seekUT(to: julianDay))
-        frame = IrisHoraeFrame(output: output)
+        frame = IrisHoraeFrame(port: Horae.signalForIris(output))
     }
 
     /// Relative temporal displacement from the exact Horae-resolved UT currently
@@ -45,7 +45,7 @@ public struct IrisHoraeControlSession: Hashable, Sendable {
         let output = try horae.respond(
             to: .shiftUT(from: frame.julianDay, by: offset)
         )
-        frame = IrisHoraeFrame(output: output)
+        frame = IrisHoraeFrame(port: Horae.signalForIris(output))
     }
 
     /// Presentation focus on one body at the current Horae plane.
@@ -59,7 +59,7 @@ public struct IrisHoraeControlSession: Hashable, Sendable {
         let output = try horae.respond(
             to: .driveBody(to: body, at: frame.julianDay)
         )
-        frame = IrisHoraeFrame(output: output)
+        frame = IrisHoraeFrame(port: Horae.signalForIris(output))
         focusedBody = body
     }
 }

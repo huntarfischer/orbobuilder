@@ -12,9 +12,48 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - name: Compile native owners and readers
-        run: swift build --package-path native/OrboCore
-      - name: Mount sealed Spine through the application reader
-        run: swift run --package-path native/OrboCore OrboSpineAssemblyProofTool --build-root tools/pass5/orbospine-build
-      - name: Build the iOS application
-        run: xcodebuild build -project native/Orbo.xcodeproj -scheme Orbo -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO
+      - name: Full native package regression including real birth-to-Hearth
+        run: swift test --package-path native/OrboCore
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Accumulated Xcode tests and Orbo build
+        run: >-
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -parallel-testing-enabled NO
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build OrboLab
+        run: >-
+          xcodebuild build -project native/Orbo.xcodeproj -scheme OrboLab
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Run real birth-to-Hearth in the app
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/Orbo.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          xcrun simctl launch --terminate-running-process --stdout="$RUNNER_TEMP/Orbo-stdout.log" --stderr="$RUNNER_TEMP/Orbo-stderr.log" "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-birth-proof
+          ready=0
+          for attempt in $(seq 1 120); do
+            if grep -q ORBO_HEARTH_LIT "$RUNNER_TEMP/Orbo-stdout.log"; then ready=1; break; fi
+            sleep 5
+          done
+          cat "$RUNNER_TEMP/Orbo-stdout.log"
+          cat "$RUNNER_TEMP/Orbo-stderr.log"
+          xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-Birth-Hearth.png"
+          test "$ready" = 1
+      - name: Preserve Xcode and simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Orbo-Assembled-Evidence
+          path: |
+            ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Orbo-Birth-Hearth.png
+            ${{ runner.temp }}/Orbo-stdout.log
+            ${{ runner.temp }}/Orbo-stderr.log
+          if-no-files-found: ignore

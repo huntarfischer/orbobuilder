@@ -52,6 +52,7 @@ public struct OrboSpineRuntime: Sendable {
     public let library: OrboSpineLibraryCatalog
     public let ports: SpinePorts
     public let linkPort: SpineAccessPort
+    public let link: SpineLink
 
     /// Compatibility views of Library-owned prepared matter.
     public var stations: [OrboSpineStation] { library.allStations }
@@ -117,6 +118,7 @@ public struct OrboSpineRuntime: Sendable {
         )
         self.ports = SpinePorts()
         self.linkPort = SpineLinkSet.port
+        self.link = SpineLink(provenance: provenance, locate: locate)
         self.retrogradePassages = retrogradePassages.sorted { $0.start.value < $1.start.value }
         self.ringOccurrences = ringOccurrences.sorted { $0.julianDay.value < $1.julianDay.value }
         self.eclipses = eclipses.sorted { $0.julianDay.value < $1.julianDay.value }
