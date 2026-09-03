@@ -42,4 +42,4 @@ Tests exercise Ean's real night chart and two additional real births, exact Tape
 
 The dedicated workflow runs the accumulated package and Xcode suites, builds Orbo and OrboLab, and captures the real Aegis, natal Pane and selected Sun in the simulator. Its launch argument drives the production selection callbacks with real sealed Spine data; it is not a synthetic runtime.
 
-Gate remains open until simulator evidence and the accumulated test results are reviewed.
+Act I is verified by [run 33733075809](https://github.com/huntarfischer/orbobuilder/actions/runs/33733075809): 941 package tests and 941 Xcode tests (858 Core + 83 Iris), zero failures; both app targets built and launched; all five simulator captures inspected. The live timer follows scene/tab activation, and the standalone proof observes a later real Horae frame after four seconds while the natal chart remains unchanged. See `specs/gates/2026-09-03-Astrolabe-Act-I.md` for the exact tested commit, evidence and practical limits. Acts II and III are not promoted by this gate.
