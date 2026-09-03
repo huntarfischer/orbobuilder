@@ -51,7 +51,8 @@ let package = Package(
             name: "OrboCore",
             resources: [
                 .copy("Geoplacement/Resources/geoplacement-atlas-v1.js")
-            ]
+            ],
+            linkerSettings: [.linkedLibrary("z")]
         ),
         .target(
             name: "OrboIris",

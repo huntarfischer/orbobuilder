@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E30000000000000000000001 /* orbospine-build in Resources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* orbospine-build */; };
 		A30000000000000000000001 /* OrboApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* OrboApp.swift */; };
 		A30000000000000000000002 /* OrboLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OrboLabApp.swift */; };
 		A30000000000000000000003 /* OrboCore in Frameworks */ = {isa = PBXBuildFile; productRef = A60100000000000000000001 /* OrboCore */; };
@@ -49,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E20000000000000000000001 /* orbospine-build */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "../tools/pass5/orbospine-build"; sourceTree = SOURCE_ROOT; };
 		A20000000000000000000001 /* OrboApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrboApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* OrboLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrboLabApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* Orbo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orbo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,6 +149,7 @@
 		A10000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				E20000000000000000000001 /* orbospine-build */,
 				A10200000000000000000001 /* Orbo */,
 				A10300000000000000000001 /* OrboLab */,
 				B10000000000000000000001 /* OrboCoreTests */,
@@ -348,7 +351,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A40400000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A40400000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (E30000000000000000000001,); runOnlyForDeploymentPostprocessing = 0; };
 		A40500000000000000000001 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		B40200000000000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
