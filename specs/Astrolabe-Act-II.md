@@ -1,6 +1,6 @@
 # Astrolabe Act II — Lunar Port and instrument control
 
-Status: implementation in progress on `feature/astrolabe-lunar-pane-swift-2026-09-03`. No acceptance claim until the accumulated Xcode and simulator gates pass.
+Status: the Lunar Port, instrument controls and first connected readers are verified on `feature/astrolabe-lunar-pane-swift-2026-09-03` at code commit `70490a518c65d494362db379d8d16f8437d9e32b`. This is the accepted scope below, not a claim that every prototype technique has been ported.
 
 ## Source transcription
 
@@ -31,8 +31,21 @@ Act I app, Iris views and Artemis port are preserved in `native/OrboCore/Obsolet
 
 ## Gates
 
-Pending: full Swift package suite, accumulated Xcode suite, actual simulator gesture/Tabula proof, Orbo/OrboLab build and captures. See the dated Act II gate for measured results and remaining scope.
+Run [33800640778, attempt 2](https://github.com/huntarfischer/orbobuilder/actions/runs/33800640778/attempts/2) completed successfully. Package: 959 tests, zero failures. Accumulated Xcode: 960 tests (870 Core + 89 Iris + one actual-touch UI test), zero failures. Orbo and OrboLab built and launched; their captures and the touch-test captures were inspected. Final evidence artifact: `9912470716`. The first attempt's stuck detail-button tap and the successful same-code retry are recorded in the dated gate.
 
-First implementation commit `861ce67`: 956 package tests passed with zero failures in run 33797380511. Subsequent refinements require their own final gate; the first result is not a claim about untested edits.
+The corrected Moon pickup keeps the Moon's actual Horae focus even where another planet overlaps its hit area. The passing touch sequence also verifies preserved natal rows, playback, paused background/foreground return, Tabula, Moon, Almanac and Hestia restore. Debug simulator startup measured 220.947 s for Spine load/assembly, 0.145 s for first sky presentation and 0.594 s for birth/Hearth delivery. Payload consolidation remains separate.
 
 The center hold currently saves the native Hearth using its existing codec. Marking an arbitrary displayed moment needs a kept-moment representation: Holdings currently keeps AstroDNA without the displayed UT/place, so pretending those records can restore an exact moment would lose information. No such alternate record or codec is invented in this pass. The composite seat reaches Hecate's existing linked sky read, with two-chart casting explicitly unavailable. The six typed axes/renderers are prepared; current real readers exercise FACT, RELATION and LEDGER. Advanced SPAN/PROSE dishes and the full Luna windowed reader are not claimed as connected.
+
+## Using this branch
+
+- Drag a sky placement or ASC to turn its gear. Pickup is resolved once against the nearest actual glyph center. A closer natal placement does not scrub. Moving inward increases the gear; moving outward reduces it. Releasing stops the request without planetary inertia.
+- Tap the center to play/pause. The clock returns to the live sky through a short sequence of real Spine reads. Double-tap ASC to switch horizon/zodiacal orientation.
+- Double-tap the outer rim, or choose **Tabula** from Orbo's menu, to reach Hermes's twelve destinations. **AEGIS** returns to the face.
+- On **Moon**, open either phase/illumination/mansion or the prepared-event reading. On **Timing**, choose a body and read its future returns to the current degree and direction.
+- On **Almanac**, choose prepared streams independently, then open the reading. The Pane's body rail includes **ALL**. A dated row seeks its real occurrence.
+- **Keep on Lunar Pane** retains an optional course on the category arc. Opening a course does not keep it. This choice is separate from Almanac stream selection.
+- Drag the category arc to move between available courses. Drag the small handle to lower the Pane. FACT readings resist an upward pull; expanded PROSE earns the higher detent under the port's contract.
+- **Hestia** lists saved houses. Selecting one restores its native Tapestry through the same keeper codec. New successful birth entries are saved independently; an unresolved new input preserves the previous Hearth.
+
+Simulator acceptance exercises the existing Ean night chart, closest-body scrubbing, playback, paused background/foreground return, Moon and Almanac openings, and Hestia restore. The existing London and Sydney birth regressions remain part of the accumulated suite.
