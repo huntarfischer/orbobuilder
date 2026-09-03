@@ -102,11 +102,12 @@ public struct IrisAstrolabeView: View {
             }.font(.system(size: 23)).minimumScaleFactor(0.65).lineLimit(1)
 
             let date = Date(timeIntervalSince1970: ((aegis.source.julianDay.value - 2440587.5) * 86400).rounded())
+            let civicLabel = date.formatted(date: .abbreviated, time: .standard) + " " + (TimeZone.current.abbreviation(for: date) ?? "")
             HStack(spacing: 7) {
                 Button(action: goLive) {
-                    Text(date.formatted(date: .abbreviated, time: .standard) + " " + (TimeZone.current.abbreviation(for: date) ?? ""))
+                    Text(civicLabel)
                         .font(.system(size: 12)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.8)
-                }.accessibilityLabel("\(date.formatted()). Return to live sky")
+                }.accessibilityLabel("\(civicLabel). Return to live sky")
                     .accessibilityIdentifier("orbo.clock")
                 Button { showSeats.toggle() } label: {
                     Text("⇅").font(.system(size: 12)).frame(width: 22, height: 22)
