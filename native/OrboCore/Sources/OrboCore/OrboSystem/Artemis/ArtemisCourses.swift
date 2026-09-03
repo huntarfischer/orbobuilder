@@ -30,7 +30,7 @@ public extension Artemis {
         let degree = OrboSpineDirectionalDegree(Double((moon.longitude.sign.rawValue + 1) % 12 * 30))!
         let ingress = try horae.occurrenceUTs(of: .moon, at: degree).first { $0.value > chart.julianDay.value }
         var rows: [LunarRow] = []
-        if let ingress { rows.append(.ledger(mark: "☽", what: "Next sign ingress", when: ingress, track: nil)) }
+        if let ingress { rows.append(.ledger(mark: "☽", what: "Moon enters \(lunarPosition(degree.physicalDegrees))", when: ingress, track: nil)) }
         let end = ingress?.value ?? chart.julianDay.value + 3
         let traditional: Set<MundaneBody> = [.sun, .mercury, .venus, .mars, .jupiter, .saturn]
         let majors: Set<RingMark> = [.conjunction, .sextile, .square, .trine, .opposition]
@@ -41,7 +41,7 @@ public extension Artemis {
         }
         // No void-of-course claim from an empty prepared set: absence needs a complete windowed reader.
         if let eclipse = library.eclipses.first(where: { $0.julianDay.value > chart.julianDay.value }) {
-            rows.append(.ledger(mark: "◐", what: "\(eclipse.kind.rawValue) \(eclipse.type.rawValue) eclipse", when: eclipse.julianDay, track: nil))
+            rows.append(.ledger(mark: "◐", what: "\(lunarPosition(eclipse.eclipseDegree)) · \(eclipse.kind.rawValue) \(eclipse.type.rawValue) eclipse", when: eclipse.julianDay, track: nil))
         }
         rows.sort { lhs, rhs in
             if case let .ledger(_, _, a, _) = lhs, case let .ledger(_, _, b, _) = rhs { return a.value < b.value }

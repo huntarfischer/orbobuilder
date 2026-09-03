@@ -1,3 +1,5 @@
+import Foundation
+
 public extension Chronos {
     /// Almanac's first prepared chronology: all bodies, or one selected rail.
     static func almanac(after moment: JulianDay, body: MundaneBody?, using library: OrboSpineLibraryCatalog, limit: Int = 30) -> ChronosAnswer {
@@ -64,15 +66,22 @@ public extension Artemis {
             let what: String
             switch event {
             case let .station(station):
-                mark = "•"; what = "\(station.body.displayName) station"
+                mark = "•"; what = "\(station.body.displayName) · \(lunarPosition(station.physicalDegrees)) · station to \(station.laneAfter.rawValue)"
             case let .contact(contact):
-                mark = "◇"; what = "\(contact.bodyA.displayName) \(String(describing: contact.mark)) \(contact.bodyB.displayName)"
+                mark = "◇"; what = "\(contact.bodyA.displayName) \(lunarPosition(contact.bodyADirectionalDegree.physicalDegrees)) · \(String(describing: contact.mark)) · \(contact.bodyB.displayName) \(lunarPosition(contact.bodyBDirectionalDegree.physicalDegrees))"
             case let .eclipse(eclipse):
-                mark = "◐"; what = "\(eclipse.kind.rawValue) \(eclipse.type.rawValue) eclipse"
+                mark = "◐"; what = "\(lunarPosition(eclipse.eclipseDegree)) · \(eclipse.kind.rawValue) \(eclipse.type.rawValue) eclipse"
             }
             return .ledger(mark: mark, what: what, when: event.moment, track: nil)
         }
         let gene = body.flatMap { $0 == .trueNorthNode ? AstroDNAGene.northNode : AstroDNAGene(rawValue: $0.displayName) }
         return try pass(LunarTicket(plate: .ledger, subject: LunarSubject(chart: chart, course: .almanac, body: gene), rows: rows, doctrine: [.chronos, .spine]))
+    }
+}
+
+extension Artemis {
+    static func lunarPosition(_ degrees: Double) -> String {
+        guard let longitude = CelestialLongitude(degrees) else { return "Unresolved degree" }
+        return String(format: "%.2f° %@", longitude.degreeInSign.value, String(describing: longitude.sign).capitalized)
     }
 }
