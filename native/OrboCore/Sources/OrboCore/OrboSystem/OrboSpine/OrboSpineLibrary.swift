@@ -23,6 +23,7 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
 
     public let coreShelves: [OrboSpineLibraryShelf]
 
+    private let retrogradeRows: [OrboSpineRetrogradePassage]
     private let stationRows: [OrboSpineStation]
     private let shellRows: [OrboSpineShellInterval]
     private let ringRows: [OrboSpineRingOccurrence]
@@ -30,6 +31,7 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
 
     public init() {
         self.coreShelves = OrboSpineLibraryShelf.allCases
+        self.retrogradeRows = []
         self.stationRows = []
         self.shellRows = []
         self.ringRows = []
@@ -37,12 +39,14 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
     }
 
     internal init(
+        retrogradePassages: [OrboSpineRetrogradePassage] = [],
         stations: [OrboSpineStation],
         shellIntervals: [OrboSpineShellInterval],
         ringOccurrences: [OrboSpineRingOccurrence] = [],
         eclipses: [OrboSpineEclipseOccurrence] = []
     ) {
         self.coreShelves = OrboSpineLibraryShelf.allCases
+        self.retrogradeRows = retrogradePassages.sorted { $0.start.value < $1.start.value }
         self.stationRows = stations.sorted { $0.julianDay.value < $1.julianDay.value }
         self.ringRows = ringOccurrences.sorted { $0.julianDay.value < $1.julianDay.value }
         self.eclipseRows = eclipses.sorted { $0.julianDay.value < $1.julianDay.value }
@@ -70,6 +74,7 @@ public struct OrboSpineLibraryCatalog: Hashable, Sendable {
 
     /// Compatibility views for the assembled runtime. These are the same Library-owned
     /// arrays, not independently retained chronology.
+    internal var allRetrogradePassages: [OrboSpineRetrogradePassage] { retrogradeRows }
     internal var allStations: [OrboSpineStation] { stationRows }
     internal var allShellIntervals: [OrboSpineShellInterval] { shellRows }
     /// Existing prepared matter, now available at its declared Port II shelves.
