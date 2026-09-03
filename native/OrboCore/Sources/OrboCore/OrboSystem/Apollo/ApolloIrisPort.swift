@@ -5,13 +5,18 @@
 /// the instrument. Later Astrolabe reconstruction may enrich this signal.
 public struct AstrolabeSignalFrame: Hashable, Sendable {
     public let subject: AstrolabeSubjectIdentity
+    public let aegis: ApolloAegis?
 
-    fileprivate init(subject: AstrolabeSubjectIdentity) {
+    fileprivate init(subject: AstrolabeSubjectIdentity, aegis: ApolloAegis? = nil) {
         self.subject = subject
+        self.aegis = aegis
     }
 }
 
 public extension Apollo {
+    static func signalForIris(_ aegis: ApolloAegis) -> IrisPort<AstrolabeSignalFrame> {
+        IrisPort(signal: AstrolabeSignalFrame(subject: aegis.sky.subject, aegis: aegis))
+    }
     /// Standard outward Iris port from Apollo's Astrolabe.
     ///
     /// Each call may expose a fresh lawful snapshot, but the supplied Astrolabe

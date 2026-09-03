@@ -56,7 +56,8 @@ let package = Package(
         ),
         .target(
             name: "OrboIris",
-            dependencies: ["OrboCore"]
+            dependencies: ["OrboCore"],
+            resources: [.process("Assets")]
         ),
         .executableTarget(
             name: "OrboSpineForgeTool",

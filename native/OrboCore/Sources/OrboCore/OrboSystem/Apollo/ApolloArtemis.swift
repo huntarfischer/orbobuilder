@@ -16,6 +16,13 @@ public struct AstrolabeSubjectIdentity: Hashable, Sendable {
 }
 
 public extension Apollo {
+    /// Only Apollo hands chart matter to Artemis. A selected gene is qualified
+    /// by its chart before the Pane can display it.
+    static func presentToArtemis(
+        _ chart: AstrolabeChart, selecting gene: AstroDNAGene? = nil
+    ) throws -> ArtemisFactReading {
+        try Artemis.receiveFromApollo(chart, selecting: gene)
+    }
     /// Apollo establishes which identity is on the Astrolabe.
     static func placeOnAstrolabe(identity: String) -> AstrolabeSubjectIdentity {
         AstrolabeSubjectIdentity(rawValue: identity)
@@ -33,6 +40,14 @@ public extension Apollo {
 }
 
 extension Artemis {
+    fileprivate static func receiveFromApollo(
+        _ chart: AstrolabeChart, selecting gene: AstroDNAGene?
+    ) throws -> ArtemisFactReading {
+        if let gene, chart.placement(gene) == nil {
+            throw ApolloAegisFailure.missingPlacement(gene)
+        }
+        return ArtemisFactReading(chart: chart, selectedGene: gene)
+    }
     /// Pass C keeps the lunar receiving aperture inside the twin seam.
     /// Artemis cannot be handed a raw Astrolabe identity through a public neighbor road.
     fileprivate static func receiveFromApollo(

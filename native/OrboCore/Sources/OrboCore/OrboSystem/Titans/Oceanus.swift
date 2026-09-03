@@ -13,6 +13,11 @@ public struct OceanusPass: Sendable {
 /// authoritative entrance to frozen Ring law while separately exposing the
 /// approved ASC/Sun geometric water table.
 public enum Oceanus {
+    /// Reads the existing Ring measurement for two supplied coordinates.
+    public static func separation(from a: CelestialLongitude, to b: CelestialLongitude) -> RingSeparation {
+        Ring.separation(from: a, to: b)
+    }
+
     public static func encircle(degree: Int) -> RingTemplate? {
         Ring.template(forDegree: degree)
     }

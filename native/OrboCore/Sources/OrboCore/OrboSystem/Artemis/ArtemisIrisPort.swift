@@ -5,13 +5,18 @@
 /// control of the Lunar Pane. Later Lunar Pane reconstruction may enrich it.
 public struct LunarPaneSignalFrame: Hashable, Sendable {
     public let subject: AstrolabeSubjectIdentity
+    public let reading: ArtemisFactReading?
 
-    fileprivate init(subject: AstrolabeSubjectIdentity) {
+    fileprivate init(subject: AstrolabeSubjectIdentity, reading: ArtemisFactReading? = nil) {
         self.subject = subject
+        self.reading = reading
     }
 }
 
 public extension Artemis {
+    static func signalForIris(_ reading: ArtemisFactReading) -> IrisPort<LunarPaneSignalFrame> {
+        IrisPort(signal: LunarPaneSignalFrame(subject: reading.subject, reading: reading))
+    }
     /// Standard outward Iris port from Artemis's Lunar Pane.
     ///
     /// The supplied subject is already Apollo-sourced. Artemis exposes that same

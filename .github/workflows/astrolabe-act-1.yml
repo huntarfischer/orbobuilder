@@ -1,0 +1,67 @@
+name: Astrolabe Act I
+on:
+  push:
+    branches: [feature/astrolabe-lunar-pane-swift-2026-09-03]
+  workflow_dispatch:
+concurrency:
+  group: astrolabe-act-1-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-gate:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Build OrboLab
+        run: >-
+          xcodebuild build -project native/Orbo.xcodeproj -scheme OrboLab
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Full native package regression including real birth-to-Hearth
+        run: swift test --package-path native/OrboCore
+      - name: Accumulated Xcode tests and Orbo build
+        run: >-
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -parallel-testing-enabled NO
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Run the real Aegis and Lunar Pane in the app
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/Orbo.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          xcrun simctl launch --terminate-running-process --stdout="$RUNNER_TEMP/Orbo-stdout.log" --stderr="$RUNNER_TEMP/Orbo-stderr.log" "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-instrument-proof
+          for stage in AEGIS PANE PLACEMENT; do
+            ready=0
+            for attempt in $(seq 1 600); do
+              if grep -q "ORBO_${stage}_READY" "$RUNNER_TEMP/Orbo-stdout.log"; then ready=1; break; fi
+              sleep 1
+            done
+            sleep 2
+            xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-${stage}.png"
+            test "$ready" = 1
+          done
+          cat "$RUNNER_TEMP/Orbo-stdout.log"
+          cat "$RUNNER_TEMP/Orbo-stderr.log"
+          xcrun simctl install "$ORBO_SIMULATOR" "$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/OrboLab.app"
+          xcrun simctl launch "$ORBO_SIMULATOR" com.huntarfischer.orbolab
+          sleep 3
+          xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-Lab.png"
+      - name: Preserve Xcode and simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Astrolabe-Act-I-Evidence
+          path: |
+            ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Orbo-*.png
+            ${{ runner.temp }}/Orbo-stdout.log
+            ${{ runner.temp }}/Orbo-stderr.log
+          if-no-files-found: ignore

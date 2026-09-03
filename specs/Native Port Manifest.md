@@ -1,3 +1,5 @@
+> September 3 Astrolabe Act I: Aegis/Big Three and Lunar Pane FACT transcription is implemented on `feature/astrolabe-lunar-pane-swift-2026-09-03` and under native validation. See `specs/Astrolabe-Act-I.md` and `specs/gates/2026-09-03-Astrolabe-Act-I.md`.
+
 > September 3 app assembly: the sealed OrboSpine is wired into application startup, existing Iris ports, Chronos/Hecate/Homer, and the real birth-to-Hearth route. Run 33706843653 passed 933 package tests, 933 Xcode tests, both app builds, and a visible Ean night-chart Hearth proof. See [the assembly gate](gates/2026-09-03%20Orbo%20App%20Assembly%20Gate.md) for evidence and the observed startup/linker limitations. Older component entries below retain their historical status.
 
 # Native Port Manifest
