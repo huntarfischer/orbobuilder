@@ -17,3 +17,9 @@ All four screenshots in artifact `9883705029` were inspected. The natal Pane sho
 The review exposed missing rendered bitmap artwork, excess Pane transparency, an overly low wheel, the wheel using natal house labels, and a misplaced live ASC. The next revision addresses those and captures returning to live sky. It adds a native bitmap decoding test. No final visual closure is claimed yet.
 
 The first standalone Debug launch reached the Aegis screenshot about six minutes after launch. Duplicate-class linker warnings from the assembly pass remain present. This run does not qualify startup performance, a Release/device build, or execution before iOS 26.
+
+## Revised visual proof and timer check
+
+[Run 33731191472](https://github.com/huntarfischer/orbobuilder/actions/runs/33731191472), code `bc996f802dec97c53cc8e400d22024d4f42c1996`, passed 941 package tests and 941 Xcode tests (858 Core + 83 Iris), zero failures. All five screenshots in artifact `9884484327` were inspected. The artwork, rim ASC, sky house band, darker Pane, and current-time handoff render correctly. OrboLab's live-runtime directions now name the Astrolabe tab.
+
+The live screenshot's clock appeared unchanged shortly after the return-to-live action. The view's long-lived task could capture the initial inactive scene state. The timer is now keyed to scene/tab activation, and the simulator proof requires a later real Horae frame after four seconds while the natal chart stays unchanged. Closure awaits that explicit continuous-clock check.

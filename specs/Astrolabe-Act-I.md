@@ -30,6 +30,12 @@ Planet scrubbing must be decoupled from fingertip longitude: gesture displacemen
 
 The first lunar disc transcribes the prototype's Sun/Moon longitude-separation display. It is not an additional three-dimensional lunar astronomy model. Iris's old 3D palette remains available; the prototype classic palette is separate presentation material.
 
+## Run and inspect
+
+Open `native/Orbo.xcodeproj` on this branch, choose the **Orbo** scheme, and run. After the real Spine loads, **Astrolabe** shows the sky. Open **Hearth**, edit or retain Ean's birth inputs, and choose **Begin**. **See my natal chart** opens the kept natal FACT reading on the Astrolabe. Tap a placement or row to inspect it; **NATAL** and **THE SKY** choose the chart being read. The down chevron lowers the Pane. The time/live control returns the instrument to the current sky. The civic clock displays the device's timezone, while the named birthplace supplies this first pass's local horizon.
+
+The **Text** and **Inspect** tabs retain the existing alternate readout and diagnostics. The iOS 26 guard remains confined to the older optional 3D view. Profiles remain session-scoped as in the assembled app; this pass does not add persistence or a full 360-degree Tapestry browser.
+
 ## Proof
 
 Tests exercise Ean's real night chart and two additional real births, exact Tapestry-to-pane values, unchanged natal data across a changing sky, the local ASC cast from the same Horae frame, refusal of mixed moments, and absence of an invented horizon. Geometry proof checks horizon orientation without changing coordinates.

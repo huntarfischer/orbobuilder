@@ -46,6 +46,7 @@ jobs:
           for stage in AEGIS PANE PLACEMENT LIVE; do
             ready=0
             for attempt in $(seq 1 600); do
+              if grep -q "ORBO_PROOF_FAILED" "$RUNNER_TEMP/Orbo-stdout.log"; then cat "$RUNNER_TEMP/Orbo-stdout.log"; exit 1; fi
               if grep -q "ORBO_${stage}_READY" "$RUNNER_TEMP/Orbo-stdout.log"; then ready=1; break; fi
               sleep 1
             done

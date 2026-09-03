@@ -122,8 +122,20 @@ private final class OrboApplicationModel: ObservableObject {
             try await Task.sleep(for: .seconds(15))
             lunarPane = nil
             goLive()
-            FileHandle.standardOutput.write(Data("ORBO_LIVE_READY\n".utf8))
-        } catch { failure = String(describing: error) }
+            let firstLiveMoment = frame?.julianDay
+            let keptNatal = aegis?.natal
+            try await Task.sleep(for: .seconds(4))
+            guard let firstLiveMoment, let nextLiveMoment = frame?.julianDay,
+                  nextLiveMoment.value > firstLiveMoment.value,
+                  aegis?.natal == keptNatal else {
+                throw NSError(domain: "OrboInstrumentProof", code: 1,
+                    userInfo: [NSLocalizedDescriptionKey: "The live frame must advance while the natal chart stays unchanged."])
+            }
+            FileHandle.standardOutput.write(Data("ORBO_LIVE_READY: \(firstLiveMoment.value) -> \(nextLiveMoment.value)\n".utf8))
+        } catch {
+            failure = String(describing: error)
+            FileHandle.standardOutput.write(Data("ORBO_PROOF_FAILED: \(error)\n".utf8))
+        }
     }
 
     func shift(days: Double) {
@@ -298,10 +310,12 @@ private struct OrboRuntimeView: View {
                 ProgressView("Opening Orbo…")
             }
         }
-        .task {
+        .task(id: scenePhase == .active && selectedTab == 0) {
+            guard scenePhase == .active && selectedTab == 0 else { return }
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(1))
-                if scenePhase == .active && selectedTab == 0 { model.updateLive() }
+                do { try await Task.sleep(for: .seconds(1)) }
+                catch { return }
+                model.updateLive()
             }
         }
     }
