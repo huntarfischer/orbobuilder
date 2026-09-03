@@ -19,7 +19,7 @@ public extension IrisAegisGeometry {
                 else if placement.gene == .ascendant { track = radius * 0.99 }
                 else { track = radius * 0.75 - (offsets[placement.gene] ?? 0) }
                 let center = point(longitude: placement.longitude.degrees, radius: track)
-                let distance = hypot(center.x - touch.x, center.y - touch.y)
+                let distance = Double(hypot(center.x - touch.x, center.y - touch.y))
                 guard distance < (kind == .natal ? 20 : 30), best == nil || distance < best!.distance else { continue }
                 best = (IrisPlacementHit(kind: kind, gene: placement.gene), distance)
             }
