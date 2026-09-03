@@ -252,7 +252,7 @@ public struct IrisAstrolabeView: View {
                         .frame(width: natal ? 15 : 21, height: natal ? 15 : 21)
                     if placement.gene == .moon, let lunar {
                         IrisMoonFace(separation: lunar, color: IrisAstrolabeStyle.color(placement.longitude.sign),
-                            illuminationBearing: moonBearing(chart, geometry: geometry, radius: track))
+                            illuminationBearing: moonBearing(chart, geometry: geometry, radius: radius, offsets: offsets))
                             .frame(width: 18, height: 18)
                     } else {
                         Text(IrisAstrolabeStyle.glyph(placement.gene)).font(.system(size: natal ? 13 : 21))
@@ -268,10 +268,11 @@ public struct IrisAstrolabeView: View {
         }
     }
 
-    private func moonBearing(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double) -> Double? {
+    private func moonBearing(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double,
+                             offsets: [AstroDNAGene: Double]) -> Double? {
         guard let sun = chart.placement(.sun), let moon = chart.placement(.moon) else { return nil }
-        let a = geometry.point(longitude: sun.longitude.degrees, radius: radius)
-        let b = geometry.point(longitude: moon.longitude.degrees, radius: radius)
+        let a = geometry.point(longitude: sun.longitude.degrees, radius: radius * 0.75 - (offsets[.sun] ?? 0))
+        let b = geometry.point(longitude: moon.longitude.degrees, radius: radius * 0.75 - (offsets[.moon] ?? 0))
         return atan2(Double(a.y - b.y), Double(a.x - b.x)) * 180 / .pi
     }
 }
