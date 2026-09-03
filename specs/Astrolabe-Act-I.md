@@ -8,7 +8,7 @@ Transcribe the prototype Aegis, Big Three and the first Lunar Pane FACT course i
 
 The Big Three, date, and live status are central instrument readouts. Natal selection must never substitute natal positions into the sky header. The native chart carries exact placements, motion, houses and conditions from the Tapestry unchanged. The natal list, selected detail, and wheel share that chart.
 
-Act I includes the two seats, horizon-oriented drawing when a place is supplied, select-to-read, sky/natal reading selection, the prototype palette and curved Pane anatomy. The current birthplace supplies the displayed local horizon and is named on screen. Before a place exists no ASC or houses are manufactured. Existing birth entry, text/3D, and diagnostics remain available. The pre-port app is preserved in `native/OrboCore/Obsolete/AppHarness/OrboAssembledApp.swift`.
+Act I includes the two seats, horizon-oriented drawing when a place is supplied, select-to-read, sky/natal reading selection, the prototype palette and curved Pane anatomy. The current birthplace supplies the displayed local horizon and is named on screen. Before a place exists no ASC or houses are manufactured. Existing birth entry, text/3D, and diagnostics remain available through the temporary Orbo menu. The pre-port app is preserved in `native/OrboCore/Obsolete/AppHarness/OrboAssembledApp.swift`.
 
 The wheel's house band follows the live ASC, as the prototype's `skin.houseNums` renderer does. The natal Pane retains natal whole-sign houses. The wheel's Moon uses the Sun's screen bearing; the header disc retains the prototype's waxing/waning convention. Both receive the same Ring separation from Apollo.
 
@@ -32,9 +32,9 @@ The first lunar disc transcribes the prototype's Sun/Moon longitude-separation d
 
 ## Run and inspect
 
-Open `native/Orbo.xcodeproj` on this branch, choose the **Orbo** scheme, and run. After the real Spine loads, **Astrolabe** shows the sky. Open **Hearth**, edit or retain Ean's birth inputs, and choose **Begin**. **See my natal chart** opens the kept natal FACT reading on the Astrolabe. Tap a placement or row to inspect it; **NATAL** and **THE SKY** choose the chart being read. The down chevron lowers the Pane. The time/live control returns the instrument to the current sky. The civic clock displays the device's timezone, while the named birthplace supplies this first pass's local horizon.
+Open `native/Orbo.xcodeproj` on this branch, choose the **Orbo** scheme, and run. After the real Spine loads, **Astrolabe** shows the sky. Tap the small **Orbo portrait → Hearth**, edit or retain Ean's birth inputs, and choose **Begin**. **See my natal chart** opens the kept natal FACT reading on the Astrolabe. Tap a placement or row to inspect it; **NATAL** and **THE SKY** choose the chart being read. The down chevron lowers the Pane. The time/live control returns the instrument to the current sky. The civic clock displays the device's timezone, while the named birthplace supplies this first pass's local horizon.
 
-The **Text** and **Inspect** tabs retain the existing alternate readout and diagnostics. The iOS 26 guard remains confined to the older optional 3D view. Profiles remain session-scoped as in the assembled app; this pass does not add persistence or a full 360-degree Tapestry browser.
+The Orbo menu’s **Text** and **Inspect** entries retain the existing alternate readout and diagnostics. Each screen has an **Astrolabe** return control; the instrument has no native bottom bar. The iOS 26 guard remains confined to the older optional 3D view. Profiles remain session-scoped as in the assembled app; this pass does not add persistence or a full 360-degree Tapestry browser.
 
 ## Proof
 

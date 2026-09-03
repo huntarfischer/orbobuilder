@@ -55,11 +55,11 @@ struct IrisLunarPaneView: View {
                                 }.font(.system(size: 12)).foregroundStyle(IrisAstrolabeStyle.text)
                                     .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 14)
                             }
-                        }.padding(.bottom, 12)
+                        }.padding(.bottom, 28)
                     }.scrollIndicators(.hidden)
                 }.padding(.horizontal, 26)
             }.clipped()
-        }.accessibilityIdentifier("orbo.lunar-pane")
+        }.accessibilityElement(children: .contain)
     }
 
     /// The selected lens sits at the crown, its neighbor along the same arc.

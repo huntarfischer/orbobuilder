@@ -10,9 +10,9 @@ public struct IrisAstrolabeView: View {
     public let select: (AstrolabeChart.Kind, AstroDNAGene?) -> Void
     public let dismissPane: () -> Void
     public let goLive: () -> Void
-    public var openHearth: () -> Void = {}
-    public var openText: () -> Void = {}
-    public var openInspect: () -> Void = {}
+    public let openHearth: () -> Void
+    public let openText: () -> Void
+    public let openInspect: () -> Void
     @State private var showSeats = false
     @State private var showCrowded = false
     @State private var crowded: [AstrolabePlacement] = []
@@ -21,7 +21,7 @@ public struct IrisAstrolabeView: View {
     public init(frame: IrisAstrolabeFrame, pane: IrisLunarPaneFrame?, isLive: Bool, environment: AetherEnvironment,
                 select: @escaping (AstrolabeChart.Kind, AstroDNAGene?) -> Void,
                 dismissPane: @escaping () -> Void, goLive: @escaping () -> Void,
-                openHearth: @escaping () -> Void = {}, openText: @escaping () -> Void = {}, openInspect: @escaping () -> Void = {}) {
+                openHearth: @escaping () -> Void, openText: @escaping () -> Void, openInspect: @escaping () -> Void) {
         self.frame = frame; self.pane = pane; self.isLive = isLive; self.environment = environment
         self.select = select; self.dismissPane = dismissPane; self.goLive = goLive
         self.openHearth = openHearth; self.openText = openText; self.openInspect = openInspect
@@ -47,7 +47,7 @@ public struct IrisAstrolabeView: View {
                         ZStack(alignment: .top) {
                             if showSeats { seats(aegis).padding(.horizontal, 22).padding(.top, 8) }
                             wheel(aegis, diameter: diameter)
-                                .padding(.top, showSeats ? 62 : max(35, proxy.size.height * 0.075))
+                                .padding(.top, showSeats ? 62 : max(28, proxy.size.height * 0.045))
                         }
                         Spacer(minLength: 0)
                     }.frame(width: width)
@@ -58,8 +58,8 @@ public struct IrisAstrolabeView: View {
                                 .frame(width: width, height: proxy.size.height * 0.47)
                         } else {
                             Button { select(aegis.natal == nil ? .sky : .natal, nil) } label: {
-                                IrisLunarPaneMaterial().frame(width: width, height: 32)
-                                    .contentShape(Rectangle())
+                                Rectangle().fill(.clear).frame(width: width, height: 32)
+                                    .background { IrisLunarPaneMaterial() }.contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("Open Lunar Pane")
@@ -68,6 +68,7 @@ public struct IrisAstrolabeView: View {
                     }
                 }.frame(maxWidth: .infinity)
             }
+            .ignoresSafeArea(.container, edges: .bottom)
             .confirmationDialog("Choose a placement", isPresented: $showCrowded, titleVisibility: .visible) {
                 ForEach(crowded, id: \.gene) { placement in
                     Button("\(placement.gene.displayName) · \(IrisAstrolabeStyle.position(placement.longitude)) \(String(describing: placement.longitude.sign).capitalized)") {
@@ -76,12 +77,12 @@ public struct IrisAstrolabeView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
-            .accessibilityIdentifier("orbo.astrolabe")
+            .accessibilityElement(children: .contain)
         }
     }
 
     private func header(_ aegis: ApolloAegis) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
                 if let logo = IrisAstrolabeArtwork.logo { logo.resizable().scaledToFit().frame(width: 55, height: 28) }
                 Spacer()
@@ -99,7 +100,7 @@ public struct IrisAstrolabeView: View {
                 Text("·").foregroundStyle(IrisAstrolabeStyle.text.opacity(0.45))
                 headerPlacement(aegis.sky.placement(.sun), gene: .sun)
             }.font(.system(size: 23)).minimumScaleFactor(0.65).lineLimit(1)
-                .accessibilityIdentifier("orbo.big-three")
+
             let date = Date(timeIntervalSince1970: ((aegis.source.julianDay.value - 2440587.5) * 86400).rounded())
             HStack(spacing: 7) {
                 Button(action: goLive) {
@@ -108,13 +109,13 @@ public struct IrisAstrolabeView: View {
                 }.accessibilityLabel("\(date.formatted()). Return to live sky")
                     .accessibilityIdentifier("orbo.clock")
                 Button { showSeats.toggle() } label: {
-                    Text("⇅").font(.system(size: 12)).frame(width: 28, height: 28)
+                    Text("⇅").font(.system(size: 12)).frame(width: 22, height: 22)
                         .overlay(RoundedRectangle(cornerRadius: 6).stroke(IrisAstrolabeStyle.text.opacity(0.2)))
                 }.accessibilityLabel("Show Plate and Rete").accessibilityIdentifier("orbo.seats")
             }.foregroundStyle(IrisAstrolabeStyle.text)
             Button(action: goLive) {
                 Text(isLive ? "• LIVE" : "RETURN TO LIVE").font(.system(size: 11)).tracking(2)
-                    .foregroundStyle(IrisAstrolabeStyle.gold).frame(minHeight: 24)
+                    .foregroundStyle(IrisAstrolabeStyle.gold).frame(minHeight: 20)
             }.accessibilityIdentifier("orbo.live")
             .frame(maxWidth: .infinity)
             .overlay(alignment: .trailing) {
@@ -141,7 +142,7 @@ public struct IrisAstrolabeView: View {
                 if aegis.natal == nil { openHearth() } else { select(.natal, nil) }
             }
             seat("THE RETE", name: "The sky", subtitle: aegis.sky.place?.place.canonicalName ?? "No local horizon") { select(.sky, nil) }
-        }.accessibilityIdentifier("orbo.chart-seats")
+        }.accessibilityElement(children: .contain)
     }
 
     private func seat(_ title: String, name: String, subtitle: String, action: @escaping () -> Void) -> some View {
@@ -219,7 +220,7 @@ public struct IrisAstrolabeView: View {
                     .accessibilityValue(selected ? "Selected" : "")
                     .position(geometry.point(longitude: ascendant.longitude.degrees, radius: radius * 0.99))
             }
-        }.frame(width: diameter, height: diameter).accessibilityIdentifier("orbo.wheel")
+        }.frame(width: diameter, height: diameter).accessibilityElement(children: .contain)
     }
 
     private func occupants(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double, lunar: Double?) -> some View {

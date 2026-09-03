@@ -9,7 +9,11 @@ final class AstrolabeInteractionTests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--orbo-ui-proof"]
         app.launch()
-        XCTAssertTrue(app.buttons["orbo.natal.Mercury"].waitForExistence(timeout: 600))
+        guard app.buttons["orbo.natal.Mercury"].waitForExistence(timeout: 480) else {
+            capture("Repass-Startup-Failure", app)
+            XCTFail(app.debugDescription)
+            return
+        }
         XCTAssertFalse(app.tabBars.firstMatch.exists)
         capture("Repass-Aegis", app)
 
@@ -39,12 +43,6 @@ final class AstrolabeInteractionTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Ean Weslynn · night chart"].exists)
         let natalSun = app.buttons["orbo.pane.row.Sun"].label
         capture("Repass-Pane", app)
-        app.buttons["orbo.live"].tap()
-        let clock = app.buttons["orbo.clock"]
-        let first = clock.label
-        let advances = expectation(for: NSPredicate(format: "label != %@", first), evaluatedWith: clock)
-        wait(for: [advances], timeout: 8)
-        XCTAssertEqual(app.buttons["orbo.pane.row.Sun"].label, natalSun)
         app.buttons["orbo.pane.close"].tap()
         app.buttons["orbo.sky.Ascendant"].tap()
         XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "the sky · Ascendant")
@@ -55,6 +53,12 @@ final class AstrolabeInteractionTests: XCTestCase {
         XCTAssertTrue(app.buttons["See my natal chart"].waitForExistence(timeout: 5))
         app.buttons["See my natal chart"].tap()
         XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "my natal chart")
+        app.buttons["orbo.live"].tap()
+        let clock = app.buttons["orbo.clock"]
+        let first = clock.label
+        let advances = expectation(for: NSPredicate(format: "label != %@", first), evaluatedWith: clock)
+        wait(for: [advances], timeout: 8)
+        XCTAssertEqual(app.buttons["orbo.pane.row.Sun"].label, natalSun)
     }
 
     @MainActor
