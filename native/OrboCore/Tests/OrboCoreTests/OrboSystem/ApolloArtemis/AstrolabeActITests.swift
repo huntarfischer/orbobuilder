@@ -30,7 +30,9 @@ final class AstrolabeActITests: XCTestCase {
         let hestia = try birth("Ean Weslynn", 1985, 4, 10, 20, 16, "Madison, WI")
         let jd = hestia.nativeEngraving()!.tempus!.absoluteInstant.julianDay
         let a = try instrument(hestia, at: jd)
-        let b = try instrument(hestia, at: JulianDay(jd.value + 7)!)
+        let horae = Horae(locate: try SealedOrboSpineFixture.runtime().locate)
+        let b = try Apollo.advanceAegis(a, from: horae.seek(to: JulianDay(jd.value + 7)!))
+        XCTAssertEqual(b, try instrument(hestia, at: JulianDay(jd.value + 7)!))
         XCTAssertEqual(a.natal, b.natal)
         XCTAssertNotEqual(a.sky.placement(.moon)?.longitude, b.sky.placement(.moon)?.longitude)
         XCTAssertEqual(try Apollo.presentToArtemis(a.natal!), try Apollo.presentToArtemis(b.natal!))

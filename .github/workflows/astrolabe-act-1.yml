@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Select installed iPhone simulator
         run: |
+          xcrun simctl list runtimes
           device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
           echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
       - name: Build OrboLab
@@ -37,6 +38,12 @@ jobs:
           -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
           -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
           CODE_SIGNING_ALLOWED=NO
+      - name: Export actual touch-test screenshots
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/OrboTests.xcresult"; then
+            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/OrboTests.xcresult" --output-path "$RUNNER_TEMP/Orbo-Interactions"
+          fi
       - name: Run the real Aegis and Lunar Pane in the app
         run: |
           xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
@@ -67,6 +74,7 @@ jobs:
           name: Astrolabe-Act-I-Evidence
           path: |
             ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Orbo-Interactions
             ${{ runner.temp }}/Orbo-*.png
             ${{ runner.temp }}/Orbo-stdout.log
             ${{ runner.temp }}/Orbo-stderr.log

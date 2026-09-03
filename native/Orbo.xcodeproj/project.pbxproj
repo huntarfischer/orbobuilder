@@ -47,6 +47,7 @@
 			remoteGlobalIDString = A50000000000000000000001;
 			remoteInfo = Orbo;
 		};
+        F90000000000000000000001 = {isa = PBXContainerItemProxy; containerPortal = A00000000000000000000001; proxyType = 1; remoteGlobalIDString = A50000000000000000000001; remoteInfo = Orbo; };
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +79,7 @@
 		C20000000000000000000004 /* IrisStressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrisStressTests.swift; sourceTree = "<group>"; };
 		C20000000000000000000005 /* IrisZodiacExpressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrisZodiacExpressionTests.swift; sourceTree = "<group>"; };
 		C20000000000000000000010 /* OrboIrisTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OrboIrisTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+        F20000000000000000000001 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = OrboUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -114,6 +116,7 @@
             path = OrboCore/Tests/OrboCoreTests;
             sourceTree = "<group>";
         };
+        F10000000000000000000001 = {isa = PBXFileSystemSynchronizedRootGroup; path = OrboUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +154,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+        F40100000000000000000001 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -164,7 +168,8 @@
 				D10000000000000000000001 /* Complete OrboCoreTests */,
 				D10000000000000000000003 /* Complete OrboIrisTests */,
 				C10000000000000000000001 /* OrboIrisTests */,
-				A10100000000000000000001 /* Products */,
+				F10000000000000000000001 /* OrboUITests */,
+                A10100000000000000000001 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -175,6 +180,7 @@
 				A20000000000000000000004 /* OrboLab.app */,
 				B2000000000000000000000E /* OrboCoreTests.xctest */,
 				C20000000000000000000010 /* OrboIrisTests.xctest */,
+                F20000000000000000000001 /* OrboUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -317,6 +323,18 @@
 			productReference = C20000000000000000000010 /* OrboIrisTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+        F50000000000000000000001 /* OrboUITests */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = F81000000000000000000001;
+            buildPhases = (F40000000000000000000001, F40100000000000000000001,);
+            buildRules = ();
+            dependencies = (F90000000000000000000002,);
+            fileSystemSynchronizedGroups = (F10000000000000000000001,);
+            name = OrboUITests;
+            productName = OrboUITests;
+            productReference = F20000000000000000000001;
+            productType = "com.apple.product-type.bundle.ui-testing";
+        };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -327,6 +345,7 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+                    F50000000000000000000001 = {CreatedOnToolsVersion = 26.0; TestTargetID = A50000000000000000000001; };
 					A50000000000000000000001 = { CreatedOnToolsVersion = 16.0; };
 					A50100000000000000000001 = { CreatedOnToolsVersion = 16.0; };
 					B50000000000000000000001 = {
@@ -356,6 +375,7 @@
 				A50100000000000000000001 /* OrboLab */,
 				B50000000000000000000001 /* OrboCoreTests */,
 				C50000000000000000000001 /* OrboIrisTests */,
+                F50000000000000000000001 /* OrboUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -389,6 +409,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+        F40000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -397,6 +418,7 @@
 			target = A50000000000000000000001 /* Orbo */;
 			targetProxy = B90000000000000000000001 /* PBXContainerItemProxy */;
 		};
+        F90000000000000000000002 = {isa = PBXTargetDependency; target = A50000000000000000000001; targetProxy = F90000000000000000000001; };
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -410,6 +432,8 @@
 		B71100000000000000000001 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboCoreTests; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = NO; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Orbo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Orbo"; }; name = Release; };
 		C71000000000000000000001 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/Frameworks"; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboIrisTests; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = NO; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
 		C71100000000000000000001 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/Frameworks"; MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboIrisTests; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = NO; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+        F71000000000000000000001 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboUITests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Orbo; }; name = Debug; };
+        F71100000000000000000001 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.huntarfischer.orbo.OrboUITests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Orbo; }; name = Release; };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -418,6 +442,7 @@
 		A82000000000000000000001 /* Build configuration list for PBXNativeTarget "OrboLab" */ = {isa = XCConfigurationList; buildConfigurations = (A72000000000000000000001 /* Debug */, A72100000000000000000001 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 		B81000000000000000000001 /* Build configuration list for PBXNativeTarget "OrboCoreTests" */ = {isa = XCConfigurationList; buildConfigurations = (B71000000000000000000001 /* Debug */, B71100000000000000000001 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 		C81000000000000000000001 /* Build configuration list for PBXNativeTarget "OrboIrisTests" */ = {isa = XCConfigurationList; buildConfigurations = (C71000000000000000000001 /* Debug */, C71100000000000000000001 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+        F81000000000000000000001 = {isa = XCConfigurationList; buildConfigurations = (F71000000000000000000001,F71100000000000000000001,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */

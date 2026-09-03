@@ -54,6 +54,36 @@ public struct IrisAegisGeometry {
         let angle = (180 + longitude - (horizon ?? 0)) * Double.pi / 180
         return CGPoint(x: diameter / 2 + radius * cos(angle), y: diameter / 2 - radius * sin(angle))
     }
+
+    /// The graduated limb belongs to the instrument, independently of its horizon.
+    public func graduation(degree: Double, radius: Double) -> CGPoint {
+        IrisAegisGeometry(diameter: diameter, horizon: nil).point(longitude: degree, radius: radius)
+    }
+
+    /// _drawLitTrack: neighboring bodies alternate depth on the Rete. Longitude
+    /// remains untouched. Rank is drawing order, not an orbital calculator.
+    static func trackOffsets(_ placements: [AstrolabePlacement]) -> [AstroDNAGene: Double] {
+        let rank: [AstroDNAGene] = [.moon, .mercury, .venus, .sun, .mars, .jupiter, .northNode, .saturn, .uranus, .neptune, .pluto, .ascendant]
+        let sorted = placements.sorted { $0.longitude.degrees < $1.longitude.degrees }
+        var clusters: [[AstrolabePlacement]] = []
+        for placement in sorted {
+            if let last = clusters.last?.last, placement.longitude.degrees - last.longitude.degrees < 9 {
+                clusters[clusters.count - 1].append(placement)
+            } else { clusters.append([placement]) }
+        }
+        // The zodiac has a seam, not a gap between neighboring Pisces/Aries marks.
+        if clusters.count > 1, let first = sorted.first, let last = sorted.last,
+           first.longitude.degrees + 360 - last.longitude.degrees < 9 {
+            let tail = clusters.removeLast()
+            clusters[0] = tail + clusters[0]
+        }
+        var offsets: [AstroDNAGene: Double] = [:]
+        for cluster in clusters {
+            let ordered = cluster.sorted { rank.firstIndex(of: $0.gene)! < rank.firstIndex(of: $1.gene)! }
+            for (index, placement) in ordered.enumerated() { offsets[placement.gene] = Double(index % 2) * 6 }
+        }
+        return offsets
+    }
 }
 
 /// Transcribes _moonFace's lit half and elliptical shadow using Apollo's Ring

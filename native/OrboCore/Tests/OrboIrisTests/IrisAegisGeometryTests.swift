@@ -1,8 +1,29 @@
 import XCTest
-import OrboCore
+@testable import OrboCore
 @testable import OrboIris
 
 final class IrisAegisGeometryTests: XCTestCase {
+    func testGraduationsStayFixedWhenTheHorizonChanges() {
+        let first = IrisAegisGeometry(diameter: 400, horizon: 12)
+        let later = IrisAegisGeometry(diameter: 400, horizon: 29)
+        for degree in stride(from: 0.0, to: 360.0, by: 10) {
+            XCTAssertEqual(first.graduation(degree: degree, radius: 190), later.graduation(degree: degree, radius: 190))
+        }
+        XCTAssertNotEqual(first.point(longitude: 15, radius: 180), later.point(longitude: 15, radius: 180))
+    }
+
+    func testReteStaggerKeepsSourcePositionsIncludingAcrossZodiacSeam() {
+        let placements = [
+            AstrolabePlacement(gene: .mercury, longitude: CelestialLongitude(359)!, motion: .retrograde, house: nil, condition: nil),
+            AstrolabePlacement(gene: .venus, longitude: CelestialLongitude(1)!, motion: .direct, house: nil, condition: nil),
+            AstrolabePlacement(gene: .mars, longitude: CelestialLongitude(40)!, motion: .direct, house: nil, condition: nil)
+        ]
+        let offsets = IrisAegisGeometry.trackOffsets(placements)
+        XCTAssertNotEqual(offsets[.mercury], offsets[.venus])
+        XCTAssertEqual(offsets[.mars], 0)
+        XCTAssertEqual(placements.map(\.longitude.degrees), [359, 1, 40])
+    }
+
     func testPrototypeArtworkDecodesFromTheIrisBundle() {
         XCTAssertNotNil(IrisAstrolabeArtwork.logo)
         XCTAssertNotNil(IrisAstrolabeArtwork.companion)

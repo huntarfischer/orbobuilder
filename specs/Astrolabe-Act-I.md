@@ -43,3 +43,15 @@ Tests exercise Ean's real night chart and two additional real births, exact Tape
 The dedicated workflow runs the accumulated package and Xcode suites, builds Orbo and OrboLab, and captures the real Aegis, natal Pane and selected Sun in the simulator. Its launch argument drives the production selection callbacks with real sealed Spine data; it is not a synthetic runtime.
 
 Act I is verified by [run 33733075809](https://github.com/huntarfischer/orbobuilder/actions/runs/33733075809): 941 package tests and 941 Xcode tests (858 Core + 83 Iris), zero failures; both app targets built and launched; all five simulator captures inspected. The live timer follows scene/tab activation, and the standalone proof observes a later real Horae frame after four seconds while the natal chart remains unchanged. See `specs/gates/2026-09-03-Astrolabe-Act-I.md` for the exact tested commit, evidence and practical limits. Acts II and III are not promoted by this gate.
+
+## Act I correction pass
+
+The repass preserves the initial app and views under `Obsolete/AstrolabeActI` and transcribes the prototype's screen-fixed limb, shared Plate/Rete boundary and notches, smaller natal recesses, and alternating luminous-track depth. A close group opens an explicit placement choice when its touch areas overlap; exact source longitudes never move. The zodiac-seam adjacency is handled as a circle.
+
+The native bottom tab bar is removed. Until Hermes' Tabula is connected in Act II, the small Orbo portrait opens a menu for Hearth, Text and Inspect; those screens have an Astrolabe return control. The seat toggle identifies the already-present natal Plate and sky Rete, and opens their existing readings. It adds no chart swapping or composite machinery.
+
+The Pane rests as a shallow illuminated circular limb. Raised, its selected label sits on the crown and its neighbor follows the arc. Its compact rows include position, sign glyph, house and dispositor. Source provenance is in Inspect. Springs, rotating lenses, aspect web, playback and scrubbing remain deferred. Brass and onboarding remain reference material, not new controls in this pass.
+
+Apollo advances the existing Aegis while retaining its natal chart; a new Hearth delivery explicitly re-establishes it. Iris accepts Horae's complete live answer once. Startup measurements distinguish sealed-Spine load/assembly, first sky presentation, and real birth/Hearth delivery. Performance changes require the measured result.
+
+Repass gate is open pending the accumulated suites, native builds, actual-touch XCTest, screenshot inspection and startup evidence. No older-runtime result is claimed until one is available.

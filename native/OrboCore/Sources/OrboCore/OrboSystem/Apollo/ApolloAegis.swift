@@ -56,6 +56,18 @@ public extension Apollo {
     static func establishAegis(
         from output: HoraeOutput, hestia: Hestia?, atPlace place: Topos?
     ) throws -> ApolloAegis {
+        try establishAegis(from: output, natal: hestia.flatMap { try nativeChart(from: $0) }, atPlace: place)
+    }
+
+    /// A new sky crosses the same kept Plate. Re-establish with Hestia only when
+    /// the engraving changes; ordinary live updates do not unpack it again.
+    static func advanceAegis(_ aegis: ApolloAegis, from output: HoraeOutput) throws -> ApolloAegis {
+        try establishAegis(from: output, natal: aegis.natal, atPlace: aegis.sky.place)
+    }
+
+    private static func establishAegis(
+        from output: HoraeOutput, natal: AstrolabeChart?, atPlace place: Topos?
+    ) throws -> ApolloAegis {
         guard output.celestial.count == MundaneBody.canonicalOrder.count,
               Set(output.celestial.map(\.body)) == Set(MundaneBody.canonicalOrder),
               output.celestial.allSatisfy({ $0.julianDay == output.julianDay }),
@@ -98,7 +110,6 @@ public extension Apollo {
         let sky = AstrolabeChart(subject: placeOnAstrolabe(identity: "sky"), kind: .sky,
             name: "The sky", julianDay: output.julianDay, place: place, sect: sect, placements: placements,
             houses: houses?.map { AstrolabeHouse(sign: $0.sign, house: $0.house) } ?? [])
-        let natal = try hestia.flatMap { try nativeChart(from: $0) }
         return ApolloAegis(source: output, sky: sky, natal: natal,
             lunarSeparation: Oceanus.separation(from: longitudes[.sun]!, to: longitudes[.moon]!))
     }

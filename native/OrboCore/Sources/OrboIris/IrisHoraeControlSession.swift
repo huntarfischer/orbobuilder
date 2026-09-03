@@ -26,6 +26,17 @@ public struct IrisHoraeControlSession: Hashable, Sendable {
         IrisHoraePlane(frame: frame)
     }
 
+    public init(live horae: Horae) throws {
+        domain = horae.controlDomain
+        frame = IrisHoraeFrame(port: Horae.signalForIris(try horae.live()))
+        focusedBody = nil
+    }
+
+    /// Accept the whole live answer once, rather than asking again for its UT.
+    public mutating func goLive(through horae: Horae) throws {
+        frame = IrisHoraeFrame(port: Horae.signalForIris(try horae.live()))
+    }
+
     /// Absolute temporal address. Horae resolve the requested UT and return the
     /// complete celestial + Terra state before Iris changes what it displays.
     public mutating func seek(

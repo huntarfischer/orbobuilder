@@ -32,13 +32,6 @@ private final class OrboApplicationModel: ObservableObject {
     let environment = Aether.astrolabeEnvironment
     private(set) var horae: Horae?
     private var started = false
-    @Published private(set) var startupMeasurements: [String] = []
-
-    private func measure(_ stage: String, since start: TimeInterval) {
-        let line = String(format: "%@: %.3f s", stage, ProcessInfo.processInfo.systemUptime - start)
-        startupMeasurements.append(line)
-        FileHandle.standardOutput.write(Data("ORBO_TIMING \(line)\n".utf8))
-    }
 
     var frame: IrisHoraeFrame? { session?.frame }
     var orboPOV: IrisHomerFrame<OrboLifecycleSnapshot> {
@@ -63,40 +56,26 @@ private final class OrboApplicationModel: ObservableObject {
             return
         }
         do {
-            let mountStart = ProcessInfo.processInfo.systemUptime
             let mounted = try await Task.detached(priority: .userInitiated) {
                 try OrboSpineRuntime.load(from: root)
             }.value
-            measure("Spine load and assembly", since: mountStart)
-            let firstFrameStart = ProcessInfo.processInfo.systemUptime
             let horae = Horae(locate: mounted.locate)
             self.runtime = mounted
             self.horae = horae
-            self.session = try IrisHoraeControlSession(live: horae)
+            self.session = try IrisHoraeControlSession(horae: horae, initialJulianDay: horae.live().julianDay)
             try refreshInstrument()
-            measure("First sky presentation", since: firstFrameStart)
-            if CommandLine.arguments.contains("--orbo-birth-proof") || CommandLine.arguments.contains("--orbo-instrument-proof") || CommandLine.arguments.contains("--orbo-ui-proof") {
+            if CommandLine.arguments.contains("--orbo-birth-proof") || CommandLine.arguments.contains("--orbo-instrument-proof") {
                 await submit(name: "Ean Weslynn", date: "1985-04-10", time: "20:16", location: "Madison, WI")
-            }
-            if CommandLine.arguments.contains("--orbo-ui-proof") {
-                isLive = false
-                try session?.seek(to: JulianDay(2461286.772071759)!, through: horae)
-                try refreshInstrument()
             }
             FileHandle.standardOutput.write(Data("ORBO_READY: real Spine mounted\n".utf8))
             if CommandLine.arguments.contains("--orbo-instrument-proof") { await proveInstrument() }
         } catch { failure = String(describing: error) }
     }
 
-    private func refreshInstrument(natalChanged: Bool = false) throws {
+    private func refreshInstrument() throws {
         guard let frame else { return }
-        let next: ApolloAegis
-        if let aegis, !natalChanged {
-            next = try Apollo.advanceAegis(aegis, from: frame.output)
-        } else {
-            next = try Apollo.establishAegis(from: frame.output, hestia: hestia,
-                atPlace: hestia?.nativeEngraving()?.topos)
-        }
+        let next = try Apollo.establishAegis(from: frame.output, hestia: hestia,
+            atPlace: hestia?.nativeEngraving()?.topos)
         aegis = next
         if let reading = lunarPane?.signal.reading {
             selectReading(reading.chart.kind, gene: reading.selectedGene)
@@ -115,7 +94,7 @@ private final class OrboApplicationModel: ObservableObject {
     func updateLive() {
         guard isLive, !working, let horae, var session else { return }
         do {
-            try session.goLive(through: horae)
+            try session.seek(to: horae.live().julianDay, through: horae)
             self.session = session
             try refreshInstrument()
         } catch { failure = String(describing: error) }
@@ -191,7 +170,6 @@ private final class OrboApplicationModel: ObservableObject {
         linkedCoordinates = []
         linkedFortune = nil
         defer { working = false }
-        let engravingStart = ProcessInfo.processInfo.systemUptime
         let result = await Task.detached(priority: .userInitiated) {
             var orbo = Orbo()
             var hermes = HermesCourier()
@@ -223,7 +201,6 @@ private final class OrboApplicationModel: ObservableObject {
             } catch { failure = String(describing: error) }
             return (orbo, hermes, hestia, notice, failure)
         }.value
-        measure("Birth engraving and Hearth delivery", since: engravingStart)
         orbo = result.0
         hermes = result.1
         hestia = result.2
@@ -231,9 +208,9 @@ private final class OrboApplicationModel: ObservableObject {
         failure = result.4
         if let birth = hestia?.nativeEngraving(), let tempus = birth.tempus, let dna = birth.astroDNA {
             do {
-                session = isLive ? try IrisHoraeControlSession(live: horae)
-                    : try IrisHoraeControlSession(horae: horae, initialJulianDay: tempus.absoluteInstant.julianDay)
-                try refreshInstrument(natalChanged: true)
+                session = try IrisHoraeControlSession(horae: horae,
+                    initialJulianDay: isLive ? horae.live().julianDay : tempus.absoluteInstant.julianDay)
+                try refreshInstrument()
                 _ = try orbo.advanceAstrosphereIntroduction()
                 let truth = OrboEstablishedBigThree(
                     ascendantSign: String(describing: dna.longitude(of: .ascendant).sign).capitalized,
@@ -244,7 +221,7 @@ private final class OrboApplicationModel: ObservableObject {
                 FileHandle.standardOutput.write(Data("ORBO_HEARTH_LIT: \(birth.name); \(truth.ascendantSign) / \(truth.moonSign) / \(truth.sunSign)\n".utf8))
             } catch { failure = String(describing: error) }
         }
-        if result.4 != nil { try? refreshInstrument(natalChanged: true) }
+        if result.4 != nil { try? refreshInstrument() }
     }
 
     func advanceIntroduction() {
@@ -316,33 +293,17 @@ private struct OrboRuntimeView: View {
                     .accessibilityIdentifier("orbo.runtime.failure")
             }
             if let frame = model.frame {
-                Group {
-                    if selectedTab == 0 {
+                TabView(selection: $selectedTab) {
                     if let aegis = model.aegis {
                         IrisAstrolabeView(frame: IrisAstrolabeFrame(port: Apollo.signalForIris(aegis)),
                             pane: model.lunarPane, isLive: model.isLive, environment: model.environment,
                             select: { kind, gene in model.selectReading(kind, gene: gene) },
-                            dismissPane: { model.lunarPane = nil }, goLive: model.goLive,
-                            openHearth: { selectedTab = 1 }, openText: { selectedTab = 2 }, openInspect: { selectedTab = 3 })
+                            dismissPane: { model.lunarPane = nil }, goLive: model.goLive)
+                            .tabItem { Label("Astrolabe", systemImage: "sparkles") }.tag(0)
                     }
-                    } else {
-                        NavigationStack {
-                            Group {
-                                switch selectedTab {
-                                case 1: birthForm
-                                case 2: sky(frame)
-                                default: diagnostics(frame)
-                                }
-                            }
-                            .navigationTitle(selectedTab == 1 ? "Hearth" : selectedTab == 2 ? "Text" : "Inspect")
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .topBarLeading) {
-                                    Button("Astrolabe") { selectedTab = 0 }.accessibilityIdentifier("orbo.return")
-                                }
-                            }
-                        }
-                    }
+                    birthForm.tabItem { Label("Hearth", systemImage: "person") }.tag(1)
+                    sky(frame).tabItem { Label("Text", systemImage: "text.alignleft") }.tag(2)
+                    diagnostics(frame).tabItem { Label("Inspect", systemImage: "list.bullet.rectangle") }.tag(3)
                 }
                 .preferredColorScheme(selectedTab == 0 ? .dark : nil)
             } else if model.failure == nil {
@@ -419,11 +380,6 @@ private struct OrboRuntimeView: View {
 
     private func diagnostics(_ frame: IrisHoraeFrame) -> some View {
         Form {
-            Section("Astrolabe sources") {
-                Text("Natal: Hestia’s kept Tapestry · whole-sign houses · Rhea’s condition testimony")
-                Text("Sky: OrboSpine through Horae · local ASC through Hecate · houses through Themis")
-                ForEach(model.startupMeasurements, id: \.self) { Text($0) }
-            }
             Section("Homer") {
                 let state = model.orboPOV.pointOfView
                 Text("Orbo: \(String(describing: state.backOfHouse))")
