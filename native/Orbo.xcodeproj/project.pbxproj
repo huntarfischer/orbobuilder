@@ -97,6 +97,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+        D10000000000000000000003 /* Complete OrboIrisTests */ = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            explicitFileTypes = {};
+            explicitFolders = ();
+            name = "Complete OrboIrisTests";
+            path = OrboCore/Tests/OrboIrisTests;
+            sourceTree = "<group>";
+        };
         D10000000000000000000001 /* Complete OrboCoreTests */ = {
             isa = PBXFileSystemSynchronizedRootGroup;
             exceptions = (D10000000000000000000002,);
@@ -154,6 +162,7 @@
 				A10300000000000000000001 /* OrboLab */,
 				B10000000000000000000001 /* OrboCoreTests */,
 				D10000000000000000000001 /* Complete OrboCoreTests */,
+				D10000000000000000000003 /* Complete OrboIrisTests */,
 				C10000000000000000000001 /* OrboIrisTests */,
 				A10100000000000000000001 /* Products */,
 			);
@@ -298,6 +307,7 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (D10000000000000000000003 /* Complete OrboIrisTests */,);
 			name = OrboIrisTests;
 			packageProductDependencies = (
 				C60100000000000000000001 /* OrboCore */,
@@ -376,11 +386,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C30000000000000000000001 /* IrisHoraeFrameTests.swift in Sources */,
-				C30000000000000000000002 /* IrisPresentationTests.swift in Sources */,
-				C30000000000000000000003 /* IrisScene3DTests.swift in Sources */,
-				C30000000000000000000004 /* IrisStressTests.swift in Sources */,
-				C30000000000000000000005 /* IrisZodiacExpressionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

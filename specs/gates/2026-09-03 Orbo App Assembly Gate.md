@@ -18,6 +18,8 @@ Branch: `feature/orbo-assembled-2026-09-02`; inspected base: `9be3d84`.
 - Application delivery functions in `Onboarding/EngravingDelivery.swift` call the fixed existing itinerary and retain no state or domain authority. Orbo, Hermes, Atlas, Moirai, and Hestia keep their established jobs.
 - The app exposes editable known-time birth input, actual kept AstroDNA, existing Big Three beats, Chronos queries, Hecate member reads, and Homer snapshots. Unknown birth times and ambiguous local times are not silently resolved.
 - The original app harness and D5 executable are preserved under `native/OrboCore/Obsolete`.
+- OrboLab's retired P22 diagnostics are preserved under `Obsolete/AppHarness/OrboLabApp.swift`; its active readouts use current OrboSpine contracts, the three doors, and existing foundation examples. Actual mounted runtime inspection lives in Orbo.
+- Xcode now includes the complete existing Iris test folder. Its older explicit list omitted 31 Iris/Homer port tests that Swift Package Manager already ran.
 
 ## Validation status
 
@@ -31,6 +33,7 @@ The real-source acceptance exposed a reversed semicircle in the existing `OrboFo
 - First real-file load: found the older CSV reader's quoted-field mismatch in the shell tables. Corrected using the existing certification parser.
 - Added real-system proofs for Ean, London and Sydney inputs, canonical source identity, Chronos, Hecate Link and Fortune, independent Hearths, and failure to resolve a place.
 - The original birth-to-Hearth red acceptance now continues through the production delivery function and real mounted source.
+- Run 33705427645 passed 933 package tests and the previously configured 902 Xcode tests (853 Core + 49 Iris). OrboLab failed on retired P22 references. The Lab references and the 31-test Xcode membership gap are corrected for the next gate.
 - Full package, accumulated Xcode tests, app/OrboLab builds, and live simulator proof: pending subsequent CI.
 
 No green completion claim until those gates have run. The local editing host is Linux and has no Swift/Xcode installation.

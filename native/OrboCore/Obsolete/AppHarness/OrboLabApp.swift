@@ -65,12 +65,31 @@ private struct FoundationLabView: View {
         )
     }
 
+    private var eclipseContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .eclipse)
+    }
+
+    private var majorRelationshipContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .exactMajorRelationships)
+    }
+
+    private var minorRelationshipContract: MundaneTimespineUniversalEventContract {
+        MundaneTimespineP22.universalEventTable(for: .exactMinorRelationships)
+    }
+
+    private var admittedRingMarkCount: Int {
+        Set(
+            MundaneTimespineP22.majorRelationshipMarks
+            + MundaneTimespineP22.minorRelationshipMarks
+        ).count
+    }
+
     private var shellAddressLaw: String {
         OrboSpineShellFamily.allCases.map(\.rawValue).joined(separator: ".")
     }
 
     private var auxiliaryPackOneText: String {
-        OrboSpineCelestialSmeldIntent.firstSmeld
+        OrboSpineAuxiliaryIntent.firstPack
             .map(auxiliaryFactorName)
             .joined(separator: " + ")
     }
@@ -81,7 +100,7 @@ private struct FoundationLabView: View {
                 Text("ORBO LAB")
                     .font(.title2.monospaced().weight(.semibold))
 
-                Text("FOUNDATION CONTRACTS / COMPONENT EXAMPLES")
+                Text("MUNDANE TIMESPINE / PASS B NATIVE PROVEN")
                     .font(.caption.monospaced())
 
                 Divider()
@@ -89,9 +108,9 @@ private struct FoundationLabView: View {
                 sectionTitle("ORBOSPINE")
                 readout("identity", OrboSpineContract.identity)
                 readout("class", "Mundane Timespine")
-                readout("build state", "sealed source connected in Orbo")
-                readout("native proof", "OrboCoreTests")
-                readout("live runtime", "Orbo / Sky and Inspect tabs")
+                readout("build state", "A + A.5 + B complete")
+                readout("native proof", "10 / 10 OrboSpine contract tests")
+                readout("next", "Pass C / canonical manufacture")
                 readout("celestial core", "\(OrboSpineContract.canonicalBodies.count) canonical tracts")
                 readout("coordinate", "continuous directional degree [0,720)")
                 readout("direct lane", "[0,360) increasing")
@@ -117,7 +136,7 @@ private struct FoundationLabView: View {
                         "support \(supportDegreeText(OrboSpineContract.supportDegrees(for: body)))"
                     )
                 }
-                readout("source", "sealed files loaded by Orbo")
+                readout("manufacture", "pending Pass C")
 
                 Divider()
 
@@ -133,7 +152,7 @@ private struct FoundationLabView: View {
                     TerraMarrowContract.sourceModelSeamYears.map(String.init).joined(separator: " / ")
                 )
                 readout("place", "none")
-                readout("source", "sealed files loaded by Orbo")
+                readout("manufacture", "pending Pass C")
 
                 Divider()
 
@@ -145,8 +164,8 @@ private struct FoundationLabView: View {
                 readout("address", shellAddressLaw)
                 readout("ownership", "independent half-open intervals")
                 readout("substrate", "A.5 imported / canonical tables present")
-                readout("Chronos", "Library chronology + Horae occurrences")
-                readout("OrboSpine image", "existing sealed Z21–Z23 files")
+                readout("Chronos", "future navigator / not truth owner")
+                readout("OrboSpine image", "not manufactured yet")
 
                 Divider()
 
@@ -160,9 +179,10 @@ private struct FoundationLabView: View {
                 Divider()
 
                 sectionTitle("ORBOSPINE PORTS")
-                readout("Door I", spinePorts.locate.rawValue + " → Horae")
-                readout("Door II", spinePorts.library.rawValue + " → Chronos")
-                readout("Door III", spinePorts.link.rawValue + " → Hecate")
+                readout("ChronosPort", "\(String(describing: type(of: spinePorts.chronos))) / neutral")
+                readout("HoraePort", "\(String(describing: type(of: spinePorts.horae))) / neutral")
+                readout("ClothoPort", "\(String(describing: type(of: spinePorts.clotho))) / neutral")
+                readout("behavior", "none defined in Pass 5")
 
                 Divider()
 
@@ -279,17 +299,180 @@ private struct FoundationLabView: View {
 
                 Divider()
 
-                sectionTitle("SPINE LIFECYCLE")
-                readout("forge", SpineSmeldContract.forgeAuthority)
-                readout("certification", SpineSmeldContract.certificationAuthority)
-                readout("seal", SpineSmeldContract.sealAuthority)
-                readout("seal before mounting", SpineSmeldContract.requiresSealBeforeMount ? "required" : "not required")
-                readout("replacement", SpineSmeldContract.replacementLaw)
-                readout("lifecycle", OrboSpineLifecycleBoundary.allCases.map(\.rawValue).joined(separator: " → "))
+                sectionTitle("FORGE / APPARATUS")
+                readout("role", "generic astronomical apparatus")
+                readout("owner", "MundaneTimespineForge")
+                readout("language", "native Swift")
+                readout("deep source", "Ephemeris -> Forge only")
+                readout("Z22 recipe", "canonical Z22 construction recipe")
+                readout("law", "celestial occurrence <-> civic UT")
+                readout("runtime oracle", "no")
 
                 Divider()
 
-                Text("Component examples from live OrboCore contracts. Use Orbo’s Sky and Inspect tabs for the mounted Spine and the Birth tab for a real birth-to-Hearth journey. Tests remain the proof authority.")
+                sectionTitle("HEPHAESTUS / SPINE FORGE")
+                readout("role", "Spine forge + final fabrication seal")
+                readout("owner", "OrboCore / Hephaestus")
+                readout("apparatus", "Forge")
+                readout(
+                    "lifecycle",
+                    OrboSpineLifecycleBoundary.allCases.map(\.rawValue).joined(separator: " -> ")
+                )
+                readout("candidate", "Hephaestus manufactures")
+                readout("certification", "Dioscuri independently resonate")
+                readout("final seal", "Hephaestus after certification")
+                readout("maintenance", "Dioscuri resonance after seal")
+                readout("runtime query", "none")
+                readout("make", Hephaestus.fabricationRole)
+                readout("identity", Hephaestus.candidateIdentityAlgorithm)
+                readout("rehydration", Hephaestus.candidateRehydrationLaw)
+                readout("overrule", Hephaestus.overruleRole)
+                readout("seal", "deterministic sidecar / \(HephaestusSeal.identityAlgorithm)")
+                readout("seal mutation", Hephaestus.sealMutationRole)
+                readout("quarantine", Hephaestus.quarantineLaw)
+                readout("interpretive", Hephaestus.interpretationRole)
+                readout("OrboSpine C", "not begun")
+                readout("OrboSpine seal", "not available before Pass G")
+
+                Divider()
+
+                sectionTitle("POLLUX / DIOSCURI I")
+                readout("current scope", "existing Z22 machinery")
+                readout("OrboSpine stage", "Pass E / not begun")
+                readout("role", Pollux.role)
+                readout("nature", Pollux.nature)
+                readout("order", Pollux.order)
+                readout("input", "Hephaestus candidate")
+                readout("axis", Pollux.axis)
+                readout("identity", Pollux.identityLaw)
+                readout("ordering", Pollux.orderingLaw)
+                readout("Reader", Pollux.readerRole)
+                readout("ephemeris", Pollux.ephemerisRole)
+                readout("civic time", Pollux.civicTimeRole)
+                readout("ambiguity", Pollux.ambiguityPolicy)
+                readout("Castor", "built")
+                readout("Dioscuri", "built")
+
+                Divider()
+
+                sectionTitle("CASTOR / DIOSCURI II")
+                readout("current scope", "existing Z22 machinery")
+                readout("OrboSpine stage", "Pass E / not begun")
+                readout("role", Castor.role)
+                readout("nature", Castor.nature)
+                readout("order", Castor.order)
+                readout("input", Castor.inputLaw)
+                readout("axis", Castor.axis)
+                readout("candidate", "independently verified")
+                readout("Reader", Castor.readerRole)
+                readout("Forge", Castor.forgeRole)
+                readout("ephemeris", Castor.ephemerisRole)
+                readout("expectations", Castor.expectationRole)
+                readout("answer", Castor.answerLaw)
+                readout("comparison", Castor.comparisonRole)
+                readout("Pollux", "built")
+                readout("Dioscuri", "built")
+
+                Divider()
+
+                sectionTitle("DIOSCURI / RESONANCE")
+                readout("current scope", "existing Z22 implementation")
+                readout("OrboSpine role", "certification + maintenance resonance")
+                readout("OrboSpine stage", "Pass E / not begun")
+                readout("role", Dioscuri.authorityRole)
+                readout("dialect", Dioscuri.currentDialect)
+                readout("contract", "v\(Dioscuri.contractVersion)")
+                readout("implementation", "v\(Dioscuri.certificationImplementationVersion)")
+                readout("twins", "Pollux + Castor")
+                readout("order", Dioscuri.order)
+                readout("origin", Dioscuri.origin)
+                readout("oracle", Dioscuri.oracleRole)
+                readout("Forge", Dioscuri.forgeRole)
+                readout("correction", Dioscuri.correctionRole)
+                readout("averaging", Dioscuri.averagingRole)
+                readout("body", "implemented")
+                readout("markers", "implemented")
+                readout("motion", "implemented")
+                readout("relationships", "implemented")
+                readout("eclipses", "implemented")
+                readout("execution", Dioscuri.exhaustiveExecutionLaw)
+                readout("checkpoint", Dioscuri.checkpointLaw)
+                readout("checkpoint validation", Dioscuri.checkpointValidationLaw)
+                readout("quantization", Dioscuri.quantizationPolicy)
+                readout("second strike", Dioscuri.secondStrikePolicy)
+                readout("divergence", Dioscuri.divergencePolicy)
+                readout("verdict target", Dioscuri.verdictTarget)
+                readout("seal authority", Dioscuri.sealAuthority)
+                readout("Z22 certification", "candidate preserved / verdict pending")
+
+                Divider()
+
+                sectionTitle("Z22 CONSTRUCTION SUBSTRATE")
+                readout("role", "historical construction specimen / audit evidence")
+                readout("status", "preserved / not the final OrboSpine support law")
+                readout("span", "Z22 Pluto Zeitgeist")
+                readout("start", MundaneTimespineP22.startUTC)
+                readout("end exclusive", MundaneTimespineP22.endUTC)
+                readout("bodies", "\(MundaneTimespineP22.profiles.count)")
+                readout("body records", "\(MundaneTimespineP22.totalConstructionRecords)")
+                readout("stations", "\(MundaneTimespineP22ForgeRecipe.canonicalStationCount)")
+                readout("retro passages", "\(MundaneTimespineP22ForgeRecipe.canonicalRetrogradePassageCount)")
+                readout("relationships", "\(MundaneTimespineP22CanonicalInputs.expectedRelationshipRows)")
+                readout("eclipses", "\(MundaneTimespineP22CanonicalInputs.expectedEclipseRows)")
+                readout("civic offset", "\(MundaneTimespineP22.civicOffsetBitsRequired) bits from Z22 start")
+                readout("civic authority", "integer seconds / \(MundaneTimespineP22CivicSerialization.auditLaw)")
+                readout("motion tables", "stations · retrograde passages · retrograde crossings")
+                readout("Node", "True North Node / direct-retrograde user terminology")
+
+                ForEach(MundaneTimespineP22.profiles, id: \.body) { profile in
+                    let resolution = profile.celestialResolutionDegrees == 1
+                        ? "1°"
+                        : String(format: "%.1f°", profile.celestialResolutionDegrees)
+                    let markers = profile.markerBodies.map(\.displayName).joined(separator: " + ")
+                    readout(
+                        profile.body.displayName,
+                        "\(resolution) · \(profile.constructionRecordCount) · markers \(markers)"
+                    )
+                }
+
+                Divider()
+
+                sectionTitle("Z22 UNIVERSAL CELESTIAL EVENTS")
+                readout("law", MundaneTimespineP22.universalEventsAreCelestialTimeFirst ? "celestial-time-first" : "INVALID")
+                readout("eclipses", "\(eclipseContract.constructionRecordCount)")
+                readout("exact major", "\(majorRelationshipContract.constructionRecordCount)")
+                readout("exact minor", "\(minorRelationshipContract.constructionRecordCount)")
+                readout("relationships total", "\(majorRelationshipContract.constructionRecordCount + minorRelationshipContract.constructionRecordCount)")
+                readout("all events", "\(MundaneTimespineP22.totalUniversalEventRecords)")
+                readout("Ring coverage", "\(admittedRingMarkCount) / \(RingMark.allCases.count) marks")
+                readout("orb stored", "none / exact relationships only")
+                readout("relationship UT", "canonical integer second / lexical JD quantization cell")
+                readout("major gzip", byteCount(majorRelationshipContract.compressedBytes))
+                readout("minor gzip", byteCount(minorRelationshipContract.compressedBytes))
+                readout("eclipse gzip", byteCount(eclipseContract.compressedBytes))
+
+                Divider()
+
+                sectionTitle("Z22 STORAGE / READER")
+                readout("scope", "Z22 storage architecture / not final Pass D image")
+                readout("artifact family", MundaneTimespineStorageFormat.identifier)
+                readout("storage version", "\(MundaneTimespineStorageFormat.version)")
+                readout("legacy readable", "ORBOTS01 / v\(MundaneTimespineStorageFormat.legacyVersion)")
+                readout("storage law", MundaneTimespineStorageFormat.celestialTimeFirst ? "celestial-time-first" : "INVALID")
+                readout("exact degrees", "integer microdegrees")
+                readout("runtime reader", "native / ephemeris-free")
+                readout("UT -> celestial", "implemented")
+                readout("celestial -> UT", "implemented")
+                readout("relationships", "implemented / read-time filters")
+                readout("eclipses", "implemented / read-time filters")
+                readout("event union", "implemented")
+                readout("shipping Z22", "not installed")
+                readout("OrboSpine runtime", "Pass D / not begun")
+                readout("proof authority", "OrboCoreTests")
+
+                Divider()
+
+                Text("Diagnostic readout of live OrboCore. Manufactured OrboSpine matter remains absent until Pass C. Tests remain the proof authority.")
                     .font(.caption.monospaced())
             }
             .frame(maxWidth: .infinity, alignment: .leading)
