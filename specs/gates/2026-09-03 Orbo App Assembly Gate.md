@@ -34,6 +34,31 @@ The real-source acceptance exposed a reversed semicircle in the existing `OrboFo
 - Added real-system proofs for Ean, London and Sydney inputs, canonical source identity, Chronos, Hecate Link and Fortune, independent Hearths, and failure to resolve a place.
 - The original birth-to-Hearth red acceptance now continues through the production delivery function and real mounted source.
 - Run 33705427645 passed 933 package tests and the previously configured 902 Xcode tests (853 Core + 49 Iris). OrboLab failed on retired P22 references. The Lab references and the 31-test Xcode membership gap are corrected for the next gate.
-- Full package, accumulated Xcode tests, app/OrboLab builds, and live simulator proof: pending subsequent CI.
+- Final [run 33706843653](https://github.com/huntarfischer/orbobuilder/actions/runs/33706843653), tested code `2a63e71c122eef577f08d8476ce1300f6009d015`: **passed**.
 
-No green completion claim until those gates have run. The local editing host is Linux and has no Swift/Xcode installation.
+| Gate | Observed result |
+| --- | --- |
+| Full Swift package suite | 933 tests, zero failures |
+| Complete Xcode suite | 853 Core + 80 Iris = 933 tests, zero failures |
+| Orbo app | Built and launched independently after testing |
+| OrboLab | Build passed with current contracts |
+| Actual app birth-to-Hearth | `ORBO_HEARTH_LIT: Ean Weslynn; Scorpio / Capricorn / Aries` |
+| Actual runtime mount | `ORBO_READY: real Spine mounted` |
+| Screenshot inspection | Editable birth form, Hearth lit, Sect night; Ascendant 11.48° Scorpio, Moon 7.55° Capricorn, Sun 21.14° Aries |
+
+The runner used Xcode 26.6 and an iPhone 17 Pro simulator on iOS 26.4.1. The app/package deployment minimum remains iOS 17. The local editing host is Linux and has no Swift/Xcode installation.
+
+The [Orbo-Assembled-Evidence artifact](https://github.com/huntarfischer/orbobuilder/actions/runs/33706843653/artifacts/9875937829) contains the Xcode result bundle, app stdout/stderr, and `Orbo-Birth-Hearth.png`. The screenshot and both app logs were downloaded and inspected.
+
+The sealed Spine files remain unchanged. Mounted candidate manifest SHA-256: `d4423805bf03c2306579d18b6ef8ec3a149ff56771be24c73e06b837239c5935`.
+
+### Practical limits observed
+
+- The standalone Debug app took approximately four minutes from process launch (02:29:23 UTC) to the captured Hearth completion (02:33:22 UTC). Loading is off the main actor and occurs once per app process. This is a correctness gate, not a startup-performance qualification.
+- The test-built app emitted duplicate-class warnings for the SwiftPM `BundleFinder` and the reader's private `CSVLineReader`, loaded from both the package product framework and `Orbo.debug.dylib`. The app completed its journey without a crash; a warning-free Release/device build is not established by this gate.
+- A pre-iOS-26 device/runtime was not exercised. The default text path and guarded 3D path compile with the iOS 17 deployment target.
+- Inputs currently use known local birth times. Ambiguous places/times and nonexistent times produce explicit failures. Each submission creates an independent subject/Hearth for the current run; this pass does not add saved-profile persistence.
+
+## Run the assembled app
+
+Open `native/Orbo.xcodeproj` on this branch, select the **Orbo** scheme, and run. After the Spine opens, the **Birth** form starts with Ean's editable inputs; select **Begin**. **Sky** displays the real Horae frame through Iris, and **Inspect** exposes the existing Chronos, Hecate, and Homer connections. The simulator proof's `--orbo-birth-proof` argument only auto-submits those same fields through the same application function.
