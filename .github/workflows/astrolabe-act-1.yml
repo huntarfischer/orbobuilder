@@ -1,7 +1,9 @@
 name: Astrolabe Act II
 on:
   push:
-    branches: [feature/astrolabe-lunar-pane-swift-2026-09-03]
+    branches:
+      - feature/astrolabe-lunar-pane-swift-2026-09-03
+      - feature/orbospine-shippable-iib-2026-09-03
   workflow_dispatch:
 concurrency:
   group: astrolabe-act-1-${{ github.ref }}
