@@ -36,7 +36,7 @@ public enum HephaestusOrboSpineCompletion {
     ) throws -> SpineResonanceTestimony {
         try requireBinding(
             schematic: schematic,
-            candidateIdentity: candidate.provenance.candidateManifestSHA256,
+            candidateIdentity: candidate.provenance.spineIdentity,
             testimonySchematicIdentity: testimony.schematicIdentity,
             testimonySchematicVersion: testimony.schematicVersion,
             testimonyCandidateIdentity: testimony.candidateIdentity
@@ -124,7 +124,7 @@ public enum HephaestusOrboSpineCompletion {
         case .confirmed:
             return try complete(
                 schematic: schematic,
-                candidateIdentity: candidate.provenance.candidateManifestSHA256,
+                candidateIdentity: candidate.provenance.spineIdentity,
                 testimonySchematicIdentity: testimony.schematicIdentity,
                 testimonySchematicVersion: testimony.schematicVersion,
                 testimonyCandidateIdentity: testimony.candidateIdentity,
