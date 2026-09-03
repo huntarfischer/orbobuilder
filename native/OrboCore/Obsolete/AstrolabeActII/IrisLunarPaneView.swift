@@ -23,7 +23,6 @@ struct IrisLunarPaneMaterial: View {
 
 struct IrisLunarPaneView: View {
     let reading: ArtemisFactReading
-    let accepted: ArtemisLunarReading
     let hasNatal: Bool
     let select: (AstrolabeChart.Kind, AstroDNAGene?) -> Void
     let dismiss: () -> Void
@@ -31,7 +30,9 @@ struct IrisLunarPaneView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack(alignment: .top) {
+                IrisLunarPaneMaterial()
                 VStack(spacing: 7) {
+                    crown(width: proxy.size.width).frame(height: 64)
                     Text(title).font(.custom("Avenir Next", size: 17))
                         .foregroundStyle(IrisAstrolabeStyle.text).lineLimit(1).minimumScaleFactor(0.8)
                         .accessibilityIdentifier("orbo.pane.title")
@@ -54,8 +55,6 @@ struct IrisLunarPaneView: View {
                                 }.font(.system(size: 12)).foregroundStyle(IrisAstrolabeStyle.text)
                                     .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 14)
                             }
-                            Text(accepted.provenance.joined(separator: " · ")).font(.system(size: 9))
-                                .foregroundStyle(IrisAstrolabeStyle.text.opacity(0.55)).padding(.top, 12)
                         }.padding(.bottom, 28)
                     }.scrollIndicators(.hidden)
                 }.padding(.horizontal, 26)

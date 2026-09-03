@@ -13,22 +13,18 @@ public struct IrisAstrolabeView: View {
     public let openHearth: () -> Void
     public let openText: () -> Void
     public let openInspect: () -> Void
-    public var controls = IrisAstrolabeControls()
     @State private var showSeats = false
     @State private var showCrowded = false
     @State private var crowded: [AstrolabePlacement] = []
     @State private var crowdedKind: AstrolabeChart.Kind = .natal
-    @State private var activeScrub: AstroDNAGene?
 
     public init(frame: IrisAstrolabeFrame, pane: IrisLunarPaneFrame?, isLive: Bool, environment: AetherEnvironment,
                 select: @escaping (AstrolabeChart.Kind, AstroDNAGene?) -> Void,
                 dismissPane: @escaping () -> Void, goLive: @escaping () -> Void,
-                openHearth: @escaping () -> Void, openText: @escaping () -> Void, openInspect: @escaping () -> Void,
-                controls: IrisAstrolabeControls = IrisAstrolabeControls()) {
+                openHearth: @escaping () -> Void, openText: @escaping () -> Void, openInspect: @escaping () -> Void) {
         self.frame = frame; self.pane = pane; self.isLive = isLive; self.environment = environment
         self.select = select; self.dismissPane = dismissPane; self.goLive = goLive
         self.openHearth = openHearth; self.openText = openText; self.openInspect = openInspect
-        self.controls = controls
     }
 
     public var body: some View {
@@ -57,10 +53,9 @@ public struct IrisAstrolabeView: View {
                     }.frame(width: width)
                     VStack {
                         Spacer(minLength: 0)
-                        if let pane, pane.signal.course != nil {
-                            IrisLunarSurface(signal: pane.signal, hasNatal: aegis.natal != nil, height: proxy.size.height,
-                                select: select, course: controls.selectCourse, dismiss: dismissPane, goToMoment: controls.seek)
-                                .frame(width: width)
+                        if let reading = pane?.signal.reading {
+                            IrisLunarPaneView(reading: reading, hasNatal: aegis.natal != nil, select: select, dismiss: dismissPane)
+                                .frame(width: width, height: proxy.size.height * 0.47)
                         } else {
                             Button { select(aegis.natal == nil ? .sky : .natal, nil) } label: {
                                 Rectangle().fill(.clear).frame(width: width, height: 32)
@@ -127,7 +122,6 @@ public struct IrisAstrolabeView: View {
             .overlay(alignment: .trailing) {
                 // Temporary access to existing app surfaces, pending Hermes' Tabula.
                 Menu {
-                    Button("Tabula", action: controls.openTabula)
                     Button("Hearth", action: openHearth)
                     Button("Text", action: openText)
                     Button("Inspect", action: openInspect)
@@ -176,15 +170,11 @@ public struct IrisAstrolabeView: View {
 
     private func wheel(_ aegis: ApolloAegis, diameter: Double) -> some View {
         let radius = diameter / 2
-        let horizon = controls.horizonFrame ? aegis.sky.placement(.ascendant)?.longitude.degrees : nil
-        let geometry = IrisAegisGeometry(diameter: diameter, horizon: horizon)
+        let geometry = IrisAegisGeometry(diameter: diameter, horizon: aegis.sky.placement(.ascendant)?.longitude.degrees)
         return ZStack {
             Circle().fill(RadialGradient(colors: [IrisAstrolabeStyle.ink, Color(red: 0.08, green: 0.045, blue: 0.22)], center: .center, startRadius: 0, endRadius: radius))
                 .shadow(color: .black.opacity(0.6), radius: 7, y: 4)
             Circle().fill(.black.opacity(0.13)).frame(width: diameter * 0.68, height: diameter * 0.68)
-            Circle().stroke(.clear, lineWidth: 24).contentShape(Circle().stroke(lineWidth: 24))
-                .onTapGesture(count: 2, perform: controls.openTabula)
-                .accessibilityLabel("Double tap rim for Tabula")
             ForEach([0.995, 0.98, 0.95, 0.83, 0.68, 0.55], id: \.self) { ratio in
                 Circle().stroke(IrisAstrolabeStyle.text.opacity(ratio > 0.9 ? 0.25 : 0.15), lineWidth: 0.8)
                     .frame(width: diameter * ratio, height: diameter * ratio)
@@ -211,17 +201,6 @@ public struct IrisAstrolabeView: View {
                     .foregroundStyle(IrisAstrolabeStyle.text.opacity(0.45))
                     .position(geometry.point(longitude: Double(house.sign.rawValue * 30 + 15), radius: radius * 0.79))
             }.allowsHitTesting(false)
-            if controls.aspects.showWeb {
-                threads(aegis.sky, contacts: controls.skyContacts, geometry: geometry, radius: radius * 0.71, opacity: 0.45)
-                if let natal = aegis.natal { threads(natal, contacts: controls.natalContacts, geometry: geometry, radius: radius * 0.60, opacity: 0.22) }
-            }
-            Button(action: controls.togglePlayback) {
-                Image(systemName: controls.playing ? "pause.fill" : "play.fill")
-                    .font(.system(size: 17)).foregroundStyle(IrisAstrolabeStyle.text.opacity(0.4))
-                    .frame(width: 60, height: 60).contentShape(Circle())
-            }.buttonStyle(.plain).accessibilityLabel(controls.playing ? "Pause sky" : "Play sky")
-                .accessibilityIdentifier("orbo.play")
-                .simultaneousGesture(LongPressGesture(minimumDuration: 0.6).onEnded { _ in controls.keepSky() })
             if let natal = aegis.natal { occupants(natal, geometry: geometry, radius: radius, lunar: nil) }
             occupants(aegis.sky, geometry: geometry, radius: radius, lunar: aegis.lunarSeparation.degrees)
             if let ascendant = aegis.sky.placement(.ascendant) {
@@ -237,15 +216,12 @@ public struct IrisAstrolabeView: View {
                         .overlay(Circle().stroke(selected ? IrisAstrolabeStyle.gold : IrisAstrolabeStyle.color(ascendant.longitude.sign), lineWidth: selected ? 2 : 1))
                         .frame(width: 44, height: 44).contentShape(Circle())
                 }.buttonStyle(.plain)
-                    .simultaneousGesture(scrubGesture(.ascendant, radius: radius))
-                    .simultaneousGesture(TapGesture(count: 2).onEnded { controls.toggleFrame() })
                     .accessibilityLabel("Sky Ascendant, \(IrisAstrolabeStyle.position(ascendant.longitude))")
                     .accessibilityIdentifier("orbo.sky.Ascendant")
                     .accessibilityValue(selected ? "Selected" : "")
                     .position(geometry.point(longitude: ascendant.longitude.degrees, radius: radius * 0.99))
             }
-        }.frame(width: diameter, height: diameter).coordinateSpace(name: "aegis")
-            .accessibilityElement(children: .contain)
+        }.frame(width: diameter, height: diameter).accessibilityElement(children: .contain)
     }
 
     private func occupants(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double, lunar: Double?) -> some View {
@@ -286,39 +262,10 @@ public struct IrisAstrolabeView: View {
                     if selected { Circle().stroke(IrisAstrolabeStyle.gold, lineWidth: 1).frame(width: 25, height: 25) }
                 }.frame(width: 30, height: 30).contentShape(Circle())
             }.buttonStyle(.plain)
-                .simultaneousGesture(scrubGesture(placement.gene, radius: radius), including: natal ? .none : .all)
                 .accessibilityLabel("\(chart.kind == .natal ? chart.name : "Sky") \(placement.gene.displayName), \(IrisAstrolabeStyle.position(placement.longitude))")
                 .accessibilityIdentifier("orbo.\(chart.kind.rawValue).\(placement.gene.rawValue)")
                 .position(geometry.point(longitude: placement.longitude.degrees, radius: track))
         }
-    }
-
-    private func threads(_ chart: AstrolabeChart, contacts: [ApolloContact], geometry: IrisAegisGeometry, radius: Double, opacity: Double) -> some View {
-        ForEach(Array(contacts.enumerated()), id: \.offset) { _, contact in
-            if let a = chart.placement(contact.left), let b = chart.placement(contact.right) {
-                Path { path in
-                    path.move(to: geometry.point(longitude: a.longitude.degrees, radius: radius))
-                    path.addLine(to: geometry.point(longitude: b.longitude.degrees, radius: radius))
-                }.stroke((contact.mark == .trine || contact.mark == .sextile ? Color.blue : Color.red).opacity(opacity), lineWidth: 1)
-            }
-        }.allowsHitTesting(false)
-    }
-
-    private func scrubGesture(_ gene: AstroDNAGene, radius: Double) -> some Gesture {
-        DragGesture(minimumDistance: 6, coordinateSpace: .named("aegis"))
-            .onChanged { value in
-                func polar(_ point: CGPoint) -> (Double, Double) {
-                    let x = point.x - radius, y = radius - point.y
-                    return (atan2(y, x) * 180 / .pi, hypot(x, y))
-                }
-                if activeScrub == nil {
-                    activeScrub = gene
-                    let start = polar(value.startLocation)
-                    controls.beginScrub(gene, start.0, start.1)
-                }
-                let current = polar(value.location)
-                controls.moveScrub(current.0, current.1)
-            }.onEnded { _ in activeScrub = nil; controls.endScrub() }
     }
 
     private func moonBearing(_ chart: AstrolabeChart, geometry: IrisAegisGeometry, radius: Double,

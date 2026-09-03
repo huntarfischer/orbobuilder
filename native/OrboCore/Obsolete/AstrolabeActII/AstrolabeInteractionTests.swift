@@ -59,47 +59,6 @@ final class AstrolabeInteractionTests: XCTestCase {
         let advances = expectation(for: NSPredicate(format: "label != %@", first), evaluatedWith: clock)
         wait(for: [advances], timeout: 8)
         XCTAssertEqual(app.buttons["orbo.pane.row.Sun"].label, natalSun)
-
-        app.buttons["orbo.pane.close"].tap()
-        let movingMoon = app.buttons["orbo.sky.Moon"]
-        let before = movingMoon.label
-        let finger = movingMoon.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        finger.press(forDuration: 0.1, thenDragTo: finger.withOffset(CGVector(dx: 65, dy: -45)))
-        XCTAssertEqual(app.buttons["orbo.live"].label, "RETURN TO LIVE")
-        XCTAssertNotEqual(movingMoon.label, before)
-        capture("Act-II-Scrub", app)
-        app.buttons["orbo.play"].tap()
-        XCTAssertEqual(app.buttons["orbo.play"].label, "Pause sky")
-        let playingClock = app.buttons["orbo.clock"].label
-        let plays = expectation(for: NSPredicate(format: "label != %@", playingClock), evaluatedWith: app.buttons["orbo.clock"])
-        wait(for: [plays], timeout: 5)
-        app.buttons["orbo.play"].tap()
-        XCTAssertEqual(app.buttons["orbo.play"].label, "Play sky")
-
-        app.buttons["orbo.menu"].tap()
-        app.buttons["Tabula"].tap()
-        XCTAssertTrue(app.buttons["orbo.tabula.3"].waitForExistence(timeout: 5))
-        capture("Act-II-Tabula", app)
-        app.buttons["orbo.tabula.3"].tap()
-        app.buttons["Phase, illumination and mansion"].tap()
-        XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "the Moon of this moment")
-        XCTAssertTrue(app.staticTexts["Illumination"].exists)
-        capture("Act-II-Moon", app)
-        app.buttons["orbo.pane.close"].tap()
-        app.buttons["orbo.menu"].tap()
-        app.buttons["Tabula"].tap()
-        app.buttons["orbo.tabula.8"].tap()
-        app.buttons["Read prepared stations"].tap()
-        XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "almanac · prepared stations")
-        capture("Act-II-Almanac", app)
-        app.buttons["orbo.pane.close"].tap()
-        app.buttons["orbo.menu"].tap()
-        app.buttons["Tabula"].tap()
-        app.buttons["orbo.tabula.10"].tap()
-        XCTAssertTrue(app.buttons["Ean Weslynn"].firstMatch.waitForExistence(timeout: 5))
-        app.buttons["Ean Weslynn"].firstMatch.tap()
-        XCTAssertEqual(app.buttons["orbo.pane.row.Sun"].label, natalSun)
-        capture("Act-II-Hestia-Restore", app)
     }
 
     @MainActor

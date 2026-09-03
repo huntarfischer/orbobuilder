@@ -4,6 +4,8 @@
 
 > September 3 app assembly: the sealed OrboSpine is wired into application startup, existing Iris ports, Chronos/Hecate/Homer, and the real birth-to-Hearth route. Run 33706843653 passed 933 package tests, 933 Xcode tests, both app builds, and a visible Ean night-chart Hearth proof. See [the assembly gate](gates/2026-09-03%20Orbo%20App%20Assembly%20Gate.md) for evidence and the observed startup/linker limitations. Older component entries below retain their historical status.
 
+> September 3 Astrolabe Act II: implementation underway on the Astrolabe feature branch. Artemis's Lunar Port, relative Apollo body/ASC controls, native Pane motion, Hermes's twelve-seat Tabula, Chronos Almanac, Pythia degree returns and Hestia codec-4 save/restore are being connected. Tests and Xcode acceptance remain pending; this entry does not supersede the verified Act I gate. See `specs/Astrolabe-Act-II.md` and `specs/gates/2026-09-03-Astrolabe-Act-II.md`.
+
 # Native Port Manifest
 
 **Status:** Living native port authority for Orbo 1.0 construction.

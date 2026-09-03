@@ -6,23 +6,16 @@
 public struct LunarPaneSignalFrame: Hashable, Sendable {
     public let subject: AstrolabeSubjectIdentity
     public let reading: ArtemisFactReading?
-    public let course: ArtemisLunarReading?
 
-    fileprivate init(subject: AstrolabeSubjectIdentity, reading: ArtemisFactReading? = nil, course: ArtemisLunarReading? = nil) {
+    fileprivate init(subject: AstrolabeSubjectIdentity, reading: ArtemisFactReading? = nil) {
         self.subject = subject
         self.reading = reading
-        self.course = course
     }
 }
 
 public extension Artemis {
     static func signalForIris(_ reading: ArtemisFactReading) -> IrisPort<LunarPaneSignalFrame> {
-        let accepted = try? pass(reading)
-        return IrisPort(signal: LunarPaneSignalFrame(subject: reading.subject,
-            reading: accepted == nil ? nil : reading, course: accepted))
-    }
-    static func signalForIris(_ course: ArtemisLunarReading) -> IrisPort<LunarPaneSignalFrame> {
-        IrisPort(signal: LunarPaneSignalFrame(subject: course.ticket.subject.chart.subject, course: course))
+        IrisPort(signal: LunarPaneSignalFrame(subject: reading.subject, reading: reading))
     }
     /// Standard outward Iris port from Artemis's Lunar Pane.
     ///

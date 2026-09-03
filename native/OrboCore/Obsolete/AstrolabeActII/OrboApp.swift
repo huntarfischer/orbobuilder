@@ -29,27 +29,7 @@ private final class OrboApplicationModel: ObservableObject {
     @Published var aegis: ApolloAegis?
     @Published var lunarPane: IrisLunarPaneFrame?
     @Published var isLive = true
-    @Published var playing = false
-    @Published var horizonFrame = true
-    @Published var aspects = ApolloAspectSettings()
-    @Published var tabulaVisible = false
-    @Published var tabulaSeat: HermesTabulaSeat = .natal
-    @Published var almanacBody: MundaneBody?
-    @Published var timingBody: MundaneBody = .moon
-    @Published var lunarEvents = false
-    @Published var keptHouses: [Hestia] = []
-    @Published var keeperMessage = ""
-    @Published var playSpeed = 6.0
-    private var scrub: ApolloScrub?
-    private var pendingScrub: (Double, Double)?
-    private var returnStart: (moment: Double, elapsed: Double)?
-    private var liveElapsed = 0.0
-    @Published var showStars = true
-    var environment: AetherEnvironment {
-        let source = Aether.astrolabeEnvironment
-        return Aether.establishEnvironment(celestialField: source.celestialField,
-            starField: showStars ? source.starField : [], earthwardField: source.earthwardField)
-    }
+    let environment = Aether.astrolabeEnvironment
     private(set) var horae: Horae?
     private var started = false
     @Published private(set) var startupMeasurements: [String] = []
@@ -93,7 +73,6 @@ private final class OrboApplicationModel: ObservableObject {
             self.runtime = mounted
             self.horae = horae
             self.session = try IrisHoraeControlSession(live: horae)
-            try restoreHearths()
             try refreshInstrument()
             measure("First sky presentation", since: firstFrameStart)
             if CommandLine.arguments.contains("--orbo-birth-proof") || CommandLine.arguments.contains("--orbo-instrument-proof") || CommandLine.arguments.contains("--orbo-ui-proof") {
@@ -121,8 +100,6 @@ private final class OrboApplicationModel: ObservableObject {
         aegis = next
         if let reading = lunarPane?.signal.reading {
             selectReading(reading.chart.kind, gene: reading.selectedGene)
-        } else if let course = lunarPane?.signal.course?.ticket.subject.course {
-            selectCourse(course)
         }
     }
 
@@ -144,131 +121,7 @@ private final class OrboApplicationModel: ObservableObject {
         } catch { failure = String(describing: error) }
     }
 
-    func goLive() {
-        guard let frame else { return }
-        playing = false; scrub = nil; pendingScrub = nil
-        returnStart = (frame.julianDay.value, 0)
-    }
-
-    func tick(seconds: Double) {
-        guard !working else { return }
-        let dt = min(0.1, max(0, seconds))
-        if let pending = pendingScrub {
-            pendingScrub = nil
-            applyScrub(angle: pending.0, radius: pending.1)
-        } else if var returning = returnStart {
-            returning.elapsed += dt
-            let now = Date().timeIntervalSince1970 / 86400 + 2440587.5
-            let t = min(1, returning.elapsed / 0.65)
-            let eased = t * t * (3 - 2 * t)
-            seek(JulianDay(returning.moment + (now - returning.moment) * eased)!)
-            if t == 1 { returnStart = nil; isLive = true; updateLive() }
-            else { returnStart = returning }
-        } else if playing, let frame {
-            let days = dt * playSpeed / (horizonFrame ? 1440 : 24)
-            seek(JulianDay(frame.julianDay.value + days)!)
-        } else if isLive {
-            liveElapsed += dt
-            if liveElapsed >= 1 { liveElapsed = 0; updateLive() }
-        }
-    }
-
-    func togglePlayback() { returnStart = nil; playing.toggle(); isLive = false }
-
-    func beginScrub(_ gene: AstroDNAGene, angle: Double, radius: Double) {
-        guard let frame else { return }
-        returnStart = nil; playing = false; isLive = false
-        scrub = ApolloScrub(body: gene, julianDay: frame.julianDay, angle: angle, radius: radius)
-    }
-    func moveScrub(angle: Double, radius: Double) { pendingScrub = (angle, radius) }
-    func endScrub() {
-        if let pendingScrub { applyScrub(angle: pendingScrub.0, radius: pendingScrub.1) }
-        pendingScrub = nil; scrub = nil
-    }
-    private func applyScrub(angle: Double, radius: Double) {
-        guard let horae, let aegis, var gesture = scrub else { return }
-        let raw = gesture.move(angle: angle, radius: radius, domain: horae.controlDomain)
-        scrub = gesture
-        do {
-            var requested = raw
-            if aspects.magnetism > 0 {
-                let first = try Apollo.advanceAegis(aegis, from: horae.seek(to: raw))
-                let probe = Apollo.bounded(raw.value + min(0.05, Apollo.period(for: gesture.body) / 2000), to: horae.controlDomain)
-                if probe.value > raw.value {
-                    let second = try Apollo.advanceAegis(aegis, from: horae.seek(to: probe))
-                    requested = Apollo.magneticMoment(raw: raw, body: gesture.body, first: first, second: second,
-                        settings: aspects, domain: horae.controlDomain)
-                }
-            }
-            seek(requested)
-        } catch { failure = String(describing: error); playing = false }
-    }
-
-    func seek(_ moment: JulianDay) {
-        guard let horae, var session else { return }
-        do {
-            let bounded = Apollo.bounded(moment.value, to: horae.controlDomain)
-            if bounded != moment { playing = false }
-            try session.seek(to: bounded, through: horae)
-            self.session = session; isLive = false
-            try refreshInstrument()
-        } catch { failure = String(describing: error); playing = false }
-    }
-
-    func selectCourse(_ course: LunarCourse) {
-        guard let aegis, let horae, let runtime else { return }
-        do {
-            let reading: ArtemisLunarReading
-            switch course {
-            case .natal: selectReading(.natal, gene: nil); return
-            case .sky: selectReading(.sky, gene: nil); return
-            case .relations: reading = try Artemis.relations(aegis.sky, settings: aspects)
-            case .moon:
-                reading = lunarEvents
-                    ? try Artemis.lunarEvents(aegis.sky, using: horae, rings: runtime.ringOccurrences, eclipses: runtime.eclipses)
-                    : try Artemis.moon(aegis)
-            case .almanac:
-                reading = try Artemis.chronology(Chronos.almanac(after: aegis.source.julianDay, body: almanacBody, using: runtime.library), chart: aegis.sky, course: .almanac)
-            case .timing:
-                guard let coordinate = aegis.source.celestial.first(where: { $0.body == timingBody }) else { return }
-                let answer = try Pythia.returns(body: timingBody, at: coordinate.directionalDegree, after: aegis.source.julianDay, using: horae)
-                reading = try Artemis.chronology(answer, chart: aegis.sky, course: .timing)
-            }
-            lunarPane = IrisLunarPaneFrame(port: Artemis.signalForIris(reading))
-        } catch { lunarPane = nil; failure = "Reading refused: \(error)" }
-    }
-
-    private var keeperDirectory: URL {
-        let root = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let proof = CommandLine.arguments.contains { $0.hasPrefix("--orbo-") }
-        return root.appendingPathComponent(proof ? "Hestia-Proof" : "Hestia", isDirectory: true)
-    }
-    private var activeHearthKey: String { keeperDirectory.lastPathComponent + ".active" }
-    private func restoreHearths() throws {
-        try FileManager.default.createDirectory(at: keeperDirectory, withIntermediateDirectories: true)
-        keptHouses = try FileManager.default.contentsOfDirectory(at: keeperDirectory, includingPropertiesForKeys: nil)
-            .filter { $0.pathExtension == "json" }.map { try HestiaPersistence.load(from: $0) }
-        if !CommandLine.arguments.contains(where: { $0.hasPrefix("--orbo-") }),
-           let active = UserDefaults.standard.string(forKey: activeHearthKey) {
-            hestia = keptHouses.first { $0.nativeSubjectID.rawValue == active }
-        }
-    }
-    func keepHearth() {
-        guard let hestia, hestia.hearthLit else { return }
-        do {
-            try HestiaPersistence.save(hestia, to: keeperDirectory.appendingPathComponent(hestia.nativeSubjectID.rawValue + ".json"))
-            UserDefaults.standard.set(hestia.nativeSubjectID.rawValue, forKey: activeHearthKey)
-            if let index = keptHouses.firstIndex(where: { $0.nativeSubjectID == hestia.nativeSubjectID }) { keptHouses[index] = hestia }
-            else { keptHouses.append(hestia) }
-            keeperMessage = "Kept by Hestia"
-        } catch { failure = "Hestia could not save: \(error)" }
-    }
-    func restore(_ house: Hestia) {
-        hestia = house
-        UserDefaults.standard.set(house.nativeSubjectID.rawValue, forKey: activeHearthKey)
-        do { try refreshInstrument(natalChanged: true); selectReading(.natal, gene: nil); tabulaVisible = false }
-        catch { failure = String(describing: error) }
-    }
+    func goLive() { isLive = true; updateLive() }
 
     /// Simulator acceptance drives the same selection path used by the controls.
     /// Every frame is read from the bundled sealed Spine; no fixture sky is mounted.
@@ -371,7 +224,6 @@ private final class OrboApplicationModel: ObservableObject {
             return (orbo, hermes, hestia, notice, failure)
         }.value
         measure("Birth engraving and Hearth delivery", since: engravingStart)
-        guard result.4 == nil else { failure = result.4; return }
         orbo = result.0
         hermes = result.1
         hestia = result.2
@@ -382,7 +234,6 @@ private final class OrboApplicationModel: ObservableObject {
                 session = isLive ? try IrisHoraeControlSession(live: horae)
                     : try IrisHoraeControlSession(horae: horae, initialJulianDay: tempus.absoluteInstant.julianDay)
                 try refreshInstrument(natalChanged: true)
-                keepHearth()
                 _ = try orbo.advanceAstrosphereIntroduction()
                 let truth = OrboEstablishedBigThree(
                     ascendantSign: String(describing: dna.longitude(of: .ascendant).sign).capitalized,
@@ -468,21 +319,11 @@ private struct OrboRuntimeView: View {
                 Group {
                     if selectedTab == 0 {
                     if let aegis = model.aegis {
-                        ZStack {
                         IrisAstrolabeView(frame: IrisAstrolabeFrame(port: Apollo.signalForIris(aegis)),
                             pane: model.lunarPane, isLive: model.isLive, environment: model.environment,
                             select: { kind, gene in model.selectReading(kind, gene: gene) },
                             dismissPane: { model.lunarPane = nil }, goLive: model.goLive,
-                            openHearth: { selectedTab = 1 }, openText: { selectedTab = 2 }, openInspect: { selectedTab = 3 },
-                            controls: instrumentControls)
-                        if model.tabulaVisible {
-                            IrisTabulaView(selected: $model.tabulaSeat, returnToAegis: { model.tabulaVisible = false }) {
-                                tabulaContent
-                            }.padding(.top, 165).background(alignment: .bottom) {
-                                Color(red: 0.04, green: 0.025, blue: 0.12).padding(.top, 160)
-                            }
-                        }
-                        }
+                            openHearth: { selectedTab = 1 }, openText: { selectedTab = 2 }, openInspect: { selectedTab = 3 })
                     }
                     } else {
                         NavigationStack {
@@ -510,108 +351,12 @@ private struct OrboRuntimeView: View {
         }
         .task(id: scenePhase == .active && selectedTab == 0) {
             guard scenePhase == .active && selectedTab == 0 else { return }
-            var previous = ProcessInfo.processInfo.systemUptime
             while !Task.isCancelled {
-                do { try await Task.sleep(for: .seconds(1.0 / 24)) }
+                do { try await Task.sleep(for: .seconds(1)) }
                 catch { return }
-                let now = ProcessInfo.processInfo.systemUptime
-                model.tick(seconds: now - previous)
-                previous = now
+                model.updateLive()
             }
         }
-    }
-
-    private var instrumentControls: IrisAstrolabeControls {
-        var controls = IrisAstrolabeControls()
-        controls.playing = model.playing
-        controls.horizonFrame = model.horizonFrame
-        controls.aspects = model.aspects
-        if let aegis = model.aegis {
-            controls.skyContacts = Apollo.contacts(in: aegis.sky, settings: model.aspects)
-            controls.natalContacts = aegis.natal.map { Apollo.contacts(in: $0, settings: model.aspects) } ?? []
-        }
-        controls.togglePlayback = model.togglePlayback
-        controls.toggleFrame = { model.horizonFrame.toggle() }
-        controls.openTabula = { model.tabulaVisible = true }
-        controls.keepSky = model.keepHearth
-        controls.selectCourse = model.selectCourse
-        controls.seek = { model.playing = false; model.seek($0) }
-        controls.beginScrub = { model.beginScrub($0, angle: $1, radius: $2) }
-        controls.moveScrub = { model.moveScrub(angle: $0, radius: $1) }
-        controls.endScrub = model.endScrub
-        return controls
-    }
-
-    private func openCourse(_ course: LunarCourse) {
-        model.selectCourse(course)
-        model.tabulaVisible = false
-    }
-
-    @ViewBuilder private var tabulaContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            switch model.tabulaSeat {
-            case .natal:
-                Button(model.hestia?.hearthLit == true ? "Read my natal chart" : "Light my Hearth") {
-                    if model.hestia?.hearthLit == true { openCourse(.natal) }
-                    else { model.tabulaVisible = false; selectedTab = 1 }
-                }
-            case .hereNow:
-                Text(model.aegis?.sky.place?.place.canonicalName ?? "Choose a birthplace at the Hearth")
-                Button("Return to live sky") { model.goLive(); model.tabulaVisible = false }
-                Button("Read the sky") { openCourse(.sky) }
-            case .planets:
-                ForEach(AstroDNAGene.canonicalOrder, id: \.self) { gene in
-                    Button(gene.displayName) { model.selectReading(.sky, gene: gene); model.tabulaVisible = false }
-                }
-            case .moon:
-                Button("Phase, illumination and mansion") { model.lunarEvents = false; openCourse(.moon) }
-                Button("Ingress, prepared contacts and next eclipse") { model.lunarEvents = true; openCourse(.moon) }
-            case .image:
-                Toggle("Stars", isOn: $model.showStars)
-            case .aspects:
-                Toggle("Aspect web", isOn: $model.aspects.showWeb)
-                ForEach(RingMark.allCases, id: \.self) { mark in
-                    Toggle(String(describing: mark), isOn: Binding(get: { model.aspects.enabled.contains(mark) }, set: {
-                        if $0 { model.aspects.enabled.insert(mark) } else { model.aspects.enabled.remove(mark) }
-                    }))
-                }
-                Slider(value: $model.aspects.orb, in: 0...10, step: 0.5)
-                Text("Orb · \(model.aspects.orb, specifier: "%.1f")°")
-                Button("Read contacts") { openCourse(.relations) }
-            case .ledger, .archive:
-                Button("Keep my Hearth", action: model.keepHearth).disabled(model.hestia?.hearthLit != true)
-                if !model.keeperMessage.isEmpty { Text(model.keeperMessage).font(.caption) }
-                ForEach(model.keptHouses, id: \.nativeSubjectID) { house in
-                    Button(house.nativeEngraving()?.name ?? "Kept chart") { model.restore(house) }
-                }
-                Button("Another birth chart") { model.tabulaVisible = false; selectedTab = 1 }
-            case .timing:
-                Picker("Return of", selection: $model.timingBody) {
-                    ForEach(MundaneBody.canonicalOrder, id: \.self) { Text($0.displayName).tag($0) }
-                }
-                Text("Returns to the selected body's current degree and direction.").font(.caption)
-                Button("Read returns") { openCourse(.timing) }
-            case .almanac:
-                Picker("Body", selection: $model.almanacBody) {
-                    Text("ALL").tag(MundaneBody?.none)
-                    ForEach(MundaneBody.canonicalOrder, id: \.self) { Text($0.displayName).tag(Optional($0)) }
-                }
-                Button("Read prepared stations") { openCourse(.almanac) }
-            case .gears:
-                Toggle("Horizon frame", isOn: $model.horizonFrame)
-                Button(model.playing ? "Pause" : "Play", action: model.togglePlayback)
-                Slider(value: $model.playSpeed, in: 1...24, step: 1)
-                Text("\(Int(model.playSpeed)) \(model.horizonFrame ? "minutes" : "hours") per second")
-                Slider(value: $model.aspects.magnetism, in: 0...1)
-                Text("Magnetism · \(Int(model.aspects.magnetism * 100))%")
-            case .composite:
-                Text("Hecate · Spine Link")
-                Button("Read this moment's linked members", action: model.askHecate)
-                ForEach(model.linkedCoordinates, id: \.body) { coordinate in
-                    Text(IrisHoraeTextBodyRow(source: coordinate).displayText).font(.caption.monospaced())
-                }
-            }
-        }.foregroundStyle(Color(red: 0.78, green: 0.75, blue: 0.88)).tint(.yellow)
     }
 
     private var birthForm: some View {
