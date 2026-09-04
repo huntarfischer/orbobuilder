@@ -1,0 +1,21 @@
+name: OrboSpine II-B All Proofs
+
+on:
+  push:
+    branches:
+      - feature/orbospine-shippable-iib-2026-09-03
+  workflow_dispatch:
+
+jobs:
+  all-proofs:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: All II-B artifact proofs
+        working-directory: native/OrboCore
+        run: |
+          swift test --filter OrboSpineArtifactRoundTripTests
+          swift test --filter OrboSpineArtifactMountedAnswerTests
+          swift test --filter OrboSpineArtifactMountedLibraryAnswerTests
+          swift test --filter OrboSpineArtifactDeterminismTests
