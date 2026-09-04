@@ -62,6 +62,25 @@ final class OrboSpineRuntimeTests: XCTestCase {
         ))
     }
 
+    func testInventoryCountsCanonicalLocateTerraRatherThanDuplicateConstructionRows() throws {
+        let matter = try makeMatter()
+        let terraWithCoincidentSeam = matter.terra + [matter.terra[0]]
+        let runtime = try XCTUnwrap(OrboSpineRuntime(
+            bone: matter.bone,
+            celestialSupports: matter.supports,
+            stations: matter.stations,
+            retrogradePassages: matter.passages,
+            ringOccurrences: matter.ring,
+            eclipses: matter.eclipses,
+            shellIntervals: matter.shells,
+            terraSamples: terraWithCoincidentSeam,
+            provenance: matter.provenance
+        ))
+
+        XCTAssertEqual(terraWithCoincidentSeam.count, 3)
+        XCTAssertEqual(runtime.inventory.terraSampleCount, 2)
+    }
+
     func testD4RejectsMatterOutsideBoneAndIncompleteShellFamilies() throws {
         let matter = try makeMatter()
         let outsideRing = try XCTUnwrap(OrboSpineRingOccurrence(

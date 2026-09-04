@@ -156,7 +156,9 @@ public struct OrboSpineRuntime: Sendable {
             ringOccurrenceCount: ringOccurrences.count,
             eclipseCount: eclipses.count,
             shellIntervalCount: shellIntervals.count,
-            terraSampleCount: terraSamples.count
+            // Locate canonicalizes coincident seam supports before owning them. Inventory
+            // describes that living matter, not duplicate construction rows already collapsed.
+            terraSampleCount: locate.artifactTerraSamples.count
         )
     }
 
