@@ -82,7 +82,7 @@ public enum OrboSpineArtifactError: Error, Equatable, Sendable {
     case bodyUnavailable(MundaneBody)
     case invalidNavigationCell(Int)
     case terraUnavailable
-    case invalidMatter
+    case invalidMatter(String)
     case artifactIdentityMismatch(expected: String, actual: String)
 }
 
@@ -859,27 +859,60 @@ internal enum OrboSpineArtifactEncoder {
               matter.candidateManifestSHA256.count == 64,
               matter.candidateManifestSHA256.allSatisfy({ $0.isHexDigit }),
               !matter.astronomicalAuthority.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !matter.astronomicalSourceVersion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              tracts.map(\.body) == MundaneBody.canonicalOrder,
-              tracts.allSatisfy({ valid($0, on: matter.bone) }),
-              matter.terra.count >= 2,
-              matter.terra.allSatisfy({ $0.julianDay.value >= matter.bone.start.value && $0.julianDay.value <= matter.bone.end.value }),
-              matter.stations.allSatisfy({ matter.bone.contains($0.julianDay) }),
-              matter.retrogradePassages.allSatisfy({ $0.start.value >= matter.bone.start.value && $0.end.value <= matter.bone.end.value }),
-              matter.ring.allSatisfy({ matter.bone.contains($0.julianDay) }),
-              matter.eclipses.allSatisfy({ eclipse in
-                  matter.bone.contains(eclipse.julianDay)
-                      && (eclipse.greatestEclipseJulianDay == nil
-                          || matter.bone.contains(eclipse.greatestEclipseJulianDay!))
-              }),
-              matter.shells.allSatisfy({ $0.start.value < matter.bone.end.value && $0.end.value > matter.bone.start.value }),
-              matter.inventory.stationCount == matter.stations.count,
+              !matter.astronomicalSourceVersion.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw OrboSpineArtifactError.invalidMatter("provenance")
+        }
+        guard tracts.map(\.body) == MundaneBody.canonicalOrder else {
+            throw OrboSpineArtifactError.invalidMatter("canonical body directory")
+        }
+        for tract in tracts where !valid(tract, on: matter.bone) {
+            throw OrboSpineArtifactError.invalidBody(tract.body)
+        }
+        let orderedTerra = matter.terra.sorted {
+            if $0.julianDay != $1.julianDay { return $0.julianDay.value < $1.julianDay.value }
+            if $0.turnDegrees != $1.turnDegrees { return $0.turnDegrees < $1.turnDegrees }
+            return $0.tiltDegrees < $1.tiltDegrees
+        }
+        guard orderedTerra.count >= 2,
+              orderedTerra[0].julianDay.value <= matter.bone.start.value + 1e-12,
+              orderedTerra[orderedTerra.count - 1].julianDay.value >= matter.bone.end.value - 1e-12,
+              orderedTerra.allSatisfy({
+                  $0.julianDay.value >= matter.bone.start.value - 1e-12
+                      && $0.julianDay.value <= matter.bone.end.value + 1e-12
+              }) else {
+            throw OrboSpineArtifactError.invalidMatter("Terra coverage")
+        }
+        guard matter.stations.allSatisfy({ matter.bone.contains($0.julianDay) }) else {
+            throw OrboSpineArtifactError.invalidMatter("stations")
+        }
+        guard matter.retrogradePassages.allSatisfy({
+            $0.start.value >= matter.bone.start.value - 1e-12
+                && $0.end.value <= matter.bone.end.value + 1e-12
+        }) else {
+            throw OrboSpineArtifactError.invalidMatter("retrograde passages")
+        }
+        guard matter.ring.allSatisfy({ matter.bone.contains($0.julianDay) }) else {
+            throw OrboSpineArtifactError.invalidMatter("Ring")
+        }
+        guard matter.eclipses.allSatisfy({ eclipse in
+            matter.bone.contains(eclipse.julianDay)
+                && (eclipse.greatestEclipseJulianDay == nil
+                    || matter.bone.contains(eclipse.greatestEclipseJulianDay!))
+        }) else {
+            throw OrboSpineArtifactError.invalidMatter("eclipses")
+        }
+        guard matter.shells.allSatisfy({
+            $0.start.value < matter.bone.end.value && $0.end.value > matter.bone.start.value
+        }) else {
+            throw OrboSpineArtifactError.invalidMatter("shells")
+        }
+        guard matter.inventory.stationCount == matter.stations.count,
               matter.inventory.retrogradePassageCount == matter.retrogradePassages.count,
               matter.inventory.ringOccurrenceCount == matter.ring.count,
               matter.inventory.eclipseCount == matter.eclipses.count,
               matter.inventory.shellIntervalCount == matter.shells.count,
               matter.inventory.terraSampleCount == matter.terra.count else {
-            throw OrboSpineArtifactError.invalidMatter
+            throw OrboSpineArtifactError.invalidMatter("inventory")
         }
 
         var bodyDirectory = BinaryWriter()
@@ -925,11 +958,6 @@ internal enum OrboSpineArtifactEncoder {
             globalNavigationCellStart += 720
         }
 
-        let orderedTerra = matter.terra.sorted {
-            if $0.julianDay != $1.julianDay { return $0.julianDay.value < $1.julianDay.value }
-            if $0.turnDegrees != $1.turnDegrees { return $0.turnDegrees < $1.turnDegrees }
-            return $0.tiltDegrees < $1.tiltDegrees
-        }
         var terra = BinaryWriter()
         for sample in orderedTerra {
             terra.double(sample.julianDay.value)
