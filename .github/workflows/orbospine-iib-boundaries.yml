@@ -1,0 +1,17 @@
+name: OrboSpine II-B Boundaries
+
+on:
+  push:
+    branches:
+      - feature/orbospine-shippable-iib-2026-09-03
+  workflow_dispatch:
+
+jobs:
+  boundaries:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mounted Bone boundary proof
+        working-directory: native/OrboCore
+        run: swift test --filter OrboSpineArtifactMountedBoundaryTests
