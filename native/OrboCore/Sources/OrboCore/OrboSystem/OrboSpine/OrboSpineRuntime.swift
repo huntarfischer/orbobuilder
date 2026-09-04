@@ -1,29 +1,40 @@
 import Foundation
 
 /// Minimal provenance binding carried by one assembled runtime OrboSpine.
-/// D4 binds identity only; D5 proves the canonical candidate bytes behind it.
+/// The construction manifest remains auditable provenance; when present, artifactSHA256 identifies
+/// the exact finished Spine representation mounted by the runtime.
 public struct OrboSpineRuntimeProvenance: Hashable, Sendable {
     public let candidateManifestSHA256: String
+    public let artifactSHA256: String?
     public let astronomicalAuthority: String
     public let astronomicalSourceVersion: String
 
+    public var spineIdentity: String { artifactSHA256 ?? candidateManifestSHA256 }
+
     public init?(
         candidateManifestSHA256: String,
+        artifactSHA256: String? = nil,
         astronomicalAuthority: String,
         astronomicalSourceVersion: String
     ) {
-        let digest = candidateManifestSHA256.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let candidateDigest = candidateManifestSHA256.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let artifactDigest = artifactSHA256?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let authority = astronomicalAuthority.trimmingCharacters(in: .whitespacesAndNewlines)
         let version = astronomicalSourceVersion.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard digest.count == 64,
-              digest.allSatisfy({ $0.isHexDigit }),
+        guard Self.isSHA256(candidateDigest),
+              artifactDigest.map(Self.isSHA256) != false,
               !authority.isEmpty,
               !version.isEmpty else {
             return nil
         }
-        self.candidateManifestSHA256 = digest
+        self.candidateManifestSHA256 = candidateDigest
+        self.artifactSHA256 = artifactDigest
         self.astronomicalAuthority = authority
         self.astronomicalSourceVersion = version
+    }
+
+    private static func isSHA256(_ digest: String) -> Bool {
+        digest.count == 64 && digest.allSatisfy({ $0.isHexDigit })
     }
 }
 
@@ -56,7 +67,7 @@ public struct OrboSpineRuntime: Sendable {
 
     /// Compatibility views of Library-owned prepared matter.
     public var stations: [OrboSpineStation] { library.allStations }
-    public let retrogradePassages: [OrboSpineRetrogradePassage]
+    public var retrogradePassages: [OrboSpineRetrogradePassage] { library.allRetrogradePassages }
     public var ringOccurrences: [OrboSpineRingOccurrence] { library.ringOccurrences }
     public var eclipses: [OrboSpineEclipseOccurrence] { library.eclipses }
     public var shellIntervals: [OrboSpineShellInterval] { library.allShellIntervals }
@@ -113,6 +124,7 @@ public struct OrboSpineRuntime: Sendable {
         self.bone = bone
         self.locate = locate
         self.library = OrboSpineLibraryCatalog(
+            retrogradePassages: retrogradePassages,
             stations: stations,
             shellIntervals: shellIntervals,
             ringOccurrences: ringOccurrences,
@@ -121,7 +133,6 @@ public struct OrboSpineRuntime: Sendable {
         self.ports = SpinePorts()
         self.linkPort = SpineLinkSet.port
         self.link = SpineLink(provenance: provenance, locate: locate)
-        self.retrogradePassages = retrogradePassages.sorted { $0.start.value < $1.start.value }
         self.smeldSeams = SpineSmeldSeams()
         self.provenance = provenance
         self.inventory = OrboSpineRuntimeInventory(

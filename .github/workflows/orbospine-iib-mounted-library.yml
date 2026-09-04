@@ -1,0 +1,17 @@
+name: OrboSpine II-B Mounted Library
+
+on:
+  push:
+    branches:
+      - feature/orbospine-shippable-iib-2026-09-03
+  workflow_dispatch:
+
+jobs:
+  mounted-library:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mounted Spine Library proof
+        working-directory: native/OrboCore
+        run: swift test --filter OrboSpineArtifactMountedLibraryAnswerTests

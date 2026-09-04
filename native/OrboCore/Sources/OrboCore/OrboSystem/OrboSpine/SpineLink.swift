@@ -35,14 +35,14 @@ public enum SpineLinkFailure: Error, Equatable, Sendable {
     case coordinateMismatch
 }
 
-/// Door III bound to one mounted candidate. Celestial members use the same
+/// Door III bound to one mounted Spine. Celestial members use the same
 /// Locate authority as Door I; Link introduces no clock or interpolation.
 public struct SpineLink: Sendable {
     public let spineIdentity: String
     private let locate: OrboSpineLocate
 
     internal init(provenance: OrboSpineRuntimeProvenance, locate: OrboSpineLocate) {
-        self.spineIdentity = provenance.candidateManifestSHA256
+        self.spineIdentity = provenance.spineIdentity
         self.locate = locate
     }
 
@@ -57,7 +57,7 @@ public struct SpineLink: Sendable {
         )!
     }
 
-    /// Retrieves the existing member named by this candidate's address.
+    /// Retrieves the existing member named by this Spine's address.
     public func coordinate(at address: SpineLinkAddress) throws -> OrboSpineCelestialCoordinate {
         guard address.spineIdentity == spineIdentity else { throw SpineLinkFailure.wrongSpine }
         let parts = address.memberIdentity.split(separator: "@", omittingEmptySubsequences: false)

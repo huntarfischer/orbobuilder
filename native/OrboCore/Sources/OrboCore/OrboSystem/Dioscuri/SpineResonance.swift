@@ -56,7 +56,7 @@ public struct SpineResonanceAssignment: Sendable {
 
         self.schematic = schematic
         self.candidate = candidate
-        self.candidateIdentity = candidate.provenance.candidateManifestSHA256
+        self.candidateIdentity = candidate.provenance.spineIdentity
     }
 
     /// ASK → ANSWER → CONFIRM for one celestial challenge.

@@ -1,0 +1,17 @@
+name: OrboSpine II-B Body Coverage
+
+on:
+  push:
+    branches:
+      - feature/orbospine-shippable-iib-2026-09-03
+  workflow_dispatch:
+
+jobs:
+  body-coverage:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mounted canonical body proof
+        working-directory: native/OrboCore
+        run: swift test --filter OrboSpineArtifactMountedBodyCoverageTests
