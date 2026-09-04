@@ -107,7 +107,7 @@ public struct IrisApolloAstrolabeView: View {
                         .font(.system(size: diameter * 0.021, weight: .medium))
                         .tracking(diameter * 0.012)
                         .foregroundStyle(color(material.accent))
-                    Text("HORAe · \(String(format: "%.5f", instrument.aegis.source.julianDay.value))")
+                    Text("HORAE · \(String(format: "%.5f", instrument.aegis.source.julianDay.value))")
                         .font(.system(size: diameter * 0.013, weight: .regular, design: .monospaced))
                         .foregroundStyle(color(material.engraving).opacity(0.52))
                 }
