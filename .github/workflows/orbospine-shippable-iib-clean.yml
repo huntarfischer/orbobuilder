@@ -1,0 +1,19 @@
+name: OrboSpine Shippable II-B Clean
+
+on:
+  push:
+    branches: [feature/orbospine-shippable-iib-clean-2026-09-04]
+  workflow_dispatch:
+
+concurrency:
+  group: orbospine-shippable-iib-clean-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cumulative-native-gate:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Full native package regression and real artifact equivalence
+        run: swift test --package-path native/OrboCore

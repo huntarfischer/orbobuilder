@@ -27,6 +27,7 @@ public struct OrboSpineLocate: Sendable {
 
     private let tracts: [MundaneBody: Tract]
     private let terra: TerraSeries?
+    private let mountedArtifact: OrboSpineMountedArtifact?
 
     public init?(
         bone: OrboSpineBoneSpan,
@@ -70,12 +71,25 @@ public struct OrboSpineLocate: Sendable {
         self.bone = bone
         self.tracts = built
         self.terra = terraSeries
+        self.mountedArtifact = nil
+    }
+
+    internal init(mountedArtifact: OrboSpineMountedArtifact) {
+        self.bone = mountedArtifact.metadata.bone
+        self.tracts = [:]
+        self.terra = nil
+        self.mountedArtifact = mountedArtifact
     }
 
     /// (body, *, UT) -> one directional-degree coordinate.
     /// Station UT belongs to the lane entered after the station.
     public func coordinate(of body: MundaneBody, at julianDay: JulianDay) throws -> OrboSpineCelestialCoordinate {
         guard bone.contains(julianDay) else { throw OrboSpineLocateError.outsideBone }
+        if let mountedArtifact {
+            do { return try mountedArtifact.coordinate(of: body, at: julianDay) }
+            catch OrboSpineArtifactError.bodyUnavailable(_) { throw OrboSpineLocateError.bodyUnavailable(body) }
+            catch { throw error }
+        }
         guard let tract = tracts[body] else { throw OrboSpineLocateError.bodyUnavailable(body) }
         return tract.coordinate(at: julianDay)
     }
@@ -86,6 +100,11 @@ public struct OrboSpineLocate: Sendable {
         of body: MundaneBody,
         at directionalDegree: OrboSpineDirectionalDegree
     ) throws -> [OrboSpineCelestialCoordinate] {
+        if let mountedArtifact {
+            do { return try mountedArtifact.occurrences(of: body, at: directionalDegree) }
+            catch OrboSpineArtifactError.bodyUnavailable(_) { throw OrboSpineLocateError.bodyUnavailable(body) }
+            catch { throw error }
+        }
         guard let tract = tracts[body] else { throw OrboSpineLocateError.bodyUnavailable(body) }
         return tract.occurrences(at: directionalDegree)
     }
@@ -97,6 +116,11 @@ public struct OrboSpineLocate: Sendable {
         inNavigationCell cell: Int
     ) throws -> [OrboSpineBoneSpan] {
         guard (0..<720).contains(cell) else { throw OrboSpineLocateError.invalidNavigationCell(cell) }
+        if let mountedArtifact {
+            do { return try mountedArtifact.candidateWindows(of: body, inNavigationCell: cell) }
+            catch OrboSpineArtifactError.bodyUnavailable(_) { throw OrboSpineLocateError.bodyUnavailable(body) }
+            catch { throw error }
+        }
         guard let tract = tracts[body] else { throw OrboSpineLocateError.bodyUnavailable(body) }
         return tract.candidateWindows(in: cell)
     }
@@ -104,9 +128,40 @@ public struct OrboSpineLocate: Sendable {
     /// UT -> Terra Marrow using one-sided source-model refinement at the 1850/2050 seams.
     public func terra(at julianDay: JulianDay) throws -> TerraMarrowSample {
         guard bone.contains(julianDay) else { throw OrboSpineLocateError.outsideBone }
+        if let mountedArtifact {
+            do { return try mountedArtifact.terra(at: julianDay) }
+            catch OrboSpineArtifactError.terraUnavailable { throw OrboSpineLocateError.terraUnavailable }
+            catch { throw error }
+        }
         guard let terra else { throw OrboSpineLocateError.terraUnavailable }
         return terra.sample(at: julianDay)
     }
+
+    /// Hephaestus's physical writer reads the already-built Locate body. This is not a
+    /// second tract constructor: the exact segments and 720-cell grips used by Door I are
+    /// transcribed into the artifact as finished matter.
+    internal var artifactTracts: [OrboSpineArtifactTract] {
+        MundaneBody.canonicalOrder.compactMap { body in
+            guard let tract = tracts[body] else { return nil }
+            return OrboSpineArtifactTract(
+                body: body,
+                segments: tract.segments.map {
+                    OrboSpineArtifactSegment(
+                        start: $0.start,
+                        end: $0.end,
+                        startPhysicalDegrees: $0.startPhysicalDegrees,
+                        endPhysicalDegrees: $0.endPhysicalDegrees,
+                        motion: $0.motion
+                    )
+                },
+                segmentIndexesByCell: tract.segmentIndexesByCell
+            )
+        }
+    }
+
+    /// Terra remains Locate-owned; this exposes its admitted supports only to Hephaestus
+    /// while a finished artifact is being forged.
+    internal var artifactTerraSamples: [TerraMarrowSample] { terra?.samples ?? [] }
 }
 
 private extension OrboSpineLocate {
