@@ -1,0 +1,103 @@
+name: Astrolabe Act II Mounted-Spine Repass
+
+on:
+  push:
+    branches: [feature/orbospine-shippable-iib-clean-2026-09-04]
+  workflow_dispatch:
+
+concurrency:
+  group: astrolabe-act-ii-mounted-spine-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-gate:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Full native package regression including mounted-Spine aspect freshness
+        run: swift test --package-path native/OrboCore
+
+  native-gate:
+    needs: package-gate
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Prove Orbo app boot has no reconstruction fallback
+        run: |
+          grep -q 'OrboSpineRuntime.mount(' native/Orbo/OrboApp.swift
+          if grep -q 'OrboSpineRuntime.load(from:' native/Orbo/OrboApp.swift; then
+            echo 'OrboApp still contains the superseded runtime reconstruction path.'
+            exit 1
+          fi
+      - name: Select installed iPhone simulator
+        run: |
+          xcrun simctl list runtimes
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Build OrboLab
+        run: >-
+          xcodebuild build -project native/Orbo.xcodeproj -scheme OrboLab
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Accumulated Xcode tests including actual-touch Act II acceptance
+        run: >-
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -parallel-testing-enabled NO
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Export actual touch-test screenshots
+        if: always()
+        run: |
+          if test -d "$RUNNER_TEMP/OrboTests.xcresult"; then
+            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/OrboTests.xcresult" --output-path "$RUNNER_TEMP/Orbo-Interactions"
+          fi
+      - name: Run Act II through the installed app and sealed Spine
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/Orbo.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          xcrun simctl launch --terminate-running-process --stdout="$RUNNER_TEMP/Orbo-stdout.log" --stderr="$RUNNER_TEMP/Orbo-stderr.log" "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-instrument-proof
+          for stage in AEGIS PANE PLACEMENT LIVE; do
+            ready=0
+            for attempt in $(seq 1 180); do
+              if grep -q "ORBO_PROOF_FAILED" "$RUNNER_TEMP/Orbo-stdout.log"; then cat "$RUNNER_TEMP/Orbo-stdout.log"; exit 1; fi
+              if grep -q "ORBO_${stage}_READY" "$RUNNER_TEMP/Orbo-stdout.log"; then ready=1; break; fi
+              sleep 1
+            done
+            sleep 1
+            xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-${stage}.png"
+            test "$ready" = 1
+          done
+          grep -q 'ORBO_TIMING Spine artifact mount:' "$RUNNER_TEMP/Orbo-stdout.log"
+          grep -q 'ORBO_READY: real Spine mounted' "$RUNNER_TEMP/Orbo-stdout.log"
+          if grep -q 'ORBO_TIMING Spine load and assembly:' "$RUNNER_TEMP/Orbo-stdout.log"; then
+            echo 'Observed the superseded reconstruction timing marker.'
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/Orbo-stdout.log"
+          cat "$RUNNER_TEMP/Orbo-stderr.log"
+          xcrun simctl install "$ORBO_SIMULATOR" "$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/OrboLab.app"
+          xcrun simctl launch "$ORBO_SIMULATOR" com.huntarfischer.orbolab
+          sleep 3
+          xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-Lab.png"
+      - name: Preserve mounted-Spine Act II evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Astrolabe-Act-II-Mounted-Spine-Repass-Evidence
+          path: |
+            ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Orbo-Interactions
+            ${{ runner.temp }}/Orbo-*.png
+            ${{ runner.temp }}/Orbo-stdout.log
+            ${{ runner.temp }}/Orbo-stderr.log
+          if-no-files-found: ignore
