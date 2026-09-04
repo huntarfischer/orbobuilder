@@ -17,6 +17,41 @@ final class OrboSpineArtifactTests: XCTestCase {
         print("ORBOSPINE_ARTIFACT_SHA256=\(artifact.receipt.sha256)")
     }
 
+    func testMountedSpineKeepsApolloContactsFreshAcrossTime() throws {
+        let artifact = try SealedOrboSpineArtifactFixture.artifact()
+        let horae = Horae(locate: artifact.mounted.locate)
+        let firstMoment = JulianDay(artifact.source.bone.start.value + 1)!
+        let secondMoment = JulianDay(firstMoment.value + 1)!
+        XCTAssertLessThan(secondMoment, artifact.source.bone.end)
+
+        var settings = ApolloAspectSettings()
+        settings.orb = 45
+
+        let first = try Apollo.establishAegis(
+            at: firstMoment,
+            using: horae,
+            hestia: nil,
+            atPlace: nil
+        )
+        let second = try Apollo.establishAegis(
+            at: secondMoment,
+            using: horae,
+            hestia: nil,
+            atPlace: nil
+        )
+        let firstContacts = Apollo.contacts(in: first.sky, settings: settings)
+        let secondContacts = Apollo.contacts(in: second.sky, settings: settings)
+
+        XCTAssertFalse(firstContacts.isEmpty)
+        XCTAssertEqual(firstContacts.count, secondContacts.count)
+        XCTAssertNotEqual(first.source.celestial, second.source.celestial)
+        XCTAssertNotEqual(
+            firstContacts,
+            secondContacts,
+            "Apollo's aspect relationships must refresh when Horae reads a new moment from the mounted Spine."
+        )
+    }
+
     func testMountedLocateMatchesRealCandidateAcrossBoneAndRejectsExclusiveEnd() throws {
         let artifact = try SealedOrboSpineArtifactFixture.artifact()
         let bone = artifact.source.bone
