@@ -1,11 +1,11 @@
-/// Hermes is Orbo's governor of the Tabula, the communicative reverse of the Astrolabe.
+/// Hermes governs transport and interconnection between Orbo's owners.
 ///
-/// Preparation Pass B establishes Tabula ownership only. It does not turn Tabula
-/// requests into Messenger or Courier contracts, and it does not own their answers.
+/// Hermes may carry a request initiated at Apollo's Tabula, but the Tabula is
+/// part of Apollo's Astrolabe. Transport does not confer device ownership.
 public enum Hermes {
     public enum GovernedDomain: String, Hashable, Sendable {
-        case tabula
+        case interconnection
     }
 
-    public static let governedDomain: GovernedDomain = .tabula
+    public static let governedDomain: GovernedDomain = .interconnection
 }

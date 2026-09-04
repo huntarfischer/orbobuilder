@@ -77,7 +77,7 @@ final class AetherPassDTests: XCTestCase {
         let orbo = Orbo()
 
         XCTAssertEqual(orbo.summonAether().governedDomain, .astrosphereEnvironment)
-        XCTAssertEqual(orbo.summonApollo().governedInstrument, .aegis)
+        XCTAssertEqual(orbo.summonApollo().governedInstrument, .astrolabe)
         XCTAssertEqual(orbo.summonArtemis().governedInstrument, .lunarPane)
     }
 }

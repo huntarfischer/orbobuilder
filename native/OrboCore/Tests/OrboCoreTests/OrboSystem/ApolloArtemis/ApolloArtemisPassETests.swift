@@ -6,8 +6,8 @@ final class ApolloArtemisPassETests: XCTestCase {
         let orbo = Orbo()
         let governor = orbo.summonApollo()
 
-        XCTAssertEqual(governor.governedInstrument, .aegis)
-        XCTAssertEqual(Apollo.governedInstrument, .aegis)
+        XCTAssertEqual(governor.governedInstrument, .astrolabe)
+        XCTAssertEqual(Apollo.governedInstrument, .astrolabe)
     }
 
     func testOrboSummonsArtemisWithoutTakingLunarPaneGovernance() {

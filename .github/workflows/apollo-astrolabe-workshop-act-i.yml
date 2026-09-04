@@ -1,0 +1,82 @@
+name: Apollo Astrolabe Workshop Act I
+
+on:
+  push:
+    branches: [feature/apollo-astrolabe-workshop-act-i-2026-09-04]
+  workflow_dispatch:
+
+concurrency:
+  group: apollo-astrolabe-workshop-act-i-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-gate:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Verify the mounted Timespine artifact
+        run: |
+          test "$(shasum -a 256 tools/pass5/orbospine-build/orbo-v1.orbospine | awk '{print $1}')" = "c009ee14231747e6409fb717027a12c74d3236cdd0646f9d8db4f978b0d29191"
+          test "$(wc -c < tools/pass5/orbospine-build/orbo-v1.orbospine | tr -d ' ')" = "216569743"
+      - name: Full native package regression
+        run: swift test --package-path native/OrboCore
+
+  native-gate:
+    needs: package-gate
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Build the isolated Apollo Astrolabe Workshop
+        run: >-
+          xcodebuild build -project native/Orbo.xcodeproj -scheme ApolloAstrolabeWorkshop
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Accumulated Xcode regression
+        run: >-
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -parallel-testing-enabled NO
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Capture Aegis, edge, and Tabula from the real workshop
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/ApolloAstrolabeWorkshop.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          for pair in "0 Aegis" "90 Edge" "180 Tabula"; do
+            angle=${pair%% *}
+            face=${pair#* }
+            log="$RUNNER_TEMP/Apollo-Workshop-$face.log"
+            xcrun simctl launch --terminate-running-process --stdout="$log" --stderr="$RUNNER_TEMP/Apollo-Workshop-$face.err" "$ORBO_SIMULATOR" com.huntarfischer.apolloastrolabeworkshop --workshop-angle "$angle"
+            ready=0
+            for attempt in $(seq 1 180); do
+              if grep -q "APOLLO_WORKSHOP_READY" "$log"; then ready=1; break; fi
+              sleep 1
+            done
+            test "$ready" = 1
+            sleep 2
+            xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Apollo-Workshop-$face.png"
+          done
+      - name: Preserve Act I evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Apollo-Astrolabe-Workshop-Act-I-Evidence
+          path: |
+            ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Apollo-Workshop-*.png
+            ${{ runner.temp }}/Apollo-Workshop-*.log
+            ${{ runner.temp }}/Apollo-Workshop-*.err
+          if-no-files-found: ignore

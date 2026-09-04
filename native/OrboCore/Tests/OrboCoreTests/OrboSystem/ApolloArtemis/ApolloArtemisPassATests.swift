@@ -3,7 +3,7 @@ import XCTest
 
 final class ApolloArtemisPassATests: XCTestCase {
     func testApolloExistsAndGovernsAegis() {
-        XCTAssertEqual(Apollo.governedInstrument, .aegis)
+        XCTAssertEqual(Apollo.governedInstrument, .astrolabe)
     }
 
     func testArtemisExistsAndGovernsLunarPane() {

@@ -1,3 +1,5 @@
+> September 4 Apollo Astrolabe Workshop Act I: implementation is staged on `feature/apollo-astrolabe-workshop-act-i-2026-09-04` from the frozen mounted-Spine green base. Apollo now owns one two-faced device, including Aegis, Tabula, shared geometry, prototype violet-stone recipe, pose and detents. A separate SwiftUI workshop target mounts the exact accepted Spine through Horae and passes an immutable device signal to Iris for display. Full Tabula behavior, alternate materials and production-shell integration remain deferred. The macOS/Xcode gate and three simulator views are pending; see `specs/ApolloAstrolabe-Workshop-Act-I.md` and `specs/gates/2026-09-04-Apollo-Astrolabe-Workshop-Act-I.md`.
+
 > September 3 Astrolabe Act I repass: verified at `53e7d40` in run 33782473759. Package: 943 tests; Xcode: 944 tests (858 Core + 85 Iris + one actual-touch UI test), all passing. Orbo/OrboLab built and launched; simulator captures inspected. Screen-fixed graduations, Plate/Rete detail, Big Three spacing, curved Pane, crowded Mercury/Venus selection, removal of native bottom navigation, and single-answer live refresh are complete. Debug simulator Spine load/assembly took 194.557 s; first sky preparation 0.043 s; birth/Hearth delivery 0.802 s. Loader performance, pre-26 execution and Acts II/III remain open. See `specs/gates/2026-09-03-Astrolabe-Act-I-Repass.md`. Earlier acceptance records below describe their tested commits.
 
 > September 3 Astrolabe Act I: the Aegis, Big Three and Lunar Pane FACT slice is verified on `feature/astrolabe-lunar-pane-swift-2026-09-03`. Run 33733075809 passed 941 package tests and 941 Xcode tests (858 Core + 83 Iris), zero failures; Orbo and OrboLab built and launched; five simulator captures were inspected. The live Horae frame advances automatically while the kept natal chart remains unchanged. Apollo/Artemis supply Iris through their existing ports, with facts from the one real Spine and Hestia's Tapestry. Acts II/III, startup-performance work and older-runtime execution remain pending. See `specs/Astrolabe-Act-I.md` and `specs/gates/2026-09-03-Astrolabe-Act-I.md` for scope and evidence.
@@ -10,7 +12,7 @@
 
 **Status:** Living native port authority for Orbo 1.0 construction.
 
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-04
 
 **Governing authorities:**
 

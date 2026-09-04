@@ -13,7 +13,23 @@ public struct AstrolabeSignalFrame: Hashable, Sendable {
     }
 }
 
+/// Apollo's immutable outward device signal. Iris can display this snapshot but
+/// cannot mutate the Astrolabe, calculate its sky, or redefine its mechanics.
+public struct ApolloAstrolabeSignalFrame: Hashable, Sendable {
+    public let instrument: ApolloAstrolabe
+
+    fileprivate init(instrument: ApolloAstrolabe) {
+        self.instrument = instrument
+    }
+}
+
 public extension Apollo {
+    static func signalForIris(
+        _ instrument: ApolloAstrolabe
+    ) -> IrisPort<ApolloAstrolabeSignalFrame> {
+        IrisPort(signal: ApolloAstrolabeSignalFrame(instrument: instrument))
+    }
+
     static func signalForIris(_ aegis: ApolloAegis) -> IrisPort<AstrolabeSignalFrame> {
         IrisPort(signal: AstrolabeSignalFrame(subject: aegis.sky.subject, aegis: aegis))
     }

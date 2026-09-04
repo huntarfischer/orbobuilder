@@ -1,11 +1,13 @@
-/// Apollo is Orbo's governor of the Aegis, the celestial face of the Astrolabe.
+/// Apollo owns Orbo's Astrolabe as a device: its Aegis, Tabula, body, pose,
+/// and the meaning of its controls.
 ///
-/// Preparation Pass B narrows Apollo's ownership to the front face. It does not
-/// define Aegis state, temporal law, celestial calculations, controls, or manifestation.
+/// Apollo does not calculate celestial truth. Horae carry one Timespine
+/// cross-section to Apollo, which seats that truth in the device. Iris remains
+/// a monitor of the signal Apollo chooses to expose.
 public enum Apollo {
     public enum GovernedInstrument: String, Hashable, Sendable {
-        case aegis
+        case astrolabe
     }
 
-    public static let governedInstrument: GovernedInstrument = .aegis
+    public static let governedInstrument: GovernedInstrument = .astrolabe
 }
