@@ -22,7 +22,7 @@ final class OrboSpineArtifactTests: XCTestCase {
         let horae = Horae(locate: artifact.mounted.locate)
         let firstMoment = JulianDay(artifact.source.bone.start.value + 1)!
         let secondMoment = JulianDay(firstMoment.value + 1)!
-        XCTAssertLessThan(secondMoment, artifact.source.bone.end)
+        XCTAssertLessThan(secondMoment.value, artifact.source.bone.end.value)
 
         var settings = ApolloAspectSettings()
         settings.orb = 45
