@@ -89,10 +89,14 @@ private final class OrboApplicationModel: ObservableObject {
         }
         do {
             let mountStart = ProcessInfo.processInfo.systemUptime
+            let artifact = root.appendingPathComponent("orbo-v1.orbospine")
             let mounted = try await Task.detached(priority: .userInitiated) {
-                try OrboSpineRuntime.load(from: root)
+                try OrboSpineRuntime.mount(
+                    from: artifact,
+                    expectedSHA256: "c009ee14231747e6409fb717027a12c74d3236cdd0646f9d8db4f978b0d29191"
+                )
             }.value
-            measure("Spine load and assembly", since: mountStart)
+            measure("Spine artifact mount", since: mountStart)
             let firstFrameStart = ProcessInfo.processInfo.systemUptime
             let horae = Horae(locate: mounted.locate)
             self.runtime = mounted
