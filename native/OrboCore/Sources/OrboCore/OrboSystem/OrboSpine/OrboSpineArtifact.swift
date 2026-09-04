@@ -122,7 +122,7 @@ internal final class OrboSpineMountedArtifact: @unchecked Sendable {
     private let sections: [OrboSpineArtifactFormat.Section: DirectoryEntry]
     private let bodies: [MundaneBody: BodyEntry]
 
-    init(url: URL) throws {
+    convenience init(url: URL) throws {
         let data = try Data(contentsOf: url, options: .mappedIfSafe)
         try self.init(data: data)
     }
