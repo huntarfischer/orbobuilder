@@ -1,0 +1,17 @@
+name: OrboSpine II-B Round Trip
+
+on:
+  push:
+    branches:
+      - feature/orbospine-shippable-iib-2026-09-03
+  workflow_dispatch:
+
+jobs:
+  roundtrip:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mounted Spine equivalence
+        working-directory: native/OrboCore
+        run: swift test --filter OrboSpineArtifactRoundTripTests
