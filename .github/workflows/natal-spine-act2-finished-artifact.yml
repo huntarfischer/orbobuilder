@@ -21,9 +21,24 @@ jobs:
           grep -q 'candidate.artifactTracts' "$file"
           grep -q 'case locateBodyDirectory = 8' "$file"
           grep -q 'case locateNavigationIndices = 11' "$file"
+      - name: Prove post-mount consumers use mounted authority
+        run: |
+          file="native/OrboCore/Sources/OrboCore/OrboSystem/NatalSpine/NatalSpineManufacture.swift"
+          grep -q 'Horae.locateNatalSpine(mounted' "$file"
+          grep -q 'Chronos.indexNatalSpine(mounted)' "$file"
+          grep -q 'Hecate.blessNatalSpine(mounted' "$file"
+          ! grep -q 'Horae.locateNatalSpine(installed' "$file"
+          ! grep -q 'Chronos.indexNatalSpine(installed)' "$file"
+          ! grep -q 'Hecate.blessNatalSpine(installed' "$file"
       - name: Build and prove Natal artifact preservation
         run: swift test --package-path native/OrboCore --filter NatalSpineArtifactTests
       - name: Prove Rhea source references remain green
         run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat5RheaForgeTests
+      - name: Prove mounted three-door handoff
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIICMountedHandoffTests
+      - name: Prove Dioscuri remains independent
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat7DioscuriTests
+      - name: Prove Hermes closure remains green
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIIIBeat5HermesClosureTests
       - name: Prove shared Mundane mapped navigation remains green
         run: swift test --package-path native/OrboCore --filter OrboSpineArtifactTests

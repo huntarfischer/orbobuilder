@@ -48,4 +48,29 @@ public extension Hecate {
             parentProvenance: spine.seal.parentProvenance
         )
     }
+
+    /// Mounted Natal Spine handoff. Once the finished artifact has mounted,
+    /// Hecate blesses the same runtime Chronos indexed rather than the pre-mount
+    /// sealed candidate. The blessing remains identity/provenance only.
+    static func blessNatalSpine(
+        _ spine: NatalSpineRuntime,
+        indexedBy index: NatalSpineMountedChronosIndex
+    ) throws -> NatalSpineHecateBlessing {
+        guard index.subjectID == spine.subjectID else {
+            throw NatalSpineHecateFailure.subjectMismatch
+        }
+        guard index.packageID == spine.packageID else {
+            throw NatalSpineHecateFailure.packageMismatch
+        }
+        guard index.bounds == spine.bounds else {
+            throw NatalSpineHecateFailure.boundsMismatch
+        }
+
+        return NatalSpineHecateBlessing(
+            packageID: spine.packageID,
+            subjectID: spine.subjectID,
+            bounds: spine.bounds,
+            parentProvenance: spine.parentProvenance
+        )
+    }
 }

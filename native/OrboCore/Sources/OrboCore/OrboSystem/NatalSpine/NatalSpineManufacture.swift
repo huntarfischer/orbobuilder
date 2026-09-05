@@ -199,11 +199,16 @@ public extension Orbo {
             ticketID: handle.ticketID,
             occurredAt: manufactureInstant(occurredAt, offset: 5)
         )
-        let installed = try Horae.receiveNatalSpine(
+        let delivered = try Horae.receiveNatalSpine(
             finishedPackage,
             deliveredTo: horaeAddress
         )
-        _ = try Horae.locateNatalSpine(installed, at: installed.bounds.natal.julianDay)
+        guard delivered.subjectID == mounted.subjectID,
+              delivered.packageID == mounted.packageID,
+              delivered.bounds == mounted.bounds,
+              delivered.seal.parentProvenance == mounted.parentProvenance else {
+            throw NatalSpineManufactureFailure.mountedHandoffMismatch
+        }
         _ = try Horae.locateNatalSpine(mounted, at: mounted.bounds.natal.julianDay)
         try courier.recover(
             ticketID: handle.ticketID,
@@ -217,8 +222,7 @@ public extension Orbo {
         ) == NatalSpineCommission.chronosAddress else {
             throw NatalSpineManufactureFailure.routeDivergence
         }
-        let index = Chronos.indexNatalSpine(installed)
-        _ = Chronos.indexNatalSpine(mounted)
+        let index = Chronos.indexNatalSpine(mounted)
         try courier.recover(
             ticketID: handle.ticketID,
             package: finishedPackage,
@@ -231,7 +235,7 @@ public extension Orbo {
         ) == NatalSpineCommission.hecateAddress else {
             throw NatalSpineManufactureFailure.routeDivergence
         }
-        let blessing = try Hecate.blessNatalSpine(installed, indexedBy: index)
+        let blessing = try Hecate.blessNatalSpine(mounted, indexedBy: index)
         let availability = try courier.closeNatalSpineCommission(
             ticketID: handle.ticketID,
             blessing: blessing,
@@ -256,4 +260,5 @@ public extension Orbo {
 
 public enum NatalSpineManufactureFailure: Error, Hashable, Sendable {
     case routeDivergence
+    case mountedHandoffMismatch
 }
