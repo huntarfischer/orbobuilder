@@ -7,6 +7,16 @@ public enum ApolloAstrolabeFace: String, Hashable, Sendable {
     case tabula
 }
 
+/// Commands a control surface may return to Apollo. The surface identifies a
+/// touched piece of Apollo's own instrument; it does not mutate the Iris frame.
+public enum ApolloAstrolabeCommand: Hashable, Sendable {
+    case turn(Double)
+    case settle
+    case flip
+    case selectDestination(ApolloTabulaDestination?)
+    case selectBodyMode(ApolloTabulaBodyMode)
+}
+
 /// A destination engraved around the Tabula. These are parts of Apollo's
 /// device, not destinations owned or interpreted by Iris.
 public enum ApolloTabulaDestination: Int, CaseIterable, Hashable, Sendable {
@@ -46,6 +56,93 @@ public enum ApolloTabulaDestination: Int, CaseIterable, Hashable, Sendable {
     }
 }
 
+/// The four prototype modes seated in Gemini's Tabula socket ring.
+public enum ApolloTabulaBodyMode: String, CaseIterable, Hashable, Sendable {
+    case planets
+    case objects
+    case points
+    case lots
+
+    public var socketTitle: String { rawValue.capitalized }
+    public var fieldTitle: String { "THE \(rawValue.uppercased())" }
+}
+
+/// One engraved control seated on the prototype's circular chip rail. Apollo
+/// owns the name, glyph, angle, and state; Iris only places the supplied mark.
+public struct ApolloTabulaChip: Hashable, Sendable {
+    public let name: String
+    public let glyph: String
+    public let angleDegrees: Double
+    public let enabled: Bool
+
+    public init(name: String, glyph: String, angleDegrees: Double, enabled: Bool) {
+        self.name = name
+        self.glyph = glyph
+        self.angleDegrees = angleDegrees
+        self.enabled = enabled
+    }
+}
+
+/// Mutable state of the reverse face. It remains inside Apollo's complete
+/// instrument value rather than becoming view state owned by Iris.
+public struct ApolloTabula: Hashable, Sendable {
+    public private(set) var destination: ApolloTabulaDestination?
+    public private(set) var bodyMode: ApolloTabulaBodyMode
+
+    public init(
+        destination: ApolloTabulaDestination? = nil,
+        bodyMode: ApolloTabulaBodyMode = .planets
+    ) {
+        self.destination = destination
+        self.bodyMode = bodyMode
+    }
+
+    public mutating func select(_ destination: ApolloTabulaDestination?) {
+        self.destination = destination
+    }
+
+    public mutating func select(_ mode: ApolloTabulaBodyMode) {
+        bodyMode = mode
+    }
+
+    /// Direct transcription of the prototype's `_chipPos` source order and
+    /// angular laws. Planet and Lot seats follow domicile spokes; objects and
+    /// points divide the complete rail evenly.
+    public var bodyChips: [ApolloTabulaChip] {
+        switch bodyMode {
+        case .planets:
+            return [
+                ("Sun", "☉", 4), ("Moon", "☽", 3), ("Mercury", "☿", 2),
+                ("Venus", "♀", 1), ("Mars", "♂", 0), ("Jupiter", "♃", 8),
+                ("Saturn", "♄", 9), ("Uranus", "♅", 10),
+                ("Neptune", "♆", 11), ("Pluto", "♇", 7),
+            ].map { ApolloTabulaChip(name: $0.0, glyph: $0.1,
+                angleDegrees: 180 + Double($0.2 * 30 + 15), enabled: true) }
+        case .objects:
+            return [
+                ("Chiron", "⚷"), ("Ceres", "⚳"), ("Pallas", "⚴"),
+                ("Juno", "⚵"), ("Vesta", "⚶"),
+            ].enumerated().map { index, item in
+                ApolloTabulaChip(name: item.0, glyph: item.1,
+                    angleDegrees: 180 + Double(index) * 72, enabled: false)
+            }
+        case .points:
+            return [("Nodes", "☊"), ("Lilith", "⚸"), ("Vertex", "Vx")]
+                .enumerated().map { index, item in
+                    ApolloTabulaChip(name: item.0, glyph: item.1,
+                        angleDegrees: 180 + Double(index) * 120, enabled: index == 0)
+                }
+        case .lots:
+            return [
+                ("Fortune", "⊗", 3), ("Spirit", "Sp", 4), ("Eros", "Er", 1),
+                ("Necessity", "Nc", 2), ("Courage", "Cg", 0),
+                ("Victory", "Vc", 8), ("Nemesis", "Nm", 9), ("Death", "Dt", 7),
+            ].map { ApolloTabulaChip(name: $0.0, glyph: $0.1,
+                angleDegrees: 180 + Double($0.2 * 30 + 15), enabled: false) }
+        }
+    }
+}
+
 /// Platform-neutral color values so Apollo can own a material recipe without
 /// importing a presentation framework.
 public struct ApolloAstrolabeColor: Hashable, Sendable {
@@ -74,11 +171,11 @@ public struct ApolloAstrolabeMaterial: Hashable, Sendable {
 
     public static let prototypeVioletStone = ApolloAstrolabeMaterial(
         name: "Prototype violet stone",
-        face: .init(red: 0.055, green: 0.027, blue: 0.135),
-        faceHighlight: .init(red: 0.115, green: 0.075, blue: 0.235),
-        edge: .init(red: 0.025, green: 0.016, blue: 0.070),
-        engraving: .init(red: 0.66, green: 0.62, blue: 0.78),
-        accent: .init(red: 0.96, green: 0.66, blue: 0.18)
+        face: .init(red: 0.094, green: 0.067, blue: 0.263),
+        faceHighlight: .init(red: 0.102, green: 0.075, blue: 0.282),
+        edge: .init(red: 0.063, green: 0.043, blue: 0.188),
+        engraving: .init(red: 0.804, green: 0.847, blue: 0.949),
+        accent: .init(red: 0.910, green: 0.671, blue: 0.255)
     )
 }
 
@@ -88,14 +185,21 @@ public struct ApolloAstrolabeGeometry: Hashable, Sendable {
     public let rimRadius: Double
     public let destinationInnerRadius: Double
     public let inscriptionInnerRadius: Double
-    public let socketRadius: Double
+    public let socketInnerRadius: Double
+    public let socketOuterRadius: Double
+    public let zodiacGlyphRadius: Double
     public let thicknessRatio: Double
 
+    /// Compatibility name retained for the accepted Act I contract.
+    public var socketRadius: Double { socketInnerRadius }
+
     public static let prototype = ApolloAstrolabeGeometry(
-        rimRadius: 0.5,
+        rimRadius: 0.493,
         destinationInnerRadius: 0.385,
-        inscriptionInnerRadius: 0.335,
-        socketRadius: 0.265,
+        inscriptionInnerRadius: 0.332,
+        socketInnerRadius: 0.264,
+        socketOuterRadius: 0.329,
+        zodiacGlyphRadius: 0.4375,
         thicknessRatio: 0.048
     )
 }
@@ -113,24 +217,41 @@ public struct ApolloAstrolabe: Hashable, Sendable {
     public static let detents: [Double] = [0, 90, 180, 270, 360]
 
     public let aegis: ApolloAegis
+    public let skyContacts: [ApolloContact]
     public let geometry: ApolloAstrolabeGeometry
     public let material: ApolloAstrolabeMaterial
+    public private(set) var tabula: ApolloTabula
     public private(set) var rotationDegrees: Double
 
     public init(
         aegis: ApolloAegis,
         rotationDegrees: Double = 0,
         geometry: ApolloAstrolabeGeometry = .prototype,
-        material: ApolloAstrolabeMaterial = .prototypeVioletStone
+        material: ApolloAstrolabeMaterial = .prototypeVioletStone,
+        tabula: ApolloTabula = ApolloTabula()
     ) {
         self.aegis = aegis
+        self.skyContacts = Apollo.contacts(in: aegis.sky, settings: ApolloAspectSettings())
         self.geometry = geometry
         self.material = material
+        self.tabula = tabula
         self.rotationDegrees = Self.normalized(rotationDegrees)
     }
 
     public mutating func turn(to degrees: Double) {
         rotationDegrees = Self.normalized(degrees)
+    }
+
+    public mutating func flip() {
+        turn(to: rotationDegrees + 180)
+    }
+
+    public mutating func selectTabulaDestination(_ destination: ApolloTabulaDestination?) {
+        tabula.select(destination)
+    }
+
+    public mutating func selectTabulaBodyMode(_ mode: ApolloTabulaBodyMode) {
+        tabula.select(mode)
     }
 
     @discardableResult
