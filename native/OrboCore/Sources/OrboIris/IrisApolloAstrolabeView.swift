@@ -43,9 +43,11 @@ public struct IrisApolloAstrolabeView: View {
                 ZStack {
                     aegisFace(instrument)
                         .opacity(instrument.exposure.aegis > 0.001 ? 1 : 0)
+                        .allowsHitTesting(instrument.exposure.aegis > 0.001)
                     tabulaFace(instrument)
                         .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
                         .opacity(instrument.exposure.tabula > 0.001 ? 1 : 0)
+                        .allowsHitTesting(instrument.exposure.tabula > 0.001)
                 }
                 .rotation3DEffect(
                     .degrees(instrument.rotationDegrees),
@@ -368,8 +370,8 @@ public struct IrisApolloAstrolabeView: View {
         material: ApolloAstrolabeMaterial,
         diameter: Double
     ) -> some View {
-        let disc = diameter * 0.071
-        let radius = diameter * 0.193
+        let disc = min(26, diameter * 0.071)
+        let radius = diameter * 0.264 - (disc / 2 + 13)
         let point = instrumentPoint(angle: chip.angleDegrees, radius: radius, diameter: diameter)
         let top = sin(chip.angleDegrees * .pi / 180) > 0.001
         let foreground = chip.enabled ? color(material.engraving) : color(material.engraving).opacity(0.25)
@@ -382,7 +384,7 @@ public struct IrisApolloAstrolabeView: View {
                 .font(.system(size: disc * (chip.glyph.count > 1 ? 0.43 : 0.62), weight: .regular))
                 .foregroundStyle(foreground)
             Text(chip.name)
-                .font(.system(size: diameter * 0.019, weight: .regular))
+                .font(.system(size: min(7.5, diameter * 0.019), weight: .regular))
                 .foregroundStyle(chip.enabled ? color(material.engraving).opacity(0.68) : color(material.engraving).opacity(0.25))
                 .fixedSize()
                 .offset(y: top ? disc * 0.82 : -disc * 0.82)
