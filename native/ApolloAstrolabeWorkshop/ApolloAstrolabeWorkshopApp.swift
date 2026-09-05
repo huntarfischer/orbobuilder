@@ -49,7 +49,11 @@ private final class ApolloAstrolabeWorkshopModel: ObservableObject {
             let moment = JulianDay(2_461_288.75)!
             let output = try horae.seek(to: moment)
             let aegis = try Apollo.establishAegis(from: output, hestia: nil, atPlace: nil)
-            instrument = ApolloAstrolabe(aegis: aegis, rotationDegrees: initialAngle)
+            instrument = ApolloAstrolabe(
+                aegis: aegis,
+                rotationDegrees: initialAngle,
+                tabula: initialTabula
+            )
             status = "Horae connected · Timespine \(String(mounted.identity.prefix(10)))"
             FileHandle.standardOutput.write(Data("APOLLO_WORKSHOP_READY: real Spine mounted\n".utf8))
         } catch {
@@ -69,11 +73,37 @@ private final class ApolloAstrolabeWorkshopModel: ObservableObject {
         self.instrument = instrument
     }
 
+    func command(_ command: ApolloAstrolabeCommand) {
+        guard var instrument else { return }
+        switch command {
+        case let .turn(degrees):
+            instrument.turn(to: degrees)
+        case .settle:
+            _ = instrument.settleToNearestDetent()
+        case .flip:
+            instrument.flip()
+        case let .selectDestination(destination):
+            instrument.selectTabulaDestination(destination)
+        case let .selectBodyMode(mode):
+            instrument.selectTabulaBodyMode(mode)
+        }
+        self.instrument = instrument
+    }
+
     private var initialAngle: Double {
         guard let marker = CommandLine.arguments.firstIndex(of: "--workshop-angle"),
               CommandLine.arguments.indices.contains(marker + 1),
               let value = Double(CommandLine.arguments[marker + 1]) else { return 0 }
         return value
+    }
+
+    private var initialTabula: ApolloTabula {
+        guard let marker = CommandLine.arguments.firstIndex(of: "--workshop-tabula-mode"),
+              CommandLine.arguments.indices.contains(marker + 1),
+              let mode = ApolloTabulaBodyMode(rawValue: CommandLine.arguments[marker + 1]) else {
+            return ApolloTabula()
+        }
+        return ApolloTabula(destination: .planets, bodyMode: mode)
     }
 
     private func fail(_ message: String) {
@@ -93,7 +123,7 @@ private struct ApolloAstrolabeWorkshopView: View {
                     Text("APOLLO ASTROLABE")
                         .font(.system(size: 13, weight: .semibold, design: .serif))
                         .tracking(3.4)
-                    Text("WORKSHOP · ACT I")
+                    Text("WORKSHOP · ACT II")
                         .font(.system(size: 9, weight: .medium, design: .monospaced))
                         .tracking(2)
                         .foregroundStyle(.secondary)
@@ -104,7 +134,7 @@ private struct ApolloAstrolabeWorkshopView: View {
 
                 Group {
                     if let frame = model.frame {
-                        IrisApolloAstrolabeView(frame: frame)
+                        IrisApolloAstrolabeView(frame: frame, onCommand: model.command)
                             .transition(.opacity.combined(with: .scale(scale: 0.97)))
                     } else if let failure = model.failure {
                         ContentUnavailableView(
