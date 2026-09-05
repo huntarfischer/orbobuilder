@@ -1,0 +1,70 @@
+name: Apollo Astrolabe Workshop Act II
+
+on:
+  push:
+    branches: [feature/apollo-astrolabe-workshop-act-ii-parity-2026-09-05]
+  workflow_dispatch:
+
+concurrency:
+  group: apollo-astrolabe-workshop-act-ii-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  parity-gate:
+    runs-on: macos-26
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Verify the unchanged mounted Timespine
+        run: |
+          test "$(shasum -a 256 tools/pass5/orbospine-build/orbo-v1.orbospine | awk '{print $1}')" = "c009ee14231747e6409fb717027a12c74d3236cdd0646f9d8db4f978b0d29191"
+          test "$(wc -c < tools/pass5/orbospine-build/orbo-v1.orbospine | tr -d ' ')" = "216569743"
+      - name: Run only the Apollo Astrolabe parity contracts
+        run: swift test --package-path native/OrboCore --filter ApolloAstrolabeTests
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Build only the isolated Workshop
+        run: >-
+          xcodebuild build -project native/Orbo.xcodeproj -scheme ApolloAstrolabeWorkshop
+          -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR"
+          -derivedDataPath "$RUNNER_TEMP/OrboDerivedData"
+          CODE_SIGNING_ALLOWED=NO
+      - name: Capture the fixed prototype-parity states
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/ApolloAstrolabeWorkshop.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          capture() {
+            name=$1
+            shift
+            log="$RUNNER_TEMP/Apollo-Workshop-$name.log"
+            xcrun simctl launch --terminate-running-process --stdout="$log" --stderr="$RUNNER_TEMP/Apollo-Workshop-$name.err" "$ORBO_SIMULATOR" com.huntarfischer.apolloastrolabeworkshop "$@"
+            ready=0
+            for attempt in $(seq 1 180); do
+              if grep -q "APOLLO_WORKSHOP_READY" "$log"; then ready=1; break; fi
+              sleep 1
+            done
+            test "$ready" = 1
+            sleep 1
+            xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Apollo-Workshop-$name.png"
+          }
+          capture Aegis --workshop-angle 0
+          capture Edge --workshop-angle 90
+          capture Tabula --workshop-angle 180
+          capture Planets --workshop-angle 180 --workshop-tabula-mode planets
+          capture Objects --workshop-angle 180 --workshop-tabula-mode objects
+          capture Points --workshop-angle 180 --workshop-tabula-mode points
+      - name: Preserve focused parity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Apollo-Astrolabe-Workshop-Act-II-Evidence
+          path: |
+            ${{ runner.temp }}/Apollo-Workshop-*.png
+            ${{ runner.temp }}/Apollo-Workshop-*.log
+            ${{ runner.temp }}/Apollo-Workshop-*.err
+          if-no-files-found: ignore
