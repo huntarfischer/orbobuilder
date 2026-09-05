@@ -1,0 +1,98 @@
+name: Natal Spine Full Implementation
+
+on:
+  push:
+    branches: [feature/natal-spine-full-2026-09-05]
+  workflow_dispatch:
+
+concurrency:
+  group: natal-spine-full-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cumulative-native-gate:
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Prove mounted-only runtime boundaries
+        run: |
+          grep -q 'OrboSpineRuntime.mount(' native/Orbo/OrboApp.swift
+          grep -q 'NatalSpineRuntime.mount(' native/Orbo/OrboApp.swift
+          if grep -q 'OrboSpineRuntime.load(from:' native/Orbo/OrboApp.swift; then
+            echo 'Application startup contains the superseded Mundane reconstruction path.'
+            exit 1
+          fi
+          if grep -R -E 'Ephemeris\.(position|state|calculate|compute)' native/OrboCore/Sources/OrboCore/OrboSystem/*/NatalSpine*.swift; then
+            echo 'Natal Spine runtime code reopened Ephemeris.'
+            exit 1
+          fi
+      - name: Full package regression with real mounted parent and Natal artifact gates
+        run: swift test --package-path native/OrboCore
+      - name: Select installed iPhone simulator
+        run: |
+          device_id=$(xcrun simctl list devices available -j | ruby -rjson -e 'puts JSON.parse(STDIN.read)["devices"].values.flatten.find { |d| d["name"].start_with?("iPhone") }.fetch("udid")')
+          echo "ORBO_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+      - name: Build OrboLab and run accumulated Xcode tests
+        run: |
+          xcodebuild build -project native/Orbo.xcodeproj -scheme OrboLab \
+            -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR" \
+            -derivedDataPath "$RUNNER_TEMP/OrboDerivedData" CODE_SIGNING_ALLOWED=NO
+          xcodebuild test -project native/Orbo.xcodeproj -scheme Orbo \
+            -destination "platform=iOS Simulator,id=$ORBO_SIMULATOR" \
+            -parallel-testing-enabled NO \
+            -derivedDataPath "$RUNNER_TEMP/OrboDerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/OrboTests.xcresult" CODE_SIGNING_ALLOWED=NO
+      - name: Forge through the real onboarding-to-Hearth path
+        run: |
+          xcrun simctl bootstatus "$ORBO_SIMULATOR" -b
+          app_path="$RUNNER_TEMP/OrboDerivedData/Build/Products/Debug-iphonesimulator/Orbo.app"
+          xcrun simctl install "$ORBO_SIMULATOR" "$app_path"
+          xcrun simctl launch --terminate-running-process \
+            --stdout="$RUNNER_TEMP/Orbo-natal-forge.log" \
+            --stderr="$RUNNER_TEMP/Orbo-natal-forge-errors.log" \
+            "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-birth-proof
+          ready=0
+          for attempt in $(seq 1 1200); do
+            if grep -q 'ORBO_NATAL_READY:' "$RUNNER_TEMP/Orbo-natal-forge.log"; then ready=1; break; fi
+            if grep -q 'ORBO_PROOF_FAILED' "$RUNNER_TEMP/Orbo-natal-forge.log"; then break; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/Orbo-natal-forge.log"
+          cat "$RUNNER_TEMP/Orbo-natal-forge-errors.log"
+          test "$ready" = 1
+          grep -q 'ORBO_HEARTH_LIT:' "$RUNNER_TEMP/Orbo-natal-forge.log"
+          grep -q 'ORBO_TIMING Natal Spine forge and remount:' "$RUNNER_TEMP/Orbo-natal-forge.log"
+      - name: Relaunch by mapping the saved Natal Spine only
+        run: |
+          xcrun simctl terminate "$ORBO_SIMULATOR" com.huntarfischer.orbo || true
+          xcrun simctl launch \
+            --stdout="$RUNNER_TEMP/Orbo-natal-remount.log" \
+            --stderr="$RUNNER_TEMP/Orbo-natal-remount-errors.log" \
+            "$ORBO_SIMULATOR" com.huntarfischer.orbo --orbo-natal-remount-proof
+          ready=0
+          for attempt in $(seq 1 120); do
+            if grep -q 'ORBO_NATAL_REMOUNTED:' "$RUNNER_TEMP/Orbo-natal-remount.log"; then ready=1; break; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/Orbo-natal-remount.log"
+          cat "$RUNNER_TEMP/Orbo-natal-remount-errors.log"
+          test "$ready" = 1
+          grep -q 'ORBO_TIMING Natal Spine artifact mount:' "$RUNNER_TEMP/Orbo-natal-remount.log"
+          if grep -q 'ORBO_TIMING Natal Spine forge and remount:' "$RUNNER_TEMP/Orbo-natal-remount.log"; then
+            echo 'A launch-time Natal forge fallback was observed.'
+            exit 1
+          fi
+          xcrun simctl io "$ORBO_SIMULATOR" screenshot "$RUNNER_TEMP/Orbo-Natal-Spine.png"
+      - name: Preserve Natal Spine evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Natal-Spine-Full-Evidence
+          path: |
+            ${{ runner.temp }}/OrboTests.xcresult
+            ${{ runner.temp }}/Orbo-Natal-Spine.png
+            ${{ runner.temp }}/Orbo-natal-*.log
+          if-no-files-found: ignore

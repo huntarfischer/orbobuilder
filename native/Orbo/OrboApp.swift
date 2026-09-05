@@ -16,6 +16,10 @@ struct OrboApp: App {
 @MainActor
 private final class OrboApplicationModel: ObservableObject {
     @Published var runtime: OrboSpineRuntime?
+    @Published var natalSpine: NatalSpineRuntime?
+    @Published var natalIndex: NatalSpineMountedChronosIndex?
+    @Published var natalExportURL: URL?
+    @Published var natalMessage = ""
     @Published var session: IrisHoraeControlSession?
     @Published var failure: String?
     @Published var working = false
@@ -103,6 +107,7 @@ private final class OrboApplicationModel: ObservableObject {
             self.horae = horae
             self.session = try IrisHoraeControlSession(live: horae)
             try restoreHearths()
+            try restoreNatalSpineIfAvailable(parent: mounted)
             try refreshInstrument()
             measure("First sky presentation", since: firstFrameStart)
             if CommandLine.arguments.contains("--orbo-birth-proof") || CommandLine.arguments.contains("--orbo-instrument-proof") || CommandLine.arguments.contains("--orbo-ui-proof") {
@@ -269,15 +274,49 @@ private final class OrboApplicationModel: ObservableObject {
         return root.appendingPathComponent(proof ? "Hestia-Proof" : "Hestia", isDirectory: true)
     }
     private var activeHearthKey: String { keeperDirectory.lastPathComponent + ".active" }
+    private var natalDirectory: URL {
+        keeperDirectory.appendingPathComponent("NatalSpines", isDirectory: true)
+    }
+    private var exportDirectory: URL {
+        keeperDirectory.appendingPathComponent("ChronosExports", isDirectory: true)
+    }
+    private func natalURLs(for subjectID: HermesSubjectID) -> (artifact: URL, receipt: URL) {
+        let base = natalDirectory.appendingPathComponent(subjectID.rawValue)
+        return (
+            base.appendingPathExtension("natalspine"),
+            base.appendingPathExtension("natalspine.json")
+        )
+    }
     private func restoreHearths() throws {
         keptCourses = Set((UserDefaults.standard.stringArray(forKey: activeHearthKey + ".lenses") ?? []).compactMap(LunarCourse.init(rawValue:)))
         try FileManager.default.createDirectory(at: keeperDirectory, withIntermediateDirectories: true)
         keptHouses = try FileManager.default.contentsOfDirectory(at: keeperDirectory, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "json" }.map { try HestiaPersistence.load(from: $0) }
-        if !CommandLine.arguments.contains(where: { $0.hasPrefix("--orbo-") }),
+        let remountProof = CommandLine.arguments.contains("--orbo-natal-remount-proof")
+        if (!CommandLine.arguments.contains(where: { $0.hasPrefix("--orbo-") }) || remountProof),
            let active = UserDefaults.standard.string(forKey: activeHearthKey) {
             hestia = keptHouses.first { $0.nativeSubjectID.rawValue == active }
         }
+    }
+    private func restoreNatalSpineIfAvailable(parent: OrboSpineRuntime) throws {
+        natalSpine = nil
+        natalIndex = nil
+        guard let hestia else { return }
+        let urls = natalURLs(for: hestia.nativeSubjectID)
+        guard FileManager.default.fileExists(atPath: urls.artifact.path),
+              FileManager.default.fileExists(atPath: urls.receipt.path) else { return }
+        let receipt = try NatalSpineArtifactReceipt.read(from: urls.receipt)
+        let mountStart = ProcessInfo.processInfo.systemUptime
+        let mounted = try NatalSpineRuntime.mount(
+            from: urls.artifact,
+            expectedSHA256: receipt.sha256,
+            expectedParentSpineIdentity: parent.provenance.spineIdentity
+        )
+        natalSpine = mounted
+        natalIndex = Chronos.indexNatalSpine(mounted)
+        natalMessage = "Natal Spine mounted"
+        measure("Natal Spine artifact mount", since: mountStart)
+        FileHandle.standardOutput.write(Data("ORBO_NATAL_REMOUNTED: \(mounted.artifactSHA256)\n".utf8))
     }
     func keepHearth() {
         guard let hestia, hestia.hearthLit else { return }
@@ -292,7 +331,12 @@ private final class OrboApplicationModel: ObservableObject {
     func restore(_ house: Hestia) {
         hestia = house
         UserDefaults.standard.set(house.nativeSubjectID.rawValue, forKey: activeHearthKey)
-        do { try refreshInstrument(natalChanged: true); selectReading(.natal, gene: nil); tabulaVisible = false }
+        do {
+            if let runtime { try restoreNatalSpineIfAvailable(parent: runtime) }
+            try refreshInstrument(natalChanged: true)
+            selectReading(.natal, gene: nil)
+            tabulaVisible = false
+        }
         catch { failure = String(describing: error) }
     }
 
@@ -409,6 +453,43 @@ private final class OrboApplicationModel: ObservableObject {
                 session = isLive ? try IrisHoraeControlSession(live: horae)
                     : try IrisHoraeControlSession(horae: horae, initialJulianDay: tempus.absoluteInstant.julianDay)
                 try refreshInstrument(natalChanged: true)
+                guard let hestia, let runtime else {
+                    throw NSError(
+                        domain: "NatalSpine",
+                        code: 1,
+                        userInfo: [NSLocalizedDescriptionKey: "The lit Hearth and mounted parent Spine are required."]
+                    )
+                }
+                try FileManager.default.createDirectory(
+                    at: natalDirectory,
+                    withIntermediateDirectories: true
+                )
+                let urls = natalURLs(for: hestia.nativeSubjectID)
+                let commissioningOrbo = orbo
+                let commissioningCourier = hermes
+                let forgeStart = ProcessInfo.processInfo.systemUptime
+                let manufacture = try await Task.detached(priority: .userInitiated) {
+                    var courier = commissioningCourier
+                    let start = AbsoluteInstant(
+                        unixSecondsSince1970: Date().timeIntervalSince1970
+                    )!
+                    let result = try commissioningOrbo.manufactureNatalSpine(
+                        for: hestia.nativeSubjectID,
+                        from: hestia,
+                        parent: runtime,
+                        via: &courier,
+                        artifactURL: urls.artifact,
+                        receiptURL: urls.receipt,
+                        occurredAt: start
+                    )
+                    return (result, courier)
+                }.value
+                hermes = manufacture.1
+                natalSpine = manufacture.0.runtime
+                natalIndex = Chronos.indexNatalSpine(manufacture.0.runtime)
+                natalMessage = "Natal Spine ready · \(manufacture.0.receipt.byteCount) bytes"
+                measure("Natal Spine forge and remount", since: forgeStart)
+                FileHandle.standardOutput.write(Data("ORBO_NATAL_READY: \(manufacture.0.receipt.sha256)\n".utf8))
                 keepHearth()
                 _ = try orbo.advanceAstrosphereIntroduction()
                 let truth = OrboEstablishedBigThree(
@@ -421,6 +502,77 @@ private final class OrboApplicationModel: ObservableObject {
             } catch { failure = String(describing: error) }
         }
         if result.4 != nil { try? refreshInstrument(natalChanged: true) }
+    }
+
+    func exportNatalSpine(
+        format: ChronosExpressionFormat,
+        choice: NatalExportRangeChoice,
+        customStart: Date,
+        customEnd: Date
+    ) {
+        guard let natalIndex, let frame else {
+            failure = "Finish a birth chart and Natal Spine first."
+            return
+        }
+        do {
+            let range: NatalSpineExportRange
+            switch choice {
+            case .entireSpine:
+                range = .entireSpine
+            case .nextYear:
+                range = .nextYears(1, anchor: frame.julianDay)
+            case .nextFiveYears:
+                range = .nextYears(5, anchor: frame.julianDay)
+            case .nextTenYears:
+                range = .nextYears(10, anchor: frame.julianDay)
+            case .custom:
+                guard let start = AbsoluteInstant(
+                    unixSecondsSince1970: customStart.timeIntervalSince1970
+                ), let end = AbsoluteInstant(
+                    unixSecondsSince1970: customEnd.timeIntervalSince1970
+                ), let interval = ChronosInterval(
+                    start: start.julianDay,
+                    endExclusive: end.julianDay
+                ) else {
+                    throw NatalSpineExportRangeFailure.rangeOutsideSpine
+                }
+                range = .custom(interval)
+            }
+            let answer = try Chronos.natalSpineExportAnswer(
+                using: natalIndex,
+                range: range
+            )
+            let request = ChronosExpressionRequest(format: format)!
+            let expression = Chronos.express(answer, as: request)
+            let contents: Data
+            let fileExtension: String
+            switch expression {
+            case let .text(value):
+                contents = Data(value.utf8); fileExtension = "txt"
+            case let .csv(value):
+                contents = Data(value.utf8); fileExtension = "csv"
+            case let .iCalendar(value):
+                contents = Data(value.utf8); fileExtension = "ics"
+            default:
+                throw NSError(
+                    domain: "NatalSpineExport",
+                    code: 1,
+                    userInfo: [NSLocalizedDescriptionKey: "This Natal Spine export format is not available."]
+                )
+            }
+            try FileManager.default.createDirectory(
+                at: exportDirectory,
+                withIntermediateDirectories: true
+            )
+            let url = exportDirectory.appendingPathComponent(
+                "Natal-Spine-\(choice.fileStem).\(fileExtension)"
+            )
+            try contents.write(to: url, options: .atomic)
+            natalExportURL = url
+            natalMessage = "Prepared \(answer.hits.count) exact events as .\(fileExtension)"
+        } catch {
+            failure = "Natal Spine export refused: \(error)"
+        }
     }
 
     func advanceIntroduction() {
@@ -473,6 +625,25 @@ private final class OrboApplicationModel: ObservableObject {
     }
 }
 
+private enum NatalExportRangeChoice: String, CaseIterable, Identifiable {
+    case entireSpine = "Entire Natal Spine"
+    case nextYear = "Next year"
+    case nextFiveYears = "Next five years"
+    case nextTenYears = "Next ten years"
+    case custom = "Custom range"
+
+    var id: String { rawValue }
+    var fileStem: String {
+        switch self {
+        case .entireSpine: return "all"
+        case .nextYear: return "next-1-year"
+        case .nextFiveYears: return "next-5-years"
+        case .nextTenYears: return "next-10-years"
+        case .custom: return "custom"
+        }
+    }
+}
+
 private struct OrboRuntimeView: View {
     @ObservedObject var model: OrboApplicationModel
     @State private var name = "Ean Weslynn"
@@ -483,6 +654,13 @@ private struct OrboRuntimeView: View {
     @State private var cameraMode: IrisCameraMode = .topDown
     @State private var selectedBody: MundaneBody = .mercury
     @State private var selectedTab = 0
+    @State private var natalRange: NatalExportRangeChoice = .nextYear
+    @State private var natalCustomStart = Date()
+    @State private var natalCustomEnd = Calendar.current.date(
+        byAdding: .year,
+        value: 1,
+        to: Date()
+    )!
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -628,6 +806,37 @@ private struct OrboRuntimeView: View {
                 }
                 Text("Returns to the selected body's current degree and direction.").font(.caption)
                 Button("Read returns") { openCourse(.timing) }
+                Divider()
+                if model.natalSpine != nil {
+                    Text("Natal Spine · exact Ring realizations and house crossings")
+                        .font(.caption)
+                    Picker("Export range", selection: $natalRange) {
+                        ForEach(NatalExportRangeChoice.allCases) { choice in
+                            Text(choice.rawValue).tag(choice)
+                        }
+                    }
+                    if natalRange == .custom {
+                        DatePicker("From", selection: $natalCustomStart)
+                        DatePicker("Until", selection: $natalCustomEnd)
+                    }
+                    HStack {
+                        Button("CSV") {
+                            model.exportNatalSpine(format: .csv, choice: natalRange, customStart: natalCustomStart, customEnd: natalCustomEnd)
+                        }
+                        Button("TXT") {
+                            model.exportNatalSpine(format: .txt, choice: natalRange, customStart: natalCustomStart, customEnd: natalCustomEnd)
+                        }
+                        Button("Calendar") {
+                            model.exportNatalSpine(format: .iCalendar, choice: natalRange, customStart: natalCustomStart, customEnd: natalCustomEnd)
+                        }
+                    }
+                    if !model.natalMessage.isEmpty { Text(model.natalMessage).font(.caption) }
+                    if let export = model.natalExportURL {
+                        ShareLink("Save or share \(export.lastPathComponent)", item: export)
+                    }
+                } else {
+                    Text("Natal Spine will be forged when the Hearth is lit.").font(.caption)
+                }
             case .almanac:
                 keepCourse(.almanac)
                 ForEach(ChronosAlmanacStream.allCases, id: \.self) { stream in

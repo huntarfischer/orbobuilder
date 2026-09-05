@@ -115,15 +115,58 @@ public struct ChronosHit: Hashable, Sendable {
     public let address: ChronosAddress
     public let fact: ChronosFactIdentity
     public let source: ChronosSourceReference?
+    public let eventContext: ChronosEventContext?
 
     public init(
         address: ChronosAddress,
         fact: ChronosFactIdentity,
-        source: ChronosSourceReference? = nil
+        source: ChronosSourceReference? = nil,
+        eventContext: ChronosEventContext? = nil
     ) {
         self.address = address
         self.fact = fact
         self.source = source
+        self.eventContext = eventContext
+    }
+}
+
+/// Factual notes already read from a finished Spine. Expressions may render
+/// these words, but they cannot calculate or interpret them.
+public struct ChronosEventContext: Hashable, Sendable {
+    public let stableUID: String
+    public let ring: [String]
+    public let tympan: [String]
+    public let mater: [String]
+    public let orbo: [String]
+
+    public init?(
+        stableUID: String,
+        ring: [String] = [],
+        tympan: [String] = [],
+        mater: [String] = [],
+        orbo: [String] = []
+    ) {
+        let uid = stableUID.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !uid.isEmpty else { return nil }
+        self.stableUID = uid
+        self.ring = ring
+        self.tympan = tympan
+        self.mater = mater
+        self.orbo = orbo
+    }
+
+    public var notes: String {
+        [
+            section("RING", lines: ring),
+            section("TYMPAN", lines: tympan),
+            section("MATER", lines: mater),
+            section("ORBO", lines: orbo),
+        ].compactMap { $0 }.joined(separator: "\n\n")
+    }
+
+    private func section(_ name: String, lines: [String]) -> String? {
+        guard !lines.isEmpty else { return nil }
+        return ([name] + lines).joined(separator: "\n")
     }
 }
 

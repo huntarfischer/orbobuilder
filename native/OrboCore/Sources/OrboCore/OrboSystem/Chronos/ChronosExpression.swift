@@ -242,13 +242,13 @@ private extension Chronos {
             let body = mundaneBody?.displayName ?? "Any body"
             let target = natalGene?.displayName ?? "any natal target"
             let relation = relation.map { String(describing: $0) } ?? "any relation"
-            return "\(body) \(relation) \(target)"
+            return "Transit \(body) \(relation) Natal \(target)"
 
         case let .natalHouseCrossing(body, fromHouse, toHouse):
             let body = body?.displayName ?? "Any body"
             let from = fromHouse.map { String($0.rawValue) } ?? "any house"
             let to = toHouse.map { String($0.rawValue) } ?? "any house"
-            return "\(body) native House \(from) to House \(to) crossing"
+            return "Transit \(body) enters Natal House \(to) from House \(from)"
 
         case let .natalMaterCondition(condition, body):
             let body = body?.displayName ?? "Any body"
@@ -416,16 +416,12 @@ private extension Chronos {
         ]
         let projected = Set(projection.fields)
 
-        for (index, hit) in answer.hits.enumerated() {
+        for hit in answer.hits {
             let start = hit.address.start
             let startStamp = iCalendarUTC(start)
-            let uidValue = String(start.value)
-                .replacingOccurrences(of: ".", with: "-")
-                .replacingOccurrences(of: "+", with: "p")
-                .replacingOccurrences(of: "-", with: "m")
 
             lines.append("BEGIN:VEVENT")
-            lines.append("UID:chronos-\(index)-\(uidValue)@orbo")
+            lines.append("UID:\(iCalendarEscape(stableUID(for: hit)))")
             // Deterministic and free of hidden current-time state.
             lines.append("DTSTAMP:\(startStamp)")
             lines.append("DTSTART:\(startStamp)")
@@ -434,6 +430,9 @@ private extension Chronos {
                 lines.append("X-ORBO-END-JULIAN-DAY:\(end.value)")
             }
             lines.append("SUMMARY:\(iCalendarEscape(factualLabel(hit.fact)))")
+            if let notes = hit.eventContext?.notes, !notes.isEmpty {
+                lines.append("DESCRIPTION:\(iCalendarEscape(notes))")
+            }
             lines.append("X-ORBO-JULIAN-DAY:\(start.value)")
 
             if projected.contains(.body), let body = body(from: hit.fact) {
@@ -450,7 +449,13 @@ private extension Chronos {
         }
 
         lines.append("END:VCALENDAR")
-        return lines.joined(separator: "\r\n") + "\r\n"
+        return lines.flatMap(foldICalendarLine).joined(separator: "\r\n") + "\r\n"
+    }
+
+    static func stableUID(for hit: ChronosHit) -> String {
+        if let stable = hit.eventContext?.stableUID { return stable }
+        let source = hit.source?.rawValue ?? "chronos"
+        return "\(source)-\(hit.address.start.value.bitPattern)-\(factualLabel(hit.fact))@orbo"
     }
 
     static func iCalendarUTC(_ julianDay: JulianDay) -> String {
@@ -465,8 +470,31 @@ private extension Chronos {
     static func iCalendarEscape(_ value: String) -> String {
         value
             .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\r\n", with: "\\n")
+            .replacingOccurrences(of: "\r", with: "\\n")
             .replacingOccurrences(of: ";", with: "\\;")
             .replacingOccurrences(of: ",", with: "\\,")
             .replacingOccurrences(of: "\n", with: "\\n")
+    }
+
+    /// RFC 5545 content lines are folded at 75 octets; continuation lines
+    /// begin with one space and are therefore limited to 74 content octets.
+    static func foldICalendarLine(_ line: String) -> [String] {
+        var result: [String] = []
+        var current = ""
+        var count = 0
+        for scalar in line.unicodeScalars {
+            let text = String(scalar)
+            let width = text.lengthOfBytes(using: .utf8)
+            if count + width > 75, !current.isEmpty {
+                result.append(current)
+                current = " "
+                count = 1
+            }
+            current += text
+            count += width
+        }
+        result.append(current)
+        return result
     }
 }

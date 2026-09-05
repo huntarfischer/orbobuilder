@@ -33,4 +33,23 @@ public extension Horae {
     ) throws -> [NatalSpineAddress] {
         try spine.candidate.addresses(of: body, at: directionalDegree)
     }
+
+    /// Mounted-artifact UT traversal. This path reads only the finished Natal
+    /// Spine and performs no forge or parent-Timespine fallback.
+    static func locateNatalSpine(
+        _ spine: NatalSpineRuntime,
+        at julianDay: JulianDay
+    ) throws -> [NatalSpineRuntimeAddress] {
+        try MundaneBody.canonicalOrder.map {
+            try spine.address(of: $0, at: julianDay)
+        }
+    }
+
+    static func locateNatalSpine(
+        _ spine: NatalSpineRuntime,
+        body: MundaneBody,
+        at directionalDegree: OrboSpineDirectionalDegree
+    ) throws -> [NatalSpineRuntimeAddress] {
+        try spine.addresses(of: body, at: directionalDegree)
+    }
 }
