@@ -52,7 +52,9 @@ final class AstrolabeInteractionTests: XCTestCase {
         app.buttons["Hearth"].tap()
         XCTAssertTrue(app.buttons["See my natal chart"].waitForExistence(timeout: 5))
         app.buttons["See my natal chart"].tap()
-        XCTAssertEqual(app.staticTexts["orbo.pane.title"].label, "my natal chart")
+        let reopenedNatalTitle = app.staticTexts["orbo.pane.title"]
+        XCTAssertTrue(reopenedNatalTitle.waitForExistence(timeout: 5))
+        XCTAssertEqual(reopenedNatalTitle.label, "my natal chart")
         app.buttons["orbo.live"].tap()
         let clock = app.buttons["orbo.clock"]
         let first = clock.label
