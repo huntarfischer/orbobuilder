@@ -34,7 +34,7 @@ final class NatalSpineArtifactTests: XCTestCase {
         let receipt = try Hephaestus.forgeNatalSpineArtifact(sealed, to: url)
         let mounted = try NatalSpineMountedArtifact(url: url)
 
-        XCTAssertEqual(mounted.locateTracts, sealed.candidate.locate.artifactTracts)
+        XCTAssertEqual(mounted.locateTracts, sealed.candidate.artifactTracts)
         XCTAssertEqual(mounted.locateTracts.map(\.body), MundaneBody.canonicalOrder)
         XCTAssertTrue(mounted.locateTracts.allSatisfy { $0.segmentIndexesByCell.count == 720 })
         XCTAssertEqual(receipt.formatVersion, NatalSpineArtifactFormat.version)

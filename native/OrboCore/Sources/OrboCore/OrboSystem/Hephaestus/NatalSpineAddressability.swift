@@ -38,6 +38,9 @@ public struct NatalSpineCandidate: Hashable, Sendable {
 
     private let locate: OrboSpineLocate
 
+    /// Finished navigation for Hephaestus's artifact writer; Locate stays private.
+    var artifactTracts: [OrboSpineArtifactTract] { locate.artifactTracts }
+
     fileprivate init(
         layer: NatalSpineRheaForgeLayer,
         locate: OrboSpineLocate

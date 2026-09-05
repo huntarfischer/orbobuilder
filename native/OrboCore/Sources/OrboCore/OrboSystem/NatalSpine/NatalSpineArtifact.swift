@@ -258,7 +258,7 @@ public extension Hephaestus {
         let bytes = try NatalSpineArtifactEncoder.encode(sealed)
         try bytes.write(to: url, options: .atomic)
         let mounted = try NatalSpineMountedArtifact(data: bytes)
-        guard mounted.locateTracts == sealed.candidate.locate.artifactTracts else {
+        guard mounted.locateTracts == sealed.candidate.artifactTracts else {
             throw NatalSpineArtifactError.invalidMatter("finished Locate navigation")
         }
         _ = try mounted.runtime()
@@ -822,7 +822,7 @@ private enum NatalSpineArtifactEncoder {
         }
 
         let navigationStart = ProcessInfo.processInfo.systemUptime
-        let tracts = candidate.locate.artifactTracts
+        let tracts = candidate.artifactTracts
         guard tracts.map(\.body) == MundaneBody.canonicalOrder else {
             throw NatalSpineArtifactError.invalidMatter("Locate body order")
         }
@@ -874,7 +874,7 @@ private enum NatalSpineArtifactEncoder {
         }
         let navigationElapsed = ProcessInfo.processInfo.systemUptime - navigationStart
         print(
-            "ORBO_NATAL_ARTIFACT navigation-encode elapsed=\(String(format: \"%.3f\", navigationElapsed))s "
+            "ORBO_NATAL_ARTIFACT navigation-encode elapsed=\(String(format: "%.3f", navigationElapsed))s "
                 + "tracts=\(tracts.count) segments=\(globalSegmentStart) indices=\(globalNavigationIndexStart)"
         )
 
