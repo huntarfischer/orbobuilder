@@ -14,11 +14,39 @@ final class ApolloAstrolabeTests: XCTestCase {
 
     func testPrototypeGeometryIsOneSharedBody() {
         let geometry = ApolloAstrolabeGeometry.prototype
-        XCTAssertEqual(geometry.rimRadius, 0.5)
+        XCTAssertEqual(geometry.rimRadius, 0.493)
+        XCTAssertEqual(geometry.destinationInnerRadius, 0.385)
+        XCTAssertEqual(geometry.inscriptionInnerRadius, 0.332)
+        XCTAssertEqual(geometry.socketInnerRadius, 0.264)
+        XCTAssertEqual(geometry.socketOuterRadius, 0.329)
+        XCTAssertEqual(geometry.zodiacGlyphRadius, 0.4375)
         XCTAssertGreaterThan(geometry.rimRadius, geometry.destinationInnerRadius)
         XCTAssertGreaterThan(geometry.destinationInnerRadius, geometry.inscriptionInnerRadius)
-        XCTAssertGreaterThan(geometry.inscriptionInnerRadius, geometry.socketRadius)
+        XCTAssertGreaterThan(geometry.inscriptionInnerRadius, geometry.socketOuterRadius)
+        XCTAssertGreaterThan(geometry.socketOuterRadius, geometry.socketInnerRadius)
         XCTAssertGreaterThan(geometry.thicknessRatio, 0)
+    }
+
+    func testGeminiTabulaPreservesPrototypeSocketAndChipLaws() {
+        var tabula = ApolloTabula()
+        XCTAssertNil(tabula.destination)
+        tabula.select(.planets)
+        XCTAssertEqual(tabula.destination, .planets)
+        XCTAssertEqual(tabula.bodyMode, .planets)
+        XCTAssertEqual(tabula.bodyChips.map(\.name), [
+            "Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter",
+            "Saturn", "Uranus", "Neptune", "Pluto",
+        ])
+        XCTAssertEqual(tabula.bodyChips.first { $0.name == "Mars" }?.angleDegrees, 195)
+        XCTAssertEqual(tabula.bodyChips.first { $0.name == "Saturn" }?.angleDegrees, 465)
+
+        tabula.select(.objects)
+        XCTAssertEqual(tabula.bodyChips.map(\.name), ["Chiron", "Ceres", "Pallas", "Juno", "Vesta"])
+        XCTAssertEqual(tabula.bodyChips.map(\.angleDegrees), [180, 252, 324, 396, 468])
+
+        tabula.select(.points)
+        XCTAssertEqual(tabula.bodyChips.map(\.name), ["Nodes", "Lilith", "Vertex"])
+        XCTAssertEqual(tabula.bodyChips.map(\.enabled), [true, false, false])
     }
 
     func testMaterialRecipeRemainsPresentationNeutral() {
