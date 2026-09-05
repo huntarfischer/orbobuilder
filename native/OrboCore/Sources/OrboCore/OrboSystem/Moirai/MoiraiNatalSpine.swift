@@ -1,3 +1,5 @@
+import Foundation
+
 public enum MoiraiNatalSpineFailure: Error, Hashable, Sendable {
     case unexpectedPackage
 }
@@ -23,12 +25,22 @@ public extension Moirai {
             bounds: bounds,
             through: port
         )
+
+        let atroposStart = ProcessInfo.processInfo.systemUptime
+        FileHandle.standardOutput.write(Data("ORBO_NATAL_STAGE START moirai-atropos\n".utf8))
         let certified = try Atropos.inspectNatalSpineSchematics(
             bounds: bounds,
             themis: tables.themis,
             oceanus: tables.oceanus,
             rhea: tables.rhea
         ).get()
+        let atroposElapsed = String(
+            format: "%.3f",
+            ProcessInfo.processInfo.systemUptime - atroposStart
+        )
+        FileHandle.standardOutput.write(Data(
+            "ORBO_NATAL_STAGE END moirai-atropos elapsed=\(atroposElapsed)s\n".utf8
+        ))
 
         return HermesPackage(
             packageID: package.packageID,
