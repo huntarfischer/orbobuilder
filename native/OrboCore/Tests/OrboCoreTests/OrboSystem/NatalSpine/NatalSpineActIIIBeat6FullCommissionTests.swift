@@ -138,6 +138,22 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
         let sealed = Hephaestus.sealNatalSpine(approval)
         XCTAssertEqual(sealed.packageID, originalPackageID)
         XCTAssertEqual(sealed.bounds, bounds)
+
+        // Finished matter is written, reopened, and mounted before downstream use.
+        let artifactURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("NatalSpineFullCommission-\(UUID().uuidString).natalspine")
+        defer { try? FileManager.default.removeItem(at: artifactURL) }
+        let receipt = try Hephaestus.forgeNatalSpineArtifact(sealed, to: artifactURL)
+        let mounted = try NatalSpineRuntime.mount(
+            from: artifactURL,
+            expectedSHA256: receipt.sha256,
+            expectedParentSpineIdentity: timespine.sourceProvenance.spineIdentity
+        )
+        XCTAssertEqual(mounted.subjectID, sealed.subjectID)
+        XCTAssertEqual(mounted.packageID, sealed.packageID)
+        XCTAssertEqual(mounted.bounds, sealed.bounds)
+        XCTAssertEqual(mounted.parentProvenance, sealed.seal.parentProvenance)
+
         let finishedPackage = Hephaestus.releaseNatalSpine(sealed)
         try hermes.recover(
             ticketID: handle.ticketID,
@@ -145,23 +161,29 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
             occurredAt: NatalSpineActIIIFixture.instant(1_930_000_240)
         )
 
-        // HERMES -> HORAE. Finished matter is traversable in UT and celestial time.
+        // HERMES -> HORAE. Courier validates the envelope; mounted matter is traversed.
         let horaeAddress = try hermes.deliverNext(
             ticketID: handle.ticketID,
             occurredAt: NatalSpineActIIIFixture.instant(1_930_000_300)
         )
-        let installed = try Horae.receiveNatalSpine(
+        let delivered = try Horae.receiveNatalSpine(
             finishedPackage,
             deliveredTo: horaeAddress
         )
-        let natalPosition = try Horae.locateNatalSpine(
-            installed,
-            at: installed.bounds.natal.julianDay
+        XCTAssertEqual(delivered.subjectID, mounted.subjectID)
+        XCTAssertEqual(delivered.packageID, mounted.packageID)
+        XCTAssertEqual(delivered.bounds, mounted.bounds)
+        XCTAssertEqual(delivered.seal.parentProvenance, mounted.parentProvenance)
+
+        let natalAddresses = try Horae.locateNatalSpine(
+            mounted,
+            at: mounted.bounds.natal.julianDay
         )
-        XCTAssertEqual(natalPosition.addresses.count, MundaneBody.canonicalOrder.count)
-        let sunAddress = try XCTUnwrap(natalPosition.addresses.first { $0.coordinate.body == .sun })
+        XCTAssertEqual(natalAddresses.count, MundaneBody.canonicalOrder.count)
+        XCTAssertEqual(natalAddresses.map(\.coordinate.body), MundaneBody.canonicalOrder)
+        let sunAddress = try XCTUnwrap(natalAddresses.first { $0.coordinate.body == .sun })
         let sunOccurrences = try Horae.locateNatalSpine(
-            installed,
+            mounted,
             body: .sun,
             at: sunAddress.coordinate.directionalDegree
         )
@@ -172,7 +194,7 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
             occurredAt: NatalSpineActIIIFixture.instant(1_930_000_360)
         )
 
-        // HERMES -> CHRONOS. Index references the sealed Spine and answers a real query.
+        // HERMES -> CHRONOS. The mounted index answers from the persisted artifact.
         XCTAssertEqual(
             try hermes.deliverNext(
                 ticketID: handle.ticketID,
@@ -180,13 +202,13 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
             ),
             NatalSpineCommission.chronosAddress
         )
-        let index = Chronos.indexNatalSpine(installed)
-        let sampleSpan = try XCTUnwrap(installed.candidate.themis.first)
+        let index = Chronos.indexNatalSpine(mounted)
+        let sampleSpan = try XCTUnwrap(mounted.themis.first)
         let query = try XCTUnwrap(
             ChronosQuery(
                 predicate: .natalHousePassage(
-                    body: sampleSpan.span.body,
-                    house: sampleSpan.span.house
+                    body: sampleSpan.body,
+                    house: sampleSpan.house
                 )
             )
         )
@@ -194,17 +216,20 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
             query,
             using: index
         ) else {
-            XCTFail("Chronos failed to resolve the finished Natal Spine")
+            XCTFail("Chronos failed to resolve the mounted Natal Spine")
             return
         }
         XCTAssertFalse(answer.hits.isEmpty)
+        XCTAssertTrue(answer.hits.allSatisfy {
+            $0.source?.rawValue.contains(mounted.artifactSHA256) == true
+        })
         try hermes.recover(
             ticketID: handle.ticketID,
             package: finishedPackage,
             occurredAt: NatalSpineActIIIFixture.instant(1_930_000_480)
         )
 
-        // HERMES -> HECATE -> blessing -> same Hermes commission resolves.
+        // HERMES -> HECATE -> mounted blessing -> same Hermes commission resolves.
         XCTAssertEqual(
             try hermes.deliverNext(
                 ticketID: handle.ticketID,
@@ -212,14 +237,15 @@ final class NatalSpineActIIIBeat6FullCommissionTests: XCTestCase {
             ),
             NatalSpineCommission.hecateAddress
         )
-        let blessing = try Hecate.blessNatalSpine(installed, indexedBy: index)
+        let blessing = try Hecate.blessNatalSpine(mounted, indexedBy: index)
+        XCTAssertEqual(blessing.parentProvenance, mounted.parentProvenance)
         let availability = try hermes.closeNatalSpineCommission(
             ticketID: handle.ticketID,
             blessing: blessing,
             receivedAt: NatalSpineActIIIFixture.instant(1_930_000_600)
         )
 
-        // One commission in, one available native Spine out.
+        // One commission in, one available mounted native Spine out.
         XCTAssertEqual(availability.ticketID, handle.ticketID)
         XCTAssertEqual(availability.packageID, originalPackageID)
         XCTAssertEqual(availability.subjectID, truth.subjectID)

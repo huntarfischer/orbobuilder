@@ -36,6 +36,8 @@ jobs:
         run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat5RheaForgeTests
       - name: Prove mounted three-door handoff
         run: swift test --package-path native/OrboCore --filter NatalSpineActIICMountedHandoffTests
+      - name: Prove full commission uses mounted authority
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIIIBeat6FullCommissionTests
       - name: Prove Dioscuri remains independent
         run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat7DioscuriTests
       - name: Prove Hermes closure remains green
