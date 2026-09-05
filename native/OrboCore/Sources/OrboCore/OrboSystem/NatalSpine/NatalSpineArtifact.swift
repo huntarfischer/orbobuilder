@@ -153,8 +153,7 @@ public struct NatalSpineRuntime: @unchecked Sendable {
     public let oceanus: [NatalSpineRuntimeOceanusRecord]
     public let rhea: [NatalSpineRuntimeRheaRecord]
 
-    private let mappedBytes: Data
-    private let locate: OrboSpineLocate
+    private let artifact: NatalSpineMountedArtifact
 
     public static func mount(
         from url: URL,
@@ -178,7 +177,7 @@ public struct NatalSpineRuntime: @unchecked Sendable {
         return try artifact.runtime()
     }
 
-    fileprivate init(artifact: NatalSpineMountedArtifact, locate: OrboSpineLocate) {
+    fileprivate init(artifact: NatalSpineMountedArtifact) {
         subjectID = artifact.subjectID
         packageID = artifact.packageID
         bounds = artifact.bounds
@@ -187,8 +186,7 @@ public struct NatalSpineRuntime: @unchecked Sendable {
         themis = artifact.themis
         oceanus = artifact.oceanus
         rhea = artifact.rhea
-        mappedBytes = artifact.data
-        self.locate = locate
+        self.artifact = artifact
     }
 
     public func address(
@@ -198,7 +196,7 @@ public struct NatalSpineRuntime: @unchecked Sendable {
         guard bounds.bone.contains(julianDay) else {
             throw NatalSpineArtifactError.outsideBone
         }
-        let coordinate = try locate.coordinate(of: body, at: julianDay)
+        let coordinate = try artifact.mappedCoordinate(of: body, at: julianDay)
         return try address(for: coordinate)
     }
 
@@ -206,7 +204,7 @@ public struct NatalSpineRuntime: @unchecked Sendable {
         of body: MundaneBody,
         at directionalDegree: OrboSpineDirectionalDegree
     ) throws -> [NatalSpineRuntimeAddress] {
-        try locate.occurrences(of: body, at: directionalDegree)
+        try artifact.mappedOccurrences(of: body, at: directionalDegree)
             .filter { bounds.bone.contains($0.julianDay) }
             .map { try address(for: $0) }
     }
@@ -257,8 +255,8 @@ public extension Hephaestus {
     ) throws -> NatalSpineArtifactReceipt {
         let bytes = try NatalSpineArtifactEncoder.encode(sealed)
         try bytes.write(to: url, options: .atomic)
-        let mounted = try NatalSpineMountedArtifact(data: bytes)
-        guard mounted.locateTracts == sealed.candidate.artifactTracts else {
+        let mounted = try NatalSpineMountedArtifact(url: url)
+        guard try mounted.finishedLocateTracts() == sealed.candidate.artifactTracts else {
             throw NatalSpineArtifactError.invalidMatter("finished Locate navigation")
         }
         _ = try mounted.runtime()
@@ -272,7 +270,7 @@ public extension Hephaestus {
     }
 }
 
-final class NatalSpineMountedArtifact: @unchecked Sendable {
+final class NatalSpineMountedArtifact: OrboSpineMappedNavigationReading, @unchecked Sendable {
     fileprivate struct DirectoryEntry {
         let recordSize: Int
         let offset: Int
@@ -293,13 +291,11 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
     let packageID: HermesPackageID
     let bounds: NatalSpineBounds
     let parentProvenance: OrboSpineRuntimeProvenance
-    let supports: [OrboSpineCelestialCoordinate]
-    let stations: [OrboSpineStation]
-    let anchors: [OrboSpineBoundaryAnchor]
     let themis: [NatalSpineRuntimeThemisRecord]
     let oceanus: [NatalSpineRuntimeOceanusRecord]
     let rhea: [NatalSpineRuntimeRheaRecord]
-    let locateTracts: [OrboSpineArtifactTract]
+    private let sections: [NatalSpineArtifactFormat.Section: DirectoryEntry]
+    private let bodies: [MundaneBody: LocateBodyEntry]
 
     convenience init(url: URL) throws {
         try self.init(data: Data(contentsOf: url, options: .mappedIfSafe))
@@ -358,7 +354,7 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
             }
             guard recordSize == 0
                     || (recordCount == 0 ? byteLength == 0
-                        : byteLength == recordSize * recordCount) else {
+                        : byteLength % recordCount == 0 && byteLength / recordCount == recordSize) else {
                 throw NatalSpineArtifactError.invalidSectionDirectory
             }
             sections[section] = DirectoryEntry(
@@ -432,25 +428,19 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
             throw NatalSpineArtifactError.invalidMetadata
         }
 
-        let supports = try Self.readSupports(data, section: sections[.celestialSupports]!)
-        let stations = try Self.readStations(data, section: sections[.stations]!)
-        let anchors = try Self.readAnchors(data, section: sections[.boundaryAnchors]!)
         let themis = try Self.readThemis(data, section: sections[.themis]!)
         let oceanus = try Self.readOceanus(data, section: sections[.oceanus]!)
         let rhea = try Self.readRhea(data, section: sections[.rhea]!)
-        let locateTracts = try Self.readLocateTracts(
-            data,
-            bodySection: sections[.locateBodyDirectory]!,
+        let bodies = try Self.readLocateBodies(
+            data, bodySection: sections[.locateBodyDirectory]!,
             segmentSection: sections[.locateSegments]!,
-            navigationSection: sections[.locateNavigationDirectory]!,
-            indexSection: sections[.locateNavigationIndices]!
+            navigationSection: sections[.locateNavigationDirectory]!
         )
-        guard Set(supports.map(\.body)) == Set(MundaneBody.canonicalOrder),
-              anchors.count == MundaneBody.canonicalOrder.count * 2,
+        guard sections[.celestialSupports]!.recordCount >= MundaneBody.canonicalOrder.count * 2,
+              sections[.boundaryAnchors]!.recordCount == MundaneBody.canonicalOrder.count * 2,
               themis.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
               oceanus.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
-              rhea.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
-              locateTracts.map(\.body) == MundaneBody.canonicalOrder else {
+              rhea.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }) else {
             throw NatalSpineArtifactError.invalidRecord
         }
 
@@ -460,25 +450,77 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
         packageID = HermesPackageID(packageUUID)
         self.bounds = bounds
         parentProvenance = provenance
-        self.supports = supports
-        self.stations = stations
-        self.anchors = anchors
         self.themis = themis
         self.oceanus = oceanus
         self.rhea = rhea
-        self.locateTracts = locateTracts
+        self.sections = sections
+        self.bodies = Dictionary(uniqueKeysWithValues: bodies.map { ($0.body, $0) })
     }
 
     func runtime() throws -> NatalSpineRuntime {
-        guard let locate = OrboSpineLocate(
-            bone: bounds.bone,
-            celestialSupports: supports,
-            stations: stations,
-            boundaryAnchors: anchors
-        ) else {
-            throw NatalSpineArtifactError.invalidMatter("celestial addressability")
+        NatalSpineRuntime(artifact: self)
+    }
+
+    var navigationBone: OrboSpineBoneSpan { bounds.bone }
+    func navigationSegmentCount(of body: MundaneBody) -> Int? { bodies[body]?.segmentCount }
+
+    func navigationSegment(of body: MundaneBody, localIndex: Int) throws -> OrboSpineArtifactSegment {
+        guard let entry = bodies[body], (0..<entry.segmentCount).contains(localIndex) else {
+            throw NatalSpineArtifactError.bodyUnavailable(body)
         }
-        return NatalSpineRuntime(artifact: self, locate: locate)
+        let section = sections[.locateSegments]!
+        let offset = section.offset + (entry.segmentStart + localIndex) * 40
+        var reader = NatalBinaryReader(data: data, offset: offset, limit: offset + 40)
+        guard let start = JulianDay(try reader.double()),
+              let end = JulianDay(try reader.double()), start.value < end.value,
+              let motion = decodeNatalMotion(try reader.u8()) else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        try reader.skip(7)
+        let startDegrees = try reader.double()
+        let endDegrees = try reader.double()
+        guard (0..<360).contains(startDegrees), (0..<360).contains(endDegrees),
+              start.value >= bounds.bone.start.value - 1e-10,
+              end.value <= bounds.bone.end.value + 1e-10 else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        return OrboSpineArtifactSegment(start: start, end: end,
+            startPhysicalDegrees: startDegrees, endPhysicalDegrees: endDegrees, motion: motion)
+    }
+
+    func navigationIndices(of body: MundaneBody, cell: Int) throws -> [Int] {
+        guard (0..<720).contains(cell), let entry = bodies[body] else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        let nav = sections[.locateNavigationDirectory]!
+        let indices = sections[.locateNavigationIndices]!
+        let offset = nav.offset + (entry.navigationCellStart + cell) * 16
+        var reader = NatalBinaryReader(data: data, offset: offset, limit: offset + 16)
+        guard let start = Int(exactly: try reader.u64()) else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        let count = Int(try reader.u32())
+        guard try reader.u32() == 0, start <= indices.recordCount,
+              count <= indices.recordCount - start else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        return try (0..<count).map { item in
+            let itemOffset = indices.offset + (start + item) * 8
+            var value = NatalBinaryReader(data: data, offset: itemOffset, limit: itemOffset + 8)
+            guard let index = Int(exactly: try value.u64()), index < entry.segmentCount else {
+                throw NatalSpineArtifactError.invalidRecord
+            }
+            return index
+        }
+    }
+
+    /// Forge-time exact disk proof only. Ordinary mount never materializes tracts.
+    func finishedLocateTracts() throws -> [OrboSpineArtifactTract] {
+        try Self.readLocateTracts(data,
+            bodySection: sections[.locateBodyDirectory]!,
+            segmentSection: sections[.locateSegments]!,
+            navigationSection: sections[.locateNavigationDirectory]!,
+            indexSection: sections[.locateNavigationIndices]!)
     }
 
     private static func readSupports(
@@ -580,13 +622,10 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
         }
     }
 
-    private static func readLocateTracts(
-        _ data: Data,
-        bodySection: DirectoryEntry,
-        segmentSection: DirectoryEntry,
-        navigationSection: DirectoryEntry,
-        indexSection: DirectoryEntry
-    ) throws -> [OrboSpineArtifactTract] {
+    private static func readLocateBodies(
+        _ data: Data, bodySection: DirectoryEntry,
+        segmentSection: DirectoryEntry, navigationSection: DirectoryEntry
+    ) throws -> [LocateBodyEntry] {
         var bodyReader = NatalBinaryReader(
             data: data,
             offset: bodySection.offset,
@@ -619,6 +658,31 @@ final class NatalSpineMountedArtifact: @unchecked Sendable {
         guard bodies.map(\.body) == MundaneBody.canonicalOrder else {
             throw NatalSpineArtifactError.invalidRecord
         }
+
+        var segmentEnd = 0
+        var cellEnd = 0
+        for entry in bodies {
+            guard entry.segmentStart == segmentEnd, entry.navigationCellStart == cellEnd else {
+                throw NatalSpineArtifactError.invalidRecord
+            }
+            segmentEnd += entry.segmentCount
+            cellEnd += 720
+        }
+        guard segmentEnd == segmentSection.recordCount, cellEnd == navigationSection.recordCount else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+        return bodies
+    }
+
+    private static func readLocateTracts(
+        _ data: Data,
+        bodySection: DirectoryEntry,
+        segmentSection: DirectoryEntry,
+        navigationSection: DirectoryEntry,
+        indexSection: DirectoryEntry
+    ) throws -> [OrboSpineArtifactTract] {
+        let bodies = try readLocateBodies(data, bodySection: bodySection,
+            segmentSection: segmentSection, navigationSection: navigationSection)
 
         return try bodies.map { bodyEntry in
             let segments = try (0..<bodyEntry.segmentCount).map { localIndex in
@@ -823,7 +887,8 @@ private enum NatalSpineArtifactEncoder {
 
         let navigationStart = ProcessInfo.processInfo.systemUptime
         let tracts = candidate.artifactTracts
-        guard tracts.map(\.body) == MundaneBody.canonicalOrder else {
+        guard tracts.map(\.body) == MundaneBody.canonicalOrder,
+              tracts.allSatisfy({ OrboSpineArtifactEncoder.valid($0, on: candidate.bounds.bone) }) else {
             throw NatalSpineArtifactError.invalidMatter("Locate body order")
         }
         var locateBodyDirectory = NatalBinaryWriter()

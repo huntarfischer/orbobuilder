@@ -25,3 +25,5 @@ jobs:
         run: swift test --package-path native/OrboCore --filter NatalSpineArtifactTests
       - name: Prove Rhea source references remain green
         run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat5RheaForgeTests
+      - name: Prove shared Mundane mapped navigation remains green
+        run: swift test --package-path native/OrboCore --filter OrboSpineArtifactTests

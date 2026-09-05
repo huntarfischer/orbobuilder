@@ -88,7 +88,7 @@ public enum OrboSpineArtifactError: Error, Equatable, Sendable {
 
 /// Read-only mounted view of the finished bytes. `Data(..., .mappedIfSafe)` allows the operating
 /// system to page sections on demand; parsing the header does not materialize Ring chronology.
-internal final class OrboSpineMountedArtifact: @unchecked Sendable {
+internal final class OrboSpineMountedArtifact: OrboSpineMappedNavigationReading, @unchecked Sendable {
     private final class LibraryCache {
         let lock = NSLock()
         var stations: Result<[OrboSpineStation], Error>?
@@ -245,97 +245,32 @@ internal final class OrboSpineMountedArtifact: @unchecked Sendable {
 
     // MARK: Locate
 
-    func coordinate(of body: MundaneBody, at julianDay: JulianDay) throws -> OrboSpineCelestialCoordinate {
-        guard metadata.bone.contains(julianDay) else { throw OrboSpineArtifactError.outsideBone }
-        guard let bodyEntry = bodies[body], bodyEntry.segmentCount > 0 else {
+    var navigationBone: OrboSpineBoneSpan { metadata.bone }
+
+    func navigationSegmentCount(of body: MundaneBody) -> Int? { bodies[body]?.segmentCount }
+
+    func navigationSegment(of body: MundaneBody, localIndex: Int) throws -> OrboSpineArtifactSegment {
+        guard let entry = bodies[body], (0..<entry.segmentCount).contains(localIndex) else {
             throw OrboSpineArtifactError.bodyUnavailable(body)
         }
-        var low = 0
-        var high = bodyEntry.segmentCount
-        while low < high {
-            let middle = (low + high) / 2
-            let segment = try readSegment(globalIndex: bodyEntry.segmentStart + middle)
-            if segment.end.value <= julianDay.value {
-                low = middle + 1
-            } else {
-                high = middle
-            }
-        }
-        let localIndex = min(low, bodyEntry.segmentCount - 1)
-        let segment = try readSegment(globalIndex: bodyEntry.segmentStart + localIndex)
-        let fraction = (julianDay.value - segment.start.value) / (segment.end.value - segment.start.value)
-        let distance = directionalDistance(
-            from: segment.startPhysicalDegrees,
-            to: segment.endPhysicalDegrees,
-            motion: segment.motion
-        ) * fraction
-        let physical = move(from: segment.startPhysicalDegrees, by: distance, motion: segment.motion)
-        guard let directional = OrboSpineDirectionalDegree(physicalDegrees: physical, motion: segment.motion) else {
-            throw OrboSpineArtifactError.invalidRecord
-        }
-        return OrboSpineCelestialCoordinate(body: body, directionalDegree: directional, julianDay: julianDay)
+        return try readSegment(globalIndex: entry.segmentStart + localIndex)
     }
 
-    func occurrences(
-        of body: MundaneBody,
-        at directionalDegree: OrboSpineDirectionalDegree
-    ) throws -> [OrboSpineCelestialCoordinate] {
-        guard let bodyEntry = bodies[body] else { throw OrboSpineArtifactError.bodyUnavailable(body) }
-        let localIndices = try navigationIndices(bodyEntry: bodyEntry, cell: directionalDegree.navigationCell)
-        var result: [OrboSpineCelestialCoordinate] = []
-        result.reserveCapacity(localIndices.count)
-        for localIndex in localIndices {
-            guard localIndex >= 0, localIndex < bodyEntry.segmentCount else {
-                throw OrboSpineArtifactError.invalidNavigation
-            }
-            let segment = try readSegment(globalIndex: bodyEntry.segmentStart + localIndex)
-            guard segment.motion == directionalDegree.motion else { continue }
-            let targetDistance = directionalDistance(
-                from: segment.startPhysicalDegrees,
-                to: directionalDegree.physicalDegrees,
-                motion: segment.motion
-            )
-            let segmentDistance = directionalDistance(
-                from: segment.startPhysicalDegrees,
-                to: segment.endPhysicalDegrees,
-                motion: segment.motion
-            )
-            guard targetDistance < segmentDistance - Self.epsilon || targetDistance <= Self.epsilon else {
-                continue
-            }
-            let fraction = targetDistance / segmentDistance
-            let value = segment.start.value + (segment.end.value - segment.start.value) * fraction
-            guard value >= metadata.bone.start.value - Self.epsilon,
-                  value < metadata.bone.end.value - Self.epsilon,
-                  let julianDay = JulianDay(value) else { continue }
-            result.append(OrboSpineCelestialCoordinate(
-                body: body,
-                directionalDegree: directionalDegree,
-                julianDay: julianDay
-            ))
-        }
-        result.sort { $0.julianDay.value < $1.julianDay.value }
-        var deduplicated: [OrboSpineCelestialCoordinate] = []
-        for occurrence in result {
-            if let previous = deduplicated.last,
-               abs(previous.julianDay.value - occurrence.julianDay.value) <= Self.epsilon {
-                continue
-            }
-            deduplicated.append(occurrence)
-        }
-        return deduplicated
+    func navigationIndices(of body: MundaneBody, cell: Int) throws -> [Int] {
+        guard let entry = bodies[body] else { throw OrboSpineArtifactError.bodyUnavailable(body) }
+        return try navigationIndices(bodyEntry: entry, cell: cell)
+    }
+
+    func coordinate(of body: MundaneBody, at day: JulianDay) throws -> OrboSpineCelestialCoordinate {
+        try mappedCoordinate(of: body, at: day)
+    }
+
+    func occurrences(of body: MundaneBody, at degree: OrboSpineDirectionalDegree) throws -> [OrboSpineCelestialCoordinate] {
+        try mappedOccurrences(of: body, at: degree)
     }
 
     func candidateWindows(of body: MundaneBody, inNavigationCell cell: Int) throws -> [OrboSpineBoneSpan] {
-        guard (0..<720).contains(cell) else { throw OrboSpineArtifactError.invalidNavigationCell(cell) }
-        guard let bodyEntry = bodies[body] else { throw OrboSpineArtifactError.bodyUnavailable(body) }
-        return try navigationIndices(bodyEntry: bodyEntry, cell: cell).compactMap { localIndex in
-            guard localIndex >= 0, localIndex < bodyEntry.segmentCount else {
-                throw OrboSpineArtifactError.invalidNavigation
-            }
-            let segment = try readSegment(globalIndex: bodyEntry.segmentStart + localIndex)
-            return OrboSpineBoneSpan(start: segment.start, end: segment.end)
-        }
+        try mappedCandidateWindows(of: body, inNavigationCell: cell)
     }
 
     func terra(at julianDay: JulianDay) throws -> TerraMarrowSample {
@@ -842,6 +777,113 @@ internal final class OrboSpineMountedArtifact: @unchecked Sendable {
     private static let epsilon = 1e-10
 }
 
+
+/// Shared traversal of Hephaestus's finished segment and 720-cell records.
+/// Each artifact retains its own envelope and binary reader; this preserves the
+/// Mundane Locate algorithm for both mounted bodies without constructing tracts.
+internal protocol OrboSpineMappedNavigationReading: Sendable {
+    var navigationBone: OrboSpineBoneSpan { get }
+    func navigationSegmentCount(of body: MundaneBody) -> Int?
+    func navigationSegment(of body: MundaneBody, localIndex: Int) throws -> OrboSpineArtifactSegment
+    func navigationIndices(of body: MundaneBody, cell: Int) throws -> [Int]
+}
+
+internal extension OrboSpineMappedNavigationReading {
+    func mappedCoordinate(of body: MundaneBody, at julianDay: JulianDay) throws -> OrboSpineCelestialCoordinate {
+        guard navigationBone.contains(julianDay) else { throw OrboSpineArtifactError.outsideBone }
+        guard let segmentCount = navigationSegmentCount(of: body), segmentCount > 0 else {
+            throw OrboSpineArtifactError.bodyUnavailable(body)
+        }
+        var low = 0
+        var high = segmentCount
+        while low < high {
+            let middle = (low + high) / 2
+            let segment = try navigationSegment(of: body, localIndex: middle)
+            if segment.end.value <= julianDay.value {
+                low = middle + 1
+            } else {
+                high = middle
+            }
+        }
+        let localIndex = min(low, segmentCount - 1)
+        let segment = try navigationSegment(of: body, localIndex: localIndex)
+        let fraction = (julianDay.value - segment.start.value) / (segment.end.value - segment.start.value)
+        let distance = directionalDistance(
+            from: segment.startPhysicalDegrees,
+            to: segment.endPhysicalDegrees,
+            motion: segment.motion
+        ) * fraction
+        let physical = move(from: segment.startPhysicalDegrees, by: distance, motion: segment.motion)
+        guard let directional = OrboSpineDirectionalDegree(physicalDegrees: physical, motion: segment.motion) else {
+            throw OrboSpineArtifactError.invalidRecord
+        }
+        return OrboSpineCelestialCoordinate(body: body, directionalDegree: directional, julianDay: julianDay)
+    }
+
+    func mappedOccurrences(
+        of body: MundaneBody,
+        at directionalDegree: OrboSpineDirectionalDegree
+    ) throws -> [OrboSpineCelestialCoordinate] {
+        guard let segmentCount = navigationSegmentCount(of: body) else { throw OrboSpineArtifactError.bodyUnavailable(body) }
+        let localIndices = try navigationIndices(of: body, cell: directionalDegree.navigationCell)
+        var result: [OrboSpineCelestialCoordinate] = []
+        result.reserveCapacity(localIndices.count)
+        for localIndex in localIndices {
+            guard localIndex >= 0, localIndex < segmentCount else {
+                throw OrboSpineArtifactError.invalidNavigation
+            }
+            let segment = try navigationSegment(of: body, localIndex: localIndex)
+            guard segment.motion == directionalDegree.motion else { continue }
+            let targetDistance = directionalDistance(
+                from: segment.startPhysicalDegrees,
+                to: directionalDegree.physicalDegrees,
+                motion: segment.motion
+            )
+            let segmentDistance = directionalDistance(
+                from: segment.startPhysicalDegrees,
+                to: segment.endPhysicalDegrees,
+                motion: segment.motion
+            )
+            guard targetDistance < segmentDistance - 1e-10 || targetDistance <= 1e-10 else {
+                continue
+            }
+            let fraction = targetDistance / segmentDistance
+            let value = segment.start.value + (segment.end.value - segment.start.value) * fraction
+            guard value >= navigationBone.start.value - 1e-10,
+                  value < navigationBone.end.value - 1e-10,
+                  let julianDay = JulianDay(value) else { continue }
+            result.append(OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: directionalDegree,
+                julianDay: julianDay
+            ))
+        }
+        result.sort { $0.julianDay.value < $1.julianDay.value }
+        var deduplicated: [OrboSpineCelestialCoordinate] = []
+        for occurrence in result {
+            if let previous = deduplicated.last,
+               abs(previous.julianDay.value - occurrence.julianDay.value) <= 1e-10 {
+                continue
+            }
+            deduplicated.append(occurrence)
+        }
+        return deduplicated
+    }
+
+    func mappedCandidateWindows(of body: MundaneBody, inNavigationCell cell: Int) throws -> [OrboSpineBoneSpan] {
+        guard (0..<720).contains(cell) else { throw OrboSpineArtifactError.invalidNavigationCell(cell) }
+        guard let segmentCount = navigationSegmentCount(of: body) else { throw OrboSpineArtifactError.bodyUnavailable(body) }
+        return try navigationIndices(of: body, cell: cell).compactMap { localIndex in
+            guard localIndex >= 0, localIndex < segmentCount else {
+                throw OrboSpineArtifactError.invalidNavigation
+            }
+            let segment = try navigationSegment(of: body, localIndex: localIndex)
+            return OrboSpineBoneSpan(start: segment.start, end: segment.end)
+        }
+    }
+
+}
+
 // MARK: - Encoding
 
 internal enum OrboSpineArtifactEncoder {
@@ -1120,7 +1162,7 @@ internal enum OrboSpineArtifactEncoder {
         return file.data
     }
 
-    private static func valid(_ tract: OrboSpineArtifactTract, on bone: OrboSpineBoneSpan) -> Bool {
+    static func valid(_ tract: OrboSpineArtifactTract, on bone: OrboSpineBoneSpan) -> Bool {
         guard tract.segmentIndexesByCell.count == 720,
               let first = tract.segments.first,
               let last = tract.segments.last,
