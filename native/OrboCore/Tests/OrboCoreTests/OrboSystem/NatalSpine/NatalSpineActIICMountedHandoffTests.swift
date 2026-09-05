@@ -11,7 +11,8 @@ final class NatalSpineActIICMountedHandoffTests: XCTestCase {
             mounted.runtime,
             at: mounted.runtime.bounds.natal.julianDay
         )
-        XCTAssertEqual(position.addresses.count, MundaneBody.canonicalOrder.count)
+        XCTAssertEqual(position.count, MundaneBody.canonicalOrder.count)
+        XCTAssertEqual(position.map(\.coordinate.body), MundaneBody.canonicalOrder)
 
         let index = Chronos.indexNatalSpine(mounted.runtime)
         XCTAssertEqual(index.subjectID, mounted.runtime.subjectID)
