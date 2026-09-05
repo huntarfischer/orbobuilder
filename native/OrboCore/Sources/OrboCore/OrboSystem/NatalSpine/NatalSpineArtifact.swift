@@ -8,7 +8,7 @@ import Crypto
 /// Stable, sectioned binary representation of one finished Natal Spine.
 /// Hephaestus writes this once; ordinary runtime code only maps and reads it.
 public enum NatalSpineArtifactFormat {
-    public static let version: UInt16 = 1
+    public static let version: UInt16 = 2
     static let magic = Array("NATLSP01".utf8)
     static let littleEndianMarker: UInt8 = 1
     static let headerSize = 32
@@ -22,6 +22,10 @@ public enum NatalSpineArtifactFormat {
         case themis = 5
         case oceanus = 6
         case rhea = 7
+        case locateBodyDirectory = 8
+        case locateSegments = 9
+        case locateNavigationDirectory = 10
+        case locateNavigationIndices = 11
     }
 }
 
@@ -254,6 +258,9 @@ public extension Hephaestus {
         let bytes = try NatalSpineArtifactEncoder.encode(sealed)
         try bytes.write(to: url, options: .atomic)
         let mounted = try NatalSpineMountedArtifact(data: bytes)
+        guard mounted.locateTracts == sealed.candidate.locate.artifactTracts else {
+            throw NatalSpineArtifactError.invalidMatter("finished Locate navigation")
+        }
         _ = try mounted.runtime()
         return NatalSpineArtifactReceipt(
             sha256: mounted.sha256,
@@ -265,12 +272,19 @@ public extension Hephaestus {
     }
 }
 
-private final class NatalSpineMountedArtifact: @unchecked Sendable {
+final class NatalSpineMountedArtifact: @unchecked Sendable {
     fileprivate struct DirectoryEntry {
         let recordSize: Int
         let offset: Int
         let byteLength: Int
         let recordCount: Int
+    }
+
+    private struct LocateBodyEntry {
+        let body: MundaneBody
+        let segmentStart: Int
+        let segmentCount: Int
+        let navigationCellStart: Int
     }
 
     let data: Data
@@ -285,6 +299,7 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
     let themis: [NatalSpineRuntimeThemisRecord]
     let oceanus: [NatalSpineRuntimeOceanusRecord]
     let rhea: [NatalSpineRuntimeRheaRecord]
+    let locateTracts: [OrboSpineArtifactTract]
 
     convenience init(url: URL) throws {
         try self.init(data: Data(contentsOf: url, options: .mappedIfSafe))
@@ -375,6 +390,12 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
               sections[.themis]?.recordSize == 24,
               sections[.oceanus]?.recordSize == 32,
               sections[.rhea]?.recordSize == 40,
+              sections[.locateBodyDirectory]?.recordSize == 32,
+              sections[.locateBodyDirectory]?.recordCount == MundaneBody.canonicalOrder.count,
+              sections[.locateSegments]?.recordSize == 40,
+              sections[.locateNavigationDirectory]?.recordSize == 16,
+              sections[.locateNavigationDirectory]?.recordCount == MundaneBody.canonicalOrder.count * 720,
+              sections[.locateNavigationIndices]?.recordSize == 8,
               let metadataSection = sections[.metadata] else {
             throw NatalSpineArtifactError.invalidSectionDirectory
         }
@@ -417,11 +438,19 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
         let themis = try Self.readThemis(data, section: sections[.themis]!)
         let oceanus = try Self.readOceanus(data, section: sections[.oceanus]!)
         let rhea = try Self.readRhea(data, section: sections[.rhea]!)
+        let locateTracts = try Self.readLocateTracts(
+            data,
+            bodySection: sections[.locateBodyDirectory]!,
+            segmentSection: sections[.locateSegments]!,
+            navigationSection: sections[.locateNavigationDirectory]!,
+            indexSection: sections[.locateNavigationIndices]!
+        )
         guard Set(supports.map(\.body)) == Set(MundaneBody.canonicalOrder),
               anchors.count == MundaneBody.canonicalOrder.count * 2,
               themis.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
               oceanus.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
-              rhea.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }) else {
+              rhea.enumerated().allSatisfy({ $0.offset == $0.element.sourceRow }),
+              locateTracts.map(\.body) == MundaneBody.canonicalOrder else {
             throw NatalSpineArtifactError.invalidRecord
         }
 
@@ -437,6 +466,7 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
         self.themis = themis
         self.oceanus = oceanus
         self.rhea = rhea
+        self.locateTracts = locateTracts
     }
 
     func runtime() throws -> NatalSpineRuntime {
@@ -547,6 +577,124 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
                 throw NatalSpineArtifactError.invalidRecord
             }
             return NatalSpineRuntimeRheaRecord(sourceRow: row, source: source, longitude: longitude, conditions: decodeNatalConditions(conditionBits))
+        }
+    }
+
+    private static func readLocateTracts(
+        _ data: Data,
+        bodySection: DirectoryEntry,
+        segmentSection: DirectoryEntry,
+        navigationSection: DirectoryEntry,
+        indexSection: DirectoryEntry
+    ) throws -> [OrboSpineArtifactTract] {
+        var bodyReader = NatalBinaryReader(
+            data: data,
+            offset: bodySection.offset,
+            limit: bodySection.offset + bodySection.byteLength
+        )
+        let bodies: [LocateBodyEntry] = try (0..<bodySection.recordCount).map { _ in
+            guard let body = MundaneBody(rawValue: try bodyReader.u8()) else {
+                throw NatalSpineArtifactError.invalidRecord
+            }
+            try bodyReader.skip(7)
+            guard let segmentStart = Int(exactly: try bodyReader.u64()),
+                  let segmentCount = Int(exactly: try bodyReader.u64()),
+                  let navigationCellStart = Int(exactly: try bodyReader.u64()),
+                  segmentStart >= 0,
+                  segmentCount > 0,
+                  navigationCellStart >= 0,
+                  segmentStart <= segmentSection.recordCount,
+                  segmentCount <= segmentSection.recordCount - segmentStart,
+                  navigationCellStart <= navigationSection.recordCount,
+                  720 <= navigationSection.recordCount - navigationCellStart else {
+                throw NatalSpineArtifactError.invalidRecord
+            }
+            return LocateBodyEntry(
+                body: body,
+                segmentStart: segmentStart,
+                segmentCount: segmentCount,
+                navigationCellStart: navigationCellStart
+            )
+        }
+        guard bodies.map(\.body) == MundaneBody.canonicalOrder else {
+            throw NatalSpineArtifactError.invalidRecord
+        }
+
+        return try bodies.map { bodyEntry in
+            let segments = try (0..<bodyEntry.segmentCount).map { localIndex in
+                let globalIndex = bodyEntry.segmentStart + localIndex
+                let offset = segmentSection.offset + globalIndex * segmentSection.recordSize
+                var reader = NatalBinaryReader(
+                    data: data,
+                    offset: offset,
+                    limit: offset + segmentSection.recordSize
+                )
+                guard let start = JulianDay(try reader.double()),
+                      let end = JulianDay(try reader.double()),
+                      start.value < end.value,
+                      let motion = decodeNatalMotion(try reader.u8()) else {
+                    throw NatalSpineArtifactError.invalidRecord
+                }
+                try reader.skip(7)
+                let startDegrees = try reader.double()
+                let endDegrees = try reader.double()
+                guard reader.isAtEnd,
+                      startDegrees.isFinite,
+                      endDegrees.isFinite,
+                      (0..<360).contains(startDegrees),
+                      (0..<360).contains(endDegrees) else {
+                    throw NatalSpineArtifactError.invalidRecord
+                }
+                return OrboSpineArtifactSegment(
+                    start: start,
+                    end: end,
+                    startPhysicalDegrees: startDegrees,
+                    endPhysicalDegrees: endDegrees,
+                    motion: motion
+                )
+            }
+
+            let cells: [[Int]] = try (0..<720).map { cell in
+                let navRecordIndex = bodyEntry.navigationCellStart + cell
+                let navOffset = navigationSection.offset + navRecordIndex * navigationSection.recordSize
+                var navigationReader = NatalBinaryReader(
+                    data: data,
+                    offset: navOffset,
+                    limit: navOffset + navigationSection.recordSize
+                )
+                guard let indexStart = Int(exactly: try navigationReader.u64()) else {
+                    throw NatalSpineArtifactError.invalidRecord
+                }
+                let count = Int(try navigationReader.u32())
+                guard try navigationReader.u32() == 0,
+                      navigationReader.isAtEnd,
+                      indexStart >= 0,
+                      count >= 0,
+                      indexStart <= indexSection.recordCount,
+                      count <= indexSection.recordCount - indexStart else {
+                    throw NatalSpineArtifactError.invalidRecord
+                }
+                return try (0..<count).map { item in
+                    let indexOffset = indexSection.offset + (indexStart + item) * indexSection.recordSize
+                    var indexReader = NatalBinaryReader(
+                        data: data,
+                        offset: indexOffset,
+                        limit: indexOffset + indexSection.recordSize
+                    )
+                    guard let localIndex = Int(exactly: try indexReader.u64()),
+                          indexReader.isAtEnd,
+                          localIndex >= 0,
+                          localIndex < bodyEntry.segmentCount else {
+                        throw NatalSpineArtifactError.invalidRecord
+                    }
+                    return localIndex
+                }
+            }
+            return OrboSpineArtifactTract(
+                body: bodyEntry.body,
+                segments: segments,
+                segmentIndexesByCell: cells
+            )
         }
     }
 
@@ -673,6 +821,63 @@ private enum NatalSpineArtifactEncoder {
             rhea.double(forged.qualification.temper.longitude.degrees)
         }
 
+        let navigationStart = ProcessInfo.processInfo.systemUptime
+        let tracts = candidate.locate.artifactTracts
+        guard tracts.map(\.body) == MundaneBody.canonicalOrder else {
+            throw NatalSpineArtifactError.invalidMatter("Locate body order")
+        }
+        var locateBodyDirectory = NatalBinaryWriter()
+        var locateSegments = NatalBinaryWriter()
+        var locateNavigationDirectory = NatalBinaryWriter()
+        var locateNavigationIndices = NatalBinaryWriter()
+        var globalSegmentStart: UInt64 = 0
+        var globalNavigationCellStart: UInt64 = 0
+        var globalNavigationIndexStart: UInt64 = 0
+        for tract in tracts {
+            guard tract.segmentIndexesByCell.count == 720 else {
+                throw NatalSpineArtifactError.invalidMatter("Locate navigation cells")
+            }
+            locateBodyDirectory.u8(tract.body.rawValue)
+            locateBodyDirectory.zeros(7)
+            locateBodyDirectory.u64(globalSegmentStart)
+            locateBodyDirectory.u64(UInt64(tract.segments.count))
+            locateBodyDirectory.u64(globalNavigationCellStart)
+
+            for segment in tract.segments {
+                guard segment.start.value < segment.end.value,
+                      segment.startPhysicalDegrees.isFinite,
+                      segment.endPhysicalDegrees.isFinite,
+                      (0..<360).contains(segment.startPhysicalDegrees),
+                      (0..<360).contains(segment.endPhysicalDegrees) else {
+                    throw NatalSpineArtifactError.invalidMatter("Locate segment")
+                }
+                locateSegments.double(segment.start.value)
+                locateSegments.double(segment.end.value)
+                locateSegments.u8(encodeNatalMotion(segment.motion))
+                locateSegments.zeros(7)
+                locateSegments.double(segment.startPhysicalDegrees)
+                locateSegments.double(segment.endPhysicalDegrees)
+            }
+
+            for cell in tract.segmentIndexesByCell {
+                guard cell.allSatisfy({ $0 >= 0 && $0 < tract.segments.count }) else {
+                    throw NatalSpineArtifactError.invalidMatter("Locate navigation index")
+                }
+                locateNavigationDirectory.u64(globalNavigationIndexStart)
+                locateNavigationDirectory.u32(UInt32(cell.count))
+                locateNavigationDirectory.u32(0)
+                for index in cell { locateNavigationIndices.u64(UInt64(index)) }
+                globalNavigationIndexStart += UInt64(cell.count)
+            }
+            globalSegmentStart += UInt64(tract.segments.count)
+            globalNavigationCellStart += 720
+        }
+        let navigationElapsed = ProcessInfo.processInfo.systemUptime - navigationStart
+        print(
+            "ORBO_NATAL_ARTIFACT navigation-encode elapsed=\(String(format: \"%.3f\", navigationElapsed))s "
+                + "tracts=\(tracts.count) segments=\(globalSegmentStart) indices=\(globalNavigationIndexStart)"
+        )
+
         let sections: [SectionBytes] = [
             .init(id: .metadata, recordSize: 0, recordCount: 1, data: metadata.data),
             .init(id: .celestialSupports, recordSize: 24, recordCount: UInt64(supportsSource.count), data: supports.data),
@@ -681,6 +886,10 @@ private enum NatalSpineArtifactEncoder {
             .init(id: .themis, recordSize: 24, recordCount: UInt64(candidate.themis.count), data: themis.data),
             .init(id: .oceanus, recordSize: 32, recordCount: UInt64(candidate.oceanus.count), data: oceanus.data),
             .init(id: .rhea, recordSize: 40, recordCount: UInt64(candidate.rhea.count), data: rhea.data),
+            .init(id: .locateBodyDirectory, recordSize: 32, recordCount: UInt64(tracts.count), data: locateBodyDirectory.data),
+            .init(id: .locateSegments, recordSize: 40, recordCount: globalSegmentStart, data: locateSegments.data),
+            .init(id: .locateNavigationDirectory, recordSize: 16, recordCount: globalNavigationCellStart, data: locateNavigationDirectory.data),
+            .init(id: .locateNavigationIndices, recordSize: 8, recordCount: globalNavigationIndexStart, data: locateNavigationIndices.data),
         ]
         return assemble(sections)
     }
