@@ -460,36 +460,41 @@ private final class OrboApplicationModel: ObservableObject {
                         userInfo: [NSLocalizedDescriptionKey: "The lit Hearth and mounted parent Spine are required."]
                     )
                 }
-                try FileManager.default.createDirectory(
-                    at: natalDirectory,
-                    withIntermediateDirectories: true
-                )
-                let urls = natalURLs(for: hestia.nativeSubjectID)
-                let commissioningOrbo = orbo
-                let commissioningCourier = hermes
-                let forgeStart = ProcessInfo.processInfo.systemUptime
-                let manufacture = try await Task.detached(priority: .userInitiated) {
-                    var courier = commissioningCourier
-                    let start = AbsoluteInstant(
-                        unixSecondsSince1970: Date().timeIntervalSince1970
-                    )!
-                    let result = try commissioningOrbo.manufactureNatalSpine(
-                        for: hestia.nativeSubjectID,
-                        from: hestia,
-                        parent: runtime,
-                        via: &courier,
-                        artifactURL: urls.artifact,
-                        receiptURL: urls.receipt,
-                        occurredAt: start
+                // The interaction proof exercises the mounted chart and must not
+                // spend minutes recommissioning the separate 101-year artifact.
+                // Production onboarding and the dedicated birth proof both forge.
+                if !CommandLine.arguments.contains("--orbo-ui-proof") {
+                    try FileManager.default.createDirectory(
+                        at: natalDirectory,
+                        withIntermediateDirectories: true
                     )
-                    return (result, courier)
-                }.value
-                hermes = manufacture.1
-                natalSpine = manufacture.0.runtime
-                natalIndex = Chronos.indexNatalSpine(manufacture.0.runtime)
-                natalMessage = "Natal Spine ready · \(manufacture.0.receipt.byteCount) bytes"
-                measure("Natal Spine forge and remount", since: forgeStart)
-                FileHandle.standardOutput.write(Data("ORBO_NATAL_READY: \(manufacture.0.receipt.sha256)\n".utf8))
+                    let urls = natalURLs(for: hestia.nativeSubjectID)
+                    let commissioningOrbo = orbo
+                    let commissioningCourier = hermes
+                    let forgeStart = ProcessInfo.processInfo.systemUptime
+                    let manufacture = try await Task.detached(priority: .userInitiated) {
+                        var courier = commissioningCourier
+                        let start = AbsoluteInstant(
+                            unixSecondsSince1970: Date().timeIntervalSince1970
+                        )!
+                        let result = try commissioningOrbo.manufactureNatalSpine(
+                            for: hestia.nativeSubjectID,
+                            from: hestia,
+                            parent: runtime,
+                            via: &courier,
+                            artifactURL: urls.artifact,
+                            receiptURL: urls.receipt,
+                            occurredAt: start
+                        )
+                        return (result, courier)
+                    }.value
+                    hermes = manufacture.1
+                    natalSpine = manufacture.0.runtime
+                    natalIndex = Chronos.indexNatalSpine(manufacture.0.runtime)
+                    natalMessage = "Natal Spine ready · \(manufacture.0.receipt.byteCount) bytes"
+                    measure("Natal Spine forge and remount", since: forgeStart)
+                    FileHandle.standardOutput.write(Data("ORBO_NATAL_READY: \(manufacture.0.receipt.sha256)\n".utf8))
+                }
                 keepHearth()
                 _ = try orbo.advanceAstrosphereIntroduction()
                 let truth = OrboEstablishedBigThree(
