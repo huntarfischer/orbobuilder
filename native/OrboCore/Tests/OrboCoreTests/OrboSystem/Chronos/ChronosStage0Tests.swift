@@ -144,7 +144,7 @@ final class ChronosStage0Tests: XCTestCase {
         )
         XCTAssertEqual(
             Set(Mirror(reflecting: hit).children.compactMap(\.label)),
-            Set(["address", "fact", "source"])
+            Set(["address", "fact", "source", "eventContext"])
         )
         XCTAssertEqual(
             Set(Mirror(reflecting: answer).children.compactMap(\.label)),

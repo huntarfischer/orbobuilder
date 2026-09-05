@@ -20,29 +20,9 @@ final class NatalSpineMountedParentIntegrationTests: XCTestCase {
         let mountElapsed = ProcessInfo.processInfo.systemUptime - mountStart
         XCTAssertLessThan(mountElapsed, 10)
 
-        let hearth = try NatalSpineTestFixture.litHestia()
-        let truth = try hearth.natalSpineNativeTruth(for: NatalSpineTestFixture.subjectID)
-        let bounds = try Clotho.boundNatalSpine(truth)
-        let schematics = try Lachesis.petitionNatalSpine(
-            native: truth,
-            bounds: bounds,
-            through: parent
-        )
-        let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: bounds,
-            themis: schematics.themis,
-            oceanus: schematics.oceanus,
-            rhea: schematics.rhea
-        ).get()
-        let package = HermesPackage(
-            packageID: HermesPackageID(),
-            subjectID: truth.subjectID,
-            sender: OrboOnboarding.orboAddress,
-            kind: NatalSpineCommission.packageKind,
-            addresses: NatalSpineCommission.itinerary,
-            contents: certified
-        )!
-        let commission = try Hephaestus.receiveNatalSpineSchematics(package)
+        // Act I proves only the mounted-parent seam here. The end-to-end app
+        // gate separately runs the expensive real 101-year Titan manufacture.
+        let commission = try NatalSpineActIIFixture.forgeCommission()
         let substrate = try Hephaestus.forgeNatalSpineSubstrate(
             for: commission,
             from: parent

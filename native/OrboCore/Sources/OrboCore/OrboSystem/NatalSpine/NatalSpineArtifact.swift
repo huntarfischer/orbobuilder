@@ -356,7 +356,11 @@ private final class NatalSpineMountedArtifact: @unchecked Sendable {
         guard sections.count == sectionCount else {
             throw NatalSpineArtifactError.invalidSectionDirectory
         }
-        let ordered = sections.values.sorted { $0.offset < $1.offset }
+        let ordered = sections.values.sorted {
+            if $0.offset != $1.offset { return $0.offset < $1.offset }
+            // Empty sections lawfully share the following section's offset.
+            return $0.byteLength < $1.byteLength
+        }
         var previousEnd = directoryOffset + sectionCount * entrySize
         for section in ordered {
             guard section.offset == previousEnd else {
