@@ -27,6 +27,20 @@ final class NatalSpineArtifactTests: XCTestCase {
         )
     }
 
+    func testArtifactPersistsFinishedLocateNavigationExactly() throws {
+        let sealed = try NatalSpineActIIIFixture.sealedSpine()
+        let url = temporaryURL("finished-navigation.natalspine")
+
+        let receipt = try Hephaestus.forgeNatalSpineArtifact(sealed, to: url)
+        let mounted = try NatalSpineMountedArtifact(url: url)
+
+        XCTAssertEqual(mounted.locateTracts, sealed.candidate.locate.artifactTracts)
+        XCTAssertEqual(mounted.locateTracts.map(\.body), MundaneBody.canonicalOrder)
+        XCTAssertTrue(mounted.locateTracts.allSatisfy { $0.segmentIndexesByCell.count == 720 })
+        XCTAssertEqual(receipt.formatVersion, NatalSpineArtifactFormat.version)
+        XCTAssertEqual(receipt.formatVersion, 2)
+    }
+
     func testMountedArtifactPreservesLayersAndBothDirectionsOfAddressability() throws {
         let (sealed, runtime, _) = try mountedFixture()
 

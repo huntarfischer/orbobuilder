@@ -1,0 +1,27 @@
+name: Natal Spine Act II Finished Artifact
+
+on:
+  push:
+    branches: [feature/natal-spine-act2-finished-artifact-2026-09-05]
+  workflow_dispatch:
+
+concurrency:
+  group: natal-spine-act2-finished-artifact-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  focused-green:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove finished navigation is persisted
+        run: |
+          file="native/OrboCore/Sources/OrboCore/OrboSystem/NatalSpine/NatalSpineArtifact.swift"
+          grep -q 'candidate.locate.artifactTracts' "$file"
+          grep -q 'case locateBodyDirectory = 8' "$file"
+          grep -q 'case locateNavigationIndices = 11' "$file"
+      - name: Build and prove Natal artifact preservation
+        run: swift test --package-path native/OrboCore --filter NatalSpineArtifactTests
+      - name: Prove Rhea source references remain green
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat5RheaForgeTests
