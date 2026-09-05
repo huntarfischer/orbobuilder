@@ -16,6 +16,37 @@ public struct NatalSpineManufactureResult: Sendable {
     }
 }
 
+private enum NatalSpineManufactureDiagnostics {
+    static func begin(_ stage: String, inputCount: Int? = nil) -> TimeInterval {
+        var message = "START \(stage)"
+        if let inputCount {
+            message += " input=\(inputCount)"
+        }
+        log(message)
+        return ProcessInfo.processInfo.systemUptime
+    }
+
+    static func end(
+        _ stage: String,
+        since start: TimeInterval,
+        outputCount: Int? = nil
+    ) {
+        var message = String(
+            format: "END %@ elapsed=%.3fs",
+            stage,
+            ProcessInfo.processInfo.systemUptime - start
+        )
+        if let outputCount {
+            message += " output=\(outputCount)"
+        }
+        log(message)
+    }
+
+    private static func log(_ message: String) {
+        FileHandle.standardOutput.write(Data("ORBO_NATAL_STAGE \(message)\n".utf8))
+    }
+}
+
 public extension Orbo {
     /// Runs the one lawful commission from the lit Hearth through all owners,
     /// writes the finished binary body, remounts it, and closes the same ticket.
@@ -44,10 +75,18 @@ public extension Orbo {
         guard moiraiAddress == NatalSpineCommission.moiraiAddress else {
             throw NatalSpineManufactureFailure.routeDivergence
         }
+        let moiraiStart = NatalSpineManufactureDiagnostics.begin("moirai-certification")
         let certified = try Moirai.processNatalSpineSchematics(
             handle.package,
             hearth: hearth,
             through: parent
+        )
+        NatalSpineManufactureDiagnostics.end(
+            "moirai-certification",
+            since: moiraiStart,
+            outputCount: certified.themis.spans.count
+                + certified.oceanus.realizations.count
+                + certified.rhea.qualifications.count
         )
         try courier.recover(
             ticketID: handle.ticketID,
@@ -63,34 +102,91 @@ public extension Orbo {
             throw NatalSpineManufactureFailure.routeDivergence
         }
         let commission = try Hephaestus.receiveNatalSpineSchematics(certified)
+
+        let substrateStart = NatalSpineManufactureDiagnostics.begin("hephaestus-substrate")
         let substrate = try Hephaestus.forgeNatalSpineSubstrate(
             for: commission,
             from: parent
+        )
+        NatalSpineManufactureDiagnostics.end(
+            "hephaestus-substrate",
+            since: substrateStart,
+            outputCount: substrate.supports.count + substrate.stations.count + substrate.boundaryAnchors.count
+        )
+
+        let themisStart = NatalSpineManufactureDiagnostics.begin(
+            "hephaestus-themis",
+            inputCount: commission.schematics.themis.spans.count
         )
         let themis = try Hephaestus.forgeNatalSpineThemis(
             for: commission,
             on: substrate
         )
+        NatalSpineManufactureDiagnostics.end(
+            "hephaestus-themis",
+            since: themisStart,
+            outputCount: themis.themis.count
+        )
+
+        let oceanusStart = NatalSpineManufactureDiagnostics.begin(
+            "hephaestus-oceanus",
+            inputCount: commission.schematics.oceanus.realizations.count
+        )
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
+        NatalSpineManufactureDiagnostics.end(
+            "hephaestus-oceanus",
+            since: oceanusStart,
+            outputCount: oceanus.oceanus.count
+        )
+
+        let rheaStart = NatalSpineManufactureDiagnostics.begin(
+            "hephaestus-rhea",
+            inputCount: commission.schematics.rhea.qualifications.count
+        )
         let rhea = try Hephaestus.forgeNatalSpineRhea(on: oceanus)
+        NatalSpineManufactureDiagnostics.end(
+            "hephaestus-rhea",
+            since: rheaStart,
+            outputCount: rhea.rhea.count
+        )
+
+        let addressabilityStart = NatalSpineManufactureDiagnostics.begin("hephaestus-addressability")
         let candidate = try Hephaestus.forgeNatalSpineAddressability(on: rhea)
+        NatalSpineManufactureDiagnostics.end(
+            "hephaestus-addressability",
+            since: addressabilityStart
+        )
+
+        let verificationStart = NatalSpineManufactureDiagnostics.begin("dioscuri-verification")
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
             against: certified.contents,
             parent: parent
         ).get()
-        let sealed = Hephaestus.sealNatalSpine(approval)
+        NatalSpineManufactureDiagnostics.end(
+            "dioscuri-verification",
+            since: verificationStart
+        )
 
+        let sealStart = NatalSpineManufactureDiagnostics.begin("hephaestus-seal")
+        let sealed = Hephaestus.sealNatalSpine(approval)
+        NatalSpineManufactureDiagnostics.end("hephaestus-seal", since: sealStart)
+
+        let artifactStart = NatalSpineManufactureDiagnostics.begin("artifact-write")
         let receipt = try Hephaestus.forgeNatalSpineArtifact(
             sealed,
             to: artifactURL
         )
         try receipt.write(to: receiptURL)
+        NatalSpineManufactureDiagnostics.end("artifact-write", since: artifactStart)
+
+        let mountStart = NatalSpineManufactureDiagnostics.begin("artifact-mount")
         let mounted = try NatalSpineRuntime.mount(
             from: artifactURL,
             expectedSHA256: receipt.sha256,
             expectedParentSpineIdentity: parent.provenance.spineIdentity
         )
+        NatalSpineManufactureDiagnostics.end("artifact-mount", since: mountStart)
 
         let finishedPackage = Hephaestus.releaseNatalSpine(sealed)
         try courier.recover(

@@ -1,0 +1,30 @@
+name: Natal Spine Act I Forge Connections
+
+on:
+  push:
+    branches: [feature/natal-spine-act1-forge-connections-2026-09-05]
+  workflow_dispatch:
+
+concurrency:
+  group: natal-spine-act1-forge-connections-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  focused-green:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove connection-once structure is present
+        run: |
+          file="native/OrboCore/Sources/OrboCore/OrboSystem/Hephaestus/NatalSpineForgeRhea.swift"
+          grep -q 'oceanusRealizationIndex' "$file"
+          grep -q 'themisCrossingIndex' "$file"
+          if grep -q 'layer.oceanus.first(where:' "$file"; then
+            echo 'Rhea reopened a whole-table Oceanus search.'
+            exit 1
+          fi
+      - name: Build and prove Rhea attachment semantics
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIIBeat5RheaForgeTests
+      - name: Prove orphan qualifications still fail closed
+        run: swift test --package-path native/OrboCore --filter NatalSpineActIBeat7AtroposTests

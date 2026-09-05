@@ -42,6 +42,19 @@ final class NatalSpineActIIBeat5RheaForgeTests: XCTestCase {
         }
     }
 
+    func testRheaForgePreservesMultipleQualificationsForOneTemporalFact() throws {
+        let commission = try commissionWithRepeatedRingQualification()
+        let layer = try forgeRheaLayer(for: commission)
+        let ringRows = layer.rhea.filter { forged in
+            if case .ringRealization = forged.qualification.source { return true }
+            return false
+        }
+
+        XCTAssertEqual(ringRows.count, 2)
+        XCTAssertEqual(Set(ringRows.map(\.fact)).count, 1)
+        XCTAssertEqual(ringRows.map(\.sourceRow), [1, 2])
+    }
+
     func testRheaForgePreservesMaterRelationshipAndPriorForgeLayersUnchanged() throws {
         let commission = try NatalSpineActIIFixture.forgeCommission()
         let substrate = NatalSpineActIIFixture.substrate(for: commission)
@@ -74,5 +87,34 @@ final class NatalSpineActIIBeat5RheaForgeTests: XCTestCase {
         )
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
         return try Hephaestus.forgeNatalSpineRhea(on: oceanus)
+    }
+
+    private func commissionWithRepeatedRingQualification() throws -> NatalSpineForgeCommission {
+        let base = try NatalSpineActIIFixture.forgeCommission()
+        let original = base.schematics.rhea.qualifications
+        let ringQualification = try XCTUnwrap(original.first { qualification in
+            if case .ringRealization = qualification.source { return true }
+            return false
+        })
+        let rhea = NatalSpineRheaTable(
+            subjectID: base.subjectID,
+            bounds: base.schematics.bounds,
+            qualifications: original + [ringQualification]
+        )
+        let certified = try Atropos.inspectNatalSpineSchematics(
+            bounds: base.schematics.bounds,
+            themis: base.schematics.themis,
+            oceanus: base.schematics.oceanus,
+            rhea: rhea
+        ).get()
+        let package = HermesPackage(
+            packageID: HermesPackageID(),
+            subjectID: base.subjectID,
+            sender: OrboOnboarding.orboAddress,
+            kind: NatalSpineCommission.packageKind,
+            addresses: NatalSpineCommission.itinerary,
+            contents: certified
+        )!
+        return try Hephaestus.receiveNatalSpineSchematics(package)
     }
 }
