@@ -84,9 +84,9 @@ public extension Orbo {
         NatalSpineManufactureDiagnostics.end(
             "moirai-certification",
             since: moiraiStart,
-            outputCount: certified.themis.spans.count
-                + certified.oceanus.realizations.count
-                + certified.rhea.qualifications.count
+            outputCount: certified.contents.themis.spans.count
+                + certified.contents.oceanus.realizations.count
+                + certified.contents.rhea.qualifications.count
         )
         try courier.recover(
             ticketID: handle.ticketID,
