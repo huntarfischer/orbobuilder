@@ -3,6 +3,8 @@ name: Natal Moirai Threads Repair
 on:
   push:
     branches: [feature/natal-moirai-threads-repair-2026-09-06]
+  pull_request:
+    branches: [feature/natal-spine-act2-finished-artifact-2026-09-05]
   workflow_dispatch:
 
 concurrency:
