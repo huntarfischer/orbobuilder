@@ -93,6 +93,22 @@ public extension Clotho {
         guard truth.subjectID == bounds.subjectID else {
             throw NatalSpineThreadsFailure.invalidThreads
         }
+        return try gatherNatalSpineThreads(
+            subjectID: truth.subjectID,
+            bounds: bounds,
+            from: source
+        )
+    }
+
+    /// Internal compatibility seam while the old Hephaestus caller is removed in Act II.
+    static func gatherNatalSpineThreads<Source: NatalSpineTimespineSource>(
+        subjectID: HermesSubjectID,
+        bounds: NatalSpineBounds,
+        from source: Source
+    ) throws -> NatalSpineThreads {
+        guard subjectID == bounds.subjectID else {
+            throw NatalSpineThreadsFailure.invalidThreads
+        }
 
         let bone = bounds.bone
         guard bone.start.value >= source.sourceBone.start.value,
@@ -160,7 +176,7 @@ public extension Clotho {
             .sorted { $0.julianDay.value < $1.julianDay.value }
 
         guard let threads = NatalSpineThreads(
-            subjectID: truth.subjectID,
+            subjectID: subjectID,
             bounds: bounds,
             supports: supports,
             stations: stations,
