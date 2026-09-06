@@ -1,17 +1,20 @@
-/// Atropos's seal around the exact three-table Natal Spine schematic she inspected.
-/// The tables remain separate inside the seal; Atropos does not merge or recalculate them.
+/// Atropos's seal around the bounded Natal material and exact three-table schematic she inspected.
+/// The Titan tables remain separate; Atropos does not merge, recalculate, or repair them.
 public struct AtroposNatalSpineSchematicsPackage: Hashable, Sendable {
+    public let threads: NatalSpineThreads
     public let bounds: NatalSpineBounds
     public let themis: NatalSpineThemisTable
     public let oceanus: NatalSpineOceanusTable
     public let rhea: NatalSpineRheaTable
 
     fileprivate init(
+        threads: NatalSpineThreads,
         bounds: NatalSpineBounds,
         themis: NatalSpineThemisTable,
         oceanus: NatalSpineOceanusTable,
         rhea: NatalSpineRheaTable
     ) {
+        self.threads = threads
         self.bounds = bounds
         self.themis = themis
         self.oceanus = oceanus
@@ -32,21 +35,21 @@ public enum AtroposNatalSpineFailure: Error, Hashable, Sendable {
     case oceanusCountMismatch
     case oceanusInvalidRealization(MundaneBody)
     case rheaCountMismatch
-    case rheaOrphanQualification
     case rheaInvalidQualification
 }
 
 public extension Atropos {
-    /// Certifies the three independent temporal Titan tables as one forgeable
-    /// Natal Spine schematic. Atropos checks correspondence only. She performs
-    /// no Titan pass, no astronomy, and no Mater qualification.
+    /// Certifies the bounded Threads and three independent temporal Titan tables as one
+    /// forgeable Natal Spine package. Atropos checks correspondence only.
     static func inspectNatalSpineSchematics(
-        bounds: NatalSpineBounds,
+        threads: NatalSpineThreads,
         themis: NatalSpineThemisTable,
         oceanus: NatalSpineOceanusTable,
         rhea: NatalSpineRheaTable
     ) -> Result<AtroposNatalSpineSchematicsPackage, AtroposNatalSpineFailure> {
-        guard themis.subjectID == bounds.subjectID,
+        let bounds = threads.bounds
+        guard threads.subjectID == bounds.subjectID,
+              themis.subjectID == bounds.subjectID,
               oceanus.subjectID == bounds.subjectID,
               rhea.subjectID == bounds.subjectID else {
             return .failure(.subjectMismatch)
@@ -94,27 +97,16 @@ public extension Atropos {
         guard rhea.declaredCount == rhea.qualifications.count else {
             return .failure(.rheaCountMismatch)
         }
-        let lawfulCrossings = Set(derivedHouseCrossings(from: themis, bounds: bounds))
-        let lawfulRealizations = Set(oceanus.realizations)
         for qualification in rhea.qualifications {
             guard qualification.source.body.planet == qualification.temper.planet,
                   bounds.bone.contains(qualification.source.julianDay) else {
                 return .failure(.rheaInvalidQualification)
             }
-            switch qualification.source {
-            case let .houseCrossing(crossing):
-                guard lawfulCrossings.contains(crossing) else {
-                    return .failure(.rheaOrphanQualification)
-                }
-            case let .ringRealization(realization):
-                guard lawfulRealizations.contains(realization) else {
-                    return .failure(.rheaOrphanQualification)
-                }
-            }
         }
 
         return .success(
             AtroposNatalSpineSchematicsPackage(
+                threads: threads,
                 bounds: bounds,
                 themis: themis,
                 oceanus: oceanus,
@@ -146,33 +138,5 @@ public extension Atropos {
             }
         }
         return true
-    }
-
-    private static func derivedHouseCrossings(
-        from themis: NatalSpineThemisTable,
-        bounds: NatalSpineBounds
-    ) -> [NatalSpineHouseCrossing] {
-        var crossings: [NatalSpineHouseCrossing] = []
-        for body in MundaneBody.canonicalOrder where body.planet != nil {
-            let spans = themis.spans(for: body).sorted { $0.start.value < $1.start.value }
-            guard spans.count > 1 else { continue }
-            for index in 1..<spans.count {
-                let previous = spans[index - 1]
-                let current = spans[index]
-                guard previous.house != current.house,
-                      current.start.value > bounds.bone.start.value,
-                      current.start.value < bounds.bone.end.value,
-                      let crossing = NatalSpineHouseCrossing(
-                        body: body,
-                        fromHouse: previous.house,
-                        toHouse: current.house,
-                        occurrence: current.start
-                      ) else {
-                    continue
-                }
-                crossings.append(crossing)
-            }
-        }
-        return crossings
     }
 }
