@@ -1,39 +1,11 @@
-public struct NatalSpineHouseCrossing: Hashable, Sendable {
+public struct NatalSpineRheaSource: Hashable, Sendable {
     public let body: MundaneBody
-    public let fromHouse: House
-    public let toHouse: House
-    public let occurrence: JulianDay
+    public let julianDay: JulianDay
 
-    public init?(
-        body: MundaneBody,
-        fromHouse: House,
-        toHouse: House,
-        occurrence: JulianDay
-    ) {
-        guard fromHouse != toHouse else { return nil }
+    public init?(body: MundaneBody, julianDay: JulianDay) {
+        guard body.planet != nil else { return nil }
         self.body = body
-        self.fromHouse = fromHouse
-        self.toHouse = toHouse
-        self.occurrence = occurrence
-    }
-}
-
-public enum NatalSpineRheaSource: Hashable, Sendable {
-    case houseCrossing(NatalSpineHouseCrossing)
-    case ringRealization(NatalSpineRingRealization)
-
-    public var body: MundaneBody {
-        switch self {
-        case let .houseCrossing(crossing): return crossing.body
-        case let .ringRealization(realization): return realization.mundaneBody
-        }
-    }
-
-    public var julianDay: JulianDay {
-        switch self {
-        case let .houseCrossing(crossing): return crossing.occurrence
-        case let .ringRealization(realization): return realization.occurrence.julianDay
-        }
+        self.julianDay = julianDay
     }
 }
 
@@ -69,103 +41,65 @@ public struct NatalSpineRheaTable: Hashable, Sendable {
 
 public enum NatalSpineRheaFailure: Error, Hashable, Sendable {
     case subjectMismatch
-    case boundsMismatch
-    case malformedThemisTable
     case invalidQualification
 }
 
 public extension Rhea {
-    /// Qualifies only temporal facts already established by Themis and Oceanus.
-    /// Rhea does not perform another chronological search. At each eligible fact,
-    /// she reads the already-forged mundane planetary field and applies canonical Mater law.
+    /// Bears Mater testimony directly from the bounded mundane chronology Clotho supplied.
+    /// Rhea receives no Themis or Oceanus testimony. Candidate moments are only the exact
+    /// zodiac degrees where this planet's own Mater condition can change under canonical law.
     static func qualifyNatalSpine<Port: NatalSpineTimespinePort>(
         native truth: NatalSpineNativeTruth,
         bounds: NatalSpineBounds,
-        themis: NatalSpineThemisTable,
-        oceanus: NatalSpineOceanusTable,
         through port: Port
     ) throws -> NatalSpineRheaTable {
-        guard truth.subjectID == bounds.subjectID,
-              themis.subjectID == truth.subjectID,
-              oceanus.subjectID == truth.subjectID else {
+        guard truth.subjectID == bounds.subjectID else {
             throw NatalSpineRheaFailure.subjectMismatch
         }
-        guard themis.bounds == bounds, oceanus.bounds == bounds else {
-            throw NatalSpineRheaFailure.boundsMismatch
-        }
 
-        var sources: [NatalSpineRheaSource] = []
-
-        for body in MundaneBody.canonicalOrder where body.planet != nil {
-            let spans = themis.spans(for: body).sorted { $0.start.value < $1.start.value }
-            guard !spans.isEmpty else { continue }
-
-            for index in 1..<spans.count {
-                let prior = spans[index - 1]
-                let next = spans[index]
-                guard prior.body == body,
-                      next.body == body,
-                      abs(prior.end.value - next.start.value) <= 1e-9 else {
-                    throw NatalSpineRheaFailure.malformedThemisTable
-                }
-                guard prior.house != next.house else { continue }
-                guard next.start.value > bounds.bone.start.value,
-                      next.start.value < bounds.bone.end.value,
-                      let crossing = NatalSpineHouseCrossing(
-                        body: body,
-                        fromHouse: prior.house,
-                        toHouse: next.house,
-                        occurrence: next.start
-                      ) else {
-                    continue
-                }
-                sources.append(.houseCrossing(crossing))
-            }
-        }
-
-        for realization in oceanus.realizations where realization.mundaneBody.planet != nil {
-            guard bounds.bone.contains(realization.occurrence.julianDay) else { continue }
-            sources.append(.ringRealization(realization))
-        }
-
-        sources.sort {
-            if $0.julianDay.value != $1.julianDay.value {
-                return $0.julianDay.value < $1.julianDay.value
-            }
-            if $0.body.rawValue != $1.body.rawValue {
-                return $0.body.rawValue < $1.body.rawValue
-            }
-            switch ($0, $1) {
-            case (.houseCrossing, .ringRealization): return true
-            case (.ringRealization, .houseCrossing): return false
-            default: return false
-            }
-        }
-
-        var fieldCache: [Double: Mater.QualifiedField] = [:]
         var qualifications: [NatalSpineMaterQualification] = []
-        qualifications.reserveCapacity(sources.count)
+        var admitted = Set<NatalSpineRheaSource>()
 
-        for source in sources {
-            guard let planet = source.body.planet else { continue }
-            let key = source.julianDay.value
-            let field: Mater.QualifiedField
-            if let cached = fieldCache[key] {
-                field = cached
-            } else {
-                let longitudes = try planetaryLongitudes(at: source.julianDay, through: port)
-                let qualified = Rhea.bear(longitudes, sect: truth.sect)
-                fieldCache[key] = qualified
-                field = qualified
-            }
+        for body in MundaneBody.canonicalOrder {
+            guard let planet = body.planet else { continue }
 
-            guard let qualification = NatalSpineMaterQualification(
-                source: source,
-                temper: field.temper(for: planet)
-            ) else {
-                throw NatalSpineRheaFailure.invalidQualification
+            for physicalDegrees in materTargetDegrees(for: planet) {
+                for motion in [Motion.direct, Motion.retrograde] {
+                    let directional = OrboSpineDirectionalDegree(
+                        physicalDegrees: physicalDegrees,
+                        motion: motion
+                    )!
+                    for occurrence in try port.occurrences(of: body, at: directional) {
+                        guard bounds.bone.contains(occurrence.julianDay),
+                              let source = NatalSpineRheaSource(
+                                body: body,
+                                julianDay: occurrence.julianDay
+                              ),
+                              admitted.insert(source).inserted else {
+                            continue
+                        }
+
+                        let field = Rhea.bear(
+                            try planetaryLongitudes(at: occurrence.julianDay, through: port),
+                            sect: truth.sect
+                        )
+                        guard let qualification = NatalSpineMaterQualification(
+                            source: source,
+                            temper: field.temper(for: planet)
+                        ) else {
+                            throw NatalSpineRheaFailure.invalidQualification
+                        }
+                        qualifications.append(qualification)
+                    }
+                }
             }
-            qualifications.append(qualification)
+        }
+
+        qualifications.sort {
+            if $0.source.julianDay.value != $1.source.julianDay.value {
+                return $0.source.julianDay.value < $1.source.julianDay.value
+            }
+            return $0.source.body.rawValue < $1.source.body.rawValue
         }
 
         return NatalSpineRheaTable(
@@ -173,6 +107,49 @@ public extension Rhea {
             bounds: bounds,
             qualifications: qualifications
         )
+    }
+
+    /// Derives Rhea's temporal targets from Mater itself rather than duplicating
+    /// the dignity tables here. Sign changes are field boundaries. Bound and face
+    /// boundaries are admitted only when that planet enters or leaves its own dignity.
+    /// The exact exaltation degree is a punctual Mater condition and is included too.
+    private static func materTargetDegrees(for planet: Planet) -> [Double] {
+        let epsilon = 1e-7
+        var targets = Set<Double>()
+
+        for degree in 0..<360 {
+            let boundary = Double(degree)
+            let beforeDegrees = boundary == 0 ? 360 - epsilon : boundary - epsilon
+            let afterDegrees = boundary + epsilon >= 360 ? epsilon : boundary + epsilon
+            let before = CelestialLongitude(beforeDegrees)!
+            let after = CelestialLongitude(afterDegrees)!
+
+            if before.sign != after.sign {
+                targets.insert(boundary)
+            }
+
+            let beforeBound = Mater.bound(at: before)
+            let afterBound = Mater.bound(at: after)
+            if beforeBound.ruler != afterBound.ruler,
+               beforeBound.ruler == planet || afterBound.ruler == planet {
+                targets.insert(boundary)
+            }
+
+            let beforeFace = Mater.face(at: before)
+            let afterFace = Mater.face(at: after)
+            if beforeFace.ruler != afterFace.ruler,
+               beforeFace.ruler == planet || afterFace.ruler == planet {
+                targets.insert(boundary)
+            }
+        }
+
+        if let exaltation = Mater.exaltation(of: planet) {
+            targets.insert(
+                Double(exaltation.sign.rawValue * 30) + exaltation.degree.value
+            )
+        }
+
+        return targets.sorted()
     }
 
     private static func planetaryLongitudes<Port: NatalSpineTimespinePort>(

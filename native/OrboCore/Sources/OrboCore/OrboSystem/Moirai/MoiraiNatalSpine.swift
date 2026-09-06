@@ -6,11 +6,11 @@ public enum MoiraiNatalSpineFailure: Error, Hashable, Sendable {
 
 public extension Moirai {
     /// Fulfills the Moirai stop of the one Natal Spine commission.
-    /// The same Hermes envelope leaves with Atropos-certified three-table schematics.
-    static func processNatalSpineSchematics<Port: NatalSpineTimespinePort>(
+    /// Clotho alone touches the parent Timespine, then Lachesis allots the bounded Threads.
+    static func processNatalSpineSchematics<Source: NatalSpineTimespineSource>(
         _ package: HermesPackage<NatalSpineSchematicsRequest>,
         hearth hestia: Hestia,
-        through port: Port
+        through source: Source
     ) throws -> HermesPackage<AtroposNatalSpineSchematicsPackage> {
         guard package.kind == NatalSpineCommission.packageKind,
               package.addresses == NatalSpineCommission.itinerary,
@@ -20,16 +20,20 @@ public extension Moirai {
 
         let truth = try hestia.natalSpineNativeTruth(for: package.subjectID)
         let bounds = try Clotho.boundNatalSpine(truth)
-        let tables = try Lachesis.petitionNatalSpine(
+        let threads = try Clotho.gatherNatalSpineThreads(
             native: truth,
             bounds: bounds,
-            through: port
+            from: source
+        )
+        let tables = try Lachesis.petitionNatalSpine(
+            native: truth,
+            threads: threads
         )
 
         let atroposStart = ProcessInfo.processInfo.systemUptime
         FileHandle.standardOutput.write(Data("ORBO_NATAL_STAGE START moirai-atropos\n".utf8))
         let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: bounds,
+            threads: threads,
             themis: tables.themis,
             oceanus: tables.oceanus,
             rhea: tables.rhea

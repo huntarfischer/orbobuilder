@@ -104,22 +104,33 @@ public extension Chronos {
             return ChronosAnswer(hits: hits)
 
         case let .natalHouseCrossing(body, fromHouse, toHouse):
-            let hits = index.rheaSourceRows.compactMap { sourceRow -> ChronosHit? in
-                guard let forged = index.spine.candidate.rhea.first(where: {
-                    $0.sourceRow == sourceRow
-                }), case let .houseCrossing(crossing) = forged.qualification.source else {
-                    return nil
-                }
-                if let body, crossing.body != body { return nil }
-                if let fromHouse, crossing.fromHouse != fromHouse { return nil }
-                if let toHouse, crossing.toHouse != toHouse { return nil }
-                return ChronosHit(
-                    address: .moment(crossing.occurrence),
-                    fact: fact,
-                    source: ChronosSourceReference(
-                        rawValue: "natal-spine:rhea:\(sourceRow)"
+            var hits: [ChronosHit] = []
+            for candidateBody in MundaneBody.canonicalOrder {
+                if let body, candidateBody != body { continue }
+                let spans = index.spine.candidate.themis
+                    .filter { $0.span.body == candidateBody }
+                    .sorted { $0.span.start.value < $1.span.start.value }
+                guard spans.count > 1 else { continue }
+
+                for pairIndex in 1..<spans.count {
+                    let previous = spans[pairIndex - 1]
+                    let next = spans[pairIndex]
+                    guard abs(previous.span.end.value - next.span.start.value) <= 1e-9,
+                          previous.span.house != next.span.house else {
+                        continue
+                    }
+                    if let fromHouse, previous.span.house != fromHouse { continue }
+                    if let toHouse, next.span.house != toHouse { continue }
+                    hits.append(
+                        ChronosHit(
+                            address: .moment(next.span.start),
+                            fact: fact,
+                            source: ChronosSourceReference(
+                                rawValue: "natal-spine:themis:\(previous.sourceRow):\(next.sourceRow)"
+                            )
+                        )
                     )
-                )
+                }
             }
             return ChronosAnswer(hits: hits)
 

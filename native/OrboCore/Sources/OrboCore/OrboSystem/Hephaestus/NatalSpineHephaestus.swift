@@ -23,9 +23,8 @@ public enum NatalSpineHephaestusFailure: Error, Hashable, Sendable {
 }
 
 public extension Hephaestus {
-    /// Receives only Atropos-certified Natal Spine schematics carried under the
-    /// original commission envelope. The strong contents type is the first seal:
-    /// an uncertified request cannot enter this function at all.
+    /// Receives only Atropos-certified Natal Spine schematics and bounded Threads
+    /// carried under the original commission envelope. No parent Timespine is reopened.
     static func receiveNatalSpineSchematics(
         _ package: HermesPackage<AtroposNatalSpineSchematicsPackage>
     ) throws -> NatalSpineForgeCommission {
@@ -38,7 +37,7 @@ public extension Hephaestus {
         }
 
         let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: package.contents.bounds,
+            threads: package.contents.threads,
             themis: package.contents.themis,
             oceanus: package.contents.oceanus,
             rhea: package.contents.rhea

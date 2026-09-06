@@ -1,18 +1,24 @@
 import Foundation
 
 public extension Lachesis {
-    /// Conducts the Natal Spine Titan pass against one native and one Clotho life domain.
-    /// The three tables remain separate. Rhea receives the temporal facts already
-    /// established by Themis and Oceanus rather than performing another time sweep.
-    static func petitionNatalSpine<Port: NatalSpineTimespinePort>(
+    /// Conducts the Natal Spine Titan pass over the bounded Threads Clotho supplied.
+    /// Each Titan receives the same self-contained chronology independently.
+    /// No Titan testimony is supplied to another Titan.
+    static func petitionNatalSpine(
         native truth: NatalSpineNativeTruth,
-        bounds: NatalSpineBounds,
-        through port: Port
+        threads: NatalSpineThreads
     ) throws -> (
         themis: NatalSpineThemisTable,
         oceanus: NatalSpineOceanusTable,
         rhea: NatalSpineRheaTable
     ) {
+        guard truth.subjectID == threads.subjectID else {
+            throw NatalSpineThreadsFailure.invalidThreads
+        }
+
+        let bounds = threads.bounds
+        let port = try threads.locate()
+
         let themisStart = ProcessInfo.processInfo.systemUptime
         FileHandle.standardOutput.write(Data("ORBO_NATAL_STAGE START moirai-themis\n".utf8))
         let themis = try Themis.traceNatalSpine(
@@ -48,8 +54,6 @@ public extension Lachesis {
         let rhea = try Rhea.qualifyNatalSpine(
             native: truth,
             bounds: bounds,
-            themis: themis,
-            oceanus: oceanus,
             through: port
         )
         let rheaElapsed = String(

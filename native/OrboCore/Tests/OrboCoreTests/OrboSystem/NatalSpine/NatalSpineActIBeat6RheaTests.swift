@@ -2,7 +2,15 @@ import XCTest
 @testable import OrboCore
 
 final class NatalSpineActIBeat6RheaTests: XCTestCase {
+    private struct Match: Sendable {
+        let body: MundaneBody
+        let degree: OrboSpineDirectionalDegree
+        let day: JulianDay
+    }
+
     private struct PortStub: NatalSpineTimespinePort {
+        let matches: [Match]
+
         func coordinate(
             of body: MundaneBody,
             at julianDay: JulianDay
@@ -22,147 +30,106 @@ final class NatalSpineActIBeat6RheaTests: XCTestCase {
             of body: MundaneBody,
             at directionalDegree: OrboSpineDirectionalDegree
         ) throws -> [OrboSpineCelestialCoordinate] {
-            []
+            matches.filter {
+                $0.body == body
+                    && abs($0.degree.degrees - directionalDegree.degrees) < 1e-10
+            }.map {
+                OrboSpineCelestialCoordinate(
+                    body: $0.body,
+                    directionalDegree: $0.degree,
+                    julianDay: $0.day
+                )
+            }
         }
     }
 
-    func testRheaQualifiesExistingThemisAndOceanusFactsThroughCanonicalMater() throws {
+    func testRheaQualifiesItsOwnMaterMomentThroughCanonicalMater() throws {
         let truth = try nativeTruth()
         let bounds = try Clotho.boundNatalSpine(truth)
-        let crossingDay = JulianDay(bounds.bone.start.value + 10)!
-        let ringDay = JulianDay(bounds.bone.start.value + 20)!
-        let themis = makeThemisTable(bounds: bounds, crossingDay: crossingDay)
-        let oceanus = try makeOceanusTable(truth: truth, bounds: bounds, ringDay: ringDay)
-        let port = PortStub()
+        let day = JulianDay(bounds.bone.start.value + 10)!
+        let degree = OrboSpineDirectionalDegree(physicalDegrees: 0, motion: .direct)!
+        let port = PortStub(matches: [Match(body: .sun, degree: degree, day: day)])
 
         let table = try Rhea.qualifyNatalSpine(
             native: truth,
             bounds: bounds,
-            themis: themis,
-            oceanus: oceanus,
             through: port
         )
 
         XCTAssertEqual(table.subjectID, truth.subjectID)
         XCTAssertEqual(table.bounds, bounds)
         XCTAssertEqual(table.declaredCount, table.qualifications.count)
-        XCTAssertEqual(table.qualifications.count, 2)
+        XCTAssertEqual(table.qualifications.count, 1)
+        XCTAssertEqual(table.qualifications[0].source.body, .sun)
+        XCTAssertEqual(table.qualifications[0].source.julianDay, day)
 
-        guard case let .houseCrossing(crossing) = table.qualifications[0].source else {
-            return XCTFail("Expected Themis crossing first")
-        }
-        XCTAssertEqual(crossing.body, .sun)
-        XCTAssertEqual(crossing.fromHouse.rawValue, 1)
-        XCTAssertEqual(crossing.toHouse.rawValue, 2)
-        XCTAssertEqual(crossing.occurrence, crossingDay)
-
-        guard case let .ringRealization(realization) = table.qualifications[1].source else {
-            return XCTFail("Expected Oceanus realization second")
-        }
-        XCTAssertEqual(realization.mundaneBody, .sun)
-        XCTAssertEqual(realization.occurrence.julianDay, ringDay)
-
-        let expectedCrossing = Rhea.bear(
-            try longitudes(at: crossingDay, through: port),
+        let expected = Rhea.bear(
+            try longitudes(at: day, through: port),
             sect: truth.sect
         ).temper(for: .sun)
-        let expectedRing = Rhea.bear(
-            try longitudes(at: ringDay, through: port),
-            sect: truth.sect
-        ).temper(for: .sun)
-
-        XCTAssertEqual(table.qualifications[0].temper, expectedCrossing)
-        XCTAssertEqual(table.qualifications[1].temper, expectedRing)
+        XCTAssertEqual(table.qualifications[0].temper, expected)
         XCTAssertEqual(table.qualifications[0].temper.sectDay, truth.sect == .day)
         XCTAssertEqual(table.qualifications[0].temper.sectNight, truth.sect == .night)
     }
 
-    func testRheaDoesNotInventMaterForTrueNodeFacts() throws {
+    func testRheaDoesNotInventMaterForTrueNode() throws {
         let truth = try nativeTruth()
         let bounds = try Clotho.boundNatalSpine(truth)
-        let crossingDay = JulianDay(bounds.bone.start.value + 10)!
-        let nodeCrossing = JulianDay(bounds.bone.start.value + 12)!
-        let themis = makeThemisTable(
-            bounds: bounds,
-            crossingDay: crossingDay,
-            nodeCrossingDay: nodeCrossing
-        )
-        let oceanus = try makeOceanusTable(
-            truth: truth,
-            bounds: bounds,
-            ringDay: JulianDay(bounds.bone.start.value + 20)!,
-            includeNode: true
-        )
+        let degree = OrboSpineDirectionalDegree(physicalDegrees: 0, motion: .direct)!
+        let port = PortStub(matches: [
+            Match(
+                body: .trueNorthNode,
+                degree: degree,
+                day: JulianDay(bounds.bone.start.value + 10)!
+            )
+        ])
 
         let table = try Rhea.qualifyNatalSpine(
             native: truth,
             bounds: bounds,
-            themis: themis,
-            oceanus: oceanus,
-            through: PortStub()
+            through: port
         )
 
         XCTAssertFalse(table.qualifications.contains { $0.source.body == .trueNorthNode })
         XCTAssertTrue(table.qualifications.allSatisfy { $0.source.body.planet != nil })
     }
 
-    func testRheaRejectsBrokenThemisAdjacencyInsteadOfInventingCrossing() throws {
+    func testRheaKeepsOnlyMomentsInsideClothoBounds() throws {
         let truth = try nativeTruth()
         let bounds = try Clotho.boundNatalSpine(truth)
-        let start = bounds.bone.start
-        let aEnd = JulianDay(start.value + 5)!
-        let bStart = JulianDay(start.value + 6)!
-        let end = JulianDay(start.value + 10)!
-        let spans = [
-            NatalSpineHouseSpan(body: .sun, house: House(rawValue: 1)!, start: start, end: aEnd)!,
-            NatalSpineHouseSpan(body: .sun, house: House(rawValue: 2)!, start: bStart, end: end)!,
-        ]
-        let themis = NatalSpineThemisTable(
-            subjectID: truth.subjectID,
+        let degree = OrboSpineDirectionalDegree(physicalDegrees: 0, motion: .direct)!
+        let inside = JulianDay(bounds.bone.start.value + 1)!
+        let port = PortStub(matches: [
+            Match(body: .sun, degree: degree, day: JulianDay(bounds.bone.start.value - 1)!),
+            Match(body: .sun, degree: degree, day: inside),
+            Match(body: .sun, degree: degree, day: bounds.bone.end),
+        ])
+
+        let table = try Rhea.qualifyNatalSpine(
+            native: truth,
             bounds: bounds,
-            spans: spans
-        )
-        let oceanus = NatalSpineOceanusTable(
-            subjectID: truth.subjectID,
-            bounds: bounds,
-            bodies: []
+            through: port
         )
 
-        XCTAssertThrowsError(
-            try Rhea.qualifyNatalSpine(
-                native: truth,
-                bounds: bounds,
-                themis: themis,
-                oceanus: oceanus,
-                through: PortStub()
-            )
-        ) { error in
-            XCTAssertEqual(error as? NatalSpineRheaFailure, .malformedThemisTable)
-        }
+        XCTAssertEqual(table.qualifications.map(\.source.julianDay), [inside])
     }
 
-    func testRheaRejectsForeignTitanTables() throws {
+    func testRheaRejectsBoundsForAnotherNative() throws {
         let truth = try nativeTruth()
-        let bounds = try Clotho.boundNatalSpine(truth)
+        let lawful = try Clotho.boundNatalSpine(truth)
         let foreign = HermesSubjectID(rawValue: "natal-spine.foreign")!
-        let themis = NatalSpineThemisTable(
+        let wrong = NatalSpineBounds(
             subjectID: foreign,
-            bounds: bounds,
-            spans: []
-        )
-        let oceanus = NatalSpineOceanusTable(
-            subjectID: truth.subjectID,
-            bounds: bounds,
-            bodies: []
-        )
+            start: lawful.start,
+            natal: lawful.natal,
+            end: lawful.end
+        )!
 
         XCTAssertThrowsError(
             try Rhea.qualifyNatalSpine(
                 native: truth,
-                bounds: bounds,
-                themis: themis,
-                oceanus: oceanus,
-                through: PortStub()
+                bounds: wrong,
+                through: PortStub(matches: [])
             )
         ) { error in
             XCTAssertEqual(error as? NatalSpineRheaFailure, .subjectMismatch)
@@ -172,117 +139,6 @@ final class NatalSpineActIBeat6RheaTests: XCTestCase {
     private func nativeTruth() throws -> NatalSpineNativeTruth {
         let hestia = try NatalSpineTestFixture.litHestia()
         return try hestia.natalSpineNativeTruth(for: NatalSpineTestFixture.subjectID)
-    }
-
-    private func makeThemisTable(
-        bounds: NatalSpineBounds,
-        crossingDay: JulianDay,
-        nodeCrossingDay: JulianDay? = nil
-    ) -> NatalSpineThemisTable {
-        var spans: [NatalSpineHouseSpan] = [
-            NatalSpineHouseSpan(
-                body: .sun,
-                house: House(rawValue: 1)!,
-                start: bounds.bone.start,
-                end: crossingDay
-            )!,
-            NatalSpineHouseSpan(
-                body: .sun,
-                house: House(rawValue: 2)!,
-                start: crossingDay,
-                end: bounds.bone.end
-            )!,
-        ]
-
-        if let nodeCrossingDay {
-            spans.append(
-                NatalSpineHouseSpan(
-                    body: .trueNorthNode,
-                    house: House(rawValue: 3)!,
-                    start: bounds.bone.start,
-                    end: nodeCrossingDay
-                )!
-            )
-            spans.append(
-                NatalSpineHouseSpan(
-                    body: .trueNorthNode,
-                    house: House(rawValue: 4)!,
-                    start: nodeCrossingDay,
-                    end: bounds.bone.end
-                )!
-            )
-        }
-
-        return NatalSpineThemisTable(
-            subjectID: bounds.subjectID,
-            bounds: bounds,
-            spans: spans
-        )
-    }
-
-    private func makeOceanusTable(
-        truth: NatalSpineNativeTruth,
-        bounds: NatalSpineBounds,
-        ringDay: JulianDay,
-        includeNode: Bool = false
-    ) throws -> NatalSpineOceanusTable {
-        let ringValue = try XCTUnwrap(
-            truth.tapestry.tapestry.degrees.flatMap(\.ring.values).first
-        )
-        let targetDegrees = Double(ringValue.targetArcsecond) / Double(Ring.arcsecondsPerDegree)
-        let sunOccurrence = OrboSpineCelestialCoordinate(
-            body: .sun,
-            directionalDegree: OrboSpineDirectionalDegree(
-                physicalDegrees: targetDegrees,
-                motion: .direct
-            )!,
-            julianDay: ringDay
-        )
-        let sunRealization = try XCTUnwrap(
-            NatalSpineRingRealization(
-                mundaneBody: .sun,
-                natalGene: ringValue.gene,
-                natalSource: ringValue.source,
-                relation: ringValue.mark,
-                targetArcsecond: ringValue.targetArcsecond,
-                occurrence: sunOccurrence
-            )
-        )
-        var bodies = [NatalSpineOceanusBodyTable(body: .sun, realizations: [sunRealization])]
-
-        if includeNode {
-            let nodeDay = JulianDay(ringDay.value + 1)!
-            let nodeOccurrence = OrboSpineCelestialCoordinate(
-                body: .trueNorthNode,
-                directionalDegree: OrboSpineDirectionalDegree(
-                    physicalDegrees: targetDegrees,
-                    motion: .retrograde
-                )!,
-                julianDay: nodeDay
-            )
-            let nodeRealization = try XCTUnwrap(
-                NatalSpineRingRealization(
-                    mundaneBody: .trueNorthNode,
-                    natalGene: ringValue.gene,
-                    natalSource: ringValue.source,
-                    relation: ringValue.mark,
-                    targetArcsecond: ringValue.targetArcsecond,
-                    occurrence: nodeOccurrence
-                )
-            )
-            bodies.append(
-                NatalSpineOceanusBodyTable(
-                    body: .trueNorthNode,
-                    realizations: [nodeRealization]
-                )
-            )
-        }
-
-        return NatalSpineOceanusTable(
-            subjectID: truth.subjectID,
-            bounds: bounds,
-            bodies: bodies
-        )
     }
 
     private func longitudes(

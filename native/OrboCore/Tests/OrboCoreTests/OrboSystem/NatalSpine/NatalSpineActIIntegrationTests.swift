@@ -2,9 +2,24 @@ import XCTest
 @testable import OrboCore
 
 final class NatalSpineActIIntegrationTests: XCTestCase {
-    private struct PortStub: NatalSpineTimespinePort {
+    private struct PortStub: NatalSpineTimespineSource {
         let bounds: NatalSpineBounds
         let crossing: JulianDay
+
+        var sourceBone: OrboSpineBoneSpan {
+            OrboSpineBoneSpan(
+                start: JulianDay(bounds.bone.start.value - 1)!,
+                end: JulianDay(bounds.bone.end.value + 1)!
+            )!
+        }
+        var sourceStations: [OrboSpineStation] { [] }
+        var sourceProvenance: OrboSpineRuntimeProvenance {
+            OrboSpineRuntimeProvenance(
+                candidateManifestSHA256: String(repeating: "b", count: 64),
+                astronomicalAuthority: "integration-parent",
+                astronomicalSourceVersion: "test"
+            )!
+        }
 
         func coordinate(
             of body: MundaneBody,
@@ -25,17 +40,29 @@ final class NatalSpineActIIntegrationTests: XCTestCase {
             of body: MundaneBody,
             at directionalDegree: OrboSpineDirectionalDegree
         ) throws -> [OrboSpineCelestialCoordinate] {
-            guard directionalDegree.motion == .direct,
-                  abs(directionalDegree.physicalDegrees - 30) <= 1e-9 else {
-                return []
-            }
-            return [
-                OrboSpineCelestialCoordinate(
+            guard directionalDegree.motion == .direct else { return [] }
+            if abs(directionalDegree.physicalDegrees - 30) <= 1e-9 {
+                return [OrboSpineCelestialCoordinate(
                     body: body,
                     directionalDegree: directionalDegree,
                     julianDay: crossing
-                )
-            ]
+                )]
+            }
+            if abs(directionalDegree.physicalDegrees - 10) <= 1e-9 {
+                return [OrboSpineCelestialCoordinate(
+                    body: body,
+                    directionalDegree: directionalDegree,
+                    julianDay: JulianDay(bounds.bone.start.value + 10)!
+                )]
+            }
+            if abs(directionalDegree.physicalDegrees - 20) <= 1e-9 {
+                return [OrboSpineCelestialCoordinate(
+                    body: body,
+                    directionalDegree: directionalDegree,
+                    julianDay: JulianDay(bounds.bone.start.value + 20)!
+                )]
+            }
+            return []
         }
     }
 
@@ -63,15 +90,9 @@ final class NatalSpineActIIntegrationTests: XCTestCase {
             )
         )
 
+        XCTAssertEqual(hermes.manifest.currentState(for: handle.ticketID), .unresolved)
         XCTAssertEqual(
-            hermes.manifest.currentState(for: handle.ticketID),
-            .unresolved
-        )
-        XCTAssertEqual(
-            try hermes.deliverNext(
-                ticketID: handle.ticketID,
-                occurredAt: moiraiDeliveryAt
-            ),
+            try hermes.deliverNext(ticketID: handle.ticketID, occurredAt: moiraiDeliveryAt),
             NatalSpineCommission.moiraiAddress
         )
 
@@ -87,6 +108,7 @@ final class NatalSpineActIIntegrationTests: XCTestCase {
         XCTAssertEqual(certified.kind, handle.package.kind)
         XCTAssertEqual(certified.addresses, handle.package.addresses)
         XCTAssertEqual(certified.contents.bounds, bounds)
+        XCTAssertEqual(certified.contents.threads.bounds, bounds)
         XCTAssertEqual(certified.contents.themis.subjectID, truth.subjectID)
         XCTAssertEqual(certified.contents.oceanus.subjectID, truth.subjectID)
         XCTAssertEqual(certified.contents.rhea.subjectID, truth.subjectID)
@@ -108,26 +130,14 @@ final class NatalSpineActIIntegrationTests: XCTestCase {
             package: certified,
             occurredAt: moiraiRecoveryAt
         )
-
         XCTAssertEqual(
-            try hermes.deliverNext(
-                ticketID: handle.ticketID,
-                occurredAt: hephaestusDeliveryAt
-            ),
+            try hermes.deliverNext(ticketID: handle.ticketID, occurredAt: hephaestusDeliveryAt),
             NatalSpineCommission.hephaestusAddress
         )
-        XCTAssertEqual(
-            hermes.manifest.currentState(for: handle.ticketID),
-            .unresolved
-        )
+        XCTAssertEqual(hermes.manifest.currentState(for: handle.ticketID), .unresolved)
         XCTAssertEqual(
             hermes.manifest.events(for: handle.ticketID).map(\.kind),
-            [
-                .ticketOpened,
-                .deliveredToStop,
-                .recoveredFromStop,
-                .deliveredToStop,
-            ]
+            [.ticketOpened, .deliveredToStop, .recoveredFromStop, .deliveredToStop]
         )
     }
 

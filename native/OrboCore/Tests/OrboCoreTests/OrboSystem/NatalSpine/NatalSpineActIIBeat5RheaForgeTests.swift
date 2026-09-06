@@ -2,7 +2,7 @@ import XCTest
 @testable import OrboCore
 
 final class NatalSpineActIIBeat5RheaForgeTests: XCTestCase {
-    func testHephaestusAttachesEveryCertifiedRheaQualificationExactlyOnce() throws {
+    func testHephaestusTranscribesEveryCertifiedRheaQualificationExactlyOnce() throws {
         let commission = try NatalSpineActIIFixture.forgeCommission()
         let rheaLayer = try forgeRheaLayer(for: commission)
         let source = commission.schematics.rhea.qualifications
@@ -14,54 +14,38 @@ final class NatalSpineActIIBeat5RheaForgeTests: XCTestCase {
         XCTAssertEqual(rheaLayer.rhea.map(\.qualification), source)
     }
 
-    func testRheaQualificationsReferenceTheExistingTemporalFactsTheyQualify() throws {
-        let commission = try NatalSpineActIIFixture.forgeCommission()
+    func testRheaForgeDoesNotRequireThemisOrOceanusFactAttachment() throws {
+        let commission = try commissionWithIndependentMaterMoment()
         let layer = try forgeRheaLayer(for: commission)
+        let added = try XCTUnwrap(layer.rhea.last)
 
-        for forged in layer.rhea {
-            switch (forged.qualification.source, forged.fact) {
-            case let (.houseCrossing(crossing), .themisCrossing(previousRow, nextRow)):
-                let previous = try XCTUnwrap(layer.themis.first { $0.sourceRow == previousRow })
-                let next = try XCTUnwrap(layer.themis.first { $0.sourceRow == nextRow })
-                XCTAssertEqual(previous.span.body, crossing.body)
-                XCTAssertEqual(next.span.body, crossing.body)
-                XCTAssertEqual(previous.span.house, crossing.fromHouse)
-                XCTAssertEqual(next.span.house, crossing.toHouse)
-                XCTAssertEqual(previous.span.end, crossing.occurrence)
-                XCTAssertEqual(next.span.start, crossing.occurrence)
-
-            case let (.ringRealization(realization), .oceanusRealization(sourceRow)):
-                let temporalFact = try XCTUnwrap(
-                    layer.oceanus.first { $0.sourceRow == sourceRow }
-                )
-                XCTAssertEqual(temporalFact.realization, realization)
-
-            default:
-                XCTFail("Rhea qualification was attached to the wrong temporal fact kind.")
-            }
-        }
+        XCTAssertEqual(added.qualification, commission.schematics.rhea.qualifications.last)
+        XCTAssertFalse(layer.themis.contains {
+            abs($0.span.start.value - added.qualification.source.julianDay.value) <= 1e-9
+                || abs($0.span.end.value - added.qualification.source.julianDay.value) <= 1e-9
+        })
+        XCTAssertFalse(layer.oceanus.contains {
+            abs($0.realization.occurrence.julianDay.value
+                - added.qualification.source.julianDay.value) <= 1e-9
+        })
     }
 
-    func testRheaForgePreservesMultipleQualificationsForOneTemporalFact() throws {
-        let commission = try commissionWithRepeatedRingQualification()
+    func testRheaForgePreservesRepeatedIndependentQualificationsAsSeparateRows() throws {
+        let base = try NatalSpineActIIFixture.forgeCommission()
+        let original = base.schematics.rhea.qualifications
+        let repeated = try XCTUnwrap(original.first)
+        let commission = try commission(base: base, qualifications: original + [repeated])
         let layer = try forgeRheaLayer(for: commission)
-        let ringRows = layer.rhea.filter { forged in
-            if case .ringRealization = forged.qualification.source { return true }
-            return false
-        }
 
-        XCTAssertEqual(ringRows.count, 2)
-        XCTAssertEqual(Set(ringRows.map(\.fact)).count, 1)
-        XCTAssertEqual(ringRows.map(\.sourceRow), [1, 2])
+        XCTAssertEqual(layer.rhea.count, 3)
+        XCTAssertEqual(layer.rhea.map(\.sourceRow), [0, 1, 2])
+        XCTAssertEqual(layer.rhea[0].qualification, layer.rhea[2].qualification)
     }
 
     func testRheaForgePreservesMaterRelationshipAndPriorForgeLayersUnchanged() throws {
         let commission = try NatalSpineActIIFixture.forgeCommission()
         let substrate = NatalSpineActIIFixture.substrate(for: commission)
-        let themis = try Hephaestus.forgeNatalSpineThemis(
-            for: commission,
-            on: substrate
-        )
+        let themis = try Hephaestus.forgeNatalSpineThemis(for: commission, on: substrate)
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
         let rhea = try Hephaestus.forgeNatalSpineRhea(on: oceanus)
 
@@ -81,28 +65,41 @@ final class NatalSpineActIIBeat5RheaForgeTests: XCTestCase {
         for commission: NatalSpineForgeCommission
     ) throws -> NatalSpineRheaForgeLayer {
         let substrate = NatalSpineActIIFixture.substrate(for: commission)
-        let themis = try Hephaestus.forgeNatalSpineThemis(
-            for: commission,
-            on: substrate
-        )
+        let themis = try Hephaestus.forgeNatalSpineThemis(for: commission, on: substrate)
         let oceanus = try Hephaestus.forgeNatalSpineOceanus(on: themis)
         return try Hephaestus.forgeNatalSpineRhea(on: oceanus)
     }
 
-    private func commissionWithRepeatedRingQualification() throws -> NatalSpineForgeCommission {
+    private func commissionWithIndependentMaterMoment() throws -> NatalSpineForgeCommission {
         let base = try NatalSpineActIIFixture.forgeCommission()
-        let original = base.schematics.rhea.qualifications
-        let ringQualification = try XCTUnwrap(original.first { qualification in
-            if case .ringRealization = qualification.source { return true }
-            return false
-        })
+        let day = JulianDay(base.schematics.bounds.bone.start.value + 15)!
+        let field = Rhea.bear(
+            Dictionary(uniqueKeysWithValues: Planet.canonicalOrder.enumerated().map { index, planet in
+                (planet, CelestialLongitude(Double(index * 29 + 4))!)
+            }),
+            sect: .day
+        )
+        let extra = NatalSpineMaterQualification(
+            source: NatalSpineRheaSource(body: .mars, julianDay: day)!,
+            temper: field.temper(for: .mars)
+        )!
+        return try commission(
+            base: base,
+            qualifications: base.schematics.rhea.qualifications + [extra]
+        )
+    }
+
+    private func commission(
+        base: NatalSpineForgeCommission,
+        qualifications: [NatalSpineMaterQualification]
+    ) throws -> NatalSpineForgeCommission {
         let rhea = NatalSpineRheaTable(
             subjectID: base.subjectID,
             bounds: base.schematics.bounds,
-            qualifications: original + [ringQualification]
+            qualifications: qualifications
         )
         let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: base.schematics.bounds,
+            threads: base.schematics.threads,
             themis: base.schematics.themis,
             oceanus: base.schematics.oceanus,
             rhea: rhea

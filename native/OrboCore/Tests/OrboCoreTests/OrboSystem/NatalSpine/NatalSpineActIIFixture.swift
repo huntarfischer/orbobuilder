@@ -6,36 +6,31 @@ enum NatalSpineActIIFixture {
         let hestia = try NatalSpineTestFixture.litHestia()
         let truth = try hestia.natalSpineNativeTruth(for: NatalSpineTestFixture.subjectID)
         let bounds = try Clotho.boundNatalSpine(truth)
+        let threads = makeThreads(subjectID: truth.subjectID, bounds: bounds)
 
         let split = JulianDay(bounds.bone.start.value + 10)!
         var spans: [NatalSpineHouseSpan] = []
         for body in MundaneBody.canonicalOrder {
             if body == .sun {
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 1)!,
-                        start: bounds.bone.start,
-                        end: split
-                    )!
-                )
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 2)!,
-                        start: split,
-                        end: bounds.bone.end
-                    )!
-                )
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 1)!,
+                    start: bounds.bone.start,
+                    end: split
+                )!)
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 2)!,
+                    start: split,
+                    end: bounds.bone.end
+                )!)
             } else {
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 1)!,
-                        start: bounds.bone.start,
-                        end: bounds.bone.end
-                    )!
-                )
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 1)!,
+                    start: bounds.bone.start,
+                    end: bounds.bone.end
+                )!)
             }
         }
         let themis = NatalSpineThemisTable(
@@ -73,12 +68,6 @@ enum NatalSpineActIIFixture {
             }
         )
 
-        let crossing = NatalSpineHouseCrossing(
-            body: .sun,
-            fromHouse: House(rawValue: 1)!,
-            toHouse: House(rawValue: 2)!,
-            occurrence: split
-        )!
         let longitudes = Dictionary(uniqueKeysWithValues: Planet.canonicalOrder.enumerated().map {
             index, planet in (planet, CelestialLongitude(Double(index * 27 + 3))!)
         })
@@ -88,18 +77,18 @@ enum NatalSpineActIIFixture {
             bounds: bounds,
             qualifications: [
                 NatalSpineMaterQualification(
-                    source: .houseCrossing(crossing),
+                    source: NatalSpineRheaSource(body: .sun, julianDay: split)!,
                     temper: field.temper(for: .sun)
                 )!,
                 NatalSpineMaterQualification(
-                    source: .ringRealization(realization),
+                    source: NatalSpineRheaSource(body: .sun, julianDay: eventDay)!,
                     temper: field.temper(for: .sun)
                 )!,
             ]
         )
 
         let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: bounds,
+            threads: threads,
             themis: themis,
             oceanus: oceanus,
             rhea: rhea
@@ -116,54 +105,53 @@ enum NatalSpineActIIFixture {
     }
 
     static func substrate(for commission: NatalSpineForgeCommission) -> NatalSpineCelestialSubstrate {
-        let bone = commission.schematics.bounds.bone
+        commission.schematics.threads
+    }
+
+    private static func makeThreads(
+        subjectID: HermesSubjectID,
+        bounds: NatalSpineBounds
+    ) -> NatalSpineThreads {
+        let bone = bounds.bone
         let firstDay = JulianDay(bone.start.value + 1)!
         let secondDay = JulianDay(bone.end.value - 1)!
         var supports: [OrboSpineCelestialCoordinate] = []
         var anchors: [OrboSpineBoundaryAnchor] = []
         for body in MundaneBody.canonicalOrder {
-            supports.append(
-                OrboSpineCelestialCoordinate(
-                    body: body,
-                    directionalDegree: OrboSpineDirectionalDegree(
-                        physicalDegrees: 10,
-                        motion: .direct
-                    )!,
-                    julianDay: firstDay
-                )
-            )
-            supports.append(
-                OrboSpineCelestialCoordinate(
-                    body: body,
-                    directionalDegree: OrboSpineDirectionalDegree(
-                        physicalDegrees: 20,
-                        motion: .direct
-                    )!,
-                    julianDay: secondDay
-                )
-            )
-            anchors.append(
-                OrboSpineBoundaryAnchor(
-                    body: body,
-                    boundary: .start,
-                    julianDay: bone.start,
-                    physicalDegrees: 9,
+            supports.append(OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: OrboSpineDirectionalDegree(
+                    physicalDegrees: 10,
                     motion: .direct
-                )!
-            )
-            anchors.append(
-                OrboSpineBoundaryAnchor(
-                    body: body,
-                    boundary: .endExclusive,
-                    julianDay: bone.end,
-                    physicalDegrees: 21,
+                )!,
+                julianDay: firstDay
+            ))
+            supports.append(OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: OrboSpineDirectionalDegree(
+                    physicalDegrees: 20,
                     motion: .direct
-                )!
-            )
+                )!,
+                julianDay: secondDay
+            ))
+            anchors.append(OrboSpineBoundaryAnchor(
+                body: body,
+                boundary: .start,
+                julianDay: bone.start,
+                physicalDegrees: 9,
+                motion: .direct
+            )!)
+            anchors.append(OrboSpineBoundaryAnchor(
+                body: body,
+                boundary: .endExclusive,
+                julianDay: bone.end,
+                physicalDegrees: 21,
+                motion: .direct
+            )!)
         }
-        return NatalSpineCelestialSubstrate(
-            subjectID: commission.subjectID,
-            bounds: commission.schematics.bounds,
+        return NatalSpineThreads(
+            subjectID: subjectID,
+            bounds: bounds,
             supports: supports,
             stations: [],
             boundaryAnchors: anchors,

@@ -2,11 +2,10 @@ import XCTest
 @testable import OrboCore
 
 final class NatalSpineActIBeat7AtroposTests: XCTestCase {
-    func testAtroposCertifiesExactThreeTableSchematicWithoutMergingIt() throws {
+    func testAtroposCertifiesThreadsAndExactThreeTableSchematicWithoutMergingIt() throws {
         let fixture = try makeValidFixture()
-
         let result = Atropos.inspectNatalSpineSchematics(
-            bounds: fixture.bounds,
+            threads: fixture.threads,
             themis: fixture.themis,
             oceanus: fixture.oceanus,
             rhea: fixture.rhea
@@ -15,6 +14,7 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         guard case let .success(package) = result else {
             return XCTFail("Expected Atropos to certify lawful Natal Spine schematics")
         }
+        XCTAssertEqual(package.threads, fixture.threads)
         XCTAssertEqual(package.subjectID, fixture.bounds.subjectID)
         XCTAssertEqual(package.bounds, fixture.bounds)
         XCTAssertEqual(package.themis, fixture.themis)
@@ -32,14 +32,12 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: altered,
-                    oceanus: fixture.oceanus,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: altered,
+                oceanus: fixture.oceanus,
+                rhea: fixture.rhea
+            )),
             .subjectMismatch
         )
     }
@@ -62,14 +60,12 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: fixture.themis,
-                    oceanus: altered,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: fixture.themis,
+                oceanus: altered,
+                rhea: fixture.rhea
+            )),
             .boundsMismatch
         )
     }
@@ -84,14 +80,12 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: altered,
-                    oceanus: fixture.oceanus,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: altered,
+                oceanus: fixture.oceanus,
+                rhea: fixture.rhea
+            )),
             .themisCountMismatch
         )
     }
@@ -108,14 +102,12 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: altered,
-                    oceanus: fixture.oceanus,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: altered,
+                oceanus: fixture.oceanus,
+                rhea: fixture.rhea
+            )),
             .themisInvalidCoverage(.sun)
         )
     }
@@ -136,14 +128,12 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: fixture.themis,
-                    oceanus: alteredBodyCount,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: fixture.themis,
+                oceanus: alteredBodyCount,
+                rhea: fixture.rhea
+            )),
             .oceanusBodyCountMismatch(.sun)
         )
 
@@ -154,31 +144,23 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
             declaredCount: 1
         )
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: fixture.themis,
-                    oceanus: alteredTotal,
-                    rhea: fixture.rhea
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: fixture.themis,
+                oceanus: alteredTotal,
+                rhea: fixture.rhea
+            )),
             .oceanusCountMismatch
         )
     }
 
-    func testAtroposRejectsOrphanRheaQualification() throws {
+    func testAtroposRejectsRheaQualificationOutsideThreads() throws {
         let fixture = try makeValidFixture(includeLawfulRhea: false)
-        let orphanDay = JulianDay(fixture.bounds.bone.start.value + 7)!
-        let orphan = NatalSpineHouseCrossing(
-            body: .sun,
-            fromHouse: House(rawValue: 1)!,
-            toHouse: House(rawValue: 2)!,
-            occurrence: orphanDay
-        )!
-        let field = Rhea.bear(sampleLongitudes(), sect: .day)
+        let outside = JulianDay(fixture.bounds.bone.end.value + 1)!
+        let source = NatalSpineRheaSource(body: .sun, julianDay: outside)!
         let qualification = NatalSpineMaterQualification(
-            source: .houseCrossing(orphan),
-            temper: field.temper(for: .sun)
+            source: source,
+            temper: Rhea.bear(sampleLongitudes(), sect: .day).temper(for: .sun)
         )!
         let altered = NatalSpineRheaTable(
             subjectID: fixture.rhea.subjectID,
@@ -187,15 +169,13 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: fixture.themis,
-                    oceanus: fixture.oceanus,
-                    rhea: altered
-                )
-            ),
-            .rheaOrphanQualification
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: fixture.themis,
+                oceanus: fixture.oceanus,
+                rhea: altered
+            )),
+            .rheaInvalidQualification
         )
     }
 
@@ -209,20 +189,19 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            failure(
-                Atropos.inspectNatalSpineSchematics(
-                    bounds: fixture.bounds,
-                    themis: fixture.themis,
-                    oceanus: fixture.oceanus,
-                    rhea: altered
-                )
-            ),
+            failure(Atropos.inspectNatalSpineSchematics(
+                threads: fixture.threads,
+                themis: fixture.themis,
+                oceanus: fixture.oceanus,
+                rhea: altered
+            )),
             .rheaCountMismatch
         )
     }
 
     private struct Fixture {
         let bounds: NatalSpineBounds
+        let threads: NatalSpineThreads
         let themis: NatalSpineThemisTable
         let oceanus: NatalSpineOceanusTable
         let rhea: NatalSpineRheaTable
@@ -233,36 +212,31 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
             .litHestia()
             .natalSpineNativeTruth(for: NatalSpineTestFixture.subjectID)
         let bounds = try Clotho.boundNatalSpine(truth)
+        let threads = NatalSpineTestFixture.schematicThreads(for: bounds)
         let crossingDay = JulianDay(bounds.bone.start.value + 10)!
 
         var spans: [NatalSpineHouseSpan] = []
         for body in MundaneBody.canonicalOrder {
             if body == .sun {
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 1)!,
-                        start: bounds.bone.start,
-                        end: crossingDay
-                    )!
-                )
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 2)!,
-                        start: crossingDay,
-                        end: bounds.bone.end
-                    )!
-                )
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 1)!,
+                    start: bounds.bone.start,
+                    end: crossingDay
+                )!)
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 2)!,
+                    start: crossingDay,
+                    end: bounds.bone.end
+                )!)
             } else {
-                spans.append(
-                    NatalSpineHouseSpan(
-                        body: body,
-                        house: House(rawValue: 1)!,
-                        start: bounds.bone.start,
-                        end: bounds.bone.end
-                    )!
-                )
+                spans.append(NatalSpineHouseSpan(
+                    body: body,
+                    house: House(rawValue: 1)!,
+                    start: bounds.bone.start,
+                    end: bounds.bone.end
+                )!)
             }
         }
         let themis = NatalSpineThemisTable(
@@ -270,38 +244,34 @@ final class NatalSpineActIBeat7AtroposTests: XCTestCase {
             bounds: bounds,
             spans: spans
         )
-
-        let bodies = MundaneBody.canonicalOrder.map {
-            NatalSpineOceanusBodyTable(body: $0, realizations: [])
-        }
         let oceanus = NatalSpineOceanusTable(
             subjectID: truth.subjectID,
             bounds: bounds,
-            bodies: bodies
+            bodies: MundaneBody.canonicalOrder.map {
+                NatalSpineOceanusBodyTable(body: $0, realizations: [])
+            }
         )
 
         var qualifications: [NatalSpineMaterQualification] = []
         if includeLawfulRhea {
-            let crossing = NatalSpineHouseCrossing(
-                body: .sun,
-                fromHouse: House(rawValue: 1)!,
-                toHouse: House(rawValue: 2)!,
-                occurrence: crossingDay
-            )!
-            qualifications.append(
-                NatalSpineMaterQualification(
-                    source: .houseCrossing(crossing),
-                    temper: Rhea.bear(sampleLongitudes(), sect: truth.sect).temper(for: .sun)
-                )!
-            )
+            let source = NatalSpineRheaSource(body: .sun, julianDay: crossingDay)!
+            qualifications.append(NatalSpineMaterQualification(
+                source: source,
+                temper: Rhea.bear(sampleLongitudes(), sect: truth.sect).temper(for: .sun)
+            )!)
         }
         let rhea = NatalSpineRheaTable(
             subjectID: truth.subjectID,
             bounds: bounds,
             qualifications: qualifications
         )
-
-        return Fixture(bounds: bounds, themis: themis, oceanus: oceanus, rhea: rhea)
+        return Fixture(
+            bounds: bounds,
+            threads: threads,
+            themis: themis,
+            oceanus: oceanus,
+            rhea: rhea
+        )
     }
 
     private func sampleLongitudes() -> [Planet: CelestialLongitude] {
