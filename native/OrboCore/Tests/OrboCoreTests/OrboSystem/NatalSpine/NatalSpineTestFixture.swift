@@ -69,6 +69,52 @@ enum NatalSpineTestFixture {
         return hestia
     }
 
+    /// Compact sealed Threads fixture for schematic/custody tests that do not exercise Locate.
+    static func schematicThreads(for bounds: NatalSpineBounds) -> NatalSpineThreads {
+        let supportDay = JulianDay(bounds.bone.start.value + 1)!
+        let supports = MundaneBody.canonicalOrder.map { body in
+            OrboSpineCelestialCoordinate(
+                body: body,
+                directionalDegree: OrboSpineDirectionalDegree(
+                    physicalDegrees: Double(body.rawValue) * 10,
+                    motion: .direct
+                )!,
+                julianDay: supportDay
+            )
+        }
+        let anchors = MundaneBody.canonicalOrder.flatMap { body in
+            [
+                OrboSpineBoundaryAnchor(
+                    body: body,
+                    boundary: .start,
+                    julianDay: bounds.bone.start,
+                    physicalDegrees: Double(body.rawValue) * 10,
+                    motion: .direct
+                )!,
+                OrboSpineBoundaryAnchor(
+                    body: body,
+                    boundary: .endExclusive,
+                    julianDay: bounds.bone.end,
+                    physicalDegrees: Double(body.rawValue) * 10 + 1,
+                    motion: .direct
+                )!,
+            ]
+        }
+        let provenance = OrboSpineRuntimeProvenance(
+            candidateManifestSHA256: String(repeating: "a", count: 64),
+            astronomicalAuthority: "natal-test-parent",
+            astronomicalSourceVersion: "test"
+        )!
+        return NatalSpineThreads(
+            subjectID: bounds.subjectID,
+            bounds: bounds,
+            supports: supports,
+            stations: [],
+            boundaryAnchors: anchors,
+            parentProvenance: provenance
+        )!
+    }
+
     static func slice(for engraving: Engraving) throws -> HoraeOutput {
         let positions: [MundaneBody: Position] = [
             .sun: Position(degrees: 20, motion: .direct),
