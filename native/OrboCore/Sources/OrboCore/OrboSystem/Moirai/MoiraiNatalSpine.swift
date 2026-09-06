@@ -33,7 +33,7 @@ public extension Moirai {
         let atroposStart = ProcessInfo.processInfo.systemUptime
         FileHandle.standardOutput.write(Data("ORBO_NATAL_STAGE START moirai-atropos\n".utf8))
         let certified = try Atropos.inspectNatalSpineSchematics(
-            bounds: bounds,
+            threads: threads,
             themis: tables.themis,
             oceanus: tables.oceanus,
             rhea: tables.rhea
