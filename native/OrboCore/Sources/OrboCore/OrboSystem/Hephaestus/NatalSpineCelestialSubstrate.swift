@@ -2,8 +2,9 @@
 /// The matter itself is now cut upstream by Clotho as NatalSpineThreads.
 public typealias NatalSpineCelestialSubstrate = NatalSpineThreads
 
-/// Compatibility name retained for existing forge-layer callers.
+/// Compatibility names retained while the old callers are removed in Act II.
 public typealias NatalSpineSubstrateFailure = NatalSpineThreadsFailure
+public typealias NatalSpineForgeTimespineSource = NatalSpineTimespineSource
 
 public extension Hephaestus {
     /// Transitional caller retained only until Act II moves the bounded Threads through Moirai.
