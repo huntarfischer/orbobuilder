@@ -19,26 +19,18 @@ public struct NatalSpineManufactureResult: Sendable {
 private enum NatalSpineManufactureDiagnostics {
     static func begin(_ stage: String, inputCount: Int? = nil) -> TimeInterval {
         var message = "START \(stage)"
-        if let inputCount {
-            message += " input=\(inputCount)"
-        }
+        if let inputCount { message += " input=\(inputCount)" }
         log(message)
         return ProcessInfo.processInfo.systemUptime
     }
 
-    static func end(
-        _ stage: String,
-        since start: TimeInterval,
-        outputCount: Int? = nil
-    ) {
+    static func end(_ stage: String, since start: TimeInterval, outputCount: Int? = nil) {
         var message = String(
             format: "END %@ elapsed=%.3fs",
             stage,
             ProcessInfo.processInfo.systemUptime - start
         )
-        if let outputCount {
-            message += " output=\(outputCount)"
-        }
+        if let outputCount { message += " output=\(outputCount)" }
         log(message)
     }
 
@@ -50,7 +42,7 @@ private enum NatalSpineManufactureDiagnostics {
 public extension Orbo {
     /// Runs the one lawful commission from the lit Hearth through all owners,
     /// writes the finished binary body, remounts it, and closes the same ticket.
-    /// This is a one-time manufacture path, never a launch-time fallback.
+    /// The parent Timespine is handed to Clotho once and is never reopened downstream.
     func manufactureNatalSpine(
         for subjectID: HermesSubjectID,
         from hearth: Hestia,
@@ -75,6 +67,7 @@ public extension Orbo {
         guard moiraiAddress == NatalSpineCommission.moiraiAddress else {
             throw NatalSpineManufactureFailure.routeDivergence
         }
+
         let moiraiStart = NatalSpineManufactureDiagnostics.begin("moirai-certification")
         let certified = try Moirai.processNatalSpineSchematics(
             handle.package,
@@ -103,16 +96,7 @@ public extension Orbo {
         }
         let commission = try Hephaestus.receiveNatalSpineSchematics(certified)
 
-        let substrateStart = NatalSpineManufactureDiagnostics.begin("hephaestus-substrate")
-        let substrate = try Hephaestus.forgeNatalSpineSubstrate(
-            for: commission,
-            from: parent
-        )
-        NatalSpineManufactureDiagnostics.end(
-            "hephaestus-substrate",
-            since: substrateStart,
-            outputCount: substrate.supports.count + substrate.stations.count + substrate.boundaryAnchors.count
-        )
+        let substrate = commission.schematics.threads
 
         let themisStart = NatalSpineManufactureDiagnostics.begin(
             "hephaestus-themis",
@@ -160,8 +144,7 @@ public extension Orbo {
         let verificationStart = NatalSpineManufactureDiagnostics.begin("dioscuri-verification")
         let approval = try Dioscuri.inspectNatalSpine(
             candidate,
-            against: certified.contents,
-            parent: parent
+            against: certified.contents
         ).get()
         NatalSpineManufactureDiagnostics.end(
             "dioscuri-verification",
@@ -173,10 +156,7 @@ public extension Orbo {
         NatalSpineManufactureDiagnostics.end("hephaestus-seal", since: sealStart)
 
         let artifactStart = NatalSpineManufactureDiagnostics.begin("artifact-write")
-        let receipt = try Hephaestus.forgeNatalSpineArtifact(
-            sealed,
-            to: artifactURL
-        )
+        let receipt = try Hephaestus.forgeNatalSpineArtifact(sealed, to: artifactURL)
         try receipt.write(to: receiptURL)
         NatalSpineManufactureDiagnostics.end("artifact-write", since: artifactStart)
 
@@ -184,7 +164,7 @@ public extension Orbo {
         let mounted = try NatalSpineRuntime.mount(
             from: artifactURL,
             expectedSHA256: receipt.sha256,
-            expectedParentSpineIdentity: parent.provenance.spineIdentity
+            expectedParentSpineIdentity: certified.contents.threads.parentProvenance.spineIdentity
         )
         NatalSpineManufactureDiagnostics.end("artifact-mount", since: mountStart)
 
@@ -241,17 +221,10 @@ public extension Orbo {
             blessing: blessing,
             receivedAt: manufactureInstant(occurredAt, offset: 10)
         )
-        return NatalSpineManufactureResult(
-            runtime: mounted,
-            receipt: receipt,
-            availability: availability
-        )
+        return NatalSpineManufactureResult(runtime: mounted, receipt: receipt, availability: availability)
     }
 
-    private func manufactureInstant(
-        _ start: AbsoluteInstant,
-        offset: Int
-    ) -> AbsoluteInstant {
+    private func manufactureInstant(_ start: AbsoluteInstant, offset: Int) -> AbsoluteInstant {
         AbsoluteInstant(
             unixSecondsSince1970: start.unixSecondsSince1970 + Double(offset)
         )!
